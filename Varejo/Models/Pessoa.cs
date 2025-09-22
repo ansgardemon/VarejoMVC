@@ -31,15 +31,20 @@ namespace Varejo.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        public bool EhJuridico { get; set; }
+        public bool EhJuridico { get; set; } = false;
 
-        public bool EhUsuario { get; set; }
+        public bool EhUsuario { get; set; } = false;
 
-        public bool EhCliente { get; set; }
+        public bool EhCliente { get; set; } = false;
 
-        public bool EhFornecedor { get; set; }
+        public bool EhFornecedor { get; set; } = false;
 
         public bool Ativo { get; set; } = true;
+
+
+
+        //RELACIONAMENTO UM PARA MUITOS
+        public virtual ICollection<Endereco>? Enderecos { get; set; }
 
 
 

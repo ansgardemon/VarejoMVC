@@ -12,7 +12,7 @@ namespace Varejo.Data
         }
 
         //DbSets
-        public DbSet<Pessoa> Pessosas { get; set; }
+        public DbSet<Pessoa> Pessoas { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo

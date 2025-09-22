@@ -2,7 +2,7 @@
 
 namespace Varejo.Interfaces
 {
-    public interface IPessoa
+    public interface IPessoaRepository
     {
         Task<List<Pessoa>> GetAllAsync();
         //stand by

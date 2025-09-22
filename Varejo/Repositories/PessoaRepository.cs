@@ -5,7 +5,7 @@ using Varejo.Models;
 
 namespace Varejo.Repositories
 {
-    public class PessoaRepository : IPessoa
+    public class PessoaRepository : IPessoaRepository
     {
         private readonly VarejoDbContext _context;
 

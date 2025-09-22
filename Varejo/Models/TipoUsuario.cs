@@ -15,6 +15,9 @@ namespace Varejo.Models
         public string DescricaoTipoUsuario { get; set; }
 
         
+
+
+        //RELACIONAMENTO UM PARA MUITOS
         
         public virtual ICollection<Usuario>? Usuarios { get; set; }
 

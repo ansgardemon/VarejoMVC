@@ -13,6 +13,9 @@ namespace Varejo.Data
 
         //DbSets
         public DbSet<Pessoa> Pessoas { get; set; }
+        public DbSet<Endereco> Enderecos { get; set; }
+        public DbSet<TipoUsuario> TiposUsuario { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo

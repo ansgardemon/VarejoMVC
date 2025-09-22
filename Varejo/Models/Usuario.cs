@@ -16,6 +16,8 @@ namespace Varejo.Models
         [Required]
         public string Senha { get; set; }
 
+        public bool Ativo { get; set; } = true;
+
 
 
 

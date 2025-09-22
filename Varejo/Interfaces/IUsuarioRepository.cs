@@ -6,10 +6,13 @@ namespace Varejo.Interfaces
     {
         Task<List<Usuario>> GetAllAsync();
         Task<Usuario> GetByIdAsync(int id);
+        Task<Usuario> GetAllAtivosAsync();
         Task AddAsync(Usuario usuario);
         Task UpdateAsync(Usuario usuario);
-        Task DeleteAsync(int id);
-        Task DesativarUsuario(int id);
-        Task RetivarUsuario(int id);
+        Task InativarUsuario(int id);
+        Task ReativarUsuario(int id);
+        //
+        Task<Usuario>? ValidarLoginAsync(string email, string senha);
+
     }
 }

@@ -11,17 +11,8 @@ namespace Varejo.Repositories
         {
             _context = context;
         }
+
         public Task AddAsync(Usuario usuario)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DesativarUsuario(int id)
         {
             throw new NotImplementedException();
         }
@@ -31,17 +22,32 @@ namespace Varejo.Repositories
             throw new NotImplementedException();
         }
 
+        public Task<Usuario> GetAllAtivosAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Usuario> GetByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task RetivarUsuario(int id)
+        public Task InativarUsuario(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ReativarUsuario(int id)
         {
             throw new NotImplementedException();
         }
 
         public Task UpdateAsync(Usuario usuario)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Usuario>? ValidarLoginAsync(string email, string senha)
         {
             throw new NotImplementedException();
         }

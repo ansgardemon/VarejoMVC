@@ -1,4 +1,5 @@
-﻿using Varejo.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Models;
 
@@ -14,24 +15,31 @@ namespace Varejo.Repositories
             _context = context;
         }
 
-        public Task AddAsync(Endereco endereco)
+        public async Task AddAsync(Endereco endereco)
         {
-            throw new NotImplementedException();
+            await _context.AddAsync(endereco);
+            await _context.SaveChangesAsync();
         }
 
         public Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var endereco = _context.Enderecos.Find(id);
+            if (endereco != null)
+            {
+                _context.Enderecos.Remove(endereco);
+                _context.SaveChanges();
+            }
         }
 
-        public Task<List<Endereco>> GetAllAsync()
+        public async Task<List<Endereco>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Enderecos.ToListAsync();
         }
 
-        public Task<Endereco> GetByIdAsync(int id)
+        public async Task<Endereco> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Enderecos
+                                 .FirstOrDefaultAsync(e => e.IdEndereco == id);
         }
 
         public Task UpdateAsync(Endereco endereco)

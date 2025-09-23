@@ -36,15 +36,5 @@ namespace Varejo.Repositories
             _context.Pessoas.Update(pessoa);
             await _context.SaveChangesAsync();
         }
-
-        public async Task DeleteAsync(int id)
-        {
-            var pessoa = await _context.Pessoas.FindAsync(id);
-            if (pessoa != null)
-            {
-                _context.Pessoas.Remove(pessoa);
-                await _context.SaveChangesAsync();
-            }
-        }
     }
 }

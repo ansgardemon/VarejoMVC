@@ -1,4 +1,5 @@
-﻿using Varejo.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Models;
 
@@ -12,44 +13,69 @@ namespace Varejo.Repositories
             _context = context;
         }
 
-        public Task AddAsync(Usuario usuario)
+        //CREATE
+        public async Task AddAsync(Usuario usuario)
         {
-            throw new NotImplementedException();
+            await _context.AddAsync(usuario);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<List<Usuario>> GetAllAsync()
+        //READ
+        public async Task<List<Usuario>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Usuarios.Include(u => u.TipoUsuario).ToListAsync();
         }
 
-        public Task<Usuario> GetAllAtivosAsync()
+        //READ - ID
+        public async Task<Usuario> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Usuarios.Include(u => u.TipoUsuario)
+                                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
         }
 
-        public Task<Usuario> GetByIdAsync(int id)
+        //READ - ATIVOS
+        public async Task<Usuario> GetAllAtivosAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Usuarios
+                                 .FirstOrDefaultAsync(u => u.Ativo == true);
         }
 
-        public Task InativarUsuario(int id)
+        //UPDATE
+        public async Task UpdateAsync(Usuario usuario)
         {
-            throw new NotImplementedException();
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
         }
 
-        public Task ReativarUsuario(int id)
+        //DELETE - OFF
+
+        //INATIVAR
+        public async Task InativarUsuario(int id)
         {
-            throw new NotImplementedException();
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario != null && usuario.Ativo)
+            {
+                usuario.Ativo = false;
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Task UpdateAsync(Usuario usuario)
+        //REATIVAR
+        public async Task ReativarUsuario(int id)
         {
-            throw new NotImplementedException();
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario != null && !usuario.Ativo)
+            {
+                usuario.Ativo = true;
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Task<Usuario>? ValidarLoginAsync(string email, string senha)
+        //VALIDAR LOGIN
+        public async Task<Usuario>? ValidarLoginAsync(string email, string senha)
         {
-            throw new NotImplementedException();
+            return await _context.Usuarios.Include(u => u.TipoUsuario).FirstOrDefaultAsync(u => u.nomeUsuario == email && u.Senha == senha);
+
         }
     }
 }

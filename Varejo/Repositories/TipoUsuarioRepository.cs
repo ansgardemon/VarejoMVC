@@ -1,4 +1,5 @@
-﻿using Varejo.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Models;
 
@@ -13,29 +14,41 @@ namespace Varejo.Repositories
             _context = context;
         }
 
-        public Task AddAsync(TipoUsuario tipoUsuario)
+        //CREATE
+        public async Task AddAsync(TipoUsuario tipoUsuario)
         {
-            throw new NotImplementedException();
+            await _context.TipoUsuarios.AddAsync(tipoUsuario);
+            await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
+        //READ
         public Task<List<TipoUsuario>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return _context.TipoUsuarios.ToListAsync();
         }
 
-        public Task<TipoUsuario> GetByIdAsync(int id)
+        //READE - ID
+        public async Task<TipoUsuario> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.TipoUsuarios.FindAsync(id);
         }
 
-        public Task UpdateAsync(TipoUsuario tipoUsuario)
+        //UPDATE
+        public async Task UpdateAsync(TipoUsuario tipoUsuario)
         {
-            throw new NotImplementedException();
+            _context.TipoUsuarios.Update(tipoUsuario);
+            await _context.SaveChangesAsync();
+        }
+
+        //DELETE
+        public async Task DeleteAsync(int id)
+        {
+            var tipoUsuario = await _context.TipoUsuarios.FindAsync(id);
+            if (tipoUsuario != null)
+            {
+                _context.TipoUsuarios.Remove(tipoUsuario);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

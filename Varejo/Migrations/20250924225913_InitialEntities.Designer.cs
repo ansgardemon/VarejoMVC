@@ -11,7 +11,7 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20250923011935_InitialEntities")]
+    [Migration("20250924225913_InitialEntities")]
     partial class InitialEntities
     {
         /// <inheritdoc />
@@ -109,9 +109,6 @@ namespace Varejo.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("FornecedorId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("MarcaId")
                         .HasColumnType("int");
 
@@ -120,18 +117,36 @@ namespace Varejo.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("PessoasIdPessoa")
-                        .HasColumnType("int");
-
                     b.HasKey("IdFamilia");
 
                     b.HasIndex("CategoriaId");
 
                     b.HasIndex("MarcaId");
 
-                    b.HasIndex("PessoasIdPessoa");
-
                     b.ToTable("Familias");
+                });
+
+            modelBuilder.Entity("Varejo.Models.FornecedorFamilia", b =>
+                {
+                    b.Property<int>("IdFornecedorFamilia")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFornecedorFamilia"));
+
+                    b.Property<int>("FamiliaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PessoaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdFornecedorFamilia");
+
+                    b.HasIndex("FamiliaId");
+
+                    b.HasIndex("PessoaId");
+
+                    b.ToTable("FornecedorFamilias");
                 });
 
             modelBuilder.Entity("Varejo.Models.Marca", b =>
@@ -383,15 +398,28 @@ namespace Varejo.Migrations
                         .WithMany("Familias")
                         .HasForeignKey("MarcaId");
 
-                    b.HasOne("Varejo.Models.Pessoa", "Pessoas")
-                        .WithMany()
-                        .HasForeignKey("PessoasIdPessoa");
-
                     b.Navigation("Categoria");
 
                     b.Navigation("Marca");
+                });
 
-                    b.Navigation("Pessoas");
+            modelBuilder.Entity("Varejo.Models.FornecedorFamilia", b =>
+                {
+                    b.HasOne("Varejo.Models.Familia", "Familia")
+                        .WithMany("FornecedorFamilias")
+                        .HasForeignKey("FamiliaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Pessoa", "Pessoa")
+                        .WithMany()
+                        .HasForeignKey("PessoaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Familia");
+
+                    b.Navigation("Pessoa");
                 });
 
             modelBuilder.Entity("Varejo.Models.Produto", b =>
@@ -450,6 +478,8 @@ namespace Varejo.Migrations
 
             modelBuilder.Entity("Varejo.Models.Familia", b =>
                 {
+                    b.Navigation("FornecedorFamilias");
+
                     b.Navigation("Produtos");
                 });
 

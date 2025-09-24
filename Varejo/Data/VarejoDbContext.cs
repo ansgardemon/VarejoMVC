@@ -23,6 +23,7 @@ namespace Varejo.Data
         public DbSet<TipoEmbalagem> TiposEmbalagem { get; set; }
         public DbSet<ProdutoEmbalagem> ProdutosEmbalagem { get; set; }
         public DbSet<Produto> Produtos { get; set; }
+        public DbSet<FornecedorFamilia> FornecedorFamilias { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo

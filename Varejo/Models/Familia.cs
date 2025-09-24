@@ -25,14 +25,14 @@ namespace Varejo.Models
         public int CategoriaId { get; set; }
         public virtual Categoria? Categoria { get; set; }
 
-        public int FornecedorId { get; set; }
-        public virtual Pessoa? Pessoas { get; set; }
-
 
 
         //RELACIONAMENTO UM PARA MUITOS
 
         public virtual ICollection<Produto>? Produtos { get; set; }
+
+
+        public virtual ICollection<FornecedorFamilia>? FornecedorFamilias { get; set; }
 
 
     }

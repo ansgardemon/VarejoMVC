@@ -87,6 +87,33 @@ namespace Varejo.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Familias",
+                columns: table => new
+                {
+                    IdFamilia = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NomeFamilia = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false),
+                    MarcaId = table.Column<int>(type: "int", nullable: true),
+                    CategoriaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Familias", x => x.IdFamilia);
+                    table.ForeignKey(
+                        name: "FK_Familias_Categorias_CategoriaId",
+                        column: x => x.CategoriaId,
+                        principalTable: "Categorias",
+                        principalColumn: "IdCategoria",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Familias_Marcas_MarcaId",
+                        column: x => x.MarcaId,
+                        principalTable: "Marcas",
+                        principalColumn: "IdMarca");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Enderecos",
                 columns: table => new
                 {
@@ -110,40 +137,6 @@ namespace Varejo.Migrations
                         principalTable: "Pessoas",
                         principalColumn: "IdPessoa",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Familias",
-                columns: table => new
-                {
-                    IdFamilia = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NomeFamilia = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Ativo = table.Column<bool>(type: "bit", nullable: false),
-                    MarcaId = table.Column<int>(type: "int", nullable: true),
-                    CategoriaId = table.Column<int>(type: "int", nullable: false),
-                    FornecedorId = table.Column<int>(type: "int", nullable: false),
-                    PessoasIdPessoa = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Familias", x => x.IdFamilia);
-                    table.ForeignKey(
-                        name: "FK_Familias_Categorias_CategoriaId",
-                        column: x => x.CategoriaId,
-                        principalTable: "Categorias",
-                        principalColumn: "IdCategoria",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Familias_Marcas_MarcaId",
-                        column: x => x.MarcaId,
-                        principalTable: "Marcas",
-                        principalColumn: "IdMarca");
-                    table.ForeignKey(
-                        name: "FK_Familias_Pessoas_PessoasIdPessoa",
-                        column: x => x.PessoasIdPessoa,
-                        principalTable: "Pessoas",
-                        principalColumn: "IdPessoa");
                 });
 
             migrationBuilder.CreateTable(
@@ -172,6 +165,32 @@ namespace Varejo.Migrations
                         column: x => x.TipoUsuarioId,
                         principalTable: "TiposUsuario",
                         principalColumn: "IdTipoUsuario",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FornecedorFamilias",
+                columns: table => new
+                {
+                    IdFornecedorFamilia = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PessoaId = table.Column<int>(type: "int", nullable: false),
+                    FamiliaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FornecedorFamilias", x => x.IdFornecedorFamilia);
+                    table.ForeignKey(
+                        name: "FK_FornecedorFamilias_Familias_FamiliaId",
+                        column: x => x.FamiliaId,
+                        principalTable: "Familias",
+                        principalColumn: "IdFamilia",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FornecedorFamilias_Pessoas_PessoaId",
+                        column: x => x.PessoaId,
+                        principalTable: "Pessoas",
+                        principalColumn: "IdPessoa",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -244,9 +263,14 @@ namespace Varejo.Migrations
                 column: "MarcaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Familias_PessoasIdPessoa",
-                table: "Familias",
-                column: "PessoasIdPessoa");
+                name: "IX_FornecedorFamilias_FamiliaId",
+                table: "FornecedorFamilias",
+                column: "FamiliaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FornecedorFamilias_PessoaId",
+                table: "FornecedorFamilias",
+                column: "PessoaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Produtos_FamiliaId",
@@ -287,6 +311,9 @@ namespace Varejo.Migrations
                 name: "Enderecos");
 
             migrationBuilder.DropTable(
+                name: "FornecedorFamilias");
+
+            migrationBuilder.DropTable(
                 name: "ProdutosEmbalagem");
 
             migrationBuilder.DropTable(
@@ -299,6 +326,9 @@ namespace Varejo.Migrations
                 name: "TiposEmbalagem");
 
             migrationBuilder.DropTable(
+                name: "Pessoas");
+
+            migrationBuilder.DropTable(
                 name: "TiposUsuario");
 
             migrationBuilder.DropTable(
@@ -309,9 +339,6 @@ namespace Varejo.Migrations
 
             migrationBuilder.DropTable(
                 name: "Marcas");
-
-            migrationBuilder.DropTable(
-                name: "Pessoas");
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Varejo.Models
 
         public bool Ativo { get; set; } = true;
 
+
         //RELACIONAMENTO COM PESSOA
         public int PessoaId { get; set; }
 

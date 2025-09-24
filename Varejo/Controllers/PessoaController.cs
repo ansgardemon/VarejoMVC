@@ -33,4 +33,3 @@ namespace Varejo.Controllers
         [ValidateAntiForgeryToken]
     }
 }
-

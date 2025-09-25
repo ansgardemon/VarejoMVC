@@ -74,7 +74,7 @@ namespace Varejo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TiposUsuario",
+                name: "TipoUsuarios",
                 columns: table => new
                 {
                     IdTipoUsuario = table.Column<int>(type: "int", nullable: false)
@@ -83,7 +83,7 @@ namespace Varejo.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TiposUsuario", x => x.IdTipoUsuario);
+                    table.PrimaryKey("PK_TipoUsuarios", x => x.IdTipoUsuario);
                 });
 
             migrationBuilder.CreateTable(
@@ -161,9 +161,9 @@ namespace Varejo.Migrations
                         principalColumn: "IdPessoa",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Usuarios_TiposUsuario_TipoUsuarioId",
+                        name: "FK_Usuarios_TipoUsuarios_TipoUsuarioId",
                         column: x => x.TipoUsuarioId,
-                        principalTable: "TiposUsuario",
+                        principalTable: "TipoUsuarios",
                         principalColumn: "IdTipoUsuario",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -329,7 +329,7 @@ namespace Varejo.Migrations
                 name: "Pessoas");
 
             migrationBuilder.DropTable(
-                name: "TiposUsuario");
+                name: "TipoUsuarios");
 
             migrationBuilder.DropTable(
                 name: "Familias");

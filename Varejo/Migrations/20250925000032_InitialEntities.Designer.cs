@@ -11,7 +11,7 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20250924225913_InitialEntities")]
+    [Migration("20250925000032_InitialEntities")]
     partial class InitialEntities
     {
         /// <inheritdoc />
@@ -336,7 +336,7 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdTipoUsuario");
 
-                    b.ToTable("TiposUsuario");
+                    b.ToTable("TipoUsuarios");
                 });
 
             modelBuilder.Entity("Varejo.Models.Usuario", b =>

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Varejo.Interfaces;
@@ -11,6 +11,8 @@ builder.Services.AddDbContext<VarejoDbContext>(options =>
 builder.Services.AddDbContext<VarejoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+//repositorios
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 builder.Services.AddScoped<IProdutoEmbalagemRepository, ProdutoEmbalagemRepository>();

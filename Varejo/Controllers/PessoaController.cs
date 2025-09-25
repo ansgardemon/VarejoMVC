@@ -58,25 +58,65 @@ namespace Varejo.Controllers
         }
 
         //UPDATE
+        // GET: Edit
         public async Task<IActionResult> Edit(int id)
         {
             var pessoa = await _pessoaRepository.GetByIdAsync(id);
             if (pessoa == null) return NotFound();
-            return View(pessoa);
+
+            // Mapear Pessoa → PessoaViewModel
+            var pessoaVm = new PessoaViewModel
+            {
+                IdPessoa = pessoa.IdPessoa,
+                NomeRazao = pessoa.NomeRazao,
+                TratamentoFantasia = pessoa.TratamentoFantasia,
+                CpfCnpj = pessoa.CpfCnpj,
+                Ddd = pessoa.Ddd,
+                Telefone = pessoa.Telefone,
+                Email = pessoa.Email,
+                EhJuridico = pessoa.EhJuridico,
+                EhUsuario = pessoa.EhUsuario,
+                EhCliente = pessoa.EhCliente,
+                EhFornecedor = pessoa.EhFornecedor,
+                Ativo = pessoa.Ativo
+            };
+
+            return View(pessoaVm);
         }
 
+        // POST: Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Pessoa pessoa)
+        public async Task<IActionResult> Edit(int id, PessoaViewModel pessoaVm)
         {
-            if (id != pessoa.IdPessoa) return NotFound();
+            if (id != pessoaVm.IdPessoa) return NotFound();
+
             if (ModelState.IsValid)
             {
+                // Mapear PessoaViewModel → Pessoa
+                var pessoa = new Pessoa
+                {
+                    IdPessoa = pessoaVm.IdPessoa,
+                    NomeRazao = pessoaVm.NomeRazao,
+                    TratamentoFantasia = pessoaVm.TratamentoFantasia,
+                    CpfCnpj = pessoaVm.CpfCnpj,
+                    Ddd = pessoaVm.Ddd,
+                    Telefone = pessoaVm.Telefone,
+                    Email = pessoaVm.Email,
+                    EhJuridico = pessoaVm.EhJuridico,
+                    EhUsuario = pessoaVm.EhUsuario,
+                    EhCliente = pessoaVm.EhCliente,
+                    EhFornecedor = pessoaVm.EhFornecedor,
+                    Ativo = pessoaVm.Ativo
+                };
+
                 await _pessoaRepository.UpdateAsync(pessoa);
                 return RedirectToAction(nameof(Index));
             }
-            return View(pessoa);
+
+            return View(pessoaVm);
         }
+
 
 
     }

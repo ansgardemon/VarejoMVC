@@ -4,7 +4,9 @@ namespace Varejo.Models
 {
     public class Endereco
     {
-
+        /// <summary>
+    
+        /// </summary>
 
         [Key]
         public int IdEndereco { get; set; }

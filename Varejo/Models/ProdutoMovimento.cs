@@ -1,0 +1,31 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Varejo.Models
+{
+    public class ProdutoMovimento
+    {
+        [Key]
+        public int IdProdutoMovimento { get; set; }
+
+        [Required]
+        public decimal Quantidade { get; set; }
+
+        //RELACIONAMENTO COM OUTRAS TABELAS
+
+        public int ProdutoId { get; set; }
+        public virtual Produto? Produto { get; set; }
+
+        public int ProdutoEmbalagemId { get; set; }
+        public virtual ProdutoEmbalagem? ProdutoEmbalagem { get; set; }
+
+
+        public int MovimentoId { get; set; }
+        public virtual Movimento? Movimento { get; set; }
+
+
+
+
+
+
+    }
+}

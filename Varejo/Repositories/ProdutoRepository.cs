@@ -1,33 +1,48 @@
-﻿using Varejo.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Varejo.Data;
+using Varejo.Interfaces;
 using Varejo.Models;
 
 namespace Varejo.Repositories
 {
     public class ProdutoRepository : IProdutoRepository
     {
-        public Task AddAsync(Produto produto)
+        private readonly VarejoDbContext _context;
+
+        public ProdutoRepository(VarejoDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public async Task AddAsync(Produto produto)
+        {
+            await _context.Produtos.AddAsync(produto);
+            await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var produto = await _context.Produtos.FindAsync(id);
+            if (produto != null)
+            {
+                _context.Produtos.Remove(produto);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Task<List<Produto>> GetAllAsync()
+        public async Task<List<Produto>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Produtos.ToListAsync();
         }
 
-        public Task<Produto> GetByIdAsync(int id)
+        public async Task<Produto?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Produtos.FindAsync(id);
         }
 
-        public Task UpdateAsync(Produto produto)
+        public async Task UpdateAsync(Produto produto)
         {
-            throw new NotImplementedException();
+            _context.Produtos.Update(produto);
+            await _context.SaveChangesAsync();
         }
     }
 }

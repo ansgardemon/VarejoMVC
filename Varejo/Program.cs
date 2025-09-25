@@ -5,7 +5,7 @@ using Varejo.Interfaces;
 using Varejo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<VarejoContext>(options =>
+builder.Services.AddDbContext<VarejoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VarejoContext") ?? throw new InvalidOperationException("Connection string 'VarejoContext' not found.")));
 
 builder.Services.AddDbContext<VarejoDbContext>(options =>

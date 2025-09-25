@@ -1,4 +1,5 @@
-﻿using Varejo.Models;
+﻿using Varejo.Controllers;
+using Varejo.Models;
 
 namespace Varejo.Interfaces
 {
@@ -9,5 +10,7 @@ namespace Varejo.Interfaces
         Task<TipoUsuario> GetByIdAsync(int id);
         Task AddAsync(TipoUsuario tipoUsuario);
         Task UpdateAsync(TipoUsuario tipoUsuario);
+        Task DeleteAsync(int id);
+       
     }
 }

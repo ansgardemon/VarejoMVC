@@ -34,7 +34,7 @@ namespace Varejo.Models
         public decimal CustoMedio { get; set; }
 
 
-        //RELACIONAMENTO UM PARA MUITOS
+        //RELACIONAMENTO COM OUTRA TABELA
 
         public int FamiliaId { get; set; }
         public virtual Familia? Familia { get; set; }

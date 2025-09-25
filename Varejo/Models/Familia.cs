@@ -32,7 +32,7 @@ namespace Varejo.Models
         public virtual ICollection<Produto>? Produtos { get; set; }
 
 
-        public virtual ICollection<FornecedorFamilia>? FornecedorFamilias { get; set; }
+        public virtual ICollection<FornecedorFamilia>? FornecedoresFamilia { get; set; }
 
 
     }

@@ -24,7 +24,6 @@ namespace Varejo.Models
 
         public virtual Pessoa? Pessoa { get; set; }
 
-
         public int TipoUsuarioId { get; set; }
 
         public virtual TipoUsuario? TipoUsuario { get; set; }

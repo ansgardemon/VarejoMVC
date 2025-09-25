@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Models;
@@ -21,18 +21,34 @@ namespace Varejo.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public Task DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
         //READ
         public async Task<List<Pessoa>> GetAllAsync()
         {
             return await _context.Pessoas.ToListAsync();
+
         }
+
+
+
 
         //READ - ID
         public async Task<Pessoa> GetByIdAsync(int id)
         {
             return await _context.Pessoas
-                                 .FirstOrDefaultAsync(p => p.IdPessoa == id);
+          .FirstOrDefaultAsync(p => p.IdPessoa == id);
         }
+
+
+
+
+
 
         //UPDATE
         public async Task UpdateAsync(Pessoa pessoa)
@@ -40,6 +56,8 @@ namespace Varejo.Repositories
             _context.Pessoas.Update(pessoa);
             await _context.SaveChangesAsync();
         }
+
+
 
         //DELETE - OFF
     }

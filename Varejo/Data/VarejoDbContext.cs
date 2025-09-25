@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Varejo.Models;
+using Varejo.ViewModels;
 
 namespace Varejo.Data
 {

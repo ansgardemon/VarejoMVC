@@ -21,18 +21,23 @@ namespace Varejo.Repositories
             await _context.SaveChangesAsync();
         }
 
-        //READ
         public async Task<List<Pessoa>> GetAllAsync()
         {
             return await _context.Pessoas.ToListAsync();
+
         }
 
-        //READ - ID
         public async Task<Pessoa> GetByIdAsync(int id)
         {
             return await _context.Pessoas
-                                 .FirstOrDefaultAsync(p => p.IdPessoa == id);
+          .FirstOrDefaultAsync(p => p.IdPessoa == id);
         }
+
+        //READ
+
+
+        //READ - ID
+
 
         //UPDATE
         public async Task UpdateAsync(Pessoa pessoa)
@@ -40,6 +45,8 @@ namespace Varejo.Repositories
             _context.Pessoas.Update(pessoa);
             await _context.SaveChangesAsync();
         }
+
+
 
         //DELETE - OFF
     }

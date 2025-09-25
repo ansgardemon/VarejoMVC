@@ -21,6 +21,11 @@ namespace Varejo.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public Task DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         //READ
         public async Task<List<Pessoa>> GetAllAsync()
         {

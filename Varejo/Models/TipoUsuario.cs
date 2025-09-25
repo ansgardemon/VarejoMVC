@@ -8,20 +8,12 @@ namespace Varejo.Models
         [Key]
         public int IdTipoUsuario { get; set; }
 
-
-
         [Required]
         [StringLength(20)]
         public string DescricaoTipoUsuario { get; set; }
-
         
-
-
         //RELACIONAMENTO UM PARA MUITOS
         
         public virtual ICollection<Usuario>? Usuarios { get; set; }
-
-
-
     }
 }

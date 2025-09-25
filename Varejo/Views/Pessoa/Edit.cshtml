@@ -1,0 +1,96 @@
+﻿@model Varejo.ViewModels.PessoaViewModel
+@* Define que a View recebe um objeto do tipo PessoaViewModel,
+   que já vem preenchido com os dados da pessoa a ser editada. *@
+
+@{
+    ViewData["Title"] = "Editar Pessoa";
+    // Define o título exibido no topo e no layout.
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit">
+    @* Formulário que envia os dados para a Action "Edit" do Controller. *@
+
+    <input type="hidden" asp-for="IdPessoa" />
+    @* Campo oculto que envia o Id da pessoa para o Controller. *@
+
+    <div class="mb-3">
+        <label asp-for="NomeRazao" class="form-label"></label>
+        <input asp-for="NomeRazao" class="form-control" />
+        <span asp-validation-for="NomeRazao" class="text-danger"></span>
+        @* Campo para editar o nome ou razão social da pessoa com validação. *@
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TratamentoFantasia" class="form-label"></label>
+        <input asp-for="TratamentoFantasia" class="form-control" />
+        <span asp-validation-for="TratamentoFantasia" class="text-danger"></span>
+        @* Campo para editar o tratamento ou fantasia da pessoa. *@
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CpfCnpj" class="form-label"></label>
+        <input asp-for="CpfCnpj" class="form-control" />
+        <span asp-validation-for="CpfCnpj" class="text-danger"></span>
+        @* Campo para editar o CPF ou CNPJ da pessoa. *@
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Ddd" class="form-label"></label>
+        <input asp-for="Ddd" class="form-control" />
+        <span asp-validation-for="Ddd" class="text-danger"></span>
+        @* Campo para editar o DDD do telefone. *@
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Telefone" class="form-label"></label>
+        <input asp-for="Telefone" class="form-control" />
+        <span asp-validation-for="Telefone" class="text-danger"></span>
+        @* Campo para editar o telefone da pessoa. *@
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+        @* Campo para editar o email da pessoa. *@
+    </div>
+
+    @* Checkboxes para os campos booleanos *@
+    <div class="form-check mb-3">
+        <input asp-for="EhJuridico" class="form-check-input" type="checkbox" />
+        <label asp-for="EhJuridico" class="form-check-label"></label>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="EhUsuario" class="form-check-input" type="checkbox" />
+        <label asp-for="EhUsuario" class="form-check-label"></label>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="EhCliente" class="form-check-input" type="checkbox" />
+        <label asp-for="EhCliente" class="form-check-label"></label>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="EhFornecedor" class="form-check-input" type="checkbox" />
+        <label asp-for="EhFornecedor" class="form-check-label"></label>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Ativo" class="form-check-input" type="checkbox" />
+        <label asp-for="Ativo" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    @* Botão que submete o formulário para salvar alterações. *@
+
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    @* Link para voltar à lista de pessoas sem salvar. *@
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @* Inclui os scripts de validação do ASP.NET Core. *@
+}

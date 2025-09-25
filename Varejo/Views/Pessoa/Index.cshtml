@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Varejo.ViewModels.PessoaViewModel>
+
+@{
+	ViewData["Title"] = "Pessoas";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h3>Lista de Pessoas</h3>
+
+<p>
+	<a asp-action="Create" class="btn btn-primary">Criar Nova Pessoa</a>
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Tratamento</th>
+            <th>CPF</th>
+            <th>DDD</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th>Jurídico</th>
+            <th>Usuário</th>
+            <th>Cliente</th>
+            <th>Fornecedor</th>
+            <th>Ativo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pessoa in Model)
+        {
+            <tr class="text-center">
+                <td>@pessoa.IdPessoa</td>
+                <td>@pessoa.NomeRazao</td>
+                <td>@pessoa.TratamentoFantasia</td>
+                <td>@pessoa.CpfCnpj</td>
+                <td>@pessoa.Ddd</td>
+                <td>@pessoa.Telefone</td>
+                <td>@pessoa.Email</td>
+                <td>@(pessoa.EhJuridico ? "✅" : "❌")</td>
+                <td>@(pessoa.EhUsuario ? "✅" : "❌")</td>
+                <td>@(pessoa.EhCliente ? "✅" : "❌")</td>
+                <td>@(pessoa.EhFornecedor ? "✅" : "❌")</td>
+                <td>@(pessoa.Ativo ? "✅" : "❌")</td>
+
+                <td>
+					@* @if (User.IsInRole("Admin") || User.IsInRole("Gerente")){ *@
+						<a asp-action="Edit" asp-route-id="@pessoa.IdPessoa" class="btn btn-sm btn-warning">Editar</a>
+					@* }) *@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

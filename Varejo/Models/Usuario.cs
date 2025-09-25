@@ -16,18 +16,13 @@ namespace Varejo.Models
         [Required]
         public string Senha { get; set; }
 
-
         public bool Ativo { get; set; } = true;
-
-
-
 
 
         //RELACIONAMENTO COM PESSOA
         public int PessoaId { get; set; }
 
         public virtual Pessoa? Pessoa { get; set; }
-
 
         public int TipoUsuarioId { get; set; }
 

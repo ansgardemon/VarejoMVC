@@ -12,7 +12,6 @@ namespace Varejo.Models
         [StringLength(100)]
         public string NomeRazao { get; set; }
 
-
         [StringLength(100)]
         [Required]
         public string TratamentoFantasia { get; set; }
@@ -20,7 +19,6 @@ namespace Varejo.Models
         [StringLength(18)]
         [Required]
         public string CpfCnpj { get; set; }
-
 
         [StringLength(2)]
         public string Ddd { get; set; }

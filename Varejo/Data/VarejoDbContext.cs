@@ -48,9 +48,44 @@ namespace Varejo.Data
                 .HasIndex(p => p.Ean)
                 .IsUnique();
 
+            modelBuilder.Entity<Pessoa>()
+        .HasIndex(p => p.CpfCnpj)
+        .IsUnique();
+
             modelBuilder.Entity<ProdutoEmbalagem>()
           .Property(p => p.Preco)
           .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<ProdutoMovimento>()
+            .Property(q => q.Quantidade)
+            .HasColumnType("decimal(18,2)");
+
+
+            modelBuilder.Entity<ProdutoMovimento>()
+           .HasOne(pm => pm.Produto)
+           .WithMany()
+           .HasForeignKey(pm => pm.ProdutoId)
+           .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProdutoMovimento>()
+                .HasOne(pm => pm.ProdutoEmbalagem)
+                .WithMany()
+                .HasForeignKey(pm => pm.ProdutoEmbalagemId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ProdutoMovimento>()
+                .HasOne(pm => pm.Movimento)
+                .WithMany()
+                .HasForeignKey(pm => pm.MovimentoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
+            modelBuilder.Entity<ProdutoMovimento>()
+    .HasOne(pm => pm.Movimento)
+    .WithMany(m => m.ProdutosMovimento)
+    .HasForeignKey(pm => pm.MovimentoId)
+    .OnDelete(DeleteBehavior.Restrict);
 
         }
 

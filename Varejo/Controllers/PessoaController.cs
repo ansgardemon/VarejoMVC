@@ -57,8 +57,8 @@ namespace Varejo.Controllers
             return View(pessoasVm);
         }
 
-<<<<<<< HEAD
-=======
+ 
+
         //UPDATE
         // GET: Edit
         public async Task<IActionResult> Edit(int id)
@@ -118,7 +118,6 @@ namespace Varejo.Controllers
 
             return View(pessoaVm);
         }
->>>>>>> 2d709b55601be0edf995dfa96424696fc74fabd1
     }
 }
     

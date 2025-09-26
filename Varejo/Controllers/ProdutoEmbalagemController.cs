@@ -63,6 +63,7 @@ namespace Varejo.Controllers
             var item = await _produtoEmbalagemRepository.GetByIdAsync(id);
             if (item == null) return NotFound();
             return View(item);
+
         }   
 
     }

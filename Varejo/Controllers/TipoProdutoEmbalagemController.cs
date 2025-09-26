@@ -64,6 +64,7 @@ namespace Varejo.Controllers
             var item = await _tipoEmbalagemRepository.GetByIdAsync(id);
             if (item == null) return NotFound();
             return View(item);
+
         }
 
         [HttpPost, ActionName("Excluir")]

@@ -1,4 +1,6 @@
-﻿namespace Varejo.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Varejo.ViewModels
 {
     public class PessoaViewModel
     {

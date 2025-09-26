@@ -23,11 +23,18 @@ namespace Varejo.Controllers
             return View();
         }
 
+        /*
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View();
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2d709b55601be0edf995dfa96424696fc74fabd1
+
+            
         }
+        */
     }
 }

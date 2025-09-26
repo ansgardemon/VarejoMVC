@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -21,6 +22,19 @@ namespace Varejo.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categorias", x => x.IdCategoria);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EspeciesMovimento",
+                columns: table => new
+                {
+                    IdEspecieMovimento = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DescricaoEspecieMovimento = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EspeciesMovimento", x => x.IdEspecieMovimento);
                 });
 
             migrationBuilder.CreateTable(
@@ -84,6 +98,26 @@ namespace Varejo.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TiposUsuario", x => x.IdTipoUsuario);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TiposMovimento",
+                columns: table => new
+                {
+                    IdTipoMovimento = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DescricaoTipoMovimento = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    EspecieMovimentoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TiposMovimento", x => x.IdTipoMovimento);
+                    table.ForeignKey(
+                        name: "FK_TiposMovimento_EspeciesMovimento_EspecieMovimentoId",
+                        column: x => x.EspecieMovimentoId,
+                        principalTable: "EspeciesMovimento",
+                        principalColumn: "IdEspecieMovimento",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -169,7 +203,36 @@ namespace Varejo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FornecedorFamilias",
+                name: "Movimentos",
+                columns: table => new
+                {
+                    IdMovimento = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Documento = table.Column<int>(type: "int", nullable: true),
+                    Observacao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataMovimento = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TipoMovimentoId = table.Column<int>(type: "int", nullable: false),
+                    PessoaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Movimentos", x => x.IdMovimento);
+                    table.ForeignKey(
+                        name: "FK_Movimentos_Pessoas_PessoaId",
+                        column: x => x.PessoaId,
+                        principalTable: "Pessoas",
+                        principalColumn: "IdPessoa",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Movimentos_TiposMovimento_TipoMovimentoId",
+                        column: x => x.TipoMovimentoId,
+                        principalTable: "TiposMovimento",
+                        principalColumn: "IdTipoMovimento",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FornecedoresFamilia",
                 columns: table => new
                 {
                     IdFornecedorFamilia = table.Column<int>(type: "int", nullable: false)
@@ -179,15 +242,15 @@ namespace Varejo.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FornecedorFamilias", x => x.IdFornecedorFamilia);
+                    table.PrimaryKey("PK_FornecedoresFamilia", x => x.IdFornecedorFamilia);
                     table.ForeignKey(
-                        name: "FK_FornecedorFamilias_Familias_FamiliaId",
+                        name: "FK_FornecedoresFamilia_Familias_FamiliaId",
                         column: x => x.FamiliaId,
                         principalTable: "Familias",
                         principalColumn: "IdFamilia",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_FornecedorFamilias_Pessoas_PessoaId",
+                        name: "FK_FornecedoresFamilia_Pessoas_PessoaId",
                         column: x => x.PessoaId,
                         principalTable: "Pessoas",
                         principalColumn: "IdPessoa",
@@ -247,6 +310,40 @@ namespace Varejo.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProdutosMovimento",
+                columns: table => new
+                {
+                    IdProdutoMovimento = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantidade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ProdutoId = table.Column<int>(type: "int", nullable: false),
+                    ProdutoEmbalagemId = table.Column<int>(type: "int", nullable: false),
+                    MovimentoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProdutosMovimento", x => x.IdProdutoMovimento);
+                    table.ForeignKey(
+                        name: "FK_ProdutosMovimento_Movimentos_MovimentoId",
+                        column: x => x.MovimentoId,
+                        principalTable: "Movimentos",
+                        principalColumn: "IdMovimento",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProdutosMovimento_ProdutosEmbalagem_ProdutoEmbalagemId",
+                        column: x => x.ProdutoEmbalagemId,
+                        principalTable: "ProdutosEmbalagem",
+                        principalColumn: "IdProdutoEmbalagem",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ProdutosMovimento_Produtos_ProdutoId",
+                        column: x => x.ProdutoId,
+                        principalTable: "Produtos",
+                        principalColumn: "IdProduto",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Enderecos_PessoaId",
                 table: "Enderecos",
@@ -263,14 +360,30 @@ namespace Varejo.Migrations
                 column: "MarcaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FornecedorFamilias_FamiliaId",
-                table: "FornecedorFamilias",
+                name: "IX_FornecedoresFamilia_FamiliaId",
+                table: "FornecedoresFamilia",
                 column: "FamiliaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FornecedorFamilias_PessoaId",
-                table: "FornecedorFamilias",
+                name: "IX_FornecedoresFamilia_PessoaId",
+                table: "FornecedoresFamilia",
                 column: "PessoaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movimentos_PessoaId",
+                table: "Movimentos",
+                column: "PessoaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movimentos_TipoMovimentoId",
+                table: "Movimentos",
+                column: "TipoMovimentoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pessoas_CpfCnpj",
+                table: "Pessoas",
+                column: "CpfCnpj",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Produtos_FamiliaId",
@@ -294,6 +407,26 @@ namespace Varejo.Migrations
                 column: "TipoEmbalagemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProdutosMovimento_MovimentoId",
+                table: "ProdutosMovimento",
+                column: "MovimentoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProdutosMovimento_ProdutoEmbalagemId",
+                table: "ProdutosMovimento",
+                column: "ProdutoEmbalagemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProdutosMovimento_ProdutoId",
+                table: "ProdutosMovimento",
+                column: "ProdutoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TiposMovimento_EspecieMovimentoId",
+                table: "TiposMovimento",
+                column: "EspecieMovimentoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Usuarios_PessoaId",
                 table: "Usuarios",
                 column: "PessoaId");
@@ -311,13 +444,28 @@ namespace Varejo.Migrations
                 name: "Enderecos");
 
             migrationBuilder.DropTable(
-                name: "FornecedorFamilias");
+                name: "FornecedoresFamilia");
+
+            migrationBuilder.DropTable(
+                name: "ProdutosMovimento");
+
+            migrationBuilder.DropTable(
+                name: "Usuarios");
+
+            migrationBuilder.DropTable(
+                name: "Movimentos");
 
             migrationBuilder.DropTable(
                 name: "ProdutosEmbalagem");
 
             migrationBuilder.DropTable(
-                name: "Usuarios");
+                name: "TiposUsuario");
+
+            migrationBuilder.DropTable(
+                name: "Pessoas");
+
+            migrationBuilder.DropTable(
+                name: "TiposMovimento");
 
             migrationBuilder.DropTable(
                 name: "Produtos");
@@ -326,10 +474,7 @@ namespace Varejo.Migrations
                 name: "TiposEmbalagem");
 
             migrationBuilder.DropTable(
-                name: "Pessoas");
-
-            migrationBuilder.DropTable(
-                name: "TiposUsuario");
+                name: "EspeciesMovimento");
 
             migrationBuilder.DropTable(
                 name: "Familias");

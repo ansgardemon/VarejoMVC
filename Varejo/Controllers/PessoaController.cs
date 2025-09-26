@@ -8,7 +8,7 @@ using Varejo.Repositories;
 
 namespace Varejo.Controllers
 {
-    public class PessoaController : ControllerBase
+    public class PessoaController : Controller
     {
         private readonly IPessoaRepository _pessoaRepository;
 
@@ -29,7 +29,5 @@ namespace Varejo.Controllers
             return View(pessoas);
         }
 
-        [Authorize]
-        [ValidateAntiForgeryToken]
     }
 }

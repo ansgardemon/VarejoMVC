@@ -333,7 +333,7 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdTipoUsuario");
 
-                    b.ToTable("TiposUsuario");
+                    b.ToTable("TipoUsuarios");
                 });
 
             modelBuilder.Entity("Varejo.Models.Usuario", b =>

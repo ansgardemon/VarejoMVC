@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
+using Varejo.Repositories;
+using Varejo.ViewModels;
 
 namespace Varejo.Controllers
 {
@@ -38,12 +40,41 @@ namespace Varejo.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var item = await _produtoEmbalagemRepository.GetByIdAsync(id);
-            if (item == null) return NotFound();
-            return View(item);
+            var produtoEmbalagem = await _produtoEmbalagemRepository.GetByIdAsync(id);
+            if (produtoEmbalagem == null) return NotFound();
 
+            // Mapear ProdutoEmbalagem -> ProdutoEmbalagemViewModel
+            var vm = new ProdutoEmbalagem
+            {
+                IdProdutoEmbalagem = produtoEmbalagem.IdProdutoEmbalagem,
+                Preco = produtoEmbalagem.Preco,
+                Ean = produtoEmbalagem.Ean,
+                ProdutoId = produtoEmbalagem.ProdutoId,
+                TipoEmbalagemId = produtoEmbalagem.TipoEmbalagemId
+            };
+
+            return View(vm);
         }
 
+        // POST: ProdutoEmbalagem/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ProdutoEmbalagem vm)
+        {
+            if (!ModelState.IsValid) return View(vm);
+
+            var produtoEmbalagem = await _produtoEmbalagemRepository.GetByIdAsync(vm.IdProdutoEmbalagem);
+            if (produtoEmbalagem == null) return NotFound();
+
+            // Mapear ViewModel -> Entidade
+            produtoEmbalagem.Preco = vm.Preco;
+            produtoEmbalagem.Ean = vm.Ean;
+            produtoEmbalagem.ProdutoId = vm.ProdutoId;
+            produtoEmbalagem.TipoEmbalagemId = vm.TipoEmbalagemId;
+
+            await _produtoEmbalagemRepository.UpdateAsync(produtoEmbalagem);
+            return RedirectToAction(nameof(Index));
+        }
 
         [HttpPost, ActionName("Editar")]
         [ValidateAntiForgeryToken]

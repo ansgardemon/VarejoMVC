@@ -19,6 +19,7 @@ namespace Varejo.Controllers
         {
             var tipos = await _tipoUsuario.GetAllAsync();
             return View(tipos);
+
         }
 
         public IActionResult Create() => View();

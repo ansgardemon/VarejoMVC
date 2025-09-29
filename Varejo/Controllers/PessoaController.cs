@@ -157,37 +157,65 @@ namespace Varejo.Controllers
                 EhUsuario = pessoa.EhUsuario,
                 EhCliente = pessoa.EhCliente,
                 EhFornecedor = pessoa.EhFornecedor,
-                Ativo = pessoa.Ativo
+                Ativo = pessoa.Ativo,
+
+                // Mapear Enderecos da entidade para o ViewModel
+                Enderecos = pessoa.Enderecos?.Select(e => new EnderecoViewModel
+                {
+                    IdEndereco = e.IdEndereco, // adiciona isso
+                    Logradouro = e.Logradouro,
+                    Numero = e.Numero,
+                    Cep = e.Cep,
+                    Bairro = e.Bairro,
+                    Cidade = e.Cidade,
+                    Uf = e.Uf,
+                    Complemento = e.Complemento
+                }).ToList() ?? new List<EnderecoViewModel>()
             };
 
             return View(pessoaVm);
         }
 
+
+
         // POST: Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, PessoaViewModel pessoaVm)
+        public async Task<IActionResult> Edit(PessoaViewModel pessoaVm)
         {
-            if (id != pessoaVm.IdPessoa) return NotFound();
+            if (pessoaVm == null) return NotFound();
+
+            int id = pessoaVm.IdPessoa;
+
+            var pessoa = await _pessoaRepository.GetByIdAsync(id);
+            if (pessoa == null) return NotFound();
 
             if (ModelState.IsValid)
             {
-                // Mapear PessoaViewModel → Pessoa
-                var pessoa = new Pessoa
+                pessoa.NomeRazao = pessoaVm.NomeRazao;
+                pessoa.TratamentoFantasia = pessoaVm.TratamentoFantasia;
+                pessoa.CpfCnpj = pessoaVm.CpfCnpj;
+                pessoa.Ddd = pessoaVm.Ddd;
+                pessoa.Telefone = pessoaVm.Telefone;
+                pessoa.Email = pessoaVm.Email;
+                pessoa.EhJuridico = pessoaVm.EhJuridico;
+                pessoa.EhUsuario = pessoaVm.EhUsuario;
+                pessoa.EhCliente = pessoaVm.EhCliente;
+                pessoa.EhFornecedor = pessoaVm.EhFornecedor;
+                pessoa.Ativo = pessoaVm.Ativo;
+
+                pessoa.Enderecos = pessoaVm.Enderecos?.Select(evm => new Endereco
                 {
-                    IdPessoa = pessoaVm.IdPessoa,
-                    NomeRazao = pessoaVm.NomeRazao,
-                    TratamentoFantasia = pessoaVm.TratamentoFantasia,
-                    CpfCnpj = pessoaVm.CpfCnpj,
-                    Ddd = pessoaVm.Ddd,
-                    Telefone = pessoaVm.Telefone,
-                    Email = pessoaVm.Email,
-                    EhJuridico = pessoaVm.EhJuridico,
-                    EhUsuario = pessoaVm.EhUsuario,
-                    EhCliente = pessoaVm.EhCliente,
-                    EhFornecedor = pessoaVm.EhFornecedor,
-                    Ativo = pessoaVm.Ativo
-                };
+                    IdEndereco = evm.IdEndereco,
+                    Logradouro = evm.Logradouro,
+                    Numero = evm.Numero,
+                    Cep = evm.Cep,
+                    Bairro = evm.Bairro,
+                    Cidade = evm.Cidade,
+                    Uf = evm.Uf,
+                    Complemento = evm.Complemento,
+                    PessoaId = pessoa.IdPessoa
+                }).ToList();
 
                 await _pessoaRepository.UpdateAsync(pessoa);
                 return RedirectToAction(nameof(Index));
@@ -195,6 +223,7 @@ namespace Varejo.Controllers
 
             return View(pessoaVm);
         }
+
     }
 }
     

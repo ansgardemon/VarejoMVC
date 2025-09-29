@@ -12,6 +12,8 @@ namespace Varejo.Controllers
     public class PessoaController : Controller
     {
         private readonly IPessoaRepository _pessoaRepository;
+        private readonly IFamiliaRepository _familiaRepository;
+
 
         public PessoaController(IPessoaRepository pessoaRepository)
         {
@@ -56,6 +58,8 @@ namespace Varejo.Controllers
             }).ToList();
             return View(pessoasVm);
         }
+
+ 
 
         //UPDATE
         // GET: Edit

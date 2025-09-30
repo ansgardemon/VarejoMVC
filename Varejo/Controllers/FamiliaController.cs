@@ -8,12 +8,16 @@ namespace Varejo.Controllers
     {
         private readonly IFamiliaRepository _familiaRepository;
         private readonly IMarcaRepository _marcaRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
+
 
         public FamiliaController(
-            IFamiliaRepository familiaRepository, IMarcaRepository marcaRepository)
+            IFamiliaRepository familiaRepository, IMarcaRepository marcaRepository, ICategoriaRepository categoriaRepository)
         {
             _familiaRepository = familiaRepository;
             _marcaRepository = marcaRepository;
+            _categoriaRepository = categoriaRepository;
+
         }
 
         // LISTAR
@@ -49,10 +53,13 @@ namespace Varejo.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var familia = await _familiaRepository.GetByIdAsync(id);
+
             if (familia == null) return NotFound();
 
             ViewBag.Marcas = await _marcaRepository.GetAllAsync();
             return View(familia);
+
+            
         }
 
         [HttpPost, ActionName("Editar")]

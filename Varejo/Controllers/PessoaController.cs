@@ -18,6 +18,7 @@ namespace Varejo.Controllers
         public PessoaController(IPessoaRepository pessoaRepository)
         {
             _pessoaRepository = pessoaRepository;
+            
         }
 
         // == CRUD ==

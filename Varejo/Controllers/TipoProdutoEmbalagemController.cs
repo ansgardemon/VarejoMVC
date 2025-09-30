@@ -45,28 +45,6 @@ namespace Varejo.Controllers
             return View(item);
         }
 
-        [HttpPost, ActionName("Editar")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, TipoEmbalagem tipoEmbalagem)
-        {
-            if (id != tipoEmbalagem.IdTipoEmbalagem) return NotFound();
-            if (ModelState.IsValid)
-            {
-                await _tipoEmbalagemRepository.UpdateAsync(tipoEmbalagem);
-                return RedirectToAction(nameof(Index));
-            }
-            return View(tipoEmbalagem);
-        }
-
-        // DELETAR
-        public async Task<IActionResult> Delete(int id)
-        {
-            var item = await _tipoEmbalagemRepository.GetByIdAsync(id);
-            if (item == null) return NotFound();
-            return View(item);
-
-
-        }
 
         [HttpPost, ActionName("Excluir")]
         [ValidateAntiForgeryToken]

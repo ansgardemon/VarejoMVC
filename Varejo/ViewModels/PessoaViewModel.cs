@@ -16,5 +16,9 @@ namespace Varejo.ViewModels
         public bool EhCliente { get; set; }
         public bool EhFornecedor { get; set; }
         public bool Ativo { get; set; }
+
+
+        public List<EnderecoViewModel> Enderecos { get; set; } = new List<EnderecoViewModel>();
+
     }
 }

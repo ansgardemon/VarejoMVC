@@ -64,10 +64,86 @@
 	</div>
 
 
+	<div class="form-check mb-3">
+		<input asp-for="Ativo" class="form-check-input" type="checkbox" />
+		<label asp-for="Ativo" class="form-check-label"></label>
+	</div>
+
+	<h4>Endereços</h4>
+	<div id="enderecos-container">
+		@for (int i = 0; i < Model.Enderecos.Count; i++)
+		{
+			<div class="endereco-item mb-3 border p-2">
+				<label asp-for="Enderecos[i].Logradouro"></label>
+				<input asp-for="Enderecos[i].Logradouro" class="form-control" />
+
+				<label asp-for="Enderecos[i].Numero"></label>
+				<input asp-for="Enderecos[i].Numero" class="form-control" />
+
+				<label asp-for="Enderecos[i].Cep"></label>
+				<input asp-for="Enderecos[i].Cep" class="form-control" />
+
+				<label asp-for="Enderecos[i].Bairro"></label>
+				<input asp-for="Enderecos[i].Bairro" class="form-control" />
+
+				<label asp-for="Enderecos[i].Cidade"></label>
+				<input asp-for="Enderecos[i].Cidade" class="form-control" />
+
+				<label asp-for="Enderecos[i].Uf"></label>
+				<input asp-for="Enderecos[i].Uf" class="form-control" />
+
+				<label asp-for="Enderecos[i].Complemento"></label>
+				<input asp-for="Enderecos[i].Complemento" class="form-control" />
+
+				<button type="button" class="btn btn-danger mt-2 remover-endereco">Remover</button>
+			</div>
+		}
+	</div>
+
+	<button type="button" id="adicionar-endereco" class="btn btn-success mb-3">+ Adicionar Endereço</button>
+
 	<button type="submit" class="btn btn-primary">Salvar</button>
 	<a asp-action="Index" class="btn btn-secondary">Voltar</a>
 </form>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script>
+		document.getElementById('adicionar-endereco').addEventListener('click', function () {
+			var container = document.getElementById('enderecos-container');
+			var index = container.children.length;
+			var html = `
+				<div class="endereco-item mb-3 border p-2">
+					<label for="Enderecos_${index}__Logradouro">Logradouro</label>
+					<input name="Enderecos[${index}].Logradouro" class="form-control" />
+
+					<label for="Enderecos_${index}__Numero">Número</label>
+					<input name="Enderecos[${index}].Numero" class="form-control" />
+
+					<label for="Enderecos_${index}__Cep">CEP</label>
+					<input name="Enderecos[${index}].Cep" class="form-control" />
+
+					<label for="Enderecos_${index}__Bairro">Bairro</label>
+					<input name="Enderecos[${index}].Bairro" class="form-control" />
+
+					<label for="Enderecos_${index}__Cidade">Cidade</label>
+					<input name="Enderecos[${index}].Cidade" class="form-control" />
+
+					<label for="Enderecos_${index}__Uf">UF</label>
+					<input name="Enderecos[${index}].Uf" class="form-control" />
+
+					<label for="Enderecos_${index}__Complemento">Complemento</label>
+					<input name="Enderecos[${index}].Complemento" class="form-control" />
+
+					<button type="button" class="btn btn-danger mt-2 remover-endereco">Remover</button>
+				</div>`;
+			container.insertAdjacentHTML('beforeend', html);
+		});
+
+		document.addEventListener('click', function (e) {
+			if (e.target && e.target.classList.contains('remover-endereco')) {
+				e.target.parentElement.remove();
+			}
+		});
+	</script>
 }

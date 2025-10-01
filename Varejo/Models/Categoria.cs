@@ -11,6 +11,7 @@ namespace Varejo.Models
 
         [Required]
         [StringLength(50)]
+        [Display(Name = "Categoria")]
         public string DescricaoCategoria { get; set; }
 
 

@@ -1,33 +1,53 @@
-﻿using Varejo.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Varejo.Data;
+using Varejo.Interfaces;
 using Varejo.Models;
 
 namespace Varejo.Repositories
 {
     public class MarcaRepository : IMarcaRepository
     {
-        public async Task AddAsync(Marca marca)
-        {
-            throw new NotImplementedException();
-        }
+        private readonly VarejoDbContext _context;
 
-        public async Task DeleteAsync(int id)
+        public MarcaRepository(VarejoDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
-
         public async Task<List<Marca>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            // Se quiser trazer as famílias junto, inclua: .Include(c => c.Familias)
+            return await _context.Marcas
+                               .Include(c => c.Familias)
+                                 .ToListAsync();
         }
 
-        public async Task<Marca> GetByIdAsync(int id)
+        public async Task<Marca?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Marcas
+                                 .Include(c => c.Familias) // inclui o relacionamento
+                                 .FirstOrDefaultAsync(c => c.IdMarca == id);
+        }
+
+        public async Task AddAsync(Marca marca)
+        {
+            await _context.Marcas.AddAsync(marca);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Marca marca)
         {
-            throw new NotImplementedException();
+            _context.Marcas.Update(marca);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var marca = await _context.Marcas.FindAsync(id);
+            if (marca != null)
+            {
+                _context.Marcas.Remove(marca);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

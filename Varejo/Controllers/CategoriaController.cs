@@ -29,7 +29,6 @@ namespace Varejo.Controllers
             return View(viewModels);
         }
 
-        // GET: Categoria/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var categoria = await _categoriaRepository.GetByIdAsync(id);
@@ -40,7 +39,13 @@ namespace Varejo.Controllers
             {
                 IdCategoria = categoria.IdCategoria,
                 DescricaoCategoria = categoria.DescricaoCategoria,
-                QuantidadeFamilia = categoria.Familias.Count
+                QuantidadeFamilia = categoria.Familias.Count,
+                Familias = categoria.Familias.Select(f => new FamiliaCategoriaViewModel
+                {
+                    IdFamilia = f.IdFamilia,
+                    NomeFamilia = f.NomeFamilia,
+                    Ativo = f.Ativo
+                }).ToList()
             };
 
             return View(viewModel);

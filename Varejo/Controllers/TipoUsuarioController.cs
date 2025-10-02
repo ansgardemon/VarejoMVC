@@ -21,6 +21,7 @@ namespace Varejo.Controllers
             tipos = tipos.OrderBy(f => f.DescricaoTipoUsuario).ToList();
 
             return View(tipos);
+
         }
 
         public IActionResult Create() => View();

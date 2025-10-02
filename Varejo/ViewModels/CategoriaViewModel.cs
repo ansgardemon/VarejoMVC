@@ -19,7 +19,7 @@ namespace Varejo.ViewModels
 
         //PARA PUXAR LISTA DETALHADA DAS FAMILIAS
 
-        public List<FamiliaCategoriaViewModel> Familias { get; set; }
+        public List<FamiliaCategoriaViewModel>? Familias { get; set; }
 
     }
 }

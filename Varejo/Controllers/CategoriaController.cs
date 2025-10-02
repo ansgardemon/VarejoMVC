@@ -61,7 +61,12 @@ namespace Varejo.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoriaViewModel viewModel)
+
+
         {
+
+            Console.WriteLine(">>> ENTROU NO POST CREATE <<<");
+
             if (ModelState.IsValid)
             {
                 var categoria = new Categoria
@@ -72,6 +77,15 @@ namespace Varejo.Controllers
                 await _categoriaRepository.AddAsync(categoria);
                 return RedirectToAction(nameof(Index));
             }
+
+            if (!ModelState.IsValid)
+            {
+                foreach (var erro in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine("Erro de validação: " + erro.ErrorMessage);
+                }
+            }
+
             return View(viewModel);
         }
 

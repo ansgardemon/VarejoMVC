@@ -60,9 +60,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
     });
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
 // MVC + JSON + AutoValidateAntiForgeryToken em métodos de escrita
 builder.Services.AddControllersWithViews(options =>
 {
@@ -83,23 +80,33 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
-
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
+app.UseCors("PermitirTudo");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+// Rotas
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapControllers();
 
 app.Run();

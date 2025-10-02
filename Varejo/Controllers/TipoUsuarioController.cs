@@ -18,6 +18,8 @@ namespace Varejo.Controllers
         public async Task<IActionResult> Index()
         {
             var tipos = await _tipoUsuario.GetAllAsync();
+            tipos = tipos.OrderBy(f => f.DescricaoTipoUsuario).ToList();
+
             return View(tipos);
         }
 

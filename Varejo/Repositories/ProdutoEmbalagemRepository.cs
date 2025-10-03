@@ -31,7 +31,9 @@ namespace Varejo.Repositories
 
         public async Task<List<ProdutoEmbalagem>> GetAllAsync()
         {
-            return await _context.ProdutosEmbalagem.ToListAsync();
+            return await _context.ProdutosEmbalagem
+                .Include(t => t.TipoEmbalagem) // se quiser carregar o relacionamento
+                .ToListAsync();
         }
 
         public async Task<ProdutoEmbalagem?> GetByIdAsync(int id)

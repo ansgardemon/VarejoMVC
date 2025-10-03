@@ -59,6 +59,18 @@ namespace Varejo.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        //MÉTODOS PARA DROPDOWN
+        public List<Marca> GetMarcas()
+        {
+            return _context.Marcas.ToList();
+        }
+
+        public List<Categoria> GetCategorias()
+        {
+            return _context.Categorias.ToList();
+        }
+
     }
 }
 

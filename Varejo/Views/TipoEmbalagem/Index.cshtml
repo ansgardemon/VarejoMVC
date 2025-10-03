@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Varejo.ViewModels.TipoEmbalagemViewModel>
+
+@{
+    ViewData["Title"] = "Tipos de Embalagem";
+}
+
+<h2>Tipos de Embalagem</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nova Embalagem</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Descrição</th>
+            <th>Multiplicador</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tipo in Model)
+        {
+            <tr>
+                <td>@tipo.IdTipoEmbalagem</td>
+                <td>@tipo.DescricaoTipoEmbalagem</td>
+                <td>@tipo.Multiplicador</td>
+                <td>
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@tipo.IdTipoEmbalagem">Editar</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@tipo.IdTipoEmbalagem">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

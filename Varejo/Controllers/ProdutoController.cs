@@ -84,6 +84,8 @@ namespace Varejo.Controllers
         {
             await _produtoRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+
+            //
         }
 
 

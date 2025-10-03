@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.VisualBasic;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.Repositories;
@@ -68,7 +69,7 @@ namespace Varejo.Controllers
         }
         [HttpPost]
 
-        public async Task<IActionResult> Create(UsuarioViewModel model)
+        public async Task<IActionResult> Create(UsuarioViewModel usuariovm)
         {
             if (!ModelState.IsValid)
             {
@@ -78,63 +79,64 @@ namespace Varejo.Controllers
 
             var usuario = new Usuario
             {
-                IdUsuario = model?.IdUsuario ?? 0,
-                nomeUsuario = model.nomeUsuario,
-                Senha = model.Senha,
-                Ativo = model.Ativo,
-                PessoaId = model.PessoaId,
-                TipoUsuarioId = model.TipoUsuarioId,
+                IdUsuario = usuariovm.IdUsuario,
+                nomeUsuario = usuariovm.nomeUsuario,
+                Senha = usuariovm.Senha,
+                Ativo = true,
+                PessoaId = usuariovm.PessoaId,
+                TipoUsuario = usuariovm.TipoUsuario,
             };
-
-            await _usuarioRepository.AddAsync(usuario);
-            return RedirectToAction(nameof(Index));
+                await _usuarioRepository.AddAsync(usuario);
+                return RedirectToAction(nameof(Index));
         }
-
 
         public async Task<IActionResult> Edit(int id)
         {
-            if (id <= 0) return NotFound();
+            if (id <= 0) return NotFound(); 
 
             var usuario = await _usuarioRepository.GetByIdAsync(id);
             if (usuario == null) return NotFound();
 
-            var vm = new UsuarioViewModel
-            {
+            var usuariovm = new UsuarioViewModel {
 
-                IdUsuario = usuario?.IdUsuario ?? 0,
                 nomeUsuario = usuario.nomeUsuario,
                 Senha = usuario.Senha,
                 Ativo = usuario.Ativo,
                 PessoaId = usuario.PessoaId,
-                TipoUsuario = usuario.TipoUsuario,
+                TipoUsuarioId = usuario.TipoUsuarioId,
+                TipoUsuarios = (await _tipoUsuarioRepository.GetAllAsync()).Select(u => new SelectListItem
+                {
+                    Text = u.DescricaoTipoUsuario,
+                    Value = u.IdTipoUsuario.ToString(),
+                }),
             };
-            return View(vm);
+
+            return View(usuariovm);
         }
 
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UsuarioViewModel viewModel)
+        public async Task<IActionResult> Edit(UsuarioViewModel usuariovm)
         {
-            if (id != viewModel.IdUsuario) return NotFound();
+            if (usuariovm == null) return NotFound();
 
-            if (!ModelState.IsValid)
-            {
-                viewModel = await CriarUsuarioViewModel(viewModel);
-                return View(viewModel);
-            }
+            int id = usuariovm.IdUsuario;
 
             var usuario = await _usuarioRepository.GetByIdAsync(id);
             if (usuario == null) return NotFound();
 
-            usuario.IdUsuario = usuario?.IdUsuario ?? 0;
-            usuario.nomeUsuario = usuario.nomeUsuario;
-            usuario.Senha = viewModel.Senha;
-            usuario.Ativo = usuario.Ativo;
-            usuario.TipoUsuarioId = viewModel.TipoUsuarioId;
-            usuario.PessoaId = viewModel.PessoaId;
-
-            await _usuarioRepository.UpdateAsync(usuario);
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                usuario.nomeUsuario = usuariovm.nomeUsuario;
+                usuario.Senha = usuariovm.Senha;
+                usuario.Ativo = usuariovm.Ativo;
+                usuario.PessoaId = usuariovm.PessoaId;
+                usuario.TipoUsuarioId = usuariovm.TipoUsuarioId;
+                await _usuarioRepository.UpdateAsync(usuario);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(usuariovm);
         }
 
 

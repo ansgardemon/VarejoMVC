@@ -16,7 +16,7 @@ namespace Varejo.Repositories
         //CREATE
         public async Task AddAsync(Usuario usuario)
         {
-            await _context.AddAsync(usuario);
+            await _context.Usuarios.AddAsync(usuario);
             await _context.SaveChangesAsync();
         }
 
@@ -77,5 +77,17 @@ namespace Varejo.Repositories
             return await _context.Usuarios.Include(u => u.TipoUsuario).FirstOrDefaultAsync(u => u.nomeUsuario == email && u.Senha == senha);
 
         }
+
+        public Task<List<TipoUsuario>> GetTipoUsuarios()
+        {
+            return _context.TipoUsuarios.ToListAsync();
+        }
+
+        public Task<List<Pessoa>> GetPessoa()
+        {
+            return _context.Pessoas.ToListAsync();
+        }
     }
 }
+
+

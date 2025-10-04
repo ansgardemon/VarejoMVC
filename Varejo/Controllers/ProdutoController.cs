@@ -1,91 +1,103 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
+using Varejo.ViewModels;
 
 namespace Varejo.Controllers
 {
-    public class ProdutoController: Controller
+    public class ProdutoController : Controller
     {
         private readonly IProdutoRepository _produtoRepository;
         private readonly IFamiliaRepository _familiaRepository;
 
-        public ProdutoController(IProdutoRepository produtoRepository)
+        public ProdutoController(IProdutoRepository produtoRepository, IFamiliaRepository familiaRepository)
         {
             _produtoRepository = produtoRepository;
-
+            _familiaRepository = familiaRepository;
         }
 
-        // LISTAR
-        [HttpPost, ActionName("Listar")]
-        public async Task<IActionResult> Index()
+        // CREATE GET
+        public async Task<IActionResult> Create(int familiaId)
         {
-            var produtos = await _produtoRepository.GetAllAsync();
-            return View(produtos);
-        }
+            var familia = await _familiaRepository.GetByIdAsync(familiaId);
+            if (familia == null) return NotFound();
 
-        // CRIAR
-        public async Task<IActionResult> Create()
-        {
-            ViewBag.Familias = await _familiaRepository.GetAllAsync(); // exibir opções de família
-            return View();
-        }
-
-        [HttpPost, ActionName("Criar")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Produto produto)
-        {
-            if (ModelState.IsValid)
+            var viewModel = new ProdutoViewModel
             {
-                await _produtoRepository.AddAsync(produto);
-                return RedirectToAction(nameof(Index));
+                FamiliaId = familiaId,
+                Ativo = true
+            };
+
+            ViewBag.NomeFamilia = familia.NomeFamilia;
+            return View(viewModel);
+        }
+
+        // CREATE POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ProdutoViewModel viewModel)
+        {
+            var familia = await _familiaRepository.GetByIdAsync(viewModel.FamiliaId);
+            if (familia == null) return NotFound();
+
+            // Tratar imagem antes de criar o produto
+            string urlImagem;
+            if (viewModel.ImagemUpload != null)
+            {
+                var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(viewModel.ImagemUpload.FileName);
+                var caminho = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", nomeArquivo);
+
+                using var stream = new FileStream(caminho, FileMode.Create);
+                await viewModel.ImagemUpload.CopyToAsync(stream);
+
+                urlImagem = "/img/" + nomeArquivo;
+            }
+            else
+            {
+                urlImagem = "/img/sem-imagem.png"; // fallback obrigatório
             }
 
-            ViewBag.Familias = await _familiaRepository.GetAllAsync();
-            return View(produto);
+            // NomeProduto automático
+            var nomeProduto = $"{familia.NomeFamilia} {viewModel.Complemento}";
+
+            // Criar entidade com todos os campos obrigatórios preenchidos
+            var produto = new Produto
+            {
+                NomeProduto = nomeProduto,
+                Complemento = viewModel.Complemento,
+                EstoqueInicial = 0,
+                Ativo = viewModel.Ativo,
+                UrlImagem = urlImagem,
+                CustoMedio = 0,
+                FamiliaId = viewModel.FamiliaId
+            };
+
+            await _produtoRepository.AddAsync(produto);
+            return RedirectToAction("Details", "Familia", new { id = viewModel.FamiliaId });
         }
 
-        // EDITAR
-        public async Task<IActionResult> Edit(int id)
+        // DETAILS
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int id)
         {
             var produto = await _produtoRepository.GetByIdAsync(id);
             if (produto == null) return NotFound();
 
-            ViewBag.Familias = await _familiaRepository.GetAllAsync();
-            return View(produto);
-        }
-
-        [HttpPost, ActionName("Editar")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Produto produto)
-        {
-            if (id != produto.IdProduto) return NotFound();
-
-            if (ModelState.IsValid)
+            var produtoVm = new ProdutoViewModel
             {
-                await _produtoRepository.UpdateAsync(produto);
-                return RedirectToAction(nameof(Index));
-            }
+                IdProduto = produto.IdProduto,
+                NomeProduto = produto.NomeProduto,
+                Complemento = produto.Complemento,
+                EstoqueInicial = produto.EstoqueInicial,
+                CustoMedio = produto.CustoMedio,
+                Ativo = produto.Ativo,
+                UrlImagem = produto.UrlImagem,
+                FamiliaId = produto.FamiliaId,
+                Familia = produto.Familia
+            };
 
-            ViewBag.Familias = await _familiaRepository.GetAllAsync();
-            return View(produto);
+            return View(produtoVm);
         }
-
-        // EXCLUIR
-        public async Task<IActionResult> Delete(int id)
-        {
-            var produto = await _produtoRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
-            return View(produto);
-        }
-
-        [HttpPost, ActionName("Excluir")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            await _produtoRepository.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
-        }
-
-
     }
 }

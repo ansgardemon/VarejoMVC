@@ -64,8 +64,13 @@ namespace Varejo.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var vm = await CriarUsuarioViewModel();
-            return View(vm);
+
+            // ViewBag para dropdowns de Marca e Categoria
+            ViewBag.Marcas = new SelectList(_usuarioRepository.GetAllAsync(), "IdMarca", "NomeMarca");
+            ViewBag.Categorias = new SelectList(_familiaRepository.GetCategorias(), "IdCategoria", "DescricaoCategoria");
+
+            return View(new FamiliaViewModel());
+
         }
         [HttpPost]
 

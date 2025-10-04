@@ -16,9 +16,6 @@ namespace Varejo.Repositories
         //CREATE
         public async Task AddAsync(Usuario usuario)
         {
-
-            return await |_context.
-
             await _context.AddAsync(usuario);
             await _context.SaveChangesAsync();
         }

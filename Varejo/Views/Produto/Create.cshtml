@@ -1,0 +1,55 @@
+﻿@model Varejo.ViewModels.ProdutoViewModel
+
+@{
+    ViewData["Title"] = "Adicionar Produto";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">@ViewData["Title"]</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <input type="hidden" asp-for="FamiliaId" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nome da Família</label>
+                    <input class="form-control" value="@ViewBag.NomeFamilia" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Complemento" class="form-label"></label>
+                    <input asp-for="Complemento" class="form-control" />
+                    <span asp-validation-for="Complemento" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ImagemUpload" class="form-label">Imagem do Produto</label>
+                    <input asp-for="ImagemUpload" class="form-control" type="file" />
+                    <span asp-validation-for="ImagemUpload" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="Ativo" class="form-check-input" />
+                    <label asp-for="Ativo" class="form-check-label"></label>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Adicionar Produto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

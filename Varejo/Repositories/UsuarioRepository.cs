@@ -34,10 +34,9 @@ namespace Varejo.Repositories
         }
 
         //READ - ATIVOS
-        public async Task<Usuario> GetAllAtivosAsync()
+        public async Task<List<Usuario>> GetAllAtivosAsync()
         {
-            return await _context.Usuarios
-                                 .FirstOrDefaultAsync(u => u.Ativo == true);
+            return await _context.Usuarios.Where(u => u.Ativo).Include(u => u.TipoUsuario).ToListAsync();
         }
 
         //UPDATE
@@ -78,15 +77,6 @@ namespace Varejo.Repositories
 
         }
 
-        public Task<List<TipoUsuario>> GetTipoUsuarios()
-        {
-            return _context.TipoUsuarios.ToListAsync();
-        }
-
-        public Task<List<Pessoa>> GetPessoa()
-        {
-            return _context.Pessoas.ToListAsync();
-        }
     }
 }
 

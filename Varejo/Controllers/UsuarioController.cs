@@ -1,10 +1,22 @@
-﻿using Microsoft.AspNetCore.Authorization;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.VisualBasic;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.Repositories;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
+using System.Security.Claims;
+
+using Varejo.Interfaces;
+using Varejo.Models;
+
 using Varejo.ViewModels;
 
 namespace Varejo.Controllers
@@ -47,6 +59,8 @@ namespace Varejo.Controllers
             return View(usuarios);
         }
 
+        //CREATE
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Create()
         {
 
@@ -57,17 +71,15 @@ namespace Varejo.Controllers
             return View(new UsuarioViewModel());
 
         }
-     
+
         [HttpPost]
+        [Authorize(Roles = "Administrador,Gerente")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UsuarioViewModel vm)
+        public async Task<IActionResult> Create(UsuarioViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                vm.Pessoas = (await _pessoaRepository.GetAllAsync())
-                    .Select(p => new SelectListItem { Value = p.IdPessoa.ToString(), Text = p.NomeRazao });
-                vm.TipoUsuarios = (await _tipoUsuarioRepository.GetAllAsync())
-                    .Select(t => new SelectListItem { Value = t.IdTipoUsuario.ToString(), Text = t.DescricaoTipoUsuario });
+                var vm = await CriarUsuarioViewModel(viewModel);
                 return View(vm);
             }
 

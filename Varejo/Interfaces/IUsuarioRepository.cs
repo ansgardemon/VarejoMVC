@@ -1,4 +1,4 @@
-﻿ using Varejo.Models;
+﻿using Varejo.Models;
 
 namespace Varejo.Interfaces
 {

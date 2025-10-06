@@ -16,7 +16,7 @@ namespace Varejo.Data
         //DbSets
         public DbSet<Pessoa> Pessoas { get; set; }
         public DbSet<Endereco> Enderecos { get; set; }
-        public DbSet<TipoUsuario> TipoUsuarios { get; set; }
+        public DbSet<TipoUsuario> TiposUsuario { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Familia> Familias { get; set; }
         public DbSet<Categoria> Categorias { get; set; }

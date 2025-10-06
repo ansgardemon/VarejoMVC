@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,17 +5,6 @@ using Microsoft.VisualBasic;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.Repositories;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Linq;
-using System.Security.Claims;
-
-using Varejo.Interfaces;
-using Varejo.Models;
-
 using Varejo.ViewModels;
 
 namespace Varejo.Controllers
@@ -52,34 +40,34 @@ namespace Varejo.Controllers
 
             // ViewBag para filtros — agora como SelectList, não List<SelectListItem>
             ViewBag.Pessoas = new SelectList(await _usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", pessoaid);
-            ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTipoUsuarios(), "IdTipoUsuario", "DescricaoTipoUsuario", tipoUsuarioId);
+            ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", tipoUsuarioId);
             ViewBag.Search = search;
 
 
             return View(usuarios);
         }
 
-        //CREATE
-        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Create()
         {
 
             // ViewBag para dropdowns de Marca e Categoria
             ViewBag.Pessoas = new SelectList(await _usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao");
-            ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTipoUsuarios(), "IdTipoUsuario", "DescricaoTipoUsuario");
+            ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario");
 
             return View(new UsuarioViewModel());
 
         }
 
         [HttpPost]
-        [Authorize(Roles = "Administrador,Gerente")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UsuarioViewModel viewModel)
+        public async Task<IActionResult> Create(UsuarioViewModel vm)
         {
             if (!ModelState.IsValid)
             {
-                var vm = await CriarUsuarioViewModel(viewModel);
+                vm.Pessoas = (await _pessoaRepository.GetAllAsync())
+                    .Select(p => new SelectListItem { Value = p.IdPessoa.ToString(), Text = p.NomeRazao });
+                vm.TipoUsuarios = (await _tipoUsuarioRepository.GetAllAsync())
+                    .Select(t => new SelectListItem { Value = t.IdTipoUsuario.ToString(), Text = t.DescricaoTipoUsuario });
                 return View(vm);
             }
 
@@ -99,12 +87,13 @@ namespace Varejo.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            if (id <= 0) return NotFound(); 
+            if (id <= 0) return NotFound();
 
             var usuario = await _usuarioRepository.GetByIdAsync(id);
             if (usuario == null) return NotFound();
 
-            var usuariovm = new UsuarioViewModel {
+            var usuariovm = new UsuarioViewModel
+            {
 
                 nomeUsuario = usuario.nomeUsuario,
                 Senha = usuario.Senha,
@@ -121,7 +110,7 @@ namespace Varejo.Controllers
             return View(usuariovm);
         }
 
-     
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UsuarioViewModel usuariovm)

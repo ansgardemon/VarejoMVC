@@ -1,4 +1,4 @@
-﻿ using Varejo.Models;
+﻿using Varejo.Models;
 
 namespace Varejo.Interfaces
 {
@@ -13,6 +13,9 @@ namespace Varejo.Interfaces
         Task ReativarUsuario(int id);
         //
         Task<Usuario>? ValidarLoginAsync(string email, string senha);
+
+        Task<List<TipoUsuario>> GetTiposUsuario();
+        Task<List<Pessoa>> GetPessoa();
 
     }
 }

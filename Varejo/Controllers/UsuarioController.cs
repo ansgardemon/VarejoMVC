@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.VisualBasic;
@@ -24,80 +24,76 @@ namespace Varejo.Controllers
         }
 
 
-        public async Task<UsuarioViewModel> CriarUsuarioViewModel(UsuarioViewModel? model = null)
-        {
-            return new UsuarioViewModel
-            {
-                IdUsuario = model?.IdUsuario ?? 0,
-                nomeUsuario = model?.nomeUsuario,
-                Senha = model?.Senha,
-                Ativo = model?.Ativo ?? true,
-                PessoaId = model?.PessoaId ?? 0,
-                TipoUsuarioId = model?.TipoUsuarioId ?? 0
-            };
-        }
-
-        public async Task<IActionResult> Index(int? tipoUsuarioId, string? search)
+        public async Task<IActionResult> Index(int? pessoaid, int? tipoUsuarioId, string search)
         {
             var usuarios = await _usuarioRepository.GetAllAsync();
 
-            if (tipoUsuarioId.HasValue && tipoUsuarioId.Value > 0)
-                usuarios = usuarios.Where(u => u.TipoUsuarioId == tipoUsuarioId).ToList();
+            // FILTROS
+            if (!string.IsNullOrEmpty(search))
+                usuarios = usuarios.Where(f => f.nomeUsuario.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
 
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                usuarios = usuarios.Where(u =>
-                    u.nomeUsuario.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    (int.TryParse(search, out int idBusca) && u.IdUsuario == idBusca)
-                ).ToList();
-            }
+            if (pessoaid.HasValue)
+                usuarios = usuarios.Where(f => f.PessoaId == pessoaid.Value).ToList();
 
-            usuarios = usuarios.OrderByDescending(u => u.IdUsuario).ToList();
+            if (tipoUsuarioId.HasValue)
+                usuarios = usuarios.Where(f => f.TipoUsuarioId == tipoUsuarioId.Value).ToList();
 
-            ViewBag.TiposUsuario = new SelectList(await _tipoUsuarioRepository.GetAllAsync(),
-                "IdTipoUsuario", "DescricaoTipoUsuario");
-            ViewBag.FiltroTipoId = tipoUsuarioId;
-            ViewBag.TermoBusca = search;
+            // ViewBag para filtros — agora como SelectList, não List<SelectListItem>
+            ViewBag.Pessoas = new SelectList(await _usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", pessoaid);
+            ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", tipoUsuarioId);
+            ViewBag.Search = search;
+
 
             return View(usuarios);
         }
 
         public async Task<IActionResult> Create()
         {
-            var vm = await CriarUsuarioViewModel();
-            return View(vm);
-        }
-        [HttpPost]
 
-        public async Task<IActionResult> Create(UsuarioViewModel usuariovm)
+            // ViewBag para dropdowns de Marca e Categoria
+            ViewBag.Pessoas = new SelectList(await _usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao");
+            ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario");
+
+            return View(new UsuarioViewModel());
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(UsuarioViewModel vm)
         {
             if (!ModelState.IsValid)
             {
-                var vm = await CriarUsuarioViewModel();
+                vm.Pessoas = (await _pessoaRepository.GetAllAsync())
+                    .Select(p => new SelectListItem { Value = p.IdPessoa.ToString(), Text = p.NomeRazao });
+                vm.TipoUsuarios = (await _tipoUsuarioRepository.GetAllAsync())
+                    .Select(t => new SelectListItem { Value = t.IdTipoUsuario.ToString(), Text = t.DescricaoTipoUsuario });
                 return View(vm);
             }
 
             var usuario = new Usuario
             {
-                IdUsuario = usuariovm.IdUsuario,
-                nomeUsuario = usuariovm.nomeUsuario,
-                Senha = usuariovm.Senha,
-                Ativo = true,
-                PessoaId = usuariovm.PessoaId,
-                TipoUsuario = usuariovm.TipoUsuario,
+                nomeUsuario = vm.nomeUsuario,
+                Senha = vm.Senha,
+                Ativo = vm.Ativo,
+                PessoaId = vm.PessoaId,
+                TipoUsuarioId = vm.TipoUsuarioId // 👈 ESSENCIAL
             };
-                await _usuarioRepository.AddAsync(usuario);
-                return RedirectToAction(nameof(Index));
+
+            await _usuarioRepository.AddAsync(usuario);
+            return RedirectToAction(nameof(Index));
         }
+
 
         public async Task<IActionResult> Edit(int id)
         {
-            if (id <= 0) return NotFound(); 
+            if (id <= 0) return NotFound();
 
             var usuario = await _usuarioRepository.GetByIdAsync(id);
             if (usuario == null) return NotFound();
 
-            var usuariovm = new UsuarioViewModel {
+            var usuariovm = new UsuarioViewModel
+            {
 
                 nomeUsuario = usuario.nomeUsuario,
                 Senha = usuario.Senha,
@@ -114,7 +110,7 @@ namespace Varejo.Controllers
             return View(usuariovm);
         }
 
-     
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UsuarioViewModel usuariovm)

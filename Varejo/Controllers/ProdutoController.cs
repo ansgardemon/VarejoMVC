@@ -99,5 +99,39 @@ namespace Varejo.Controllers
 
             return View(produtoVm);
         }
+
+
+        // GET: Produto/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var produto = await _produtoRepository.GetByIdAsync(id);
+            if (produto == null) return NotFound();
+
+            var produtoVm = new ProdutoViewModel
+            {
+                IdProduto = produto.IdProduto,
+                NomeProduto = produto.NomeProduto,
+                Complemento = produto.Complemento,
+                FamiliaId = produto.FamiliaId
+            };
+
+            return View(produtoVm);
+        }
+
+        // POST: Produto/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var produto = await _produtoRepository.GetByIdAsync(id);
+            if (produto == null) return NotFound();
+
+            await _produtoRepository.DeleteAsync(id);
+            return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
+        }
+
+
+
+
     }
 }

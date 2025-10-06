@@ -57,27 +57,33 @@ namespace Varejo.Controllers
             return View(new UsuarioViewModel());
 
         }
+     
         [HttpPost]
-
-        public async Task<IActionResult> Create(UsuarioViewModel usuariovm)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(UsuarioViewModel vm)
         {
             if (!ModelState.IsValid)
             {
-                var usuario = new Usuario
-
-                {             
-                    nomeUsuario = usuariovm.nomeUsuario,
-                    Ativo = true,
-                    PessoaId = usuariovm.PessoaId,
-                    TipoUsuario = usuariovm.TipoUsuario,
-                };
-                await _usuarioRepository.AddAsync(usuario);
-                return RedirectToAction(nameof(Index));
+                vm.Pessoas = (await _pessoaRepository.GetAllAsync())
+                    .Select(p => new SelectListItem { Value = p.IdPessoa.ToString(), Text = p.NomeRazao });
+                vm.TipoUsuarios = (await _tipoUsuarioRepository.GetAllAsync())
+                    .Select(t => new SelectListItem { Value = t.IdTipoUsuario.ToString(), Text = t.DescricaoTipoUsuario });
+                return View(vm);
             }
-            ViewBag.Pessoas = new SelectList(await _usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao");
-            ViewBag.Categorias = new SelectList(await _usuarioRepository.GetTipoUsuarios(), "IdTipoUsuario", "DescricaoTipoUsuario");
-            return View(usuariovm);
+
+            var usuario = new Usuario
+            {
+                nomeUsuario = vm.nomeUsuario,
+                Senha = vm.Senha,
+                Ativo = vm.Ativo,
+                PessoaId = vm.PessoaId,
+                TipoUsuarioId = vm.TipoUsuarioId // 👈 ESSENCIAL
+            };
+
+            await _usuarioRepository.AddAsync(usuario);
+            return RedirectToAction(nameof(Index));
         }
+
 
         public async Task<IActionResult> Edit(int id)
         {

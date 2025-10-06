@@ -17,36 +17,36 @@ namespace Varejo.Repositories
         //CREATE
         public async Task AddAsync(TipoUsuario tipoUsuario)
         {
-            await _context.TipoUsuarios.AddAsync(tipoUsuario);
+            await _context.TiposUsuario.AddAsync(tipoUsuario);
             await _context.SaveChangesAsync();
         }
 
         //READ
         public Task<List<TipoUsuario>> GetAllAsync()
         {
-            return _context.TipoUsuarios.ToListAsync();
+            return _context.TiposUsuario.ToListAsync();
         }
 
         //READE - ID
         public async Task<TipoUsuario> GetByIdAsync(int id)
         {
-            return await _context.TipoUsuarios.FindAsync(id);
+            return await _context.TiposUsuario.FindAsync(id);
         }
 
         //UPDATE
         public async Task UpdateAsync(TipoUsuario tipoUsuario)
         {
-            _context.TipoUsuarios.Update(tipoUsuario);
+            _context.TiposUsuario.Update(tipoUsuario);
             await _context.SaveChangesAsync();
         }
 
         //DELETE
         public async Task DeleteAsync(int id)
         {
-            var tipoUsuario = await _context.TipoUsuarios.FindAsync(id);
+            var tipoUsuario = await _context.TiposUsuario.FindAsync(id);
             if (tipoUsuario != null)
             {
-                _context.TipoUsuarios.Remove(tipoUsuario);
+                _context.TiposUsuario.Remove(tipoUsuario);
                 await _context.SaveChangesAsync();
             }
         }

@@ -1,10 +1,22 @@
-﻿using Microsoft.AspNetCore.Authorization;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.VisualBasic;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.Repositories;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
+using System.Security.Claims;
+
+using Varejo.Interfaces;
+using Varejo.Models;
+
 using Varejo.ViewModels;
 
 namespace Varejo.Controllers
@@ -62,18 +74,22 @@ namespace Varejo.Controllers
             return View(usuarios);
         }
 
+        //CREATE
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Create()
         {
             var vm = await CriarUsuarioViewModel();
             return View(vm);
         }
-        [HttpPost]
 
-        public async Task<IActionResult> Create(UsuarioViewModel usuariovm)
+        [HttpPost]
+        [Authorize(Roles = "Administrador,Gerente")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(UsuarioViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                var vm = await CriarUsuarioViewModel();
+                var vm = await CriarUsuarioViewModel(viewModel);
                 return View(vm);
             }
 

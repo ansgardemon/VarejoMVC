@@ -5,47 +5,47 @@ using Varejo.Models;
 
 namespace Varejo.Repositories
 {
-    public class MarcaRepository : IMarcaRepository
+    public class CategoriaRepository : ICategoriaRepository
     {
         private readonly VarejoDbContext _context;
 
-        public MarcaRepository(VarejoDbContext context)
+        public CategoriaRepository(VarejoDbContext context)
         {
             _context = context;
         }
-        public async Task<List<Marca>> GetAllAsync()
+        public async Task<List<Categoria>> GetAllAsync()
         {
             // Se quiser trazer as famílias junto, inclua: .Include(c => c.Familias)
-            return await _context.Marcas
+            return await _context.Categorias
                                .Include(c => c.Familias)
                                  .ToListAsync();
         }
 
-        public async Task<Marca?> GetByIdAsync(int id)
+        public async Task<Categoria?> GetByIdAsync(int id)
         {
-            return await _context.Marcas
+            return await _context.Categorias
                                  .Include(c => c.Familias) // inclui o relacionamento
-                                 .FirstOrDefaultAsync(c => c.IdMarca == id);
+                                 .FirstOrDefaultAsync(c => c.IdCategoria == id);
         }
 
-        public async Task AddAsync(Marca marca)
+        public async Task AddAsync(Categoria categoria)
         {
-            await _context.Marcas.AddAsync(marca);
+            await _context.Categorias.AddAsync(categoria);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Marca marca)
+        public async Task UpdateAsync(Categoria categoria)
         {
-            _context.Marcas.Update(marca);
+            _context.Categorias.Update(categoria);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var marca = await _context.Marcas.FindAsync(id);
-            if (marca != null)
+            var categoria = await _context.Categorias.FindAsync(id);
+            if (categoria != null)
             {
-                _context.Marcas.Remove(marca);
+                _context.Categorias.Remove(categoria);
                 await _context.SaveChangesAsync();
             }
         }

@@ -1,0 +1,35 @@
+﻿@model Varejo.ViewModels.CategoriaViewModel
+
+
+
+@{
+    ViewData["Title"] = "Excluir Categoria";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">@ViewData["Title"]</h5>
+        </div>
+        <div class="card-body">
+            <h5>Você tem certeza que deseja excluir esta categoria?</h5>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DescricaoCategoria)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.DescricaoCategoria)</dd>
+            </dl>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="IdCategoria" />
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Excluir
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

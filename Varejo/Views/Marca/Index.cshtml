@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Varejo.ViewModels.MarcaViewModel>
+
+@{
+    ViewData["Title"] = "Marcas";
+}
+
+<h2>Marcas</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nova Marca</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome da Marca</th>
+            <th>Quantidade de Familias</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var categoria in Model)
+        {
+            <tr>
+                <td>@categoria.IdMarca</td>
+                <td>@categoria.NomeMarca</td>
+                <td>@categoria.QuantidadeFamilia</td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@categoria.IdMarca">Detalhes</a>
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@categoria.IdMarca">Editar</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@categoria.IdMarca">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

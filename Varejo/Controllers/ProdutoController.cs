@@ -247,6 +247,151 @@ namespace Varejo.Controllers
 
 
 
+
+        // EDIT GET
+        public async Task<IActionResult> Edit(int id)
+        {
+            var produto = await _produtoRepository.GetByIdAsync(id);
+            if (produto == null) return NotFound();
+
+            var tipos = await _tipoEmbalagemRepository.GetAllAsync() ?? new List<TipoEmbalagem>();
+
+            var produtoVm = new ProdutoViewModel
+            {
+                IdProduto = produto.IdProduto,
+                NomeProduto = produto.NomeProduto,
+                Complemento = produto.Complemento,
+                EstoqueInicial = produto.EstoqueInicial,
+                CustoMedio = produto.CustoMedio,
+                Ativo = produto.Ativo,
+                UrlImagem = produto.UrlImagem,
+                FamiliaId = produto.FamiliaId,
+                Familia = produto.Familia,
+                Embalagens = produto.ProdutosEmbalagem.Select(e => new ProdutoEmbalagemViewModel
+                {
+                    IdProdutoEmbalagem = e.IdProdutoEmbalagem,
+                    Preco = e.Preco,
+                    Ean = e.Ean,
+                    ProdutoId = e.ProdutoId,
+                    TipoEmbalagemId = e.TipoEmbalagemId,
+                    TiposEmbalagem = tipos.Select(t => new SelectListItem
+                    {
+                        Value = t.IdTipoEmbalagem.ToString(),
+                        Text = t.DescricaoTipoEmbalagem,
+                        Selected = t.IdTipoEmbalagem == e.TipoEmbalagemId
+                    }).ToList()
+                }).ToList()
+            };
+
+            ViewBag.NomeFamilia = produto.Familia?.NomeFamilia;
+            ViewBag.TiposEmbalagem = tipos;
+
+            return View(produtoVm);
+        }
+
+        // EDIT POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ProdutoViewModel viewModel)
+        {
+            var produto = await _produtoRepository.GetByIdAsync(viewModel.IdProduto);
+            if (produto == null) return NotFound();
+
+            var tipos = await _tipoEmbalagemRepository.GetAllAsync() ?? new List<TipoEmbalagem>();
+
+            // Validação
+            if (!ModelState.IsValid)
+            {
+                ViewBag.NomeFamilia = (await _familiaRepository.GetByIdAsync(viewModel.FamiliaId))?.NomeFamilia;
+                ViewBag.TiposEmbalagem = tipos;
+                // Repopular TiposEmbalagem para cada embalagem existente
+                if (viewModel.Embalagens != null)
+                {
+                    foreach (var emb in viewModel.Embalagens)
+                    {
+                        emb.TiposEmbalagem = tipos.Select(t => new SelectListItem
+                        {
+                            Value = t.IdTipoEmbalagem.ToString(),
+                            Text = t.DescricaoTipoEmbalagem
+                        }).ToList();
+                    }
+                }
+                return View(viewModel);
+            }
+
+            // Atualizar dados do produto
+            produto.Complemento = viewModel.Complemento;
+            produto.Ativo = viewModel.Ativo;
+
+            // Atualizar imagem se houver upload
+            if (viewModel.ImagemUpload != null)
+            {
+                var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(viewModel.ImagemUpload.FileName);
+                var caminho = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", nomeArquivo);
+
+                using var stream = new FileStream(caminho, FileMode.Create);
+                await viewModel.ImagemUpload.CopyToAsync(stream);
+
+                produto.UrlImagem = "/img/" + nomeArquivo;
+            }
+
+            // NomeProduto automático
+            var familia = await _familiaRepository.GetByIdAsync(produto.FamiliaId);
+            produto.NomeProduto = $"{familia?.NomeFamilia} {produto.Complemento}";
+
+            // Atualizar embalagens
+            var embalagensRecebidas = viewModel.Embalagens ?? new List<ProdutoEmbalagemViewModel>();
+
+            // Remover embalagens que não existem mais
+            var idsRecebidos = embalagensRecebidas
+                .Where(e => e.IdProdutoEmbalagem != 0)
+                .Select(e => e.IdProdutoEmbalagem)
+                .ToList();
+
+            var paraRemover = produto.ProdutosEmbalagem
+                .Where(e => !idsRecebidos.Contains(e.IdProdutoEmbalagem))
+                .ToList();
+
+            foreach (var emb in paraRemover)
+                produto.ProdutosEmbalagem.Remove(emb);
+
+            // Atualizar ou adicionar embalagens
+            foreach (var embVm in embalagensRecebidas)
+            {
+                if (embVm.IdProdutoEmbalagem != 0)
+                {
+                    // Atualiza embalagem existente
+                    var emb = produto.ProdutosEmbalagem.FirstOrDefault(e => e.IdProdutoEmbalagem == embVm.IdProdutoEmbalagem);
+                    if (emb != null)
+                    {
+                        emb.Preco = embVm.Preco;
+                        emb.Ean = embVm.Ean;
+                        emb.TipoEmbalagemId = embVm.TipoEmbalagemId;
+                    }
+                }
+                else
+                {
+                    // Nova embalagem
+                    produto.ProdutosEmbalagem.Add(new ProdutoEmbalagem
+                    {
+                        Preco = embVm.Preco,
+                        Ean = embVm.Ean,
+                        TipoEmbalagemId = embVm.TipoEmbalagemId
+                    });
+                }
+            }
+
+            await _produtoRepository.UpdateAsync(produto);
+
+            return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
+        }
+
+
+
+
+
+
+
         // GET: Produto/Delete/5
         public async Task<IActionResult> Delete(int id)
         {

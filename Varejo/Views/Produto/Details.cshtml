@@ -1,0 +1,69 @@
+﻿@model Varejo.ViewModels.ProdutoViewModel
+
+@{
+    ViewData["Title"] = "Detalhes do Produto";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="mb-3">
+    <h4>Informações do Produto</h4>
+    <dl class="row">
+        <dt class="col-sm-3">Nome do Produto</dt>
+        <dd class="col-sm-9">@Model.NomeProduto ?? "(não definido)"</dd>
+
+        <dt class="col-sm-3">Complemento</dt>
+        <dd class="col-sm-9">@Model.Complemento</dd>
+
+        <dt class="col-sm-3">Estoque Inicial</dt>
+        <dd class="col-sm-9">@Model.EstoqueInicial</dd>
+
+        <dt class="col-sm-3">Custo Médio</dt>
+        <dd class="col-sm-9">@Model.CustoMedio.ToString("C")</dd>
+
+        <dt class="col-sm-3">Família</dt>
+        <dd class="col-sm-9">@Model.Familia?.NomeFamilia ?? "(não definido)"</dd>
+
+        <dt class="col-sm-3">Ativo</dt>
+        <dd class="col-sm-9">@((Model.Ativo) ? "✅" : "❌")</dd>
+
+        <dt class="col-sm-3">Imagem</dt>
+        <dd class="col-sm-9">
+            <img src="@Model.UrlImagem ?? " /img/sem-imagem.png"" alt="@Model.NomeProduto" style="max-width:200px;" />
+        </dd>
+    </dl>
+</div>
+
+@if (Model.Embalagens != null && Model.Embalagens.Any())
+{
+    <div class="mb-3">
+        <h4>Embalagens</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tipo de Embalagem</th>
+                    <th>Preço</th>
+                    <th>EAN</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var emb in Model.Embalagens)
+                {
+                    <tr>
+                        <td>
+                            @* Se você não está trazendo o tipo de embalagem, precisa buscar o nome aqui ou incluir no ViewModel *@
+                            @(emb.TiposEmbalagem?.FirstOrDefault(t => t.Value == emb.TipoEmbalagemId.ToString())?.Text ?? "—")
+                        </td>
+                        <td>@emb.Preco.ToString("C")</td>
+                        <td>@emb.Ean</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div class="d-flex justify-content-between">
+    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    <a asp-action="Edit" asp-route-id="@Model.IdProduto" class="btn btn-warning">Editar</a>
+</div>

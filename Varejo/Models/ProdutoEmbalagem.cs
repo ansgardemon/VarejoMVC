@@ -19,6 +19,8 @@ namespace Varejo.Models
         [Required]
         public string Ean { get; set; }
 
+        public bool Principal { get; set; }
+
 
         //RELACIONAMENTO COM OUTRAS TABELAS
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.ViewModels;
@@ -10,26 +11,62 @@ namespace Varejo.Controllers
     {
         private readonly IProdutoRepository _produtoRepository;
         private readonly IFamiliaRepository _familiaRepository;
+        private readonly ITipoEmbalagemRepository _tipoEmbalagemRepository;
 
-        public ProdutoController(IProdutoRepository produtoRepository, IFamiliaRepository familiaRepository)
+        public ProdutoController(
+                    IProdutoRepository produtoRepository,
+                    IFamiliaRepository familiaRepository,
+                    ITipoEmbalagemRepository tipoEmbalagemRepository)
         {
             _produtoRepository = produtoRepository;
             _familiaRepository = familiaRepository;
+            _tipoEmbalagemRepository = tipoEmbalagemRepository;
         }
 
         // CREATE GET
         public async Task<IActionResult> Create(int familiaId)
         {
-            var familia = await _familiaRepository.GetByIdAsync(familiaId);
-            if (familia == null) return NotFound();
+            Console.WriteLine($"[LOG] Create GET chamado para FamiliaId={familiaId}");
 
+            var familia = await _familiaRepository.GetByIdAsync(familiaId);
+            if (familia == null)
+            {
+                Console.WriteLine("[LOG] Família não encontrada!");
+                return NotFound();
+            }
+
+            var tipos = await _tipoEmbalagemRepository.GetAllAsync();
+            if (tipos == null || !tipos.Any())
+            {
+                Console.WriteLine("[LOG] Nenhum tipo de embalagem encontrado, inicializando lista vazia");
+                tipos = new List<TipoEmbalagem>(); // fallback
+            }
+            Console.WriteLine($"[LOG] Tipos de embalagem carregados: {tipos.Count()}");
+
+            // Inicializa Embalagens garantindo que TiposEmbalagem nunca seja null
             var viewModel = new ProdutoViewModel
             {
                 FamiliaId = familiaId,
-                Ativo = true
+                Ativo = true,
+                Embalagens = new List<ProdutoEmbalagemViewModel>
+        {
+            new ProdutoEmbalagemViewModel
+            {
+                TiposEmbalagem = tipos.Select(t => new SelectListItem
+                {
+                    Value = t.IdTipoEmbalagem.ToString(),
+                    Text = t.DescricaoTipoEmbalagem
+                }).ToList()
+            }
+        }
             };
 
             ViewBag.NomeFamilia = familia.NomeFamilia;
+            ViewBag.TiposEmbalagem = tipos;
+
+            Console.WriteLine("[LOG] ViewModel criado com uma embalagem padrão");
+            Console.WriteLine($"[LOG] ViewModel Embalagens Count: {viewModel.Embalagens.Count}");
+
             return View(viewModel);
         }
 
@@ -38,10 +75,81 @@ namespace Varejo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProdutoViewModel viewModel)
         {
-            var familia = await _familiaRepository.GetByIdAsync(viewModel.FamiliaId);
-            if (familia == null) return NotFound();
+            Console.WriteLine($"[LOG] Create POST chamado para FamiliaId={viewModel.FamiliaId}");
 
-            // Tratar imagem antes de criar o produto
+            var familia = await _familiaRepository.GetByIdAsync(viewModel.FamiliaId);
+            if (familia == null)
+            {
+                Console.WriteLine("[LOG] Família não encontrada no POST!");
+                return NotFound();
+            }
+
+            var tipos = await _tipoEmbalagemRepository.GetAllAsync() ?? new List<TipoEmbalagem>();
+            Console.WriteLine($"[LOG] Tipos de embalagem carregados: {tipos.Count}");
+
+            // Log completo das propriedades recebidas
+            Console.WriteLine("[LOG] Valores recebidos no POST:");
+            Console.WriteLine($" - Complemento: {viewModel.Complemento}");
+            Console.WriteLine($" - Ativo: {viewModel.Ativo}");
+            Console.WriteLine($" - ImagemUpload: {(viewModel.ImagemUpload != null ? viewModel.ImagemUpload.FileName : "null")}");
+            Console.WriteLine($" - Embalagens count: {(viewModel.Embalagens != null ? viewModel.Embalagens.Count : 0)}");
+            if (viewModel.Embalagens != null)
+            {
+                for (int i = 0; i < viewModel.Embalagens.Count; i++)
+                {
+                    var e = viewModel.Embalagens[i];
+                    Console.WriteLine($"   [Embalagem {i}] Preco={e.Preco}, Ean={e.Ean}, TipoEmbalagemId={e.TipoEmbalagemId}");
+                }
+            }
+
+            // Garantir que Embalagens nunca seja null
+            if (viewModel.Embalagens == null || !viewModel.Embalagens.Any())
+            {
+                Console.WriteLine("[LOG] Nenhuma embalagem enviada, adicionando uma padrão");
+                viewModel.Embalagens = new List<ProdutoEmbalagemViewModel>
+        {
+            new ProdutoEmbalagemViewModel
+            {
+                TiposEmbalagem = tipos.Select(t => new SelectListItem
+                {
+                    Value = t.IdTipoEmbalagem.ToString(),
+                    Text = t.DescricaoTipoEmbalagem
+                }).ToList()
+            }
+        };
+            }
+            else
+            {
+                // Repopular TiposEmbalagem para cada embalagem existente
+                foreach (var emb in viewModel.Embalagens)
+                {
+                    emb.TiposEmbalagem = tipos.Select(t => new SelectListItem
+                    {
+                        Value = t.IdTipoEmbalagem.ToString(),
+                        Text = t.DescricaoTipoEmbalagem
+                    }).ToList();
+                }
+                Console.WriteLine($"[LOG] Embalagens recebidas: {viewModel.Embalagens.Count}");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("[LOG] ModelState inválido, detalhes:");
+                foreach (var key in ModelState.Keys)
+                {
+                    var state = ModelState[key];
+                    foreach (var error in state.Errors)
+                    {
+                        Console.WriteLine($" - Campo '{key}': {error.ErrorMessage}");
+                    }
+                }
+
+                ViewBag.NomeFamilia = familia.NomeFamilia;
+                ViewBag.TiposEmbalagem = tipos;
+                return View(viewModel);
+            }
+
+            // Tratar imagem
             string urlImagem;
             if (viewModel.ImagemUpload != null)
             {
@@ -52,16 +160,19 @@ namespace Varejo.Controllers
                 await viewModel.ImagemUpload.CopyToAsync(stream);
 
                 urlImagem = "/img/" + nomeArquivo;
+                Console.WriteLine($"[LOG] Imagem enviada: {nomeArquivo}");
             }
             else
             {
-                urlImagem = "/img/sem-imagem.png"; // fallback obrigatório
+                urlImagem = "/img/sem-imagem.png";
+                Console.WriteLine("[LOG] Nenhuma imagem enviada, usando padrão");
             }
 
             // NomeProduto automático
             var nomeProduto = $"{familia.NomeFamilia} {viewModel.Complemento}";
+            Console.WriteLine($"[LOG] Nome do produto: {nomeProduto}");
 
-            // Criar entidade com todos os campos obrigatórios preenchidos
+            // Criar entidade Produto
             var produto = new Produto
             {
                 NomeProduto = nomeProduto,
@@ -70,12 +181,29 @@ namespace Varejo.Controllers
                 Ativo = viewModel.Ativo,
                 UrlImagem = urlImagem,
                 CustoMedio = 0,
-                FamiliaId = viewModel.FamiliaId
+                FamiliaId = viewModel.FamiliaId,
+                ProdutosEmbalagem = viewModel.Embalagens
+                    .Where(e => e != null)
+                    .Select(e => new ProdutoEmbalagem
+                    {
+                        Preco = e.Preco,
+                        Ean = e.Ean,
+                        TipoEmbalagemId = e.TipoEmbalagemId
+                    }).ToList()
             };
 
+            Console.WriteLine($"[LOG] Produto criado com {produto.ProdutosEmbalagem.Count} embalagens");
+
             await _produtoRepository.AddAsync(produto);
+            Console.WriteLine("[LOG] Produto adicionado ao repositório");
+
             return RedirectToAction("Details", "Familia", new { id = viewModel.FamiliaId });
         }
+
+
+
+
+
 
         // DETAILS
         [AllowAnonymous]
@@ -84,6 +212,7 @@ namespace Varejo.Controllers
             var produto = await _produtoRepository.GetByIdAsync(id);
             if (produto == null) return NotFound();
 
+            // Mapear para ViewModel incluindo Embalagens
             var produtoVm = new ProdutoViewModel
             {
                 IdProduto = produto.IdProduto,
@@ -94,11 +223,28 @@ namespace Varejo.Controllers
                 Ativo = produto.Ativo,
                 UrlImagem = produto.UrlImagem,
                 FamiliaId = produto.FamiliaId,
-                Familia = produto.Familia
+                Familia = produto.Familia,
+                Embalagens = produto.ProdutosEmbalagem.Select(e => new ProdutoEmbalagemViewModel
+                {
+                    IdProdutoEmbalagem = e.IdProdutoEmbalagem,
+                    Preco = e.Preco,
+                    Ean = e.Ean,
+                    ProdutoId = e.ProdutoId,
+                    TipoEmbalagemId = e.TipoEmbalagemId,
+                    TiposEmbalagem = new List<SelectListItem> // só para exibir o nome da embalagem
+            {
+                new SelectListItem
+                {
+                    Value = e.TipoEmbalagemId.ToString(),
+                    Text = e.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "—"
+                }
+            }
+                }).ToList()
             };
 
             return View(produtoVm);
         }
+
 
 
         // GET: Produto/Delete/5

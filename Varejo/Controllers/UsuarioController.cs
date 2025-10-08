@@ -39,7 +39,6 @@ namespace Varejo.Controllers
                 usuarios = usuarios.Where(f => f.TipoUsuarioId == tipoUsuarioId.Value).ToList();
 
             // ViewBag para filtros — agora como SelectList, não List<SelectListItem>
-            ViewBag.Pessoas = new SelectList(await _usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", pessoaid);
             ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", tipoUsuarioId);
             ViewBag.Search = search;
 
@@ -51,7 +50,6 @@ namespace Varejo.Controllers
         {
 
             // ViewBag para dropdowns de Marca e Categoria
-            ViewBag.Pessoas = new SelectList(await _usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao");
             ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario");
 
             return View(new UsuarioViewModel());

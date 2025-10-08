@@ -33,7 +33,7 @@ builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
 
 //data protection
 var dpBase = Path.Combine(
-    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"VitrinoKeys");
+    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "VitrinoKeys");
 Directory.CreateDirectory(dpBase);
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(dpBase));

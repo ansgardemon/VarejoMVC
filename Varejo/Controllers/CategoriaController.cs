@@ -74,8 +74,17 @@ namespace Varejo.Controllers
                     DescricaoCategoria = viewModel.DescricaoCategoria
                 };
 
-                await _categoriaRepository.AddAsync(categoria);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _categoriaRepository.AddAsync(categoria);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    // Captura exceções de chave única ou outras
+                    Console.WriteLine("[ERRO] Ao adicionar categoria: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível adicionar a categoria. Verifique se já existe uma com o mesmo nome.");
+                }
             }
 
             if (!ModelState.IsValid)
@@ -121,8 +130,17 @@ namespace Varejo.Controllers
                     DescricaoCategoria = viewModel.DescricaoCategoria
                 };
 
-                await _categoriaRepository.UpdateAsync(categoria);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _categoriaRepository.AddAsync(categoria);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    // Captura exceções de chave única ou outras
+                    Console.WriteLine("[ERRO] Ao atualizar categoria: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível atualizar a categoria. Verifique se já existe uma com o mesmo nome.");
+                }
             }
             return View(viewModel);
         }

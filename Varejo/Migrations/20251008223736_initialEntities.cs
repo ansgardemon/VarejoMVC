@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Varejo.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialEntities : Migration
+    public partial class initialEntities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

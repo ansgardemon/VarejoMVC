@@ -10,13 +10,13 @@
     <a class="btn btn-primary" asp-action="Create">Nova Categoria</a>
 </p>
 
-<table class="table table-striped">
+<table class="table table-striped liquid-glass">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Descrição</th>
             <th>Quantidade de Familias</th>
-            <th>Ações</th>
+            <th class="text-center">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -26,10 +26,10 @@
                 <td>@categoria.IdCategoria</td>
                 <td>@categoria.DescricaoCategoria</td>
                 <td>@categoria.QuantidadeFamilia</td>
-                <td>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@categoria.IdCategoria">Detalhes</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@categoria.IdCategoria">Editar</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@categoria.IdCategoria">Excluir</a>
+                <td class="text-center" id="acoes">
+                    <a class="btn btn-info btn-sm text-white" asp-action="Details" asp-route-id="@categoria.IdCategoria">Detalhes</a>
+                    <a class="btn btn-warning btn-sm text-white" asp-action="Edit" asp-route-id="@categoria.IdCategoria">Editar</a>
+                    <a class="btn btn-danger btn-sm text-white" asp-action="Delete" asp-route-id="@categoria.IdCategoria">Excluir</a>
                 </td>
             </tr>
         }

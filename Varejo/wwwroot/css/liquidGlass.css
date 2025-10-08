@@ -1,0 +1,89 @@
+﻿:root {
+    --radius: 18px;
+    --glass-blur: 20px;
+    --bg: rgba(255,255,255,0.16);
+    --stroke: rgba(255,255,255,0.6);
+    --white: #fff;
+    --off-white: #F5F7FA;
+    --off-white-20: #F5F7FA33;
+    --light-gray: #BDC3C7;
+    --graffitte: #34495E;
+    --dark-blue: #2C3E50;
+}
+
+.page-bg {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient( 135deg, #b4d9ff 0%, #6bb8ff 30%, #4098ff 60%);
+    /*    background: url(../img/acrossSpiderVerse.jpg);*/
+}
+
+.liquid-glass {
+    padding: 22px;
+    border-radius: var(--radius);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
+    background-color: var(--bg);
+    box-shadow: 0 8px 20px rgba(2,6,23,0.18), inset 0 1px 0 rgba(255,255,255,0.03);
+    overflow: hidden;
+}
+
+    .liquid-glass::before {
+        background: linear-gradient(white -> transparent);
+        transform: rotate(-18deg);
+        filter: blur(18px);
+        mix-blend-mode: screen;
+    }
+
+    .liquid-glass::after {
+        background: linear-gradient(transparent -> rgba(0,0,0,0.06));
+    }
+
+
+    .liquid-glass a:hover {
+        background: rgba(255, 255, 255, 0.5); /* vidro um pouco mais "molhado" */
+        backdrop-filter: blur(18px); /* aumenta a difusão da luz */
+        border: 1px solid rgba(255, 255, 255, 0.35); /* reforça o contorno */
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* sombra mais suave */
+        transform: translateY(1px) scale(1.01); /* dá leve sensação de movimento */
+        border-radius: 999px;
+        padding: 1%;
+    }
+
+a {
+    border-radius: 999px;
+}
+
+.noise {
+    background-image: url(../img/noise.png);
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+    .liquid-glass {
+        background-color: rgba(255,255,255,0.90);
+    }
+}
+
+
+#acoes a {
+    padding: 5px;
+    border-radius: var(--radius);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
+    box-shadow: 0 8px 20px rgba(2,6,23,0.18), inset 0 1px 0 rgba(255,255,255,0.03);
+    overflow: hidden;
+}
+
+    #acoes a:nth-child(1) {
+        background-color: #0d6efd;
+    }
+
+#acoes a:nth-child(2) {
+    background: #fd7e14;
+}
+
+#acoes a:nth-child(3) {
+    background: #dc3545;
+}

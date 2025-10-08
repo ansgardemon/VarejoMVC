@@ -109,8 +109,16 @@ namespace Varejo.Controllers
                     CategoriaId = familiaVm.CategoriaId
                 };
 
-                await _familiaRepository.AddAsync(familia);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _familiaRepository.AddAsync(familia);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERRO] Ao criar família: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível criar a família. Verifique se o nome já existe.");
+                }
             }
 
             // Recarregar dropdowns caso ModelState seja inválido
@@ -156,8 +164,16 @@ namespace Varejo.Controllers
                 familia.MarcaId = familiaVm.MarcaId;
                 familia.CategoriaId = familiaVm.CategoriaId;
 
-                await _familiaRepository.UpdateAsync(familia);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _familiaRepository.UpdateAsync(familia);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERRO] Ao editar família: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível atualizar a família. Verifique se o nome já existe ou se há produtos associados.");
+                }
             }
 
             // Recarregar dropdowns caso ModelState seja inválido

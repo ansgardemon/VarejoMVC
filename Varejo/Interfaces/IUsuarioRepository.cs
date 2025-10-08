@@ -14,8 +14,8 @@ namespace Varejo.Interfaces
         //
         Task<Usuario>? ValidarLoginAsync(string email, string senha);
 
-        Task<List<TipoUsuario>> GetTiposUsuario();
-        Task<List<Pessoa>> GetPessoa();
+        List<TipoUsuario> GetTiposUsuario();
+        List<Pessoa> GetPessoa();
 
     }
 }

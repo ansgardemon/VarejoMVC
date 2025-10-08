@@ -1,11 +1,10 @@
 ﻿@model Varejo.ViewModels.UsuarioViewModel
 
 @{
-    ViewData["Title"] = "Editar Usuário";
+    ViewData["Title"] = "Excluir Usuário";
 }
 
-<h2>@ViewData["Title"]</h2>
-
+<h2 class="mb-4">Tem certeza que deseja excluir este usuário?</h2>
 <form asp-action="Edit" method="post">
     <!-- Campo oculto para manter o ID no POST -->
     <input type="hidden" asp-for="IdUsuario" />
@@ -50,7 +49,5 @@
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

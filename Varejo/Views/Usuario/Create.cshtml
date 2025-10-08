@@ -1,47 +1,50 @@
 ﻿@model Varejo.ViewModels.UsuarioViewModel
 
 @{
-    ViewData["Title"] = "Criar Nova Família";
+    ViewData["Title"] = "Criar Novo Usuário";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<form asp-action="Create" method="Post">
-    <div class="form-group">
-        <label asp-for="nomeUsuario" class="control-label"></label>
-        <input asp-for="nomeUsuario" class="form-control" />
-        <span asp-validation-for="nomeUsuario" class="text-danger"></span>
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@ViewData["Title"]</h4>
     </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label asp-for="nomeUsuario" class="form-label"></label>
+                <input asp-for="nomeUsuario" class="form-control" />
+                <span asp-validation-for="nomeUsuario" class="text-danger"></span>
+            </div>
 
+            <div class="mb-3">
+                <label asp-for="TipoUsuarioId" class="form-label">Tipo de Usuário</label>
+                <select asp-for="TipoUsuarioId" class="form-select" asp-items="ViewBag.TipoUsuario">
+                    <option value="">-- Selecione o tipo de usuário --</option>
+                </select>
+                <span asp-validation-for="TipoUsuarioId" class="text-danger"></span>
+            </div>
 
-    <div class="form-group">
-        <label asp-for="TipoUsuarioId" class="control-label">Tipo de Usuario</label>
-        <select asp-for="TipoUsuarioId" class="form-control" asp-items="ViewBag.TipoUsuario">
-            <option value="">-- Selecione a tipo de usuario --</option>
-        </select>
-        <span asp-validation-for="TipoUsuarioId" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="PessoaId" class="form-label">Pessoa</label>
+                <select asp-for="PessoaId" class="form-select" asp-items="ViewBag.Pessoas">
+                    <option value="">-- Selecione a pessoa --</option>
+                </select>
+                <span asp-validation-for="PessoaId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Senha" class="form-label"></label>
+                <input asp-for="Senha" class="form-control" type="password" />
+                <span asp-validation-for="Senha" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
     </div>
-
-    <div class="form-group">
-        <label asp-for="PessoaId" class="control-label">Pessoa Id</label>
-        <select asp-for="PessoaId" class="form-control" asp-items="ViewBag.Pessoas">
-            <option value="">-- Selecione a pessoa --</option>
-        </select>
-        <span asp-validation-for="PessoaId" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Senha" class="control-label"></label>
-        <input asp-for="Senha" class="form-control" />
-        <span asp-validation-for="Senha" class="text-danger"></span>
-    </div>
-
-
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Salvar</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-    </div>
-</form>
+</div>
 
 @section Scripts {
     @{

@@ -15,7 +15,7 @@ namespace Varejo.ViewModels
         public string Complemento { get; set; }
 
         [StringLength(101)]
-        public string NomeProduto { get; set; }
+        public string? NomeProduto { get; set; }
 
         [Column(TypeName = "decimal(18,4)")]
         public decimal EstoqueInicial { get; set; } = 0;
@@ -24,7 +24,7 @@ namespace Varejo.ViewModels
 
 
         [StringLength(255)]
-        public string UrlImagem { get; set; }
+        public string? UrlImagem { get; set; }
 
         public IFormFile? ImagemUpload { get; set; }
 
@@ -37,6 +37,12 @@ namespace Varejo.ViewModels
 
         public int FamiliaId { get; set; }
         public virtual Familia? Familia { get; set; }
+
+
+        //RELACIONAMENTO COM PRODUTO EMBALAGEM
+
+        public List<ProdutoEmbalagemViewModel> Embalagens { get; set; } = new List<ProdutoEmbalagemViewModel>();
+
 
 
 

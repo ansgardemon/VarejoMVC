@@ -5,7 +5,7 @@ using Varejo.Models;
 
 namespace Varejo.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    //[Authorize(Roles = "Administrador")]
     public class TipoUsuarioController : Controller
     {
         private readonly ITipoUsuarioRepository _tipoUsuario;

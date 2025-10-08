@@ -1,89 +1,150 @@
-﻿:root {
-    --radius: 18px;
+﻿/* ==========================
+   CUSTOM.CSS – Liquid Glass Style
+   ========================== */
+
+/* ---- BASE ---- */
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.25);
     --glass-blur: 20px;
-    --bg: rgba(255,255,255,0.16);
-    --stroke: rgba(255,255,255,0.6);
-    --white: #fff;
-    --off-white: #F5F7FA;
-    --off-white-20: #F5F7FA33;
-    --light-gray: #BDC3C7;
-    --graffitte: #34495E;
-    --dark-blue: #2C3E50;
+    --text-light: #ffffff;
+    --text-dark: #0f172a;
+    --accent-color: #4dabff; /* tom azulado apple */
 }
 
-.page-bg {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient( 135deg, #b4d9ff 0%, #6bb8ff 30%, #4098ff 60%);
-    /*    background: url(../img/acrossSpiderVerse.jpg);*/
+/* Reset suave de fundo */
+body {
+    background: linear-gradient(135deg, #e8f1ff, #c8d8ff);
+    color: var(--text-dark);
+    font-family: "Inter", "Segoe UI", sans-serif;
+    transition: background 0.4s ease;
 }
 
-.liquid-glass {
-    padding: 22px;
-    border-radius: var(--radius);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
-    background-color: var(--bg);
-    box-shadow: 0 8px 20px rgba(2,6,23,0.18), inset 0 1px 0 rgba(255,255,255,0.03);
-    overflow: hidden;
+/* ---- NAVBAR ---- */
+.navbar {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    margin: 10px;
+    padding: 0.5rem 1rem;
 }
 
-    .liquid-glass::before {
-        background: linear-gradient(white -> transparent);
-        transform: rotate(-18deg);
-        filter: blur(18px);
-        mix-blend-mode: screen;
+    .navbar .nav-link {
+        color: var(--text-dark) !important;
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.2s ease;
     }
 
-    .liquid-glass::after {
-        background: linear-gradient(transparent -> rgba(0,0,0,0.06));
+        .navbar .nav-link:hover {
+            color: var(--accent-color) !important;
+            transform: translateY(-1px);
+        }
+
+/* ---- CARDS ---- */
+.card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
     }
 
+/* ---- BUTTONS ---- */
+.btn {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    color: var(--text-dark);
+    border-radius: 12px;
+    transition: all 0.25s ease;
+}
 
-    .liquid-glass a:hover {
-        background: rgba(255, 255, 255, 0.5); /* vidro um pouco mais "molhado" */
-        backdrop-filter: blur(18px); /* aumenta a difusão da luz */
-        border: 1px solid rgba(255, 255, 255, 0.35); /* reforça o contorno */
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* sombra mais suave */
-        transform: translateY(1px) scale(1.01); /* dá leve sensação de movimento */
-        border-radius: 999px;
-        padding: 1%;
+    .btn:hover {
+        background: rgba(255, 255, 255, 0.35);
+        color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(77, 171, 255, 0.2);
     }
 
-a {
-    border-radius: 999px;
+.btn-success {
+    background: rgba(0, 200, 
+    
+    0, 0.3)!important;
 }
 
-.noise {
-    background-image: url(../img/noise.png);
-    opacity: 0.06;
-    mix-blend-mode: overlay;
+.btn-danger{
+    background: rgba(200, 0, 0, 0.3)!important;
 }
 
-@supports not (backdrop-filter: blur(1px)) {
-    .liquid-glass {
-        background-color: rgba(255,255,255,0.90);
+.btn-warning {
+    background: rgba(255, 200, 0, 0.3)!important;
+}
+
+.btn-info {
+    background: rgba(0, 150, 255, 0.3)!important;
+}
+
+
+
+/* ---- INPUTS ---- */
+.form-control {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--glass-border);
+    color: var(--text-dark);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+    .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.2rem rgba(77, 171, 255, 0.25);
+        background: rgba(255, 255, 255, 0.4);
     }
+
+/* ---- CARDS HEADER/TEXT ---- */
+.card-title {
+    color: var(--text-dark);
+    font-weight: 600;
 }
 
-
-#acoes a {
-    padding: 5px;
-    border-radius: var(--radius);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.05);
-    box-shadow: 0 8px 20px rgba(2,6,23,0.18), inset 0 1px 0 rgba(255,255,255,0.03);
-    overflow: hidden;
+.card-text {
+    color: rgba(15, 23, 42, 0.8);
 }
 
-    #acoes a:nth-child(1) {
-        background-color: #0d6efd;
+/* ---- DARK MODE (opcional futuro) ---- */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: var(--text-light);
     }
 
-#acoes a:nth-child(2) {
-    background: #fd7e14;
-}
+    .navbar,
+    .card,
+    .btn,
+    .form-control {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+        color: var(--text-light);
+    }
 
-#acoes a:nth-child(3) {
-    background: #dc3545;
+    .nav-link {
+        color: var(--text-light) !important;
+    }
+
+    .btn:hover {
+        color: var(--accent-color);
+    }
 }

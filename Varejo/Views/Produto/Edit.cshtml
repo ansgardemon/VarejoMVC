@@ -1,23 +1,24 @@
 ﻿@model Varejo.ViewModels.ProdutoViewModel
 
 @{
-    ViewData["Title"] = "Adicionar Produto";
+    ViewData["Title"] = "Editar Produto";
 }
 
 <div class="container mt-4">
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-success text-white">
+        <div class="card-header bg-warning text-white">
             <h5 class="mb-0">@ViewData["Title"]</h5>
         </div>
         <div class="card-body">
-            <form id="produto-form" asp-action="Create" enctype="multipart/form-data" method="post">
+            <form id="produto-form" asp-action="Edit" enctype="multipart/form-data" method="post">
+                <input type="hidden" asp-for="IdProduto" />
                 <input type="hidden" asp-for="FamiliaId" />
 
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                 <div class="mb-3">
                     <label class="form-label">Nome da Família</label>
-                    <input class="form-control" value="@ViewBag.NomeFamilia" disabled />
+                    <input class="form-control" value="@Model.Familia?.NomeFamilia" disabled />
                 </div>
 
                 <div class="mb-3">
@@ -31,6 +32,14 @@
                     <input asp-for="ImagemUpload" class="form-control" type="file" />
                     <span asp-validation-for="ImagemUpload" class="text-danger"></span>
                 </div>
+
+                @if (!string.IsNullOrEmpty(Model.UrlImagem))
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Imagem Atual</label><br />
+                        <img src="@Url.Content(Model.UrlImagem)" alt="@Model.NomeProduto" class="img-thumbnail" style="max-width: 200px; height:auto;" />
+                    </div>
+                }
 
                 <div class="form-check mb-3">
                     <input asp-for="Ativo" class="form-check-input" />
@@ -46,18 +55,16 @@
                             var embalagem = Model.Embalagens[i];
                             <div class="embalagem-item mb-3 border p-2">
                                 <label class="form-label">Tipo de Embalagem</label>
-<select name="Embalagens[@i].TipoEmbalagemId" class="form-select">
-    @if (embalagem.TiposEmbalagem != null)
-    {
-        foreach (var t in embalagem.TiposEmbalagem)
-        {
-            var selected = t.Selected ? "selected" : "";
-            @:<option value="@t.Value" @selected>@t.Text</option>
-        }
-    }
-</select>
-
-
+                                <select name="Embalagens[@i].TipoEmbalagemId" class="form-select">
+                                    @if (embalagem.TiposEmbalagem != null)
+                                    {
+                                        foreach (var t in embalagem.TiposEmbalagem)
+                                        {
+                                            var selected = t.Value == embalagem.TipoEmbalagemId.ToString() ? "selected" : "";
+                                            @:<option value="@t.Value" @selected>@t.Text</option>
+                                        }
+                                    }
+                                </select>
 
                                 <label class="form-label">Preço</label>
                                 <input name="Embalagens[@i].Preco" class="form-control" value="@embalagem.Preco" />
@@ -81,8 +88,8 @@
                     <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Voltar
                     </a>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i> Adicionar Produto
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-save"></i> Salvar Alterações
                     </button>
                 </div>
             </form>
@@ -117,7 +124,6 @@
                         <label>EAN</label>
                         <input name="Embalagens[${index}].Ean" class="form-control" />
 
-
                         <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
                     </div>
                 `;
@@ -132,16 +138,5 @@
                 }
             });
         });
-
-
-        document.getElementById('produto-form').addEventListener('submit', function(e) {
-    console.log('FORM SUBMIT DETECTADO');
-    const data = new FormData(this);
-    for (let pair of data.entries()) {
-        console.log(pair[0], pair[1]);
-    }
-});
-
-
     </script>
 }

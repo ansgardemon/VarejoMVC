@@ -39,7 +39,12 @@
                         <div class="col-md-3 mt-5 text-center">
                             <div class="card h-100">
                                 <a asp-controller="Produto" asp-action="Details" asp-route-id="@produto.IdProduto" class="text-decoration-none text-dark">
-                                    <img src="@produto.UrlImagem" class="card-img-top" alt="@(!string.IsNullOrEmpty(produto.NomeProduto) ? produto.NomeProduto : "Produto")" />
+                                    <div class="d-flex justify-content-center align-items-center" style="height:200px; overflow:hidden;">
+                                        <img src="@produto.UrlImagem"
+                                             class="card-img-top"
+                                             alt="@(!string.IsNullOrEmpty(produto.NomeProduto) ? produto.NomeProduto : "Produto")"
+                                             style="max-height:100%; max-width:100%; object-fit:contain;" />
+                                    </div>
                                     <div class="card-body">
                                         <h6 class="card-title">@produto.NomeProduto</h6>
                                         <p class="card-text">Ativo: @(produto.Ativo ? "✅" : "❌")</p>
@@ -58,6 +63,7 @@
                         </div>
                     }
                 </div>
+
             }
             else
             {

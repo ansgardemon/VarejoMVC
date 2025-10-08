@@ -141,14 +141,7 @@ namespace Varejo.Controllers
             var usuario = await _usuarioRepository.GetByIdAsync(id);
             if (usuario == null) return NotFound();
 
-            var usuariovm = new UsuarioViewModel
-            {
-                IdUsuario = usuario.IdUsuario,
-                nomeUsuario = usuario.nomeUsuario,
-                Ativo = usuario.Ativo
-            };
-
-            return View(usuariovm);
+            return View(usuario);
         }
 
 

@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Varejo.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Usuários Inativos";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<table class="table table-dark table-striped table-hover align-middle">
+    <thead class="table-secondary text-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Tipo de Usuário</th>
+            <th scope="col">Status</th>
+            <th scope="col">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model)
+        {
+            <tr>
+                <td>@usuario.IdUsuario</td>
+                <td>@usuario.nomeUsuario</td>
+                <td>@usuario.TipoUsuario?.DescricaoTipoUsuario ?? "Não definido"</td>
+                <td>
+                    <span class="badge bg-danger">@((usuario.Ativo) ? "Ativo" : "Inativo")</span>
+                </td>
+                <td>
+                    <a asp-action="Ativar" asp-route-id="@usuario.IdUsuario"
+                       class="btn btn-sm btn-success me-1">Ativar</a>
+                    <a class="btn btn-info btn-sm" asp-controller="Pessoa" asp-action="Details" asp-route-id="@usuario.PessoaId">Ver Pessoa </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Voltar à lista principal</a>
+</div>

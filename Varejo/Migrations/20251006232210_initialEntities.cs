@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Varejo.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialEntities : Migration
+    public partial class initialEntities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,9 +17,7 @@ namespace Varejo.Migrations
                 {
                     IdCategoria = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DescricaoCategoria = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    DescricaoCategoria = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,9 +30,7 @@ namespace Varejo.Migrations
                 {
                     IdEspecieMovimento = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DescricaoEspecieMovimento = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    DescricaoEspecieMovimento = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,9 +43,7 @@ namespace Varejo.Migrations
                 {
                     IdMarca = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    NomeMarca = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    NomeMarca = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,9 +66,7 @@ namespace Varejo.Migrations
                     EhUsuario = table.Column<bool>(type: "bit", nullable: false),
                     EhCliente = table.Column<bool>(type: "bit", nullable: false),
                     EhFornecedor = table.Column<bool>(type: "bit", nullable: false),
-                    Ativo = table.Column<bool>(type: "bit", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -88,9 +80,7 @@ namespace Varejo.Migrations
                     IdTipoEmbalagem = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DescricaoTipoEmbalagem = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Multiplicador = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    Multiplicador = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,9 +93,7 @@ namespace Varejo.Migrations
                 {
                     IdTipoUsuario = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DescricaoTipoUsuario = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    DescricaoTipoUsuario = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -119,9 +107,7 @@ namespace Varejo.Migrations
                     IdTipoMovimento = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DescricaoTipoMovimento = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    EspecieMovimentoId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    EspecieMovimentoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -143,9 +129,7 @@ namespace Varejo.Migrations
                     NomeFamilia = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false),
                     MarcaId = table.Column<int>(type: "int", nullable: true),
-                    CategoriaId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    CategoriaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -176,9 +160,7 @@ namespace Varejo.Migrations
                     Uf = table.Column<string>(type: "nvarchar(2)", maxLength: 2, nullable: false),
                     Complemento = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Numero = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    PessoaId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    PessoaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -201,9 +183,7 @@ namespace Varejo.Migrations
                     Senha = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false),
                     PessoaId = table.Column<int>(type: "int", nullable: false),
-                    TipoUsuarioId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    TipoUsuarioId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -232,9 +212,7 @@ namespace Varejo.Migrations
                     Observacao = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DataMovimento = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TipoMovimentoId = table.Column<int>(type: "int", nullable: false),
-                    PessoaId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    PessoaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -260,9 +238,7 @@ namespace Varejo.Migrations
                     IdFornecedorFamilia = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PessoaId = table.Column<int>(type: "int", nullable: false),
-                    FamiliaId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    FamiliaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -292,10 +268,8 @@ namespace Varejo.Migrations
                     EstoqueInicial = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false),
                     UrlImagem = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CustoMedio = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    FamiliaId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    CustoMedio = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    FamiliaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -305,7 +279,7 @@ namespace Varejo.Migrations
                         column: x => x.FamiliaId,
                         principalTable: "Familias",
                         principalColumn: "IdFamilia",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -316,11 +290,8 @@ namespace Varejo.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Preco = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Ean = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Principal = table.Column<bool>(type: "bit", nullable: false),
                     ProdutoId = table.Column<int>(type: "int", nullable: false),
-                    TipoEmbalagemId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    TipoEmbalagemId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -348,9 +319,7 @@ namespace Varejo.Migrations
                     Quantidade = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ProdutoId = table.Column<int>(type: "int", nullable: false),
                     ProdutoEmbalagemId = table.Column<int>(type: "int", nullable: false),
-                    MovimentoId = table.Column<int>(type: "int", nullable: false),
-                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    DataCriacao = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    MovimentoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -376,12 +345,6 @@ namespace Varejo.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Categorias_DescricaoCategoria",
-                table: "Categorias",
-                column: "DescricaoCategoria",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Enderecos_PessoaId",
                 table: "Enderecos",
                 column: "PessoaId");
@@ -397,12 +360,6 @@ namespace Varejo.Migrations
                 column: "MarcaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Familias_NomeFamilia",
-                table: "Familias",
-                column: "NomeFamilia",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_FornecedoresFamilia_FamiliaId",
                 table: "FornecedoresFamilia",
                 column: "FamiliaId");
@@ -411,12 +368,6 @@ namespace Varejo.Migrations
                 name: "IX_FornecedoresFamilia_PessoaId",
                 table: "FornecedoresFamilia",
                 column: "PessoaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Marcas_NomeMarca",
-                table: "Marcas",
-                column: "NomeMarca",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movimentos_PessoaId",

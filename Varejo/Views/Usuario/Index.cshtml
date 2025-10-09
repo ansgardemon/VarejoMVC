@@ -1,42 +1,56 @@
 ﻿@model IEnumerable<Varejo.Models.Usuario>
 
 @{
-	ViewData["Title"] = "UsuariosTeste";
+    ViewData["Title"] = "Usuários Ativos";
 }
 
-<h2>Usuarios</h2>
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
-<p>
-	<a class="btn btn-primary" asp-action="Create">Novo Usuario</a>
-</p>
 
-<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-	<table class="w-100">
-		<thead>
-			<tr>
-				<th>Id do Usuario</th>
-				<th>Nome do Usuario</th>
-				<th>Ativo</th>
-				<th>Id da Pessoa</th>
-				<th>Tipo de Usuario</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var usuario in Model)
-			{
-				<tr>
-					<td>@usuario.IdUsuario</td>
-					<td>@usuario.nomeUsuario</td>
-					<td>@usuario.Ativo </td>
-					<td>@usuario.PessoaId</td>
-					<td>@usuario.TipoUsuarioId</td>
-					<td>
-						<a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@usuario.IdUsuario">Detalhes</a>
-						<a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@usuario.IdUsuario">Editar</a>
-						<a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@usuario.IdUsuario">Excluir</a>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+<div class="mb-3">
+    <a class="btn btn-primary me-2" asp-action="Create">Novo Usuário</a>
+    <a class="btn btn-secondary" asp-action="Inativos">Usuários Inativos</a>
 </div>
+<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+<table class="table table-hover table-bordered align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Ativo</th>
+            <th scope="col">ID da Pessoa</th>
+            <th scope="col">Tipo de Usuário</th>
+            <th scope="col" style="width: 340px;">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var usuario in Model.Where(u => u.Ativo))
+        {
+            <tr>
+                <td>@usuario.IdUsuario</td>
+                <td>@usuario.nomeUsuario</td>
+                <td>
+                    @if (usuario.Ativo)
+                    {
+                        <span class="badge bg-success">Ativo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inativo</span>
+                    }
+                </td>
+                <td>@usuario.PessoaId</td>
+                <td>@usuario.TipoUsuarioId</td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-controller="Pessoa" asp-action="Details" asp-route-id="@usuario.PessoaId">
+                        Ver Pessoa
+                    </a>
+                    <a class="btn btn-warning btn-sm me-1" asp-action="Edit" asp-route-id="@usuario.IdUsuario">Editar</a>
+                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@usuario.IdUsuario">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+  </div>
+

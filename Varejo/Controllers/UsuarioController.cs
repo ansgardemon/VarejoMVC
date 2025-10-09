@@ -39,7 +39,8 @@ namespace Varejo.Controllers
                 usuarios = usuarios.Where(f => f.TipoUsuarioId == tipoUsuarioId.Value).ToList();
 
             // ViewBag para filtros — agora como SelectList, não List<SelectListItem>
-            ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", tipoUsuarioId);
+            ViewBag.Pessoas = new SelectList( _usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", pessoaid);
+            ViewBag.TipoUsuario = new SelectList( _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", tipoUsuarioId);
             ViewBag.Search = search;
 
 
@@ -49,8 +50,8 @@ namespace Varejo.Controllers
         public async Task<IActionResult> Create()
         {
 
-            // ViewBag para dropdowns de Marca e Categoria
-            ViewBag.TipoUsuario = new SelectList(await _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario");
+            ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao");
+            ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario");
 
             return View(new UsuarioViewModel());
 
@@ -62,20 +63,21 @@ namespace Varejo.Controllers
         {
             if (!ModelState.IsValid)
             {
-                vm.Pessoas = (await _pessoaRepository.GetAllAsync())
+                vm.Pessoas = (_usuarioRepository.GetPessoa())
                     .Select(p => new SelectListItem { Value = p.IdPessoa.ToString(), Text = p.NomeRazao });
-                vm.TipoUsuarios = (await _tipoUsuarioRepository.GetAllAsync())
+                vm.TipoUsuarios = (_usuarioRepository.GetTiposUsuario())
                     .Select(t => new SelectListItem { Value = t.IdTipoUsuario.ToString(), Text = t.DescricaoTipoUsuario });
                 return View(vm);
             }
 
             var usuario = new Usuario
             {
+               
                 nomeUsuario = vm.nomeUsuario,
                 Senha = vm.Senha,
                 Ativo = vm.Ativo,
                 PessoaId = vm.PessoaId,
-                TipoUsuarioId = vm.TipoUsuarioId // 👈 ESSENCIAL
+                TipoUsuarioId = vm.TipoUsuarioId 
             };
 
             await _usuarioRepository.AddAsync(usuario);
@@ -85,43 +87,39 @@ namespace Varejo.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            if (id <= 0) return NotFound();
-
+          
             var usuario = await _usuarioRepository.GetByIdAsync(id);
             if (usuario == null) return NotFound();
 
+       
             var usuariovm = new UsuarioViewModel
             {
-
+                IdUsuario = usuario.IdUsuario,
                 nomeUsuario = usuario.nomeUsuario,
                 Senha = usuario.Senha,
                 Ativo = usuario.Ativo,
                 PessoaId = usuario.PessoaId,
-                TipoUsuarioId = usuario.TipoUsuarioId,
-                TipoUsuarios = (await _tipoUsuarioRepository.GetAllAsync()).Select(u => new SelectListItem
-                {
-                    Text = u.DescricaoTipoUsuario,
-                    Value = u.IdTipoUsuario.ToString(),
-                }),
+                TipoUsuarioId = usuario.TipoUsuarioId
             };
 
+            ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", usuariovm.PessoaId);
+            ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", usuariovm.TipoUsuarioId);
             return View(usuariovm);
         }
 
-
+ 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UsuarioViewModel usuariovm)
         {
-            if (usuariovm == null) return NotFound();
-
-            int id = usuariovm.IdUsuario;
-
-            var usuario = await _usuarioRepository.GetByIdAsync(id);
-            if (usuario == null) return NotFound();
-
+           
             if (ModelState.IsValid)
             {
+
+                var usuario = await _usuarioRepository.GetByIdAsync(usuariovm.IdUsuario);
+                if (usuario == null) return NotFound();
+
+
                 usuario.nomeUsuario = usuariovm.nomeUsuario;
                 usuario.Senha = usuariovm.Senha;
                 usuario.Ativo = usuariovm.Ativo;
@@ -130,7 +128,20 @@ namespace Varejo.Controllers
                 await _usuarioRepository.UpdateAsync(usuario);
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", usuariovm.PessoaId);
+            ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", usuariovm.TipoUsuarioId);
             return View(usuariovm);
+        }
+
+
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(id);
+            if (usuario == null) return NotFound();
+
+            return View(usuario);
         }
 
 

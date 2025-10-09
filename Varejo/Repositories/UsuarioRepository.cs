@@ -23,14 +23,13 @@ namespace Varejo.Repositories
         //READ
         public async Task<List<Usuario>> GetAllAsync()
         {
-            return await _context.Usuarios.Include(u => u.TipoUsuario).ToListAsync();
+            return await _context.Usuarios.Include(u => u.TipoUsuario).Include(f => f.Pessoa).ToListAsync();
         }
 
         //READ - ID
-        public async Task<Usuario> GetByIdAsync(int id)
+        public async Task<Usuario?> GetByIdAsync(int id)
         {
-            return await _context.Usuarios.Include(u => u.TipoUsuario)
-                                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
+            return await _context.Usuarios.Include(u => u.TipoUsuario).Include(f => f.Pessoa).FirstOrDefaultAsync(f => f.IdUsuario == id);
         }
 
         //READ - ATIVOS
@@ -78,14 +77,16 @@ namespace Varejo.Repositories
 
         }
 
-        public Task<List<TipoUsuario>> GetTiposUsuario()
+     
+
+        public List<TipoUsuario> GetTiposUsuario()
         {
-            return _context.TiposUsuario.ToListAsync();
+            return _context.TiposUsuario.ToList();
         }
 
-        public Task<List<Pessoa>> GetPessoa()
+        public List<Pessoa> GetPessoa()
         {
-            return _context.Pessoas.ToListAsync();
+            return _context.Pessoas.ToList();
         }
     }
 }

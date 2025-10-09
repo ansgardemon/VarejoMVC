@@ -1,0 +1,35 @@
+﻿@model Varejo.Models.Usuario
+
+@{
+    ViewData["Title"] = "Excluir Usuário";
+}
+
+<h2 class="mb-4">Tem certeza que deseja excluir este usuário?</h2>
+
+<div class="card p-4 shadow-sm">
+    <dl class="row">
+        <dt class="col-sm-3">Nome de Usuário</dt>
+        <dd class="col-sm-9">@Model.nomeUsuario</dd>
+
+        <dt class="col-sm-3">Nome de Usuário</dt>
+        <dd class="col-sm-9">@Model.TipoUsuario?.DescricaoTipoUsuario</dd> 
+        
+        <dt class="col-sm-3">Nome da pessoa</dt>
+        <dd class="col-sm-9">@Model.PessoaId</dd>
+
+    </dl>
+
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="IdUsuario" />
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-danger">Excluir</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

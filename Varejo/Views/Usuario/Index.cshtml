@@ -1,40 +1,42 @@
 ﻿@model IEnumerable<Varejo.Models.Usuario>
 
 @{
-    ViewData["Title"] = "UsuariosTeste";
+	ViewData["Title"] = "UsuariosTeste";
 }
 
 <h2>Usuarios</h2>
 
 <p>
-    <a class="btn btn-primary" asp-action="Create">Novo Usuario</a>
+	<a class="btn btn-primary" asp-action="Create">Novo Usuario</a>
 </p>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Id do Usuario</th>
-            <th>Nome do Usuario</th>
-            <th>Ativo</th>
-            <th>Id da Pessoa</th>
-            <th>Tipo de Usuario</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var usuario in Model)
-        {
-            <tr>
-                <td>@usuario.IdUsuario</td>
-                <td>@usuario.nomeUsuario</td>
-                <td>@usuario.Ativo </td>
-                <td>@usuario.PessoaId</td>
-                <td>@usuario.TipoUsuarioId</td>
-                <td>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@usuario.IdUsuario">Detalhes</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@usuario.IdUsuario">Editar</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@usuario.IdUsuario">Excluir</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+	<table class="w-100">
+		<thead>
+			<tr>
+				<th>Id do Usuario</th>
+				<th>Nome do Usuario</th>
+				<th>Ativo</th>
+				<th>Id da Pessoa</th>
+				<th>Tipo de Usuario</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var usuario in Model)
+			{
+				<tr>
+					<td>@usuario.IdUsuario</td>
+					<td>@usuario.nomeUsuario</td>
+					<td>@usuario.Ativo </td>
+					<td>@usuario.PessoaId</td>
+					<td>@usuario.TipoUsuarioId</td>
+					<td>
+						<a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@usuario.IdUsuario">Detalhes</a>
+						<a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@usuario.IdUsuario">Editar</a>
+						<a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@usuario.IdUsuario">Excluir</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

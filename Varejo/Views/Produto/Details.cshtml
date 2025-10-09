@@ -1,81 +1,83 @@
 ﻿@model Varejo.ViewModels.ProdutoViewModel
 
 @{
-    ViewData["Title"] = "Detalhes do Produto";
+	ViewData["Title"] = "Detalhes do Produto";
 }
 
 <h2 class="mb-4">@ViewData["Title"]</h2>
 
 <div class="card shadow-sm p-4 mb-4">
-    <div class="row">
-        <!-- Coluna da esquerda: informações -->
-        <div class="col-md-8">
-            <h4 class="mb-3">Informações do Produto</h4>
-            <dl class="row mb-0">
-                <dt class="col-sm-4 fw-bold">Nome do Produto</dt>
-                <dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.NomeProduto) ? Model.NomeProduto : "(não definido)")</dd>
+	<div class="row">
+		<!-- Coluna da esquerda: informações -->
+		<div class="col-md-8">
+			<h4 class="mb-3">Informações do Produto</h4>
+			<dl class="row mb-0">
+				<dt class="col-sm-4 fw-bold">Nome do Produto</dt>
+				<dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.NomeProduto) ? Model.NomeProduto : "(não definido)")</dd>
 
-                <dt class="col-sm-4 fw-bold">Complemento</dt>
-                <dd class="col-sm-8">@Model.Complemento</dd>
+				<dt class="col-sm-4 fw-bold">Complemento</dt>
+				<dd class="col-sm-8">@Model.Complemento</dd>
 
-                <dt class="col-sm-4 fw-bold">Estoque Inicial</dt>
-                <dd class="col-sm-8">@Model.EstoqueInicial.ToString("N4")</dd>
+				<dt class="col-sm-4 fw-bold">Estoque Inicial</dt>
+				<dd class="col-sm-8">@Model.EstoqueInicial.ToString("N4")</dd>
 
-                <dt class="col-sm-4 fw-bold">Custo Médio</dt>
-                <dd class="col-sm-8">@Model.CustoMedio.ToString("C")</dd>
+				<dt class="col-sm-4 fw-bold">Custo Médio</dt>
+				<dd class="col-sm-8">@Model.CustoMedio.ToString("C")</dd>
 
-                <dt class="col-sm-4 fw-bold">Família</dt>
-                <dd class="col-sm-8"> @(Model.Familia?.NomeFamilia ?? "(não definido)") </dd>
+				<dt class="col-sm-4 fw-bold">Família</dt>
+				<dd class="col-sm-8"> @(Model.Familia?.NomeFamilia ?? "(não definido)") </dd>
 
-                <dt class="col-sm-4 fw-bold">Ativo</dt>
-                <dd class="col-sm-8">@((Model.Ativo) ? "✅" : "❌")</dd>
-            </dl>
-        </div>
+				<dt class="col-sm-4 fw-bold">Ativo</dt>
+				<dd class="col-sm-8">@((Model.Ativo) ? "✅" : "❌")</dd>
+			</dl>
+		</div>
 
-        <!-- Coluna da direita: imagem -->
-        <div class="col-md-4 d-flex justify-content-center align-items-start">
-            <div style="width: 100%; max-width: 250px; height: 250px; overflow:hidden;">
-                <img src="@(string.IsNullOrEmpty(Model.UrlImagem) ? Url.Content("~/imagens/default.png") : Url.Content(Model.UrlImagem))"
-                     alt="@Model.NomeProduto"
-                     class="img-thumbnail"
-                     style="max-width:100%; max-height:100%; object-fit:contain;" />
-            </div>
-        </div>
-    </div>
+		<!-- Coluna da direita: imagem -->
+		<div class="col-md-4 d-flex justify-content-center align-items-start">
+			<div style="width: 100%; max-width: 250px; height: 250px; overflow:hidden;">
+				<img src="@(string.IsNullOrEmpty(Model.UrlImagem) ? Url.Content("~/imagens/default.png") : Url.Content(Model.UrlImagem))"
+					 alt="@Model.NomeProduto"
+					 class="img-thumbnail"
+					 style="max-width:100%; max-height:100%; object-fit:contain;" />
+			</div>
+		</div>
+	</div>
 </div>
 
 @if (Model.Embalagens != null && Model.Embalagens.Any())
 {
-    <div class="mb-3">
-        <h4>Embalagens</h4>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Tipo de Embalagem</th>
-                    <th>Preço</th>
-                    <th>EAN</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var emb in Model.Embalagens)
-                {
-                    <tr>
-                        <td>
-                            @* Se você não está trazendo o tipo de embalagem, precisa buscar o nome aqui ou incluir no ViewModel *@
-                            @(emb.TiposEmbalagem?.FirstOrDefault(t => t.Value == emb.TipoEmbalagemId.ToString())?.Text ?? "—")
-                        </td>
-                        <td>@emb.Preco.ToString("C")</td>
-                        <td>@emb.Ean</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+	<div class="mb-3">
+		<h4>Embalagens</h4>
+		<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+			<table class="w-100">
+				<thead>
+					<tr>
+						<th>Tipo de Embalagem</th>
+						<th>Preço</th>
+						<th>EAN</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var emb in Model.Embalagens)
+					{
+						<tr>
+							<td>
+								@* Se você não está trazendo o tipo de embalagem, precisa buscar o nome aqui ou incluir no ViewModel *@
+								@(emb.TiposEmbalagem?.FirstOrDefault(t => t.Value == emb.TipoEmbalagemId.ToString())?.Text ?? "—")
+							</td>
+							<td>@emb.Preco.ToString("C")</td>
+							<td>@emb.Ean</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
 }
 
 <div class="d-flex justify-content-between">
-    <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-secondary">
-        Voltar
-    </a>
-    <a asp-action="Edit" asp-route-id="@Model.IdProduto" class="btn btn-warning">Editar</a>
+	<a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-secondary">
+		Voltar
+	</a>
+	<a asp-action="Edit" asp-route-id="@Model.IdProduto" class="btn btn-warning">Editar</a>
 </div>

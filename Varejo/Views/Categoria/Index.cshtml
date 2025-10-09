@@ -1,37 +1,40 @@
 ﻿@model IEnumerable<Varejo.ViewModels.CategoriaViewModel>
 
 @{
-    ViewData["Title"] = "Categorias";
+	ViewData["Title"] = "Categorias";
 }
 
 <h2>Categorias</h2>
 
 <p>
-    <a class="btn btn-primary" asp-action="Create">Nova Categoria</a>
+	<a class="btn btn-primary" asp-action="Create">Nova Categoria</a>
 </p>
 
-<table class="table table-striped liquid-glass">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Descrição</th>
-            <th>Quantidade de Familias</th>
-            <th class="text-center">Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var categoria in Model)
-        {
-            <tr>
-                <td>@categoria.IdCategoria</td>
-                <td>@categoria.DescricaoCategoria</td>
-                <td>@categoria.QuantidadeFamilia</td>
-                <td class="text-center" id="acoes">
-                    <a class="btn btn-info btn-sm text-white" asp-action="Details" asp-route-id="@categoria.IdCategoria">Detalhes</a>
-                    <a class="btn btn-warning btn-sm text-white" asp-action="Edit" asp-route-id="@categoria.IdCategoria">Editar</a>
-                    <a class="btn btn-danger btn-sm text-white" asp-action="Delete" asp-route-id="@categoria.IdCategoria">Excluir</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+	<table class="w-100">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Descrição</th>
+				<th>Quantidade de Familias</th>
+				<th class="text-center">Ações</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var categoria in Model)
+			{
+				<tr>
+					<td>@categoria.IdCategoria</td>
+					<td>@categoria.DescricaoCategoria</td>
+					<td>@categoria.QuantidadeFamilia</td>
+					<td class="text-center" id="acoes">
+						<a class="btn btn-info btn-sm text-white" asp-action="Details" asp-route-id="@categoria.IdCategoria">Detalhes</a>
+						<a class="btn btn-warning btn-sm text-white" asp-action="Edit" asp-route-id="@categoria.IdCategoria">Editar</a>
+						<a class="btn btn-danger btn-sm text-white" asp-action="Delete" asp-route-id="@categoria.IdCategoria">Excluir</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+

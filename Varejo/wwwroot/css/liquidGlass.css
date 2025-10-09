@@ -1,20 +1,15 @@
-﻿/* ==========================
-   CUSTOM.CSS – Liquid Glass Style
-   ========================== */
-
-/* ---- BASE ---- */
-:root {
+﻿:root {
     --glass-bg: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.25);
     --glass-blur: 20px;
     --text-light: #ffffff;
     --text-dark: #0f172a;
-    --accent-color: #4dabff; /* tom azulado apple */
 }
 
 /* Reset suave de fundo */
 body {
     background: linear-gradient(135deg, #e8f1ff, #c8d8ff);
+    /*    background: url(../img/faixas.png);*/
     color: var(--text-dark);
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: background 0.4s ease;
@@ -55,7 +50,6 @@ body {
 }
 
     .card:hover {
-        transform: translateY(-4px);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
     }
 
@@ -68,34 +62,51 @@ body {
     color: var(--text-dark);
     border-radius: 12px;
     transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(77, 171, 255, 0.2);
 }
 
     .btn:hover {
         background: rgba(255, 255, 255, 0.35);
-        color: var(--accent-color);
+        box-shadow: 0 4px 12px rgba(77, 171, 255, 0.5);
+        border: 1px solid transparent;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(77, 171, 255, 0.2);
+    }
+
+.btn-info {
+    background: #0d9dfdCC !important;
+}
+
+    .btn-info:hover {
+        background: #0d9dfd !important;
+        filter: saturate(1.5);
     }
 
 .btn-success {
-    background: rgba(0, 200, 
-    
-    0, 0.3)!important;
+    background: #27eb8fCC !important;
 }
 
-.btn-danger{
-    background: rgba(200, 0, 0, 0.3)!important;
+    .btn-success:hover {
+        background: #27eb8f !important;
+        filter: saturate(1.5);
+    }
+
+
+.btn-danger {
+    background: #dc3545CC !important;
 }
+
+    .btn-danger:hover {
+        background: #dc3545 !important;
+    }
 
 .btn-warning {
-    background: rgba(255, 200, 0, 0.3)!important;
+    background: #ffc107CC !important;
 }
 
-.btn-info {
-    background: rgba(0, 150, 255, 0.3)!important;
-}
-
-
+    .btn-warning:hover {
+        background: #ffc107 !important;
+        filter: saturate(1.5);
+    }
 
 /* ---- INPUTS ---- */
 .form-control {
@@ -122,6 +133,82 @@ body {
 
 .card-text {
     color: rgba(15, 23, 42, 0.8);
+}
+
+.card-header {
+    border-radius: 16px 16px 0 0 !important;
+}
+
+/*TABLE*/
+
+table {
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+}
+
+    table thead, {
+        background: linear-gradient(145deg, rgba(150, 150, 150, 0.25), rgba(150, 150, 150, 0.05));
+        border: 1px solid var(--glass-border);
+        height: 50px;
+    }
+
+    table th, table td {
+        padding: 0 1rem 0 1rem !important;
+        height: 50px;
+    }
+
+    table tbody tr:nth-child(odd), dl dd:nth-child(odd) {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+    }
+
+    table tbody tr:nth-child(even), dl dd:nth-child(even) {
+        background: linear-gradient(145deg, rgba(220, 220, 220, 0.25), rgba(220, 220, 220, 0.05));
+    }
+
+dl {
+    border: 1px solid var(--glass-border)
+}
+
+dl dt, dl dd {
+    display: flex;
+    align-items: center;
+}
+
+    dl dt {
+        padding: 0;
+        height: 50px;
+        background: linear-gradient(145deg, rgba(150, 150, 150, 0.25), rgba(150, 150, 150, 0.05));
+    }
+
+        dl dt:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        dl dt:last-of-type {
+            border-bottom-left-radius: 12px;
+        }
+
+    dl dd {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+        dl dd:first-child {
+            border-top-right-radius: 12px;
+        }
+
+        dl dd:last-of-type {
+            border-bottom-right-radius: 12px;
+        }
+
+
+/*Footer*/
+.footer {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 
 /* ---- DARK MODE (opcional futuro) ---- */

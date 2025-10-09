@@ -12,7 +12,7 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20251007234305_InitialEntities")]
+    [Migration("20251008120532_InitialEntities")]
     partial class InitialEntities
     {
         /// <inheritdoc />

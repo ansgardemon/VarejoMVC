@@ -37,7 +37,7 @@
                     @foreach (var produto in Model.FamiliaDetails)
                     {
                         <div class="col-md-3 mt-5 text-center">
-                            <div class="card h-100">
+                            <div class="card h-100 p-2">
                                 <a asp-controller="Produto" asp-action="Details" asp-route-id="@produto.IdProduto" class="text-decoration-none text-dark">
                                     <div class="d-flex justify-content-center align-items-center" style="height:200px; overflow:hidden;">
                                         <img src="@produto.UrlImagem"

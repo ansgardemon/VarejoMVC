@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Varejo.Data;
 
@@ -11,9 +12,11 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    partial class VarejoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251006232210_initialEntities")]
+    partial class initialEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,25 +33,12 @@ namespace Varejo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCategoria"));
 
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<string>("DescricaoCategoria")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("IdCategoria");
-
-                    b.HasIndex("DescricaoCategoria")
-                        .IsUnique();
 
                     b.ToTable("Categorias");
                 });
@@ -80,16 +70,6 @@ namespace Varejo.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Logradouro")
                         .IsRequired()
@@ -124,16 +104,6 @@ namespace Varejo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdEspecieMovimento"));
 
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<string>("DescricaoEspecieMovimento")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -158,16 +128,6 @@ namespace Varejo.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<int?>("MarcaId")
                         .HasColumnType("int");
 
@@ -182,9 +142,6 @@ namespace Varejo.Migrations
 
                     b.HasIndex("MarcaId");
 
-                    b.HasIndex("NomeFamilia")
-                        .IsUnique();
-
                     b.ToTable("Familias");
                 });
 
@@ -195,16 +152,6 @@ namespace Varejo.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdFornecedorFamilia"));
-
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("FamiliaId")
                         .HasColumnType("int");
@@ -229,25 +176,12 @@ namespace Varejo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdMarca"));
 
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<string>("NomeMarca")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("IdMarca");
-
-                    b.HasIndex("NomeMarca")
-                        .IsUnique();
 
                     b.ToTable("Marcas");
                 });
@@ -259,16 +193,6 @@ namespace Varejo.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdMovimento"));
-
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<DateTime>("DataMovimento")
                         .HasColumnType("datetime2");
@@ -310,16 +234,6 @@ namespace Varejo.Migrations
                         .IsRequired()
                         .HasMaxLength(18)
                         .HasColumnType("nvarchar(18)");
-
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Ddd")
                         .IsRequired()
@@ -382,17 +296,7 @@ namespace Varejo.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("CustoMedio")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<decimal>("EstoqueInicial")
                         .HasColumnType("decimal(18,4)");
@@ -425,16 +329,6 @@ namespace Varejo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdProdutoEmbalagem"));
 
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<string>("Ean")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -442,9 +336,6 @@ namespace Varejo.Migrations
                     b.Property<decimal>("Preco")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("Principal")
-                        .HasColumnType("bit");
 
                     b.Property<int>("ProdutoId")
                         .HasColumnType("int");
@@ -471,16 +362,6 @@ namespace Varejo.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdProdutoMovimento"));
-
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("MovimentoId")
                         .HasColumnType("int");
@@ -513,16 +394,6 @@ namespace Varejo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTipoEmbalagem"));
 
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<string>("DescricaoTipoEmbalagem")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -543,16 +414,6 @@ namespace Varejo.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTipoMovimento"));
-
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("DescricaoTipoMovimento")
                         .IsRequired()
@@ -577,16 +438,6 @@ namespace Varejo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdTipoUsuario"));
 
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
                     b.Property<string>("DescricaoTipoUsuario")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -607,16 +458,6 @@ namespace Varejo.Migrations
 
                     b.Property<bool>("Ativo")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime>("DataAtualizacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("PessoaId")
                         .HasColumnType("int");
@@ -714,7 +555,7 @@ namespace Varejo.Migrations
                     b.HasOne("Varejo.Models.Familia", "Familia")
                         .WithMany("Produtos")
                         .HasForeignKey("FamiliaId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Familia");
@@ -723,7 +564,7 @@ namespace Varejo.Migrations
             modelBuilder.Entity("Varejo.Models.ProdutoEmbalagem", b =>
                 {
                     b.HasOne("Varejo.Models.Produto", "Produto")
-                        .WithMany("ProdutosEmbalagem")
+                        .WithMany()
                         .HasForeignKey("ProdutoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -826,11 +667,6 @@ namespace Varejo.Migrations
             modelBuilder.Entity("Varejo.Models.Pessoa", b =>
                 {
                     b.Navigation("Enderecos");
-                });
-
-            modelBuilder.Entity("Varejo.Models.Produto", b =>
-                {
-                    b.Navigation("ProdutosEmbalagem");
                 });
 
             modelBuilder.Entity("Varejo.Models.TipoEmbalagem", b =>

@@ -1,29 +1,32 @@
 ﻿@model IEnumerable<Varejo.Models.ProdutoEmbalagem>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Produto</th>
-            <th>Tipo Embalagem</th>
-            <th>Preço</th>
-            <th>Ean</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Produto?.Complemento</td>
-                <td>@item.TipoEmbalagem?.DescricaoTipoEmbalagem</td>
-                <td>@item.Preco</td>
-                <td>@item.Ean</td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.IdProdutoEmbalagem }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.IdProdutoEmbalagem }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.IdProdutoEmbalagem })
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+
+	<table class="w-100">
+		<thead>
+			<tr>
+				<th>Produto</th>
+				<th>Tipo Embalagem</th>
+				<th>Preço</th>
+				<th>Ean</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>@item.Produto?.Complemento</td>
+					<td>@item.TipoEmbalagem?.DescricaoTipoEmbalagem</td>
+					<td>@item.Preco</td>
+					<td>@item.Ean</td>
+					<td>
+						@Html.ActionLink("Edit", "Edit", new { id = item.IdProdutoEmbalagem }) |
+						@Html.ActionLink("Details", "Details", new { id = item.IdProdutoEmbalagem }) |
+						@Html.ActionLink("Delete", "Delete", new { id = item.IdProdutoEmbalagem })
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

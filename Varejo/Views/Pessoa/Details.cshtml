@@ -1,78 +1,81 @@
 ﻿@model Varejo.ViewModels.PessoaViewModel
 
 @{
-    ViewData["Title"] = "Detalhes da Pessoa";
+	ViewData["Title"] = "Detalhes da Pessoa";
 }
 
 <h2>@ViewData["Title"]</h2>
 
 <div class="mb-3">
-    <h4>Informações da Pessoa</h4>
-    <dl class="row">
-        <dt class="col-sm-3">Nome/Razão</dt>
-        <dd class="col-sm-9">@Model.NomeRazao</dd>
+	<h4>Informações da Pessoa</h4>
+	<dl class="row">
+		<dt class="col-sm-3">Nome/Razão</dt>
+		<dd class="col-sm-9">@Model.NomeRazao</dd>
 
-        <dt class="col-sm-3">Tratamento/Fantasia</dt>
-        <dd class="col-sm-9">@Model.TratamentoFantasia</dd>
+		<dt class="col-sm-3">Tratamento/Fantasia</dt>
+		<dd class="col-sm-9">@Model.TratamentoFantasia</dd>
 
-        <dt class="col-sm-3">CPF/CNPJ</dt>
-        <dd class="col-sm-9">@Model.CpfCnpj</dd>
+		<dt class="col-sm-3">CPF/CNPJ</dt>
+		<dd class="col-sm-9">@Model.CpfCnpj</dd>
 
-        <dt class="col-sm-3">Telefone</dt>
-        <dd class="col-sm-9">(@Model.Ddd) @Model.Telefone</dd>
+		<dt class="col-sm-3">Telefone</dt>
+		<dd class="col-sm-9">(@Model.Ddd) @Model.Telefone</dd>
 
-        <dt class="col-sm-3">Email</dt>
-        <dd class="col-sm-9">@Model.Email</dd>
+		<dt class="col-sm-3">Email</dt>
+		<dd class="col-sm-9">@Model.Email</dd>
 
-        <dt class="col-sm-3">Jurídico</dt>
-        <dd class="col-sm-9">@((Model.EhJuridico) ? "✅" : "❌")</dd>
+		<dt class="col-sm-3">Jurídico</dt>
+		<dd class="col-sm-9">@((Model.EhJuridico) ? "✅" : "❌")</dd>
 
-        <dt class="col-sm-3">Usuário</dt>
-        <dd class="col-sm-9">@((Model.EhUsuario) ? "✅" : "❌")</dd>
+		<dt class="col-sm-3">Usuário</dt>
+		<dd class="col-sm-9">@((Model.EhUsuario) ? "✅" : "❌")</dd>
 
-        <dt class="col-sm-3">Cliente</dt>
-        <dd class="col-sm-9">@((Model.EhCliente) ? "✅" : "❌")</dd>
+		<dt class="col-sm-3">Cliente</dt>
+		<dd class="col-sm-9">@((Model.EhCliente) ? "✅" : "❌")</dd>
 
-        <dt class="col-sm-3">Fornecedor</dt>
-        <dd class="col-sm-9">@((Model.EhFornecedor) ? "✅" : "❌")</dd>
+		<dt class="col-sm-3">Fornecedor</dt>
+		<dd class="col-sm-9">@((Model.EhFornecedor) ? "✅" : "❌")</dd>
 
-        <dt class="col-sm-3">Ativo</dt>
-        <dd class="col-sm-9">@((Model.Ativo) ? "✅" : "❌")</dd>
-    </dl>
+		<dt class="col-sm-3">Ativo</dt>
+		<dd class="col-sm-9">@((Model.Ativo) ? "✅" : "❌")</dd>
+	</dl>
 </div>
 
 @if (Model.Enderecos != null && Model.Enderecos.Any())
 {
-    <div class="mb-3">
-        <h4>Endereços</h4>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Logradouro</th>
-                    <th>Número</th>
-                    <th>CEP</th>
-                    <th>Bairro</th>
-                    <th>Cidade</th>
-                    <th>UF</th>
-                    <th>Complemento</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var endereco in Model.Enderecos)
-                {
-                    <tr>
-                        <td>@endereco.Logradouro</td>
-                        <td>@endereco.Numero</td>
-                        <td>@endereco.Cep</td>
-                        <td>@endereco.Bairro</td>
-                        <td>@endereco.Cidade</td>
-                        <td>@endereco.Uf</td>
-                        <td>@endereco.Complemento</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+	<div class="mb-3">
+		<h4>Endereços</h4>
+		<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+
+			<table class="w-100">
+				<thead>
+					<tr>
+						<th>Logradouro</th>
+						<th>Número</th>
+						<th>CEP</th>
+						<th>Bairro</th>
+						<th>Cidade</th>
+						<th>UF</th>
+						<th>Complemento</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var endereco in Model.Enderecos)
+					{
+						<tr>
+							<td>@endereco.Logradouro</td>
+							<td>@endereco.Numero</td>
+							<td>@endereco.Cep</td>
+							<td>@endereco.Bairro</td>
+							<td>@endereco.Cidade</td>
+							<td>@endereco.Uf</td>
+							<td>@endereco.Complemento</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
 }
 
 <a asp-action="Index" class="btn btn-secondary">Voltar</a>

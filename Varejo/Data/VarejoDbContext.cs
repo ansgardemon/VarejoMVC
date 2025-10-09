@@ -27,7 +27,6 @@ namespace Varejo.Data
         public DbSet<FornecedorFamilia> FornecedoresFamilia { get; set; }
         public DbSet<EspecieMovimento> EspeciesMovimento { get; set; }
         public DbSet<TipoMovimento> TiposMovimento { get; set; }
-
         public DbSet<Movimento> Movimentos { get; set; }
         public DbSet<ProdutoMovimento> ProdutosMovimento { get; set; }
 

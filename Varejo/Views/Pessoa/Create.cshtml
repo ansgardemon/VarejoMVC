@@ -136,5 +136,30 @@
 				e.target.parentElement.remove();
 			}
 		});
+
+		//Máscara de CPF
+			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+	<script>
+		$(document).ready(function () {
+		  const cpfCnpjMaskBehavior = function (val) {
+			return val.replace(/\D/g, '').length <= 11
+			  ? '000.000.000-00' // CNPJ
+			  : '00.000.000/0000-00';    // CPF
+		  };
+
+		  const cpfCnpjOptions = {
+			onKeyPress: function (val, e, field, options) {
+			  // remove e reaplica a máscara correta dinamicamente
+			  field.mask(cpfCnpjMaskBehavior(val), options);
+			}
+		  };
+
+		  $('#CpfCnpj').mask(cpfCnpjMaskBehavior, cpfCnpjOptions);
+		});
+
+
 	</script>
+
+	// ajustar a logica da mascara e colocar no js global
 }

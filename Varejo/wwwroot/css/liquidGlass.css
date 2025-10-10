@@ -1,15 +1,14 @@
 ﻿:root {
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.25);
+    --glass-bg: ffffff26;
+    --glass-border: #ffffff40;
     --glass-blur: 20px;
     --text-light: #ffffff;
-    --text-dark: #0f172a;
+    --text-dark: #163889;
 }
 
 /* Reset suave de fundo */
 body {
     background: linear-gradient(135deg, #e8f1ff, #c8d8ff);
-    /*    background: url(../img/faixas.png);*/
     color: var(--text-dark);
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: background 0.4s ease;
@@ -145,12 +144,14 @@ table {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
+    border-radius: 12px;
 }
 
-    table thead, {
+    table thead {
         background: linear-gradient(145deg, rgba(150, 150, 150, 0.25), rgba(150, 150, 150, 0.05));
         border: 1px solid var(--glass-border);
         height: 50px;
+        border-radius: 12px 12px 0 0;
     }
 
     table th, table td {
@@ -159,26 +160,28 @@ table {
     }
 
     table tbody tr:nth-child(odd), dl dd:nth-child(odd) {
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.5));
     }
 
     table tbody tr:nth-child(even), dl dd:nth-child(even) {
-        background: linear-gradient(145deg, rgba(220, 220, 220, 0.25), rgba(220, 220, 220, 0.05));
+        background: linear-gradient(145deg, rgba(200, 200, 200, 0.25), rgba(200, 200, 200, 0.5));
     }
 
 dl {
-    border: 1px solid var(--glass-border)
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
 }
 
-dl dt, dl dd {
-    display: flex;
-    align-items: center;
-}
+    dl dt, dl dd {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--glass-border)
+    }
 
     dl dt {
         padding: 0;
         height: 50px;
-        background: linear-gradient(145deg, rgba(150, 150, 150, 0.25), rgba(150, 150, 150, 0.05));
+        background: linear-gradient(145deg, rgba(125, 125, 125, 0.25), rgba(125, 125, 125, 0.05));
     }
 
         dl dt:first-child {
@@ -192,9 +195,10 @@ dl dt, dl dd {
     dl dd {
         padding: 0 !important;
         margin: 0 !important;
+        padding-left: 1rem !important;
     }
 
-        dl dd:first-child {
+        dl dd:first-of-type {
             border-top-right-radius: 12px;
         }
 

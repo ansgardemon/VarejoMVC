@@ -144,12 +144,14 @@ table {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
+    border-radius: 12px;
 }
 
-    table thead, {
+    table thead {
         background: linear-gradient(145deg, rgba(150, 150, 150, 0.25), rgba(150, 150, 150, 0.05));
         border: 1px solid var(--glass-border);
         height: 50px;
+        border-radius: 12px 12px 0 0;
     }
 
     table th, table td {
@@ -193,7 +195,7 @@ dl {
     dl dd {
         padding: 0 !important;
         margin: 0 !important;
-        padding-left: 1rem!important;
+        padding-left: 1rem !important;
     }
 
         dl dd:first-of-type {

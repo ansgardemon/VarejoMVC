@@ -12,8 +12,8 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20251007234305_InitialEntities")]
-    partial class InitialEntities
+    [Migration("20251009230441_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

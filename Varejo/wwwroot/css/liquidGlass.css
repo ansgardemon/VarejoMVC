@@ -13,6 +13,10 @@ body {
     transition: background 0.4s ease;
 }
 
+h1 {
+    color: var(--text);
+}
+
 /* ---- NAVBAR ---- */
 .navbar {
     background: var(--glass-bg) !important;
@@ -212,6 +216,11 @@ dl {
     -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 
+    .footer .container, .footer .container a {
+        color: var(--text);
+        opacity: 0.5;
+        text-decoration: none;
+    }
 /* ---- DARK MODE (opcional futuro) ---- */
 @media (prefers-color-scheme: dark) {
     :root {
@@ -241,12 +250,11 @@ dl {
     }
 
     .btn-primary {
-        color:var(--text)!important;
+        color: var(--text) !important;
     }
     /* Azul */
     .btn-info {
         background: #0a7cccCC !important; /* azul escuro */
-        
     }
 
         .btn-info:hover {
@@ -257,7 +265,6 @@ dl {
     /* Verde */
     .btn-success {
         background: #1f9b5dcc !important; /* verde escuro */
-        
     }
 
         .btn-success:hover {
@@ -268,7 +275,6 @@ dl {
     /* Vermelho */
     .btn-danger {
         background: #b02a37CC !important; /* vermelho escuro */
-        
     }
 
         .btn-danger:hover {
@@ -279,7 +285,6 @@ dl {
     /* Amarelo */
     .btn-warning {
         background: #b38f0eCC !important; /* amarelo escuro */
-        
     }
 
         .btn-warning:hover {

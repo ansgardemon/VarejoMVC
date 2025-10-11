@@ -43,10 +43,10 @@
     $('input[id*="Telefone"], input[name*="Telefone"]').mask(phoneMask, phoneOptions);
 
 
-    /* ==========================
-       MÁSCARA DDD
-       Ex: 00
-    =========================== */
-    $('input[id*="Ddd"], input[name*="Ddd"]').mask('(00)');
+    ///* ==========================
+    //   MÁSCARA DDD
+    //   Ex: 00
+    //=========================== */
+    //$('input[id*="Ddd"], input[name*="Ddd"]').mask('(00)');
 
 });

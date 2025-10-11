@@ -26,17 +26,12 @@ namespace Varejo.Repositories
             throw new NotImplementedException();
         }
 
-
-
         //READ
         public async Task<List<Pessoa>> GetAllAsync()
         {
             return await _context.Pessoas.ToListAsync();
 
         }
-
-
-
 
         //READ - ID
         public async Task<Pessoa> GetByIdAsync(int id)
@@ -52,8 +47,6 @@ namespace Varejo.Repositories
             _context.Pessoas.Update(pessoa);
             await _context.SaveChangesAsync();
         }
-
-
 
         //DELETE - OFF
     }

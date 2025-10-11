@@ -46,11 +46,6 @@ namespace Varejo.Repositories
           .FirstOrDefaultAsync(p => p.IdPessoa == id);
         }
 
-
-
-
-
-
         //UPDATE
         public async Task UpdateAsync(Pessoa pessoa)
         {

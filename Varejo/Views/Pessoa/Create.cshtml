@@ -43,21 +43,31 @@
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
-    <div class="form-check mb-3">
-        <input asp-for="EhJuridico" class="form-check-input" type="checkbox" />
-        <label asp-for="EhJuridico" class="form-check-label"></label>
+    <div class="mb-3 d-flex justify-content-evenly flex-column flex-md-row">
 
-        <input asp-for="EhUsuario" class="form-check-input" type="checkbox" />
-        <label asp-for="EhUsuario" class="form-check-label"></label>
+        <label class="card check p-3 text-center mb-2">
+            <input asp-for="EhJuridico" class="form-check-input d-none" type="checkbox" />
+            Jurídico
+        </label>
 
-        <input asp-for="EhCliente" class="form-check-input" type="checkbox" />
-        <label asp-for="EhCliente" class="form-check-label"></label>
+        <label class="card check p-3 text-center mb-2">
+            <input asp-for="EhUsuario" class="form-check-input d-none" type="checkbox" />
+            Usuário
+        </label>
 
-        <input asp-for="EhFornecedor" class="form-check-input" type="checkbox" />
-        <label asp-for="EhFornecedor" class="form-check-label"></label>
+        <label class="card check p-3 text-center mb-2">
+            <input asp-for="EhCliente" class="form-check-input d-none" type="checkbox" />
+            Cliente
+        </label>
 
-        <input asp-for="Ativo" class="form-check-input" type="checkbox" />
-        <label asp-for="Ativo" class="form-check-label"></label>
+        <label class="card check p-3 text-center mb-2">
+            <input asp-for="EhFornecedor" class="form-check-input d-none" type="checkbox" />
+            Fornecedor
+        </label>
+
+        <label class="card check p-3 text-center ativo-btn mb-2">
+            <input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
+        </label>
     </div>
 
     <h4>Endereços</h4>
@@ -100,41 +110,41 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-                document.getElementById('adicionar-endereco').addEventListener('click', function () {
-                    var container = document.getElementById('enderecos-container');
-                    var index = container.children.length;
-                    var html = `
-                        <div class="endereco-item mb-3 border p-2">
-                            <label for="Enderecos_${index}__Logradouro">Logradouro</label>
-                            <input name="Enderecos[${index}].Logradouro" class="form-control" />
+        document.getElementById('adicionar-endereco').addEventListener('click', function () {
+            var container = document.getElementById('enderecos-container');
+            var index = container.children.length;
+            var html = `
+                <div class="endereco-item mb-3 border p-2">
+                    <label for="Enderecos_${index}__Logradouro">Logradouro</label>
+                    <input name="Enderecos[${index}].Logradouro" class="form-control" />
 
-                            <label for="Enderecos_${index}__Numero">Número</label>
-                            <input name="Enderecos[${index}].Numero" class="form-control" />
+                    <label for="Enderecos_${index}__Numero">Número</label>
+                    <input name="Enderecos[${index}].Numero" class="form-control" />
 
-                            <label for="Enderecos_${index}__Cep">CEP</label>
-                            <input name="Enderecos[${index}].Cep" class="form-control" />
+                    <label for="Enderecos_${index}__Cep">CEP</label>
+                    <input name="Enderecos[${index}].Cep" class="form-control" />
 
-                            <label for="Enderecos_${index}__Bairro">Bairro</label>
-                            <input name="Enderecos[${index}].Bairro" class="form-control" />
+                    <label for="Enderecos_${index}__Bairro">Bairro</label>
+                    <input name="Enderecos[${index}].Bairro" class="form-control" />
 
-                            <label for="Enderecos_${index}__Cidade">Cidade</label>
-                            <input name="Enderecos[${index}].Cidade" class="form-control" />
+                    <label for="Enderecos_${index}__Cidade">Cidade</label>
+                    <input name="Enderecos[${index}].Cidade" class="form-control" />
 
-                            <label for="Enderecos_${index}__Uf">UF</label>
-                            <input name="Enderecos[${index}].Uf" class="form-control" />
+                    <label for="Enderecos_${index}__Uf">UF</label>
+                    <input name="Enderecos[${index}].Uf" class="form-control" />
 
-                            <label for="Enderecos_${index}__Complemento">Complemento</label>
-                            <input name="Enderecos[${index}].Complemento" class="form-control" />
+                    <label for="Enderecos_${index}__Complemento">Complemento</label>
+                    <input name="Enderecos[${index}].Complemento" class="form-control" />
 
-                            <button type="button" class="btn btn-danger mt-2 remover-endereco">Remover</button>
-                        </div>`;
-                    container.insertAdjacentHTML('beforeend', html);
-                });
+                    <button type="button" class="btn btn-danger mt-2 remover-endereco">Remover</button>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', html);
+        });
 
-                document.addEventListener('click', function (e) {
-                    if (e.target && e.target.classList.contains('remover-endereco')) {
-                        e.target.parentElement.remove();
-                    }
-                });
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remover-endereco')) {
+                e.target.parentElement.remove();
+            }
+        });
     </script>
 }

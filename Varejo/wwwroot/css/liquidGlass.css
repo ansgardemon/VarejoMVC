@@ -125,6 +125,48 @@ h1 {
         background: rgba(255, 255, 255, 0.4);
     }
 
+.card.check {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    filter: saturate(1);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+    .card.check:hover {
+        background-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .card.check:has(input:checked) {
+        border: 2px solid var(--text);
+        background-color: var(--glass-bg);
+        color: var(--text);
+        filter: saturate(1.5);
+    }
+
+    .card.check.ativo-btn {
+        border-color: #dc3545;
+        color: #dc3545;
+        background: #dc354533;
+        font-weight: bold;
+        min-width: 10%;
+    }
+
+        .card.check.ativo-btn::before {
+            content: 'Inativo';
+        }
+
+        .card.check.ativo-btn:has(input:checked) {
+            border-color: #198754;
+            color: #198754;
+            background: #19875433;
+        }
+
+            .card.check.ativo-btn:has(input:checked)::before {
+                content: 'Ativo';
+            }
+
 /* ---- CARDS HEADER/TEXT ---- */
 .card-title {
     color: var(--text);
@@ -221,7 +263,8 @@ dl {
         opacity: 0.5;
         text-decoration: none;
     }
-/* ---- DARK MODE (opcional futuro) ---- */
+
+/*DARK MODE*/
 @media (prefers-color-scheme: dark) {
     :root {
         --text: #7eb5f8;

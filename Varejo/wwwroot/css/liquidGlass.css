@@ -2,16 +2,19 @@
     --glass-bg: ffffff26;
     --glass-border: #ffffff40;
     --glass-blur: 20px;
-    --text-light: #ffffff;
-    --text-dark: #163889;
+    --text: #163889;
 }
 
 /* Reset suave de fundo */
 body {
     background: linear-gradient(135deg, #e8f1ff, #c8d8ff);
-    color: var(--text-dark);
+    color: var(--text);
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: background 0.4s ease;
+}
+
+h1 {
+    color: var(--text);
 }
 
 /* ---- NAVBAR ---- */
@@ -27,13 +30,12 @@ body {
 }
 
     .navbar .nav-link {
-        color: var(--text-dark) !important;
+        color: var(--text) !important;
         font-weight: 500;
         transition: color 0.3s ease, transform 0.2s ease;
     }
 
         .navbar .nav-link:hover {
-            color: var(--accent-color) !important;
             transform: translateY(-1px);
         }
 
@@ -58,7 +60,7 @@ body {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
-    color: var(--text-dark);
+    color: var(--text);
     border-radius: 12px;
     transition: all 0.25s ease;
     box-shadow: 0 4px 12px rgba(77, 171, 255, 0.2);
@@ -111,7 +113,7 @@ body {
 .form-control {
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid var(--glass-border);
-    color: var(--text-dark);
+    color: var(--text);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-radius: 12px;
@@ -119,14 +121,55 @@ body {
 }
 
     .form-control:focus {
-        border-color: var(--accent-color);
         box-shadow: 0 0 0 0.2rem rgba(77, 171, 255, 0.25);
         background: rgba(255, 255, 255, 0.4);
     }
 
+.card.check {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    filter: saturate(1);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+    .card.check:hover {
+        background-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .card.check:has(input:checked) {
+        border: 2px solid var(--text);
+        background-color: var(--glass-bg);
+        color: var(--text);
+        filter: saturate(1.5);
+    }
+
+    .card.check.ativo-btn {
+        border-color: #dc3545;
+        color: #dc3545;
+        background: #dc354533;
+        font-weight: bold;
+        min-width: 10%;
+    }
+
+        .card.check.ativo-btn::before {
+            content: 'Inativo';
+        }
+
+        .card.check.ativo-btn:has(input:checked) {
+            border-color: #198754;
+            color: #198754;
+            background: #19875433;
+        }
+
+            .card.check.ativo-btn:has(input:checked)::before {
+                content: 'Ativo';
+            }
+
 /* ---- CARDS HEADER/TEXT ---- */
 .card-title {
-    color: var(--text-dark);
+    color: var(--text);
     font-weight: 600;
 }
 
@@ -215,11 +258,21 @@ dl {
     -webkit-backdrop-filter: blur(var(--glass-blur));
 }
 
-/* ---- DARK MODE (opcional futuro) ---- */
+    .footer .container, .footer .container a {
+        color: var(--text);
+        opacity: 0.5;
+        text-decoration: none;
+    }
+
+/*DARK MODE*/
 @media (prefers-color-scheme: dark) {
+    :root {
+        --text: #7eb5f8;
+    }
+
     body {
         background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: var(--text-light);
+        color: var(--text);
     }
 
     .navbar,
@@ -228,14 +281,79 @@ dl {
     .form-control {
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.15);
-        color: var(--text-light);
+        color: var(--text);
     }
 
     .nav-link {
-        color: var(--text-light) !important;
+        color: var(--text) !important;
     }
 
-    .btn:hover {
-        color: var(--accent-color);
+    .btn {
+        color: #060606 !important;
+    }
+
+    .btn-primary {
+        color: var(--text) !important;
+    }
+    /* Azul */
+    .btn-info {
+        background: #0a7cccCC !important; /* azul escuro */
+    }
+
+        .btn-info:hover {
+            background: #0d9dfd !important;
+            filter: saturate(1.5);
+        }
+
+    /* Verde */
+    .btn-success {
+        background: #1f9b5dcc !important; /* verde escuro */
+    }
+
+        .btn-success:hover {
+            background: #27eb8f !important;
+            filter: saturate(1.5);
+        }
+
+    /* Vermelho */
+    .btn-danger {
+        background: #b02a37CC !important; /* vermelho escuro */
+    }
+
+        .btn-danger:hover {
+            background: #dc3545 !important;
+            filter: saturate(1.2);
+        }
+
+    /* Amarelo */
+    .btn-warning {
+        background: #b38f0eCC !important; /* amarelo escuro */
+    }
+
+        .btn-warning:hover {
+            background: #ffc107 !important;
+            filter: saturate(1.5);
+        }
+
+
+    table thead {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.75));
+        border: 1px solid var(--glass-border);
+        height: 50px;
+        border-radius: 12px 12px 0 0;
+        color: #08173b;
+    }
+
+    table th, table td {
+        padding: 0 1rem 0 1rem !important;
+        height: 50px;
+    }
+
+    table tbody tr:nth-child(odd), dl dd:nth-child(odd) {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.5));
+    }
+
+    table tbody tr:nth-child(even), dl dd:nth-child(even) {
+        background: linear-gradient(145deg, rgba(200, 200, 200, 0.25), rgba(200, 200, 200, 0.5));
     }
 }

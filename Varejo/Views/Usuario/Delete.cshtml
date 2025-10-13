@@ -4,17 +4,25 @@
     ViewData["Title"] = "Excluir Usuário";
 }
 
-<h2 class="mb-4">Tem certeza que deseja excluir este usuário?</h2>
+<h2 class="mb-4">
+    Tem certeza que deseja excluir o usuário
+    <span class="text-primary">@Model.nomeUsuario</span>?
+</h2>
+
 
 <div class="card p-4 shadow-sm">
     <dl class="row">
-        <dt class="col-sm-3">Nome de Usuário</dt>
-        <dd class="col-sm-9">@Model.nomeUsuario</dd>
+       
+        <dt class="col-sm-3"> ID tipo de usuario </dt>
+        <dd class="col-sm-9">@Model.TipoUsuarioId</dd>
 
-        <dt class="col-sm-3">Nome de Usuário</dt>
-        <dd class="col-sm-9">@Model.TipoUsuario?.DescricaoTipoUsuario</dd> 
+        <dt class="col-sm-3">Tipo de usuario</dt>
+        <dd class="col-sm-9">@Model.TipoUsuario?.DescricaoTipoUsuario</dd>
         
-        <dt class="col-sm-3">Nome da pessoa</dt>
+        <dt class="col-sm-3">Nome da pessoa </dt>
+        <dd class="col-sm-9">@Model.Pessoa?.NomeRazao</dd>
+        
+        <dt class="col-sm-3">Id pessoa</dt>
         <dd class="col-sm-9">@Model.PessoaId</dd>
 
     </dl>

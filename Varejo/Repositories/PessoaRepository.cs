@@ -26,17 +26,12 @@ namespace Varejo.Repositories
             throw new NotImplementedException();
         }
 
-
-
         //READ
         public async Task<List<Pessoa>> GetAllAsync()
         {
             return await _context.Pessoas.ToListAsync();
 
         }
-
-
-
 
         //READ - ID
         public async Task<Pessoa> GetByIdAsync(int id)
@@ -45,11 +40,6 @@ namespace Varejo.Repositories
           .Include(p => p.Enderecos) // garante que os endereços venham junto
           .FirstOrDefaultAsync(p => p.IdPessoa == id);
         }
-
-
-
-
-
 
         //UPDATE
         public async Task UpdateAsync(Pessoa pessoa)

@@ -108,8 +108,19 @@ namespace Varejo.Controllers
                     NomeMarca = viewModel.NomeMarca
                 };
 
-                await _marcaRepository.UpdateAsync(marca);
-                return RedirectToAction(nameof(Index));
+
+                try
+                {
+                    await _marcaRepository.UpdateAsync(marca);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERRO] Ao criar Marca: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível criar a marca. Verifique se o nome já existe.");
+                }
+
             }
             return View(viewModel);
         }

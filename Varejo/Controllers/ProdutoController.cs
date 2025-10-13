@@ -26,22 +26,22 @@ namespace Varejo.Controllers
         // CREATE GET
         public async Task<IActionResult> Create(int familiaId)
         {
-            Console.WriteLine($"[LOG] Create GET chamado para FamiliaId={familiaId}");
+
 
             var familia = await _familiaRepository.GetByIdAsync(familiaId);
             if (familia == null)
             {
-                Console.WriteLine("[LOG] Família não encontrada!");
+
                 return NotFound();
             }
 
             var tipos = await _tipoEmbalagemRepository.GetAllAsync();
             if (tipos == null || !tipos.Any())
             {
-                Console.WriteLine("[LOG] Nenhum tipo de embalagem encontrado, inicializando lista vazia");
+
                 tipos = new List<TipoEmbalagem>(); // fallback
             }
-            Console.WriteLine($"[LOG] Tipos de embalagem carregados: {tipos.Count()}");
+
 
             // Inicializa Embalagens garantindo que TiposEmbalagem nunca seja null
             var viewModel = new ProdutoViewModel
@@ -64,8 +64,7 @@ namespace Varejo.Controllers
             ViewBag.NomeFamilia = familia.NomeFamilia;
             ViewBag.TiposEmbalagem = tipos;
 
-            Console.WriteLine("[LOG] ViewModel criado com uma embalagem padrão");
-            Console.WriteLine($"[LOG] ViewModel Embalagens Count: {viewModel.Embalagens.Count}");
+
 
             return View(viewModel);
         }
@@ -75,37 +74,31 @@ namespace Varejo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProdutoViewModel viewModel)
         {
-            Console.WriteLine($"[LOG] Create POST chamado para FamiliaId={viewModel.FamiliaId}");
+
 
             var familia = await _familiaRepository.GetByIdAsync(viewModel.FamiliaId);
             if (familia == null)
             {
-                Console.WriteLine("[LOG] Família não encontrada no POST!");
+
                 return NotFound();
             }
 
             var tipos = await _tipoEmbalagemRepository.GetAllAsync() ?? new List<TipoEmbalagem>();
-            Console.WriteLine($"[LOG] Tipos de embalagem carregados: {tipos.Count}");
 
-            // Log completo das propriedades recebidas
-            Console.WriteLine("[LOG] Valores recebidos no POST:");
-            Console.WriteLine($" - Complemento: {viewModel.Complemento}");
-            Console.WriteLine($" - Ativo: {viewModel.Ativo}");
-            Console.WriteLine($" - ImagemUpload: {(viewModel.ImagemUpload != null ? viewModel.ImagemUpload.FileName : "null")}");
-            Console.WriteLine($" - Embalagens count: {(viewModel.Embalagens != null ? viewModel.Embalagens.Count : 0)}");
+
+
             if (viewModel.Embalagens != null)
             {
                 for (int i = 0; i < viewModel.Embalagens.Count; i++)
                 {
                     var e = viewModel.Embalagens[i];
-                    Console.WriteLine($"   [Embalagem {i}] Preco={e.Preco}, Ean={e.Ean}, TipoEmbalagemId={e.TipoEmbalagemId}");
+
                 }
             }
 
             // Garantir que Embalagens nunca seja null
             if (viewModel.Embalagens == null || !viewModel.Embalagens.Any())
             {
-                Console.WriteLine("[LOG] Nenhuma embalagem enviada, adicionando uma padrão");
                 viewModel.Embalagens = new List<ProdutoEmbalagemViewModel>
         {
             new ProdutoEmbalagemViewModel
@@ -129,12 +122,11 @@ namespace Varejo.Controllers
                         Text = t.DescricaoTipoEmbalagem
                     }).ToList();
                 }
-                Console.WriteLine($"[LOG] Embalagens recebidas: {viewModel.Embalagens.Count}");
+
             }
 
             if (!ModelState.IsValid)
             {
-                Console.WriteLine("[LOG] ModelState inválido, detalhes:");
                 foreach (var key in ModelState.Keys)
                 {
                     var state = ModelState[key];
@@ -160,17 +152,14 @@ namespace Varejo.Controllers
                 await viewModel.ImagemUpload.CopyToAsync(stream);
 
                 urlImagem = "/img/" + nomeArquivo;
-                Console.WriteLine($"[LOG] Imagem enviada: {nomeArquivo}");
             }
             else
             {
                 urlImagem = "/img/sem-imagem.png";
-                Console.WriteLine("[LOG] Nenhuma imagem enviada, usando padrão");
             }
 
             // NomeProduto automático
             var nomeProduto = $"{familia.NomeFamilia} {viewModel.Complemento}";
-            Console.WriteLine($"[LOG] Nome do produto: {nomeProduto}");
 
             // Criar entidade Produto
             var produto = new Produto
@@ -192,10 +181,8 @@ namespace Varejo.Controllers
                     }).ToList()
             };
 
-            Console.WriteLine($"[LOG] Produto criado com {produto.ProdutosEmbalagem.Count} embalagens");
 
             await _produtoRepository.AddAsync(produto);
-            Console.WriteLine("[LOG] Produto adicionado ao repositório");
 
             return RedirectToAction("Details", "Familia", new { id = viewModel.FamiliaId });
         }

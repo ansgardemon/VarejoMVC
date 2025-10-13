@@ -69,8 +69,20 @@ namespace Varejo.Controllers
                     }).ToList()
                 };
 
-                await _pessoaRepository.AddAsync(pessoa);
-                return RedirectToAction(nameof(Index));
+
+                try
+                {
+                    await _pessoaRepository.AddAsync(pessoa);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERRO] Ao criar pessoa: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível criar a pessoa. Verifique se o cpf/cnpj já existe.");
+                }
+
+
             }
 
             return View(pessoaVm);
@@ -217,8 +229,18 @@ namespace Varejo.Controllers
                     PessoaId = pessoa.IdPessoa
                 }).ToList();
 
-                await _pessoaRepository.UpdateAsync(pessoa);
-                return RedirectToAction(nameof(Index));
+
+                try
+                {
+                    await _pessoaRepository.UpdateAsync(pessoa);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERRO] Ao criar pessoa: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível criar a pessoa. Verifique se o cpf já existe.");
+                }
             }
 
             return View(pessoaVm);

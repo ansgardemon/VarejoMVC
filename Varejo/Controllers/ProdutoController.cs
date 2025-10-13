@@ -181,8 +181,16 @@ namespace Varejo.Controllers
                     }).ToList()
             };
 
+            try
+            {
+                await _produtoRepository.AddAsync(produto);
+            }
 
-            await _produtoRepository.AddAsync(produto);
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERRO] Ao criar produto: " + ex.Message);
+                ModelState.AddModelError(string.Empty, "Não foi possível criar a produto. Verifique se o EAN já existe.");
+            }
 
             return RedirectToAction("Details", "Familia", new { id = viewModel.FamiliaId });
         }
@@ -368,8 +376,16 @@ namespace Varejo.Controllers
                 }
             }
 
-            await _produtoRepository.UpdateAsync(produto);
 
+            try
+            {
+                await _produtoRepository.UpdateAsync(produto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[ERRO] Ao editar produto: " + ex.Message);
+                ModelState.AddModelError(string.Empty, "Não foi possível editar o produto. Verifique se o nome ou EAN já existem.");
+            }
             return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
         }
 

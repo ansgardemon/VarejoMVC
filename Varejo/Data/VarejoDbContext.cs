@@ -87,6 +87,18 @@ namespace Varejo.Data
                 .Property(p => p.EstoqueInicial)
                 .HasColumnType("decimal(18,4)");
 
+            modelBuilder.Entity<Produto>()
+             .HasIndex(f => f.NomeProduto)
+             .IsUnique();
+
+            modelBuilder.Entity<Usuario>()
+            .HasIndex(f => f.nomeUsuario)
+            .IsUnique();
+
+                   modelBuilder.Entity<Usuario>()
+            .HasIndex(f => f.PessoaId)
+            .IsUnique();
+
             modelBuilder.Entity<Familia>()
                 .HasIndex(f => f.NomeFamilia)
                 .IsUnique();

@@ -110,6 +110,10 @@ namespace Varejo.Data
                 .HasIndex(m => m.DescricaoCategoria)
                 .IsUnique();
 
+            modelBuilder.Entity<TipoEmbalagem>()
+    .HasIndex(m => m.DescricaoTipoEmbalagem)
+    .IsUnique();
+
             modelBuilder.Entity<Produto>()
                 .HasOne(p => p.Familia)
                 .WithMany(f => f.Produtos)

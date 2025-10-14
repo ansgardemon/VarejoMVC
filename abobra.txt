@@ -1,0 +1,5 @@
+<p class="card-text small mb-1">
+    Marca: @produto.Familia?.NomeFamilia ?? "N/A" <br />
+    Categoria: @produto.Familia?.Categoria?.DescricaoCategoria ?? "N/A" <br />
+    Preço: R$ @preco
+</p>

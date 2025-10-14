@@ -49,7 +49,7 @@ builder.Services.AddAntiforgery(options =>
 });
 
 // Cookie Authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication("VarejoAuth")
     .AddCookie(options =>
     {
         options.Cookie.Name = "Vitrino.Auth";

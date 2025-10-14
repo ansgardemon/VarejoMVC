@@ -2,27 +2,27 @@
     ViewData["Title"] = "Login";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2 class="mb-4">@ViewData["Title"]</h2>
 
 <form asp-action="Login" method="post">
-
+    @Html.AntiForgeryToken()
 
     <div class="mb-3">
-        <label for="usuario" class="form-label">Usuário</label>
-        <input type="text" name="usuario" class="form-control" required />
+        <label for="nomeUsuario" class="form-label">Usuário</label>
+        <input type="text" name="nomeUsuario" id="nomeUsuario" class="form-control" required />
     </div>
 
     <div class="mb-3">
         <label for="senha" class="form-label">Senha</label>
-        <input type="password" name="senha" maxlength="70" class="form-control" required />
+        <input type="password" name="senha" id="senha" maxlength="70" class="form-control" required />
     </div>
 
-    <button type="submit" class="btn btn-primary">Entrar</button>
+    <button type="submit" class="btn btn-primary w-100">Entrar</button>
 </form>
 
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger mt-3">
-        @Html.ValidationSummary()
+        @Html.ValidationSummary(false)
     </div>
 }

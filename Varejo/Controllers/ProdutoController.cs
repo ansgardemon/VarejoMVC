@@ -189,7 +189,24 @@ namespace Varejo.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("[ERRO] Ao criar produto: " + ex.Message);
-                ModelState.AddModelError(string.Empty, "Não foi possível criar a produto. Verifique se o EAN já existe.");
+                ModelState.AddModelError(string.Empty, "Não foi possível criar o produto. Verifique se o EAN já existe.");
+
+                // Recarregar listas para ViewBag
+                var tipo = await _tipoEmbalagemRepository.GetAllAsync() ?? new List<TipoEmbalagem>();
+                viewModel.Embalagens = viewModel.Embalagens ?? new List<ProdutoEmbalagemViewModel>();
+                foreach (var emb in viewModel.Embalagens)
+                {
+                    emb.TiposEmbalagem = tipos.Select(t => new SelectListItem
+                    {
+                        Value = t.IdTipoEmbalagem.ToString(),
+                        Text = t.DescricaoTipoEmbalagem
+                    }).ToList();
+                }
+
+                ViewBag.NomeFamilia = familia.NomeFamilia;
+                ViewBag.TiposEmbalagem = tipos;
+
+                return View(viewModel);
             }
 
             return RedirectToAction("Details", "Familia", new { id = viewModel.FamiliaId });
@@ -384,7 +401,24 @@ namespace Varejo.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine("[ERRO] Ao editar produto: " + ex.Message);
-                ModelState.AddModelError(string.Empty, "Não foi possível editar o produto. Verifique se o nome ou EAN já existem.");
+                ModelState.AddModelError(string.Empty, "Não foi possível criar o produto. Verifique se o EAN ou Produto já existem.");
+
+                // Recarregar listas para ViewBag
+                var tipo = await _tipoEmbalagemRepository.GetAllAsync() ?? new List<TipoEmbalagem>();
+                viewModel.Embalagens = viewModel.Embalagens ?? new List<ProdutoEmbalagemViewModel>();
+                foreach (var emb in viewModel.Embalagens)
+                {
+                    emb.TiposEmbalagem = tipos.Select(t => new SelectListItem
+                    {
+                        Value = t.IdTipoEmbalagem.ToString(),
+                        Text = t.DescricaoTipoEmbalagem
+                    }).ToList();
+                }
+
+                ViewBag.NomeFamilia = familia.NomeFamilia;
+                ViewBag.TiposEmbalagem = tipos;
+
+                return View(viewModel);
             }
             return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
         }

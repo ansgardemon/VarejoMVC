@@ -80,8 +80,20 @@ namespace Varejo.Controllers
                 TipoUsuarioId = vm.TipoUsuarioId 
             };
 
-            await _usuarioRepository.AddAsync(usuario);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _usuarioRepository.AddAsync(usuario);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Ocorreu um erro ao salvar o usuário: " + ex.Message);
+                vm.Pessoas = (_usuarioRepository.GetPessoa())
+                    .Select(p => new SelectListItem { Value = p.IdPessoa.ToString(), Text = p.NomeRazao });
+                vm.TipoUsuarios = (_usuarioRepository.GetTiposUsuario())
+                    .Select(t => new SelectListItem { Value = t.IdTipoUsuario.ToString(), Text = t.DescricaoTipoUsuario });
+                return View(vm);
+            }
         }
 
 
@@ -107,32 +119,43 @@ namespace Varejo.Controllers
             return View(usuariovm);
         }
 
- 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UsuarioViewModel usuariovm)
         {
-           
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
+                ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", usuariovm.PessoaId);
+                ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", usuariovm.TipoUsuarioId);
+                return View(usuariovm);
+            }
 
-                var usuario = await _usuarioRepository.GetByIdAsync(usuariovm.IdUsuario);
-                if (usuario == null) return NotFound();
+            var usuario = await _usuarioRepository.GetByIdAsync(usuariovm.IdUsuario);
+            if (usuario == null)
+                return NotFound();
 
-
+    
                 usuario.nomeUsuario = usuariovm.nomeUsuario;
                 usuario.Senha = usuariovm.Senha;
                 usuario.Ativo = usuariovm.Ativo;
                 usuario.PessoaId = usuariovm.PessoaId;
                 usuario.TipoUsuarioId = usuariovm.TipoUsuarioId;
+            try
+            {
                 await _usuarioRepository.UpdateAsync(usuario);
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", usuariovm.PessoaId);
-            ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", usuariovm.TipoUsuarioId);
-            return View(usuariovm);
+            catch (Exception ex)
+            {
+                ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", usuariovm.PessoaId);
+                ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", usuariovm.TipoUsuarioId);
+                Console.WriteLine("[ERRO] Ao atualizar usuario: " + ex.Message);
+                ModelState.AddModelError(string.Empty, "Não foi possível atualizar o usuário. Verifique se já existe com o mesmo login ou pessoa.");
+            }
+                return View(usuariovm);
         }
+
 
 
 

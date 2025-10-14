@@ -50,3 +50,28 @@
     //$('input[id*="Ddd"], input[name*="Ddd"]').mask('(00)');
 
 });
+
+//switch
+
+const check = document.querySelector('.check');
+
+// Carrega tema salvo
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+    document.body.classList.add('dark');
+    check.checked = true;
+} else {
+    document.body.classList.remove('dark');
+    check.checked = false;
+}
+
+// Toggle tema
+check.addEventListener('change', () => {
+    if (check.checked) {
+        document.body.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.body.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+    }
+});

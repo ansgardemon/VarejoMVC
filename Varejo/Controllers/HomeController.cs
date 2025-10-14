@@ -6,6 +6,7 @@ namespace Varejo.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["NavbarClass"] = "nav-content";
             return View();
         }
     }

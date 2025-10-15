@@ -1,6 +1,5 @@
-﻿/* =====================
-   🌞 LIGHT MODE (padrão)
-   ===================== */
+﻿/* ================== LIGHTMODE ================== */
+
 :root {
     /* Glass / Blur */
     --glass-bg: #ffffff26;
@@ -23,15 +22,15 @@
     --table-even: rgba(200, 200, 200, 0.25);
 }
 
-/* =====================
-   BODY
-   ===================== */
+/* ================== body ================== */
+
 body {
     background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     color: var(--text);
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: all 0.4s ease;
 }
+
 * {
     transition: .3s ease;
 }
@@ -50,9 +49,8 @@ h1.vitrino {
 }
 
 
-/* =====================
-   NAVBAR
-   ===================== */
+/* ================== navbar ================== */
+
 .navbar {
     background: var(--glass-bg) !important;
     backdrop-filter: blur(var(--glass-blur));
@@ -81,9 +79,9 @@ h1.vitrino {
     border: 4px solid transparent;
 }
 
-#logo:hover {
-    border: 4px solid var(--text);
-}
+    #logo:hover {
+        border: 4px solid var(--text);
+    }
 
 .nav-content {
     position: absolute;
@@ -109,8 +107,7 @@ i {
     display: flex;
     align-items: center;
     border-radius: 16px;
-    min-width: 7vw !important;
-    font-size:80%;
+    font-size: 80%;
 }
 
     .navbar-nav a:hover {
@@ -121,9 +118,9 @@ i {
         .navbar-nav a:hover i {
             filter: saturate(1.4);
         }
-/* =====================
-   SWITCH
-   ===================== */
+
+/* ================== SWITCH ================== */
+
 .switch {
     position: relative;
     display: inline-block;
@@ -171,9 +168,8 @@ i {
         opacity: 1;
     }
 
-/* =====================
-   CARDS
-   ===================== */
+/* ================== CARDS ================== */
+
 .card {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -249,9 +245,8 @@ i {
             content: 'Ativo';
         }
 
-/* =====================
-   BUTTONS
-   ===================== */
+/* ================== BUTTONS ================== */
+
 .btn {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
     backdrop-filter: blur(var(--glass-blur));
@@ -290,12 +285,11 @@ i {
 }
 
 i.bi {
-display:none!important;
+    display: none !important;
 }
 
-/* =====================
-   INPUTS
-   ===================== */
+/* ================== INPUTS ================== */
+
 .form-control {
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid var(--glass-border);
@@ -311,9 +305,8 @@ display:none!important;
         background: rgba(255, 255, 255, 0.4);
     }
 
-/* =====================
-   TABLE & DL
-   ===================== */
+/* ================== TABLE - DL ================== */
+
 table {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -381,9 +374,8 @@ dl {
         padding-left: 1rem !important;
     }
 
-/* =====================
-   FOOTER
-   ===================== */
+/* ================== FOOTER ================== */
+
 .footer {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -397,9 +389,8 @@ dl {
         text-decoration: none;
     }
 
-/* =====================
-   DARK MODE
-   ===================== */
+/* ================== DARKMODE ================== */
+
 body.dark {
     --glass-bg: #ffffff14;
     --glass-border: #ffffff30;

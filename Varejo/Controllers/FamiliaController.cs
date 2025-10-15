@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Varejo.Interfaces;
 using Varejo.Models;
@@ -19,7 +20,7 @@ namespace Varejo.Controllers
 
 
 
-
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Index(int? marcaId, int? categoriaId, string search)
         {
             var familias = await _familiaRepository.GetAllAsync();
@@ -57,6 +58,7 @@ namespace Varejo.Controllers
 
 
         // DETAILS
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Details(int id)
         {
             var familia = await _familiaRepository.GetByIdAsync(id);
@@ -85,6 +87,7 @@ namespace Varejo.Controllers
         }
 
         // CREATE - GET
+        [Authorize(Roles = "Administrador, Gerente")]
         public IActionResult Create()
         {
             // ViewBag para dropdowns de Marca e Categoria
@@ -129,6 +132,7 @@ namespace Varejo.Controllers
         }
 
         // EDIT - GET
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Edit(int id)
         {
             var familia = await _familiaRepository.GetByIdAsync(id);
@@ -184,6 +188,7 @@ namespace Varejo.Controllers
         }
 
         // DELETE - GET (confirmação)
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Delete(int id)
         {
             var familia = await _familiaRepository.GetByIdAsync(id);

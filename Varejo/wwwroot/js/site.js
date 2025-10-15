@@ -3,7 +3,7 @@
     // =========== CPF - CNPJ ===========
 
     const cpfCnpjMask = function (val) {
-        const num = val.replace(/\D/g, '');
+        const num = val.replace(/\D/g, ''); 
         return num.length <= 11 ? '000.000.000-009' : '00.000.000/0000-00';
     };
 

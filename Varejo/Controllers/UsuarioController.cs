@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +11,7 @@ using Varejo.ViewModels;
 
 namespace Varejo.Controllers
 {
+
     public class UsuarioController : Controller
     {
 
@@ -23,7 +26,7 @@ namespace Varejo.Controllers
             _tipoUsuarioRepository = tipoUsuarioRepository;
         }
 
-
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index(int? pessoaid, int? tipoUsuarioId, string search)
         {
             var usuarios = await _usuarioRepository.GetAllAsync();
@@ -47,6 +50,7 @@ namespace Varejo.Controllers
             return View(usuarios);
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create()
         {
 
@@ -96,7 +100,7 @@ namespace Varejo.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id)
         {
           
@@ -158,7 +162,7 @@ namespace Varejo.Controllers
 
 
 
-
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var usuario = await _usuarioRepository.GetByIdAsync(id);
@@ -174,12 +178,17 @@ namespace Varejo.Controllers
             await _usuarioRepository.InativarUsuario(id);
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Inativos()
         {
             var usuarios = await _usuarioRepository.GetAllAsync();
             var inativos = usuarios.Where(u => !u.Ativo).OrderByDescending(u => u.IdUsuario).ToList();
             return View(inativos);
         }
+
+
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Ativar(int id)
         {
             if (id <= 0) return NotFound();
@@ -192,5 +201,67 @@ namespace Varejo.Controllers
 
             return RedirectToAction(nameof(Inativos));
         }
+
+
+
+
+        // LOGIN (GET)
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // LOGIN (POST)
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string nomeUsuario, string senha)
+        {
+            var usuario = await _usuarioRepository.ValidarLoginAsync(nomeUsuario, senha);
+
+            if (usuario == null || !usuario.Ativo)
+            {
+                ModelState.AddModelError("", "Usuário ou senha inválidos.");
+                return View();
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, usuario.nomeUsuario),
+                new Claim("IdUsuario", usuario.IdUsuario.ToString()),
+                new Claim("PessoaId", usuario.PessoaId.ToString()),
+                new Claim(ClaimTypes.Role, usuario.TipoUsuario?.DescricaoTipoUsuario ?? "Usuário")
+            };
+
+            var identity = new ClaimsIdentity(claims, "VarejoAuth");
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync("VarejoAuth", principal);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // LOGOUT
+        [AllowAnonymous]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("VarejoAuth");
+            return RedirectToAction("Login");
+        }
+
+        // ACESSO NEGADO
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AcessoNegado()
+        {
+            return View();
+        }
+
+
+
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Varejo.Interfaces;
@@ -7,6 +8,8 @@ using Varejo.ViewModels;
 
 namespace Varejo.Controllers
 {
+
+
     public class ProdutoController : Controller
     {
         private readonly IProdutoRepository _produtoRepository;
@@ -24,6 +27,7 @@ namespace Varejo.Controllers
         }
 
         // CREATE GET
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Create(int familiaId)
         {
 
@@ -261,6 +265,7 @@ namespace Varejo.Controllers
 
 
         // EDIT GET
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Edit(int id)
         {
             var produto = await _produtoRepository.GetByIdAsync(id);
@@ -430,6 +435,7 @@ namespace Varejo.Controllers
 
 
         // GET: Produto/Delete/5
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Delete(int id)
         {
             var produto = await _produtoRepository.GetByIdAsync(id);

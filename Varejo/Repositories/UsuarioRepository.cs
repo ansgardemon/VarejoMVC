@@ -70,14 +70,17 @@ namespace Varejo.Repositories
             }
         }
 
-        //VALIDAR LOGIN
-        public async Task<Usuario>? ValidarLoginAsync(string email, string senha)
+        // VALIDAR LOGIN
+        public async Task<Usuario?> ValidarLoginAsync(string nomeUsuario, string senha)
         {
-            return await _context.Usuarios.Include(u => u.TipoUsuario).FirstOrDefaultAsync(u => u.nomeUsuario == email && u.Senha == senha);
-
+            return await _context.Usuarios
+                .Include(u => u.TipoUsuario)
+                .Include(u => u.Pessoa)
+                .FirstOrDefaultAsync(u => u.nomeUsuario == nomeUsuario && u.Senha == senha && u.Ativo);
         }
 
-     
+
+
 
         public List<TipoUsuario> GetTiposUsuario()
         {

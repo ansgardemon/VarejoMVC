@@ -49,14 +49,10 @@ builder.Services.AddAntiforgery(options =>
 });
 
 // Cookie Authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+builder.Services.AddAuthentication("VarejoAuth")
+    .AddCookie("VarejoAuth", options =>
     {
         options.Cookie.Name = "Vitrino.Auth";
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-
         options.LoginPath = "/Usuario/Login";
         options.AccessDeniedPath = "/Usuario/AcessoNegado";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);

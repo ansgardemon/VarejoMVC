@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Varejo.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDatabase : Migration
+    public partial class InitialEntities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -197,7 +197,7 @@ namespace Varejo.Migrations
                 {
                     IdUsuario = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    nomeUsuario = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    nomeUsuario = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     Senha = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false),
                     PessoaId = table.Column<int>(type: "int", nullable: false),
@@ -440,6 +440,12 @@ namespace Varejo.Migrations
                 column: "FamiliaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Produtos_NomeProduto",
+                table: "Produtos",
+                column: "NomeProduto",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProdutosEmbalagem_Ean",
                 table: "ProdutosEmbalagem",
                 column: "Ean",
@@ -471,14 +477,27 @@ namespace Varejo.Migrations
                 column: "ProdutoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TiposEmbalagem_DescricaoTipoEmbalagem",
+                table: "TiposEmbalagem",
+                column: "DescricaoTipoEmbalagem",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TiposMovimento_EspecieMovimentoId",
                 table: "TiposMovimento",
                 column: "EspecieMovimentoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_nomeUsuario",
+                table: "Usuarios",
+                column: "nomeUsuario",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Usuarios_PessoaId",
                 table: "Usuarios",
-                column: "PessoaId");
+                column: "PessoaId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Usuarios_TipoUsuarioId",

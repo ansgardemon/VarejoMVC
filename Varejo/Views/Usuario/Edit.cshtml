@@ -10,6 +10,8 @@
     <!-- Campo oculto para manter o ID no POST -->
     <input type="hidden" asp-for="IdUsuario" />
 
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
     <div class="form-group mb-3">
         <label asp-for="nomeUsuario" class="control-label"></label>
         <input asp-for="nomeUsuario" class="form-control" />

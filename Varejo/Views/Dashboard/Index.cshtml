@@ -1,0 +1,228 @@
+﻿@model Varejo.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<style>
+    /* Garantir que cards e tabela usem glassmorphism */
+    .kpi-card .card-body, .chart-card .card-body {
+        background: var(--glass-bg);
+        color: var(--text);
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;    
+        align-items: center;
+    }
+
+    .chart-card {
+        border-radius: 12px;
+    }
+
+    table {
+        border-radius: 12px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+    }
+
+        table th, table td {
+            color: var(--text);
+        }
+</style>
+
+<div class="container-fluid py-3">
+    <h2 class="mb-4">📊 Dashboard</h2>
+
+    <!-- KPIs -->
+    <div class="row g-3 mt-3">
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm kpi-card h-100">
+                <div class="card-body text-center">
+                    <div class="fs-1 fw-bold">@Model.TotalProdutos</div>
+                    <div class="fs-5">@("Produtos")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm kpi-card h-100">
+                <div class="card-body text-center">
+                    <div class="fs-1 fw-bold">@Model.TotalCategorias</div>
+                    <div class="fs-5">@("Categorias")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm kpi-card h-100">
+                <div class="card-body text-center">
+                    <div class="fs-1 fw-bold">@Model.TotalFamilias</div>
+                    <div class="fs-5">@("Famílias")</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm kpi-card h-100">
+                <div class="card-body text-center">
+                    <div class="fs-1 fw-bold">@Model.TotalMarcas</div>
+                    <div class="fs-5">@("Marcas")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimos produtos / Produtos por categoria -->
+    <div class="row g-3 mt-4">
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm chart-card h-100">
+                <div class="card-header fw-semibold">🆕 Últimos 5 Produtos</div>
+                <div class="card-body">
+                    @if (Model.UltimosProdutos?.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nome</th>
+                                        <th>Categoria</th>
+                                        <th>Família</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var p in Model.UltimosProdutos)
+                                    {
+                                        <tr>
+                                            <td>@p.IdProduto</td>
+                                            <td>@p.Nome</td>
+                                            <td>@p.Categoria</td>
+                                            <td>@p.Familia</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted m-0">Nenhum produto cadastrado ainda.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm chart-card h-100">
+                <div class="card-header fw-semibold">📂 Produtos por Categoria</div>
+                <div class="card-body">
+                    @if (Model.ProdutosPorCategoria?.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Categoria</th>
+                                        <th>Qtd Produtos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var c in Model.ProdutosPorCategoria)
+                                    {
+                                        <tr>
+                                            <td>@c.IdCategoria</td>
+                                            <td>@c.Descricao</td>
+                                            <td>@c.QtdeProdutos</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted m-0">Nenhuma categoria cadastrada.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Produtos por família / Gráfico -->
+    <div class="row g-3 mt-3">
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm chart-card h-100">
+                <div class="card-header fw-semibold">🏷️ Produtos por Família</div>
+                <div class="card-body">
+                    @if (Model.ProdutosPorFamilia?.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Família</th>
+                                        <th>Qtd Produtos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var f in Model.ProdutosPorFamilia)
+                                    {
+                                        <tr>
+                                            <td>@f.IdFamilia</td>
+                                            <td>@f.Descricao</td>
+                                            <td>@f.QtdeProdutos</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted m-0">Nenhuma família cadastrada.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm chart-card h-100">
+                <div class="card-header fw-semibold">📊 Produtos por Categoria (Gráfico)</div>
+                <div class="card-body">
+                    <canvas id="chartProdutosCategoria"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const catLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProdutosPorCategoria.Select(x => x.Descricao)));
+        const catData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProdutosPorCategoria.Select(x => x.QtdeProdutos)));
+
+        new Chart(document.getElementById('chartProdutosCategoria'), {
+            type: 'bar',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    label: 'Qtd Produtos',
+                    data: catData,
+                    backgroundColor: "rgba(34, 211, 238, 0.85)",
+                    borderColor: "rgba(34, 211, 238, 1)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, ticks: { stepSize: 1 } },
+                    y: { ticks: { autoSkip: false } }
+                }
+            }
+        });
+    </script>
+}

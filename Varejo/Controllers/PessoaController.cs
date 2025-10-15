@@ -9,6 +9,7 @@ using Varejo.ViewModels;
 
 namespace Varejo.Controllers
 {
+    [Authorize(Roles = "Administrador, Gerente, Usuário")]
     public class PessoaController : Controller
     {
         private readonly IPessoaRepository _pessoaRepository;

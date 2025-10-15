@@ -168,6 +168,7 @@ i {
         opacity: 1;
     }
 
+
 /* ================== CARDS ================== */
 
 .card {
@@ -373,6 +374,12 @@ dl {
         margin: 0 !important;
         padding-left: 1rem !important;
     }
+
+select {
+    background: transparent!important;
+    text-align:center;
+    padding-left:24px!important;
+}
 
 /* ================== FOOTER ================== */
 

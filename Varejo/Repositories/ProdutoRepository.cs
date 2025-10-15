@@ -34,6 +34,17 @@ namespace Varejo.Repositories
             return await _context.Produtos.ToListAsync();
         }
 
+        public async Task<Categoria?> GetByCategory(int idProduto)
+        {
+            var produto = await _context.Produtos
+                .Include(p => p.Familia)
+                .ThenInclude(f => f.Categoria)
+                .FirstOrDefaultAsync(p => p.IdProduto == idProduto);
+
+            return produto?.Familia?.Categoria;
+        }
+
+
         public async Task<Produto?> GetByIdAsync(int id)
         {
             return await _context.Produtos
@@ -44,12 +55,11 @@ namespace Varejo.Repositories
         }
 
 
-
-
         public async Task UpdateAsync(Produto produto)
         {
             _context.Produtos.Update(produto);
             await _context.SaveChangesAsync();
         }
+        
     }
 }

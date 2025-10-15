@@ -12,8 +12,8 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20251008223736_initialEntities")]
-    partial class initialEntities
+    [Migration("20251014002045_InitialEntities")]
+    partial class InitialEntities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -634,8 +634,8 @@ namespace Varejo.Migrations
 
                     b.Property<string>("nomeUsuario")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
 
                     b.HasKey("IdUsuario");
 

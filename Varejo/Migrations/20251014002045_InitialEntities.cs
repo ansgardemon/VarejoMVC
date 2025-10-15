@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Varejo.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDatabase : Migration
+    public partial class InitialEntities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -197,7 +197,7 @@ namespace Varejo.Migrations
                 {
                     IdUsuario = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    nomeUsuario = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    nomeUsuario = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
                     Senha = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     Ativo = table.Column<bool>(type: "bit", nullable: false),
                     PessoaId = table.Column<int>(type: "int", nullable: false),

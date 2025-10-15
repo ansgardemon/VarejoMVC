@@ -631,8 +631,8 @@ namespace Varejo.Migrations
 
                     b.Property<string>("nomeUsuario")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
 
                     b.HasKey("IdUsuario");
 

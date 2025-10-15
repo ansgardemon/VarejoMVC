@@ -7,6 +7,9 @@
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="Create">
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
     <div class="mb-3">
         <label asp-for="NomeRazao" class="form-label"></label>
         <input asp-for="NomeRazao" class="form-control" />
@@ -21,7 +24,7 @@
 
     <div class="mb-3">
         <label asp-for="CpfCnpj" class="form-label"></label>
-        <input asp-for="CpfCnpj" class="form-control" />
+        <input asp-for="CpfCnpj" id="CpfCnpj" class="form-control" />
         <span asp-validation-for="CpfCnpj" class="text-danger"></span>
     </div>
 
@@ -46,7 +49,7 @@
     <div class="mb-3 d-flex justify-content-evenly flex-column flex-md-row">
 
         <label class="card check p-3 text-center mb-2">
-            <input asp-for="EhJuridico" class="form-check-input d-none" type="checkbox" />
+            <input asp-for="EhJuridico" id="EhJuridico" class="form-check-input d-none" type="checkbox" />
             Jurídico
         </label>
 
@@ -109,11 +112,62 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+
     <script>
-        document.getElementById('adicionar-endereco').addEventListener('click', function () {
-            var container = document.getElementById('enderecos-container');
-            var index = container.children.length;
-            var html = `
+        function limpa_formulario_cep(container) {
+            container.find("[name$='.Logradouro']").val('');
+            container.find("[name$='.Bairro']").val('');
+            container.find("[name$='.Cidade']").val('');
+            container.find("[name$='.Uf']").val('');
+        }
+
+        function consulta_cep(inputCep) {
+            var container = $(inputCep).closest('.endereco-item');
+            var cep = $(inputCep).val().replace(/\D/g, '');
+
+            if (cep !== '') {
+                var validacep = /^[0-9]{8}$/;
+
+                if (validacep.test(cep)) {
+                    container.find("[name$='.Logradouro']").val('...');
+                    container.find("[name$='.Bairro']").val('...');
+                    container.find("[name$='.Cidade']").val('...');
+                    container.find("[name$='.Uf']").val('...');
+
+                    $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function(dados) {
+                        if (!("erro" in dados)) {
+                            container.find("[name$='.Logradouro']").val(dados.logradouro);
+                            container.find("[name$='.Bairro']").val(dados.bairro);
+                            container.find("[name$='.Cidade']").val(dados.localidade);
+                            container.find("[name$='.Uf']").val(dados.uf);
+                        } else {
+                            limpa_formulario_cep(container);
+                            alert("CEP não encontrado.");
+                        }
+                    });
+                } else {
+                    limpa_formulario_cep(container);
+                    alert("Formato de CEP inválido.");
+                }
+            } else {
+                limpa_formulario_cep(container);
+            }
+        }
+
+        $(document).ready(function() {
+            // Vincula o evento para todos os CEPs existentes
+            $(document).on('blur', "[name$='.Cep']", function() {
+                consulta_cep(this);
+            });
+
+            // Adicionar endereço
+            $('#adicionar-endereco').on('click', function() {
+                var container = $('#enderecos-container');
+                var index = container.children().length;
+                var html = `
                 <div class="endereco-item mb-3 border p-2">
                     <label for="Enderecos_${index}__Logradouro">Logradouro</label>
                     <input name="Enderecos[${index}].Logradouro" class="form-control" />
@@ -138,13 +192,13 @@
 
                     <button type="button" class="btn btn-danger mt-2 remover-endereco">Remover</button>
                 </div>`;
-            container.insertAdjacentHTML('beforeend', html);
-        });
+                container.append(html);
+            });
 
-        document.addEventListener('click', function (e) {
-            if (e.target && e.target.classList.contains('remover-endereco')) {
-                e.target.parentElement.remove();
-            }
+            // Remover endereço
+            $(document).on('click', '.remover-endereco', function() {
+                $(this).closest('.endereco-item').remove();
+            });
         });
     </script>
 }

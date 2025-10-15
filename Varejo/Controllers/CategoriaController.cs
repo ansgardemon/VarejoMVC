@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.ViewModels;
@@ -16,6 +17,7 @@ namespace Varejo.Controllers
         }
 
         // GET: Categoria
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Index()
         {
             var categorias = await _categoriaRepository.GetAllAsync();
@@ -29,6 +31,7 @@ namespace Varejo.Controllers
             return View(viewModels);
         }
 
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Details(int id)
         {
             var categoria = await _categoriaRepository.GetByIdAsync(id);
@@ -52,6 +55,7 @@ namespace Varejo.Controllers
         }
 
         // GET: Categoria/Create
+        [Authorize(Roles = "Administrador, Gerente")]
         public IActionResult Create()
         {
             return View();
@@ -65,7 +69,6 @@ namespace Varejo.Controllers
 
         {
 
-            Console.WriteLine(">>> ENTROU NO POST CREATE <<<");
 
             if (ModelState.IsValid)
             {
@@ -82,7 +85,6 @@ namespace Varejo.Controllers
                 catch (Exception ex)
                 {
                     // Captura exceções de chave única ou outras
-                    Console.WriteLine("[ERRO] Ao adicionar categoria: " + ex.Message);
                     ModelState.AddModelError(string.Empty, "Não foi possível adicionar a categoria. Verifique se já existe uma com o mesmo nome.");
                 }
             }
@@ -99,6 +101,7 @@ namespace Varejo.Controllers
         }
 
         // GET: Categoria/Edit/5
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Edit(int id)
         {
             var categoria = await _categoriaRepository.GetByIdAsync(id);
@@ -146,6 +149,7 @@ namespace Varejo.Controllers
         }
 
         // GET: Categoria/Delete/5
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Delete(int id)
         {
             var categoria = await _categoriaRepository.GetByIdAsync(id);

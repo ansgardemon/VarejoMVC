@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +11,7 @@ using Varejo.ViewModels;
 
 namespace Varejo.Controllers
 {
+
     public class UsuarioController : Controller
     {
 
@@ -23,7 +26,7 @@ namespace Varejo.Controllers
             _tipoUsuarioRepository = tipoUsuarioRepository;
         }
 
-
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index(int? pessoaid, int? tipoUsuarioId, string search)
         {
             var usuarios = await _usuarioRepository.GetAllAsync();
@@ -47,6 +50,7 @@ namespace Varejo.Controllers
             return View(usuarios);
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create()
         {
 
@@ -80,11 +84,23 @@ namespace Varejo.Controllers
                 TipoUsuarioId = vm.TipoUsuarioId 
             };
 
-            await _usuarioRepository.AddAsync(usuario);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _usuarioRepository.AddAsync(usuario);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Ocorreu um erro ao salvar o usuário: " + ex.Message);
+                vm.Pessoas = (_usuarioRepository.GetPessoa())
+                    .Select(p => new SelectListItem { Value = p.IdPessoa.ToString(), Text = p.NomeRazao });
+                vm.TipoUsuarios = (_usuarioRepository.GetTiposUsuario())
+                    .Select(t => new SelectListItem { Value = t.IdTipoUsuario.ToString(), Text = t.DescricaoTipoUsuario });
+                return View(vm);
+            }
         }
 
-
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id)
         {
           
@@ -107,35 +123,46 @@ namespace Varejo.Controllers
             return View(usuariovm);
         }
 
- 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(UsuarioViewModel usuariovm)
         {
-           
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
+                ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", usuariovm.PessoaId);
+                ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", usuariovm.TipoUsuarioId);
+                return View(usuariovm);
+            }
 
-                var usuario = await _usuarioRepository.GetByIdAsync(usuariovm.IdUsuario);
-                if (usuario == null) return NotFound();
+            var usuario = await _usuarioRepository.GetByIdAsync(usuariovm.IdUsuario);
+            if (usuario == null)
+                return NotFound();
 
-
+    
                 usuario.nomeUsuario = usuariovm.nomeUsuario;
                 usuario.Senha = usuariovm.Senha;
                 usuario.Ativo = usuariovm.Ativo;
                 usuario.PessoaId = usuariovm.PessoaId;
                 usuario.TipoUsuarioId = usuariovm.TipoUsuarioId;
+            try
+            {
                 await _usuarioRepository.UpdateAsync(usuario);
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", usuariovm.PessoaId);
-            ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", usuariovm.TipoUsuarioId);
-            return View(usuariovm);
+            catch (Exception ex)
+            {
+                ViewBag.Pessoas = new SelectList(_usuarioRepository.GetPessoa(), "IdPessoa", "NomeRazao", usuariovm.PessoaId);
+                ViewBag.TipoUsuario = new SelectList(_usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", usuariovm.TipoUsuarioId);
+                Console.WriteLine("[ERRO] Ao atualizar usuario: " + ex.Message);
+                ModelState.AddModelError(string.Empty, "Não foi possível atualizar o usuário. Verifique se já existe com o mesmo login ou pessoa.");
+            }
+                return View(usuariovm);
         }
 
 
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var usuario = await _usuarioRepository.GetByIdAsync(id);
@@ -151,12 +178,17 @@ namespace Varejo.Controllers
             await _usuarioRepository.InativarUsuario(id);
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Inativos()
         {
             var usuarios = await _usuarioRepository.GetAllAsync();
             var inativos = usuarios.Where(u => !u.Ativo).OrderByDescending(u => u.IdUsuario).ToList();
             return View(inativos);
         }
+
+
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Ativar(int id)
         {
             if (id <= 0) return NotFound();
@@ -169,5 +201,67 @@ namespace Varejo.Controllers
 
             return RedirectToAction(nameof(Inativos));
         }
+
+
+
+
+        // LOGIN (GET)
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // LOGIN (POST)
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string nomeUsuario, string senha)
+        {
+            var usuario = await _usuarioRepository.ValidarLoginAsync(nomeUsuario, senha);
+
+            if (usuario == null || !usuario.Ativo)
+            {
+                ModelState.AddModelError("", "Usuário ou senha inválidos.");
+                return View();
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, usuario.nomeUsuario),
+                new Claim("IdUsuario", usuario.IdUsuario.ToString()),
+                new Claim("PessoaId", usuario.PessoaId.ToString()),
+                new Claim(ClaimTypes.Role, usuario.TipoUsuario?.DescricaoTipoUsuario ?? "Usuário")
+            };
+
+            var identity = new ClaimsIdentity(claims, "VarejoAuth");
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync("VarejoAuth", principal);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // LOGOUT
+        [AllowAnonymous]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("VarejoAuth");
+            return RedirectToAction("Login");
+        }
+
+        // ACESSO NEGADO
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AcessoNegado()
+        {
+            return View();
+        }
+
+
+
+
+
     }
 }

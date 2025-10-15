@@ -12,7 +12,7 @@ namespace Varejo.Interfaces
         Task InativarUsuario(int id);
         Task ReativarUsuario(int id);
         //
-        Task<Usuario>? ValidarLoginAsync(string email, string senha);
+        Task<Usuario>? ValidarLoginAsync(string nomeUsuario, string senha);
 
         List<TipoUsuario> GetTiposUsuario();
         List<Pessoa> GetPessoa();

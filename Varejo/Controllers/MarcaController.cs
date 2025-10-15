@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.ViewModels;
@@ -17,6 +18,7 @@ namespace Varejo.Controllers
         }
 
         // GET: Marca
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Index()
         {
             var marcas = await _marcaRepository.GetAllAsync();
@@ -30,6 +32,7 @@ namespace Varejo.Controllers
             return View(viewModels);
         }
 
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Details(int id)
         {
             var marca = await _marcaRepository.GetByIdAsync(id);
@@ -53,6 +56,7 @@ namespace Varejo.Controllers
         }
 
         // GET: Marca/Create
+        [Authorize(Roles = "Administrador, Gerente")]
         public IActionResult Create()
         {
             return View();
@@ -70,13 +74,27 @@ namespace Varejo.Controllers
                     NomeMarca = viewModel.NomeMarca
                 };
 
-                await _marcaRepository.AddAsync(marca);
-                return RedirectToAction(nameof(Index));
-            }
+
+                try
+                {
+                    await _marcaRepository.AddAsync(marca);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERRO] Ao criar Marca: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível criar a marca. Verifique se o nome já existe.");
+                }
+
+
+
+
+                }
             return View(viewModel);
         }
 
         // GET: Marca/Edit/5
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Edit(int id)
         {
             var marca = await _marcaRepository.GetByIdAsync(id);
@@ -108,13 +126,25 @@ namespace Varejo.Controllers
                     NomeMarca = viewModel.NomeMarca
                 };
 
-                await _marcaRepository.UpdateAsync(marca);
-                return RedirectToAction(nameof(Index));
+
+                try
+                {
+                    await _marcaRepository.UpdateAsync(marca);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                catch (Exception ex)
+                {
+                    Console.WriteLine("[ERRO] Ao criar Marca: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Não foi possível atualizar a marca. Verifique se o nome já existe.");
+                }
+
             }
             return View(viewModel);
         }
 
         // GET: Marca/Delete/5
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Delete(int id)
         {
             var marca = await _marcaRepository.GetByIdAsync(id);

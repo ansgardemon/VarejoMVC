@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.ViewModels;
 
 namespace Varejo.Controllers
 {
+
+    [Authorize(Roles = "Administrador")]
     public class TipoEmbalagemController : Controller
     {
         private readonly ITipoEmbalagemRepository _tipoEmbalagemRepository;

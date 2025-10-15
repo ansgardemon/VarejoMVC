@@ -90,6 +90,7 @@ namespace Varejo.Controllers
                 NomeRazao = p.NomeRazao,
                 CpfCnpj = p.CpfCnpj,
                 Telefone = p.Telefone,
+                Ddd = p.Ddd,
                 Email = p.Email,
                 Ativo = p.Ativo
             }).ToList();

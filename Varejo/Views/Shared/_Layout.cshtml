@@ -16,34 +16,34 @@
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-lightaccept-policy border-bottom box-shadow mb-3 w-75 mx-auto @(ViewData["NavbarClass"] ?? "")">
 			<div class="container-fluid m-auto w-100">
-				<a class="navbar-brand rounded-circle img-fluid mx-auto b-block" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/img/logo_zeus.png" /></a>
+				<a class="navbar-brand rounded-circle img-fluid mx-auto b-block" asp-area="" asp-controller="Home" asp-action="Index"><img id="logo" src="~/img/dose-certa.jpg" /></a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="navbar-collapse collapse d-sm-inline-flex">
-					<ul class="navbar-nav flex-grow-1 fs-4 fw-bold">
+					<ul class="navbar-nav flex-grow-1 fs-4 fw-bold justify-content-evenly">
 						<li class="nav-item tetx-white">
-							<a class="nav-link" asp-area="" asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-user"></i></a>
+							<a class="nav-link" asp-area="" asp-controller="Pessoa" asp-action="Index"><i class="fa-solid nav-i fa-user"></i><span>Pessoas</span></a>
 						</li>
 						<li class="nav-item tetx-white">
-							<a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-open"></i></a>
+							<a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid nav-i fa-folder-open"></i><span>Categorias</span></a>
 						</li>
 						<li class="nav-item tetx-white">
-							<a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tags"></i>	</a>
+							<a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid nav-i fa-tags"></i><span>Marcas</span></a>
 						</li>
 
 						<li class="nav-item tetx-white">
-							<a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i></a>
+							<a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid nav-i fa-basket-shopping"></i><span>Famílias</span></a>
 						</li>
 						<li class="nav-item tetx-white">
-							<a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box"></i></a>
+							<a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid nav-i fa-box"></i><span>Embalagens</span></a>
 						</li>
 						<li class="nav-item tetx-white">
-							<a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-secret"></i></a>
+							<a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid nav-i fa-user-secret"></i><span>Usuários</span></a>
 						</li>
 						<li class="nav-item tetx-white">
-							<a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-pie"></i></a>
+							<a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid nav-i fa-chart-pie"></i><span>Dashboard</span></a>
 						</li>
 
 					</ul>

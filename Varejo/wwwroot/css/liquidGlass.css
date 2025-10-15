@@ -32,6 +32,9 @@ body {
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: all 0.4s ease;
 }
+* {
+    transition: .3s ease;
+}
 
 h1.vitrino {
     color: var(--text);
@@ -43,7 +46,7 @@ h1.vitrino {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index:-1;
+    z-index: -1;
 }
 
 
@@ -61,7 +64,6 @@ h1.vitrino {
     padding: 0.5rem 1rem;
 }
 
-
     .navbar .nav-link {
         color: var(--text) !important;
         font-weight: 500;
@@ -72,13 +74,53 @@ h1.vitrino {
             transform: translateY(-1px);
         }
 
+#logo {
+    width: 80px !important;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 4px solid transparent;
+}
+
+#logo:hover {
+    border: 4px solid var(--text);
+}
+
 .nav-content {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 10vh;
+    min-height: 10vh;
+    width: 80vw !important;
+    margin: 10px 0 !important;
+    padding: 5px;
 }
+
+    .nav-content a span {
+        display: none;
+    }
+
+i {
+    font-size: 2.5rem;
+}
+
+.navbar-nav a {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    border-radius: 16px;
+    min-width: 7vw !important;
+    font-size:80%;
+}
+
+    .navbar-nav a:hover {
+        box-shadow: inset -2px -4px 8px rgba(0,0,0,0.3);
+        background: var(--bg-gradient-end);
+    }
+
+        .navbar-nav a:hover i {
+            filter: saturate(1.4);
+        }
 /* =====================
    SWITCH
    ===================== */
@@ -186,7 +228,6 @@ h1.vitrino {
         font-weight: bold;
     }
 
-    /* Card ativo/inativo */
     .card.check.ativo-btn {
         border-color: #dc3545;
         color: #dc3545;
@@ -246,6 +287,10 @@ h1.vitrino {
 
 .btn-warning {
     background: var(--btn-warning) !important;
+}
+
+i.bi {
+display:none!important;
 }
 
 /* =====================

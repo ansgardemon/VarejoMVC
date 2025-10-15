@@ -32,7 +32,7 @@
 					<td>@pessoa.IdPessoa</td>
 					<td>@pessoa.NomeRazao</td>
 					<td>@pessoa.CpfCnpj</td>
-					<td>@pessoa.Telefone</td>
+					<td>@($"({pessoa.Ddd}) {pessoa.Telefone}")</td>
 					<td>@pessoa.Email</td>
 					<td>@(pessoa.Ativo ? "✅" : "❌")</td>
 					<td>

@@ -24,7 +24,7 @@
 
     <div class="mb-3">
         <label asp-for="CpfCnpj" class="form-label"></label>
-        <input asp-for="CpfCnpj" class="form-control" />
+        <input asp-for="CpfCnpj" id="CpfCnpj" class="form-control" />
         <span asp-validation-for="CpfCnpj" class="text-danger"></span>
     </div>
 
@@ -49,7 +49,7 @@
     <div class="mb-3 d-flex justify-content-evenly flex-column flex-md-row">
 
         <label class="card check p-3 text-center mb-2">
-            <input asp-for="EhJuridico" class="form-check-input d-none" type="checkbox" />
+            <input asp-for="EhJuridico" id="EhJuridico" class="form-check-input d-none" type="checkbox" />
             Jurídico
         </label>
 

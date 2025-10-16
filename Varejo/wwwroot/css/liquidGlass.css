@@ -374,6 +374,12 @@ dl {
         padding-left: 1rem !important;
     }
 
+select {
+    background: transparent !important;
+    text-align: center;
+    padding-left: 24px !important;
+}
+
 /* ================== FOOTER ================== */
 
 .footer {

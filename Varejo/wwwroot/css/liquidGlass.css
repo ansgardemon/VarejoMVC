@@ -23,16 +23,15 @@
 }
 
 /* ================== body ================== */
+* {
+    transition: .3s ease;
+}
 
 body {
     background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     color: var(--text);
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: all 0.4s ease;
-}
-
-* {
-    transition: .3s ease;
 }
 
 h1.vitrino {
@@ -72,6 +71,10 @@ h1.vitrino {
             transform: translateY(-1px);
         }
 
+.navbar-nav {
+    justify-content: space-evenly !important;
+}
+
 #logo {
     width: 80px !important;
     aspect-ratio: 1 / 1;
@@ -101,6 +104,28 @@ h1.vitrino {
 i {
     font-size: 2.5rem;
 }
+
+.login, .logout {
+    font-weight: 400 !important;
+    color: var(--text) !important;
+}
+
+    .login:hover, .logout:hover {
+        scale: 1.05 !important;
+        filter: saturate(150%) !important;
+        font-weight: normal;
+    }
+
+.avatar {
+    border-radius: 50%;
+    border: 2px solid transparent !important;
+    height: 50px;
+    aspect-ratio: 1/1;
+}
+
+    .avatar:hover {
+        border: 2px solid var(--text) !important;
+    }
 
 .navbar-nav a {
     justify-content: center;
@@ -290,23 +315,43 @@ i.bi {
 
 /* ================== INPUTS ================== */
 
-.form-control {
+.form-control, input {
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid var(--glass-border);
-    color: var(--text);
+    color: var(--text) !important;
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-radius: 12px;
     transition: all 0.2s ease;
+    font-size: 1.2rem;
 }
 
-    .form-control:focus {
+    .form-control:focus, input:focus {
         box-shadow: 0 0 0 0.2rem rgba(77, 171, 255, 0.25);
-        background: rgba(255, 255, 255, 0.4);
+        background: var(--bg-gradient-start);
     }
 
-/* ================== TABLE - DL ================== */
+label {
+    font-size: 1rem !important;
+}
 
+.endereco-item {
+    width: 100%;
+}
+
+.remover-endereco {
+    position: relative;
+    right: 0%;
+}
+
+#adicionar-endereco {
+    margin-left: 8px;
+}
+
+.btns-endereco {
+    transform: translateY(-98px)
+}
+/* ================== TABLE - DL ================== */
 table {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -376,7 +421,6 @@ dl {
 
 select {
     background: transparent !important;
-    text-align: center;
     padding-left: 24px !important;
 }
 

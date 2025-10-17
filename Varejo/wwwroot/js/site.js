@@ -68,12 +68,17 @@
     });
 
     // =========== FOCUS ===========
-    $('input[name="DescricaoCategoria"]').focus();
-    $('input[name="NomeFamilia"]').focus();
-    $('input[name="NomeMarca"]').focus();
-    $('input[name="NomeRazao"]').focus();
-    $('input[name="Preco"]').focus();
-    $('input[name="Complemento"]').focus();
-    $('input[name="DescricaoTipoEmbalagem"]').focus();
-    $('input[name="nomeUsuario"]').focus();
+    const campos = [
+        "DescricaoCategoria",
+        "NomeFamilia",
+        "NomeMarca",
+        "NomeRazao",
+        "Preco",
+        "Complemento",
+        "DescricaoTipoEmbalagem",
+        "nomeUsuario"
+    ];
+
+    $(`input[name="${campos.join('"], input[name="')}"]`).filter(':visible:first').focus();
+
 });

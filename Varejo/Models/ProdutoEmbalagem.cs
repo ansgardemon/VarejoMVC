@@ -14,19 +14,24 @@ namespace Varejo.Models
         [Required(ErrorMessage = "O preço do produto é obrigatório.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "O preço do produto deve ser maior que zero.")]
         [Precision(18, 2)] // Define precisão decimal no banco (decimal(18,2))
+        [Display(Name = "Preço")]
         public decimal Preco { get; set; }
 
         [Required]
+        [Display(Name = "EAN")]
         public string Ean { get; set; }
 
+        [Display(Name = "Principal")]
         public bool Principal { get; set; }
 
 
         //RELACIONAMENTO COM OUTRAS TABELAS
 
+        [Display(Name = "Produto")]
         public int ProdutoId { get; set; }
         public virtual Produto? Produto { get; set; }
 
+        [Display(Name = "Tipo de Embalagem")]
         public int TipoEmbalagemId { get; set; }
         public virtual TipoEmbalagem? TipoEmbalagem { get; set; }
     }

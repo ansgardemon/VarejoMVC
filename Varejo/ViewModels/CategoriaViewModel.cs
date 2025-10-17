@@ -13,12 +13,13 @@ namespace Varejo.ViewModels
         public string DescricaoCategoria { get; set; }
 
         //número de produtos na categoria
+        [Display(Name = "Número de Famílias")]
         public int QuantidadeFamilia { get; set; }
 
 
 
         //PARA PUXAR LISTA DETALHADA DAS FAMILIAS
-
+        [Display(Name = "Famílias")]
         public List<FamiliaCategoriaViewModel>? Familias { get; set; }
 
     }

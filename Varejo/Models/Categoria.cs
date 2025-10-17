@@ -16,7 +16,7 @@ namespace Varejo.Models
 
 
         //RELACIONAMENTO UM PARA MUITOS
-
+        [Display(Name = "Famílias")]
         public virtual ICollection<Familia>? Familias { get; set; }
 
     }

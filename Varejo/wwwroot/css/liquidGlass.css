@@ -342,6 +342,7 @@ label {
 .remover-endereco {
     position: relative;
     right: 0%;
+    color: var(--text) !important;
 }
 
 #adicionar-endereco {
@@ -351,6 +352,11 @@ label {
 .btns-endereco {
     transform: translateY(-98px)
 }
+
+    .btns-endereco a, .btns-endereco button {
+        margin-right: .5rem;
+        color: var(--text) !important;
+    }
 /* ================== TABLE - DL ================== */
 table {
     backdrop-filter: blur(var(--glass-blur));

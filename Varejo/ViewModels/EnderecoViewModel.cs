@@ -17,7 +17,6 @@ namespace Varejo.ViewModels
 
         //RELACIONAMENTO COM PESSOA
         public int PessoaId { get; set; }
-
         public virtual Pessoa? Pessoa { get; set; }
     }
 }

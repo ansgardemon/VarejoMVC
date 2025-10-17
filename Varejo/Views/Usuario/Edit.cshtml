@@ -1,58 +1,63 @@
 ﻿@model Varejo.ViewModels.UsuarioViewModel
 
 @{
-    ViewData["Title"] = "Editar Usuário";
+	ViewData["Title"] = "Editar Usuário";
 }
 
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="Edit" method="post">
-    <!-- Campo oculto para manter o ID no POST -->
-    <input type="hidden" asp-for="IdUsuario" />
+	<!-- Campo oculto para manter o ID no POST -->
+	<input type="hidden" asp-for="IdUsuario" />
 
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+	<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-    <div class="form-group mb-3">
-        <label asp-for="nomeUsuario" class="control-label"></label>
-        <input asp-for="nomeUsuario" class="form-control" />
-        <span asp-validation-for="nomeUsuario" class="text-danger"></span>
-    </div>
+	<div class="form-group mb-3">
+		<label asp-for="nomeUsuario" class="control-label"></label>
+		<input asp-for="nomeUsuario" class="form-control" />
+		<span asp-validation-for="nomeUsuario" class="text-danger"></span>
+	</div>
 
-    <div class="form-group mb-3">
-        <label asp-for="TipoUsuarioId" class="control-label">Tipo de Usuário</label>
-        <select asp-for="TipoUsuarioId" class="form-control" asp-items="ViewBag.TipoUsuario">
-            <option value="">-- Selecione o tipo de usuário --</option>
-        </select>
-        <span asp-validation-for="TipoUsuarioId" class="text-danger"></span>
-    </div>
+	<div class="form-group mb-3">
+		<label asp-for="TipoUsuarioId" class="control-label">Tipo de Usuário</label>
+		<select asp-for="TipoUsuarioId" class="form-select" asp-items="ViewBag.TipoUsuario">
+			<option value=""><i class="fa-solid fa-caret-down"></i>-- Selecione o tipo de usuário --</option>
+		</select>
+		<span asp-validation-for="TipoUsuarioId" class="text-danger"></span>
+	</div>
 
-    <div class="form-group mb-3">
-        <label asp-for="PessoaId" class="control-label">Pessoa</label>
-        <select asp-for="PessoaId" class="form-control" asp-items="ViewBag.Pessoas">
-            <option value="">-- Selecione a pessoa --</option>
-        </select>
-        <span asp-validation-for="PessoaId" class="text-danger"></span>
-    </div>
+	<div class="form-group mb-3">
+		<label asp-for="PessoaId" class="control-label">Pessoa</label>
+		<select asp-for="PessoaId" class="form-select" asp-items="ViewBag.Pessoas">
+			<option value=""><i class="fa-solid fa-caret-down"></i>-- Selecione a pessoa --</option>
+		</select>
+		<span asp-validation-for="PessoaId" class="text-danger"></span>
+	</div>
 
-    <div class="form-group mb-3">
-        <label asp-for="Senha" class="control-label"></label>
-        <input asp-for="Senha" class="form-control" type="password" />
-        <span asp-validation-for="Senha" class="text-danger"></span>
-    </div>
+	<div class="form-group mb-3">
+		<label asp-for="Senha" class="control-label"></label>
+		<input asp-for="Senha" class="form-control" type="password" />
+		<span asp-validation-for="Senha" class="text-danger"></span>
+	</div>
 
-    <div class="form-group mb-4 form-check">
-        <input asp-for="Ativo" class="form-check-input" />
-        <label asp-for="Ativo" class="form-check-label">Usuário Ativo</label>
-    </div>
 
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Salvar</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-    </div>
+
+	<div class="form-group d-flex justify-content-between">
+		<div>
+			<button type="submit" class="btn btn-primary" style="margin-right:.5rem;">Salvar</button>
+			<a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+		</div>
+
+		<div class="form-group">
+			<label class="card check text-center btn ativo-btn mb-2" style="width:fit-content;">
+				<input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
+			</label>
+		</div>
+	</div>
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 }

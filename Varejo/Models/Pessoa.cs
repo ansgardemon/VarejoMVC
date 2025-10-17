@@ -10,7 +10,6 @@ namespace Varejo.Models
 
         [Required]
         [StringLength(100)]
-
         [Display(Name = "Nome / Razão")]
         public string NomeRazao { get; set; }
 
@@ -30,10 +29,12 @@ namespace Varejo.Models
 
 
         [Phone]
+        [Display(Name = "Telefone")]
         public string Telefone { get; set; }
 
         [StringLength(100)]
         [EmailAddress]
+        [Display(Name = "E-mail")]
         public string Email { get; set; }
 
 
@@ -49,7 +50,7 @@ namespace Varejo.Models
         public bool EhCliente { get; set; } = false;
 
 
-        [Display(Name = "Jurídico")]
+        [Display(Name = "Fornecedor")]
         public bool EhFornecedor { get; set; } = false;
 
         public bool Ativo { get; set; } = true;
@@ -57,6 +58,7 @@ namespace Varejo.Models
 
 
         //RELACIONAMENTO UM PARA MUITOS
+        [Display(Name = "Endereços")]
         public virtual ICollection<Endereco>? Enderecos { get; set; }
 
 

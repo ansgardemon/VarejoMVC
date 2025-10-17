@@ -1,0 +1,68 @@
+﻿/* Paleta de cores da adega */
+:root {
+    --wine: #5a1f15;
+    --wine-dark: #3e130e;
+    --gold: #d4af37;
+    --beige: #f8f3e9;
+}
+
+/* Navbar e herói */
+.bg-wine {
+    background-color: var(--wine) !important;
+}
+
+.btn-gold {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: #3e130e;
+}
+
+    .btn-gold:hover {
+        background-color: #b89629;
+        border-color: #b89629;
+        color: #fff;
+    }
+
+.btn-outline-gold {
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+    .btn-outline-gold:hover {
+        background-color: var(--gold);
+        color: var(--wine-dark);
+    }
+
+.btn-outline-wine {
+    border-color: var(--wine);
+    color: var(--wine);
+}
+
+    .btn-outline-wine:hover {
+        background-color: var(--wine);
+        color: #fff;
+    }
+
+/* Hero */
+.hero-section {
+    background: linear-gradient(rgba(40, 15, 10, 0.6), rgba(40, 15, 10, 0.6)), url('https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    min-height: 90vh;
+}
+
+.bg-beige {
+    background-color: var(--beige);
+}
+
+.brand-card {
+    background-color: #fff;
+    border-radius: 12px;
+    width: 140px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+    transition: 0.3s ease;
+}

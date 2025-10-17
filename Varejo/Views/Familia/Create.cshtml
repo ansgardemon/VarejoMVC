@@ -21,7 +21,7 @@
 
                 <div class="mb-3">
                     <label asp-for="MarcaId" class="form-label">Marca</label>
-                    <select asp-for="MarcaId" class="form-select" asp-items="ViewBag.Marcas">
+                    <select asp-for="MarcaId" class="form-select card" asp-items="ViewBag.Marcas">
                         <option value="">-- Selecione a Marca --</option>
                     </select>
                     <span asp-validation-for="MarcaId" class="text-danger"></span>
@@ -29,7 +29,7 @@
 
                 <div class="mb-3">
                     <label asp-for="CategoriaId" class="form-label">Categoria</label>
-                    <select asp-for="CategoriaId" class="form-select" asp-items="ViewBag.Categorias">
+                    <select asp-for="CategoriaId" class="form-select card" asp-items="ViewBag.Categorias">
                         <option value="">-- Selecione a Categoria --</option>
                     </select>
                     <span asp-validation-for="CategoriaId" class="text-danger"></span>

@@ -1,6 +1,5 @@
-﻿/* =====================
-   🌞 LIGHT MODE (padrão)
-   ===================== */
+﻿/* ================== LIGHTMODE ================== */
+
 :root {
     /* Glass / Blur */
     --glass-bg: #ffffff26;
@@ -23,9 +22,11 @@
     --table-even: rgba(200, 200, 200, 0.25);
 }
 
-/* =====================
-   BODY
-   ===================== */
+/* ================== body ================== */
+* {
+    transition: .3s ease;
+}
+
 body {
     background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     color: var(--text);
@@ -43,13 +44,12 @@ h1.vitrino {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index:-1;
+    z-index: -1;
 }
 
 
-/* =====================
-   NAVBAR
-   ===================== */
+/* ================== navbar ================== */
+
 .navbar {
     background: var(--glass-bg) !important;
     backdrop-filter: blur(var(--glass-blur));
@@ -61,7 +61,6 @@ h1.vitrino {
     padding: 0.5rem 1rem;
 }
 
-
     .navbar .nav-link {
         color: var(--text) !important;
         font-weight: 500;
@@ -72,16 +71,81 @@ h1.vitrino {
             transform: translateY(-1px);
         }
 
+.navbar-nav {
+    justify-content: space-evenly !important;
+}
+
+#logo {
+    width: 80px !important;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 4px solid transparent;
+}
+
+    #logo:hover {
+        border: 4px solid var(--text);
+    }
+
 .nav-content {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 10vh;
+    min-height: 10vh;
+    width: 80vw !important;
+    margin: 10px 0 !important;
+    padding: 5px;
 }
-/* =====================
-   SWITCH
-   ===================== */
+
+    .nav-content a span {
+        display: none;
+    }
+
+i {
+    font-size: 2.5rem;
+}
+
+.login, .logout {
+    font-weight: 400 !important;
+    color: var(--text) !important;
+}
+
+    .login:hover, .logout:hover {
+        scale: 1.05 !important;
+        filter: saturate(150%) !important;
+        font-weight: normal;
+    }
+
+.avatar {
+    border-radius: 50%;
+    border: 2px solid transparent !important;
+    height: 50px;
+    aspect-ratio: 1/1;
+}
+
+    .avatar:hover {
+        border: 2px solid var(--text) !important;
+    }
+
+.navbar-nav a {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    border-radius: 16px;
+    font-size: 80%;
+}
+
+    .navbar-nav a:hover {
+        box-shadow: inset -2px -4px 8px rgba(0,0,0,0.3);
+        background: var(--bg-gradient-end);
+    }
+
+        .navbar-nav a:hover i {
+            filter: saturate(1.4);
+        }
+
+/* ================== SWITCH ================== */
+
 .switch {
     position: relative;
     display: inline-block;
@@ -129,9 +193,8 @@ h1.vitrino {
         opacity: 1;
     }
 
-/* =====================
-   CARDS
-   ===================== */
+/* ================== CARDS ================== */
+
 .card {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -186,7 +249,6 @@ h1.vitrino {
         font-weight: bold;
     }
 
-    /* Card ativo/inativo */
     .card.check.ativo-btn {
         border-color: #dc3545;
         color: #dc3545;
@@ -208,9 +270,8 @@ h1.vitrino {
             content: 'Ativo';
         }
 
-/* =====================
-   BUTTONS
-   ===================== */
+/* ================== BUTTONS ================== */
+
 .btn {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
     backdrop-filter: blur(var(--glass-blur));
@@ -248,27 +309,49 @@ h1.vitrino {
     background: var(--btn-warning) !important;
 }
 
-/* =====================
-   INPUTS
-   ===================== */
-.form-control {
+i.bi {
+    display: none !important;
+}
+
+/* ================== INPUTS ================== */
+
+.form-control, input {
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid var(--glass-border);
-    color: var(--text);
+    color: var(--text) !important;
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-radius: 12px;
     transition: all 0.2s ease;
+    font-size: 1.2rem;
 }
 
-    .form-control:focus {
+    .form-control:focus, input:focus {
         box-shadow: 0 0 0 0.2rem rgba(77, 171, 255, 0.25);
-        background: rgba(255, 255, 255, 0.4);
+        background: var(--bg-gradient-start);
     }
 
-/* =====================
-   TABLE & DL
-   ===================== */
+label {
+    font-size: 1rem !important;
+}
+
+.endereco-item {
+    width: 100%;
+}
+
+.remover-endereco {
+    position: relative;
+    right: 0%;
+}
+
+#adicionar-endereco {
+    margin-left: 8px;
+}
+
+.btns-endereco {
+    transform: translateY(-98px)
+}
+/* ================== TABLE - DL ================== */
 table {
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -336,9 +419,13 @@ dl {
         padding-left: 1rem !important;
     }
 
-/* =====================
-   FOOTER
-   ===================== */
+select {
+    background: transparent !important;
+    padding-left: 24px !important;
+}
+
+/* ================== FOOTER ================== */
+
 .footer {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -352,9 +439,8 @@ dl {
         text-decoration: none;
     }
 
-/* =====================
-   DARK MODE
-   ===================== */
+/* ================== DARKMODE ================== */
+
 body.dark {
     --glass-bg: #ffffff14;
     --glass-border: #ffffff30;

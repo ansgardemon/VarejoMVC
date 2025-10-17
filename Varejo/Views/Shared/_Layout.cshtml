@@ -6,7 +6,7 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,52 +30,52 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex w-100 align-items-center">
+                <div class="navbar-collapse collapse d-sm-inline-flex w-100 align-items-center justify-content-evenly">
                     <ul class="navbar-nav flex-grow-1 fs-4 fw-bold">
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
                             <li class="nav-item tetx-white">
-                                <a class="nav-link" asp-area="" asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-user"></i></a>
+                                <a class="nav-link" asp-area="" asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-user"></i><span>Pessoas</span></a>
                             </li>
                             <li class="nav-item tetx-white">
-                                <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-pie"></i></a>
+                                <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
                             </li>
 
                             @if (role == "Administrador" || role == "Gerente")
                             {
                                 <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-open"></i></a>
+                                    <a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-open"></i><span>Categorias</span></a>
                                 </li>
                                 <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tags"></i></a>
+                                    <a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tags"></i><span>Marcas</span></a>
                                 </li>
                                 <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i></a>
+                                    <a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Famílias</span></a>
                                 </li>
                             }
 
                             @if (role == "Administrador")
                             {
                                 <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box"></i></a>
+                                    <a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box"></i><span>Embalagens</span></a>
                                 </li>
                                 <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-secret"></i></a>
+                                    <a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-secret"></i><span>Usuários</span></a>
                                 </li>
                             }
                         }
                     </ul>
+
+                    <!-- Usuário logado / Login -->
+                    <div class="d-flex align-items-center ms-auto">
+                        @await Html.PartialAsync("_UsuarioLogado")
+                    </div>
 
                     <!-- Switch -->
                     <label class="switch me-3">
                         <input type="checkbox" class="check">
                         <span class="slider"></span>
                     </label>
-
-                    <!-- Usuário logado / Login -->
-                    <div class="d-flex align-items-center ms-auto">
-                        @await Html.PartialAsync("_UsuarioLogado")
-                    </div>
                 </div>
             </div>
         </nav>
@@ -95,9 +95,10 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

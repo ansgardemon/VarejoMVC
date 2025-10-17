@@ -13,7 +13,7 @@
 
     var badge = role switch
     {
-        "Administrador" => "danger",
+        "Administrador" => "primary",
         "Gerente" => "warning",
         _ => "secondary"
     };
@@ -22,15 +22,15 @@
 @if (User.Identity?.IsAuthenticated ?? false)
 {
     <div class="d-flex align-items-center gap-2">
-        <img src="~/img/@icone" width="36" height="36" class="rounded-circle border shadow-sm" alt="Avatar" />
+        <img src="~/img/@icone"class="avatar" alt="Avatar" />
         <div class="text-white small">
             Olá, <strong>@nome</strong>
             <span class="badge bg-@badge">@role</span>
         </div>
-        <a asp-controller="Usuario" asp-action="Logout" class="btn btn-outline-light btn-sm ms-2">Sair</a>
+        <a asp-controller="Usuario" asp-action="Logout" class="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
     </div>
 }
 else
 {
-    <a asp-controller="Usuario" asp-action="Login" class="btn btn-outline-light btn-sm">Entrar</a>
+    <a asp-controller="Usuario" asp-action="Login" class="login"><i class="fa-solid fa-arrow-right-to-bracket"></i></a>
 }

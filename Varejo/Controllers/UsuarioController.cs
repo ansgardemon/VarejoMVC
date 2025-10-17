@@ -259,9 +259,15 @@ namespace Varejo.Controllers
             return View();
         }
 
-
-
-
-
+        private static string NormalizeRole(string? raw)
+        {
+            var r = (raw ?? "").Trim().ToLowerInvariant();
+            return r switch
+            {
+                "administrador" or "admin" => "Administrador",
+                "gerente" or "manager" => "Gerente",
+                _ => "Outros"
+            };
+        }
     }
 }

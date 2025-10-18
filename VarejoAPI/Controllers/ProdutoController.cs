@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
-using Varejo.Models;
-using Varejo.Repositories;
 using VarejoAPI.DTO;
 
 namespace VarejoAPI.Controllers
@@ -13,27 +10,30 @@ namespace VarejoAPI.Controllers
     {
 
         private readonly IProdutoRepository _produtoRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
         private readonly IFamiliaRepository _familiaRepository;
-        private readonly IProdutoEmbalagemRepository _produtoEmbalagemRepository;
 
-        public ProdutoController(IProdutoRepository produtoRepository)
+        public ProdutoController(IProdutoRepository produtoRepository, ICategoriaRepository categoriaRepository, IFamiliaRepository familiaRepository)
         {
             _produtoRepository = produtoRepository;
-            _produtoRepository = produtoRepository;
+            _categoriaRepository = categoriaRepository;
+            _familiaRepository = familiaRepository;
+
+
         }
 
         [HttpGet]
         public async Task<ActionResult> Get()
         {
             var produtos = await _produtoRepository.GetAllAsync();
-          
-            
+
+
             var resultado = new List<ProdutoOutputDTO>();
 
             foreach (var produto in produtos)
             {
-                
-               
+
+
 
                 resultado.Add(new ProdutoOutputDTO
                 {
@@ -45,7 +45,7 @@ namespace VarejoAPI.Controllers
                     UrlImagem = produto.UrlImagem,
                     CustoMedio = produto.CustoMedio,
                     FamiliaId = produto.FamiliaId,
-                   
+
                 });
             }
 
@@ -53,16 +53,13 @@ namespace VarejoAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id)
+        public async Task<ActionResult<ProdutoOutputDTO>> Get(int id)
         {
             var produto = await _produtoRepository.GetByIdAsync(id);
-
             if (produto == null)
                 return NotFound();
 
-            var resultado = new List<ProdutoOutputDTO>();
-
-            resultado.Add(new ProdutoOutputDTO
+            var resultado = new ProdutoOutputDTO
             {
                 IdProduto = produto.IdProduto,
                 Complemento = produto.Complemento,
@@ -71,40 +68,57 @@ namespace VarejoAPI.Controllers
                 Ativo = produto.Ativo,
                 UrlImagem = produto.UrlImagem,
                 CustoMedio = produto.CustoMedio,
-                FamiliaId = produto.FamiliaId
-            });
+                FamiliaId = produto.FamiliaId,
+            };
 
             return Ok(resultado);
         }
 
-
-
-        [HttpGet("{idProduto}/Categoria")]
-        public async Task<ActionResult> GetId(int idProduto)
+        [HttpGet("categoria/{idCategoria}")]
+        public async Task<IActionResult> Details(int idCategoria)
         {
-            // Buscar produto(s) relacionados à categoria do produto
-            var produto = await _produtoRepository.GetByIdAsync(idProduto);
+            var categoria = await _categoriaRepository.GetByIdAsync(idCategoria);
 
-            if (produto == null)
+            if (categoria == null)
                 return NotFound();
 
-            var resultado = new List<ProdutoOutputDTO>();
-
-            // Preenche apenas os campos necessários do banco
-            resultado.Add(new ProdutoOutputDTO
+            var viewModel = new CategoriaOutputDTO
             {
-                IdProduto = produto.IdProduto,
-                Complemento = produto.Complemento,
-                NomeProduto = produto.NomeProduto,
-                EstoqueInicial = produto.EstoqueInicial,
-                Ativo = produto.Ativo,
-                UrlImagem = produto.UrlImagem,
-                CustoMedio = produto.CustoMedio,
-                FamiliaId = produto.FamiliaId
-            });
+                IdCategoria = categoria.IdCategoria,
+                DescricaoCategoria = categoria.DescricaoCategoria ?? string.Empty,
 
-            return Ok(resultado);
+                Familias = categoria.Familias?
+                    .Where(f => f != null)
+                    .Select(f =>
+                    {
+                        var produtos = f.Produtos?
+                            .Where(p => p != null)
+                            .Select(p => new ProdutoOutputDTO
+                            {
+                                IdProduto = p.IdProduto,
+                                NomeProduto = p.NomeProduto ?? string.Empty,
+                                Complemento = p.Complemento ?? string.Empty,
+                                EstoqueInicial = p.EstoqueInicial,
+                                Ativo = p.Ativo,
+                                UrlImagem = p.UrlImagem ?? string.Empty,
+                                CustoMedio = p.CustoMedio,
+                                FamiliaId = p.FamiliaId
+                            })
+                            .ToList() ?? new List<ProdutoOutputDTO>();
+
+                        return new FamiliaOutputDTO
+                        {
+                            IdFamilia = f.IdFamilia,
+                            NomeFamilia = f.NomeFamilia ?? string.Empty,
+                            Produtos = produtos
+                        };
+                    })
+                    .ToList() ?? new List<FamiliaOutputDTO>()
+            };
+
+            return Ok(viewModel);
         }
+
 
     }
 }

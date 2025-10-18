@@ -16,8 +16,6 @@ namespace VarejoAPI.DTO
             //RELACIONAMENTO COM PESSOA
             public int TipoUsuarioId { get; set; }
 
-            public virtual TipoUsuario? TipoUsuario { get; set; }
-
 
         
     }

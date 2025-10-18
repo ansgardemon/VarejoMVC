@@ -44,6 +44,10 @@ namespace Varejo.Repositories
             return produto?.Familia?.Categoria;
         }
 
+        public Task<Produto> GetByFamilia(int id)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<Produto?> GetByIdAsync(int id)
         {

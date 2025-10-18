@@ -29,6 +29,7 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
 builder.Services.AddScoped<IProdutoMovimentoRepository, ProdutoMovimentoRepository>();
 builder.Services.AddScoped<ITipoMovimentoRepository, TipoMovimentoRepository>();
+builder.Services.AddScoped<IMovimentoRepository, MovimentoRepository>();
 
 
 

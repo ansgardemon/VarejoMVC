@@ -1,0 +1,149 @@
+﻿@model Varejo.ViewModels.MovimentoViewModel
+
+@{
+    ViewData["Title"] = "Novo Movimento";
+}
+
+<h1>Novo Movimento</h1>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label>Número do Documento</label>
+        <input asp-for="Documento" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Observação</label>
+        <textarea asp-for="Observacao" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Tipo de Movimento</label>
+        <select asp-for="TipoMovimentoId" class="form-select">
+            <option value="">Selecione...</option>
+            @foreach (var tipo in ViewBag.TiposMovimento)
+            {
+                <option value="@tipo.IdTipoMovimento">@tipo.DescricaoTipoMovimento</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Cliente/Fornecedor</label>
+        <select asp-for="PessoaId" class="form-select">
+            <option value="">Selecione...</option>
+            @foreach (var pessoa in ViewBag.Pessoas)
+            {
+                <option value="@pessoa.IdPessoa">@pessoa.NomeRazao</option>
+            }
+        </select>
+    </div>
+
+    <hr />
+    <h3>Produtos</h3>
+
+    <!-- Barra de pesquisa -->
+    <div class="mb-3">
+        <input type="text" id="produtoSearch" class="form-control" placeholder="Buscar produto..." />
+    </div>
+
+    <div class="row" id="produtoCards">
+        @if (ViewBag.Produtos != null)
+        {
+            @foreach (var produto in ViewBag.Produtos)
+            {
+                <div class="col-md-3 mb-3 produto-card"
+                     data-id="@produto.IdProduto"
+                     data-nome="@(produto.NomeProduto?.ToLower() ?? "")">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.NomeProduto</h5>
+                            <label>Quantidade</label>
+                            <input type="number" min="0" class="form-control quantidade" />
+                            <label>Embalagem</label>
+                            <select class="form-select embalagem">
+                                @if (ViewBag.ProdutoEmbalagens != null)
+                                {
+                                    @foreach (var emb in ViewBag.ProdutoEmbalagens)
+                                    {
+                                        if (emb.ProdutoId == produto.IdProduto && emb.TipoEmbalagem != null)
+                                        {
+                                            <option value="@emb.IdProdutoEmbalagem">
+                                                @emb.TipoEmbalagem.DescricaoTipoEmbalagem - R$ @emb.Preco
+                                            </option>
+                                        }
+                                    }
+                                }
+                            </select>
+                            <button type="button" class="btn btn-success btn-sm mt-2 addProdutoBtn">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <hr />
+    <h3>Produtos Selecionados</h3>
+    <div id="produtosSelecionados" class="row"></div>
+
+    <button type="submit" class="btn btn-primary mt-3">Salvar Movimento</button>
+</form>
+
+@section Scripts {
+    <script>
+        // Filtrar produtos pelo nome
+        document.getElementById('produtoSearch').addEventListener('input', function() {
+            const termo = this.value.toLowerCase();
+            document.querySelectorAll('.produto-card').forEach(card => {
+                const nome = card.dataset.nome;
+                if (!nome) return;
+                card.style.display = nome.includes(termo) ? 'block' : 'none';
+            });
+        });
+
+        const produtosSelecionados = document.getElementById('produtosSelecionados');
+
+        // Adicionar produtos ao movimento
+        document.querySelectorAll('.addProdutoBtn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const card = this.closest('.produto-card');
+                const nome = card.querySelector('.card-title').innerText;
+                const quantidade = card.querySelector('.quantidade').value;
+                const embalagemSelect = card.querySelector('.embalagem');
+                const embalagemId = embalagemSelect.value;
+                const embalagemText = embalagemSelect.options[embalagemSelect.selectedIndex].text;
+
+                if (!quantidade || quantidade <= 0) {
+                    alert('Informe uma quantidade válida.');
+                    return;
+                }
+
+                const idx = produtosSelecionados.children.length;
+                const div = document.createElement('div');
+                div.classList.add('col-md-3', 'mb-3');
+                div.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${nome}</h5>
+                            <p>Quantidade: ${quantidade}</p>
+                            <p>Embalagem: ${embalagemText}</p>
+                            <input type="hidden" name="Produtos[${idx}].ProdutoId" value="${card.dataset.id}" />
+                            <input type="hidden" name="Produtos[${idx}].ProdutoEmbalagemId" value="${embalagemId}" />
+                            <input type="hidden" name="Produtos[${idx}].Quantidade" value="${quantidade}" />
+                            <button type="button" class="btn btn-danger btn-sm removeProdutoBtn">Remover</button>
+                        </div>
+                    </div>
+                `;
+                produtosSelecionados.appendChild(div);
+
+                // Remover produto
+                div.querySelector('.removeProdutoBtn').addEventListener('click', () => div.remove());
+
+                // Reset inputs do card
+                card.querySelector('.quantidade').value = '';
+                card.querySelector('.embalagem').selectedIndex = 0;
+            });
+        });
+    </script>
+}

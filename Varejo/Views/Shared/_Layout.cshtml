@@ -51,11 +51,16 @@
                                 </li>
                                 <li class="nav-item tetx-white">
                                     <a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Famílias</span></a>
-                                </li>
+                                </li>                     
+          
                             }
 
                             @if (role == "Administrador")
                             {
+                                <li class="nav-item tetx-white">
+                                    <a class="nav-link" asp-area="" asp-controller="TipoMovimento" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Tipo Movimento</span></a>
+                                </li>
+
                                 <li class="nav-item tetx-white">
                                     <a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box"></i><span>Embalagens</span></a>
                                 </li>

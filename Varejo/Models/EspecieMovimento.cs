@@ -9,12 +9,13 @@ namespace Varejo.Models
 
         [Required]
         [StringLength(10)]
+        [Display(Name = "Espécie Movimento")]
         public string DescricaoEspecieMovimento { get; set; }
 
 
 
         //RELACIONAMENTO UM PARA MUITOS
-
+        [Display(Name = "Tipos de Movimento")]
         public ICollection<TipoMovimento> TiposMovimento { get; set; }
 
 

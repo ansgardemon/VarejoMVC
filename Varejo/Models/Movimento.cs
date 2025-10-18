@@ -8,10 +8,13 @@ namespace Varejo.Models
         [Key]
         public int IdMovimento { get; set; }
 
+        [DisplayName("Número do Documento")]
         public int? Documento { get; set; }
 
+        [DisplayName("Observação")]
         public string Observacao { get; set; }
 
+        [DisplayName("Data do Movimento")]
         public DateTime DataMovimento { get; set; } = DateTime.Now;
 
         // Relacionamento com TipoMovimento

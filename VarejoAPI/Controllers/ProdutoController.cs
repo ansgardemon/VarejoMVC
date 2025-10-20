@@ -120,5 +120,33 @@ namespace VarejoAPI.Controllers
         }
 
 
+        [HttpGet("familia/{idFamilia}")]
+        public async Task<ActionResult> GetFamilia(int idFamilia)
+        {
+            var familia = await _produtoRepository.GetByFamilia(idFamilia);
+
+            var resultado = new List<ProdutoOutputDTO>();
+
+            foreach (var produto in familia)
+            {
+                resultado.Add(new ProdutoOutputDTO
+                {
+                    IdProduto = produto.IdProduto,
+                    Complemento = produto.Complemento,
+                    NomeProduto = produto.NomeProduto,
+                    EstoqueInicial = produto.EstoqueInicial,
+                    Ativo = produto.Ativo,
+                    UrlImagem = produto.UrlImagem,
+                    CustoMedio = produto.CustoMedio,
+                    FamiliaId = produto.FamiliaId,
+                });
+            }
+
+            return Ok(resultado);
+
+        }
+
+
+
     }
 }

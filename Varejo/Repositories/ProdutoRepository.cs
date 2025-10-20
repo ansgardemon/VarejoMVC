@@ -34,19 +34,13 @@ namespace Varejo.Repositories
             return await _context.Produtos.ToListAsync();
         }
 
-        public async Task<Categoria?> GetByCategory(int idProduto)
+        public async Task<List<Produto>> GetByFamilia(int id)
         {
-            var produto = await _context.Produtos
-                .Include(p => p.Familia)
-                .ThenInclude(f => f.Categoria)
-                .FirstOrDefaultAsync(p => p.IdProduto == idProduto);
+            return await _context.Produtos
+             .Include(p => p.Familia)
+             .Where(p => p.FamiliaId == id)
+             .ToListAsync();
 
-            return produto?.Familia?.Categoria;
-        }
-
-        public Task<Produto> GetByFamilia(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<Produto?> GetByIdAsync(int id)

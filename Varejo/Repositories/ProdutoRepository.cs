@@ -2,6 +2,7 @@
 using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Models;
+using Varejo.ViewModels;
 
 namespace Varejo.Repositories
 {
@@ -43,6 +44,38 @@ namespace Varejo.Repositories
                 .FirstOrDefaultAsync(p => p.IdProduto == id);
         }
 
+        public async Task<List<ProdutoViewModel>> GetByNameAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+                return new List<ProdutoViewModel>();
+
+            return await _context.Produtos
+                .Where(p => p.NomeProduto.Contains(query) && p.Ativo)
+                .Select(p => new ProdutoViewModel
+                {
+                    IdProduto = p.IdProduto,
+                    NomeProduto = p.NomeProduto,
+                    UrlImagem = p.UrlImagem,
+                    Complemento = p.Complemento,
+                    CustoMedio = p.CustoMedio,
+                    EstoqueInicial = p.EstoqueInicial,
+                    Ativo = p.Ativo,
+                    FamiliaId = p.FamiliaId,
+                    Familia = p.Familia,
+                    Embalagens = p.ProdutosEmbalagem
+                        .Select(e => new ProdutoEmbalagemViewModel
+                        {
+                            IdProdutoEmbalagem = e.IdProdutoEmbalagem,
+                            Preco = e.Preco,
+                            ProdutoId = e.ProdutoId,
+                            TipoEmbalagemId = e.TipoEmbalagemId,
+                            // TiposEmbalagem não precisa popular aqui, é só para forms
+                        })
+                        .ToList()
+                })
+                .Take(20) // limite para performance
+                .ToListAsync();
+        }
 
 
 

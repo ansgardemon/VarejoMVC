@@ -12,11 +12,13 @@ namespace Varejo.Controllers
     {
         private readonly VarejoDbContext _context;
         private readonly IProdutoMovimentoRepository _produtoMovimentoRepository;
+        private readonly IProdutoRepository _produtoRepository;
 
-        public MovimentoController(VarejoDbContext context, IProdutoMovimentoRepository produtoMovimentoRepository)
+        public MovimentoController(VarejoDbContext context, IProdutoMovimentoRepository produtoMovimentoRepository, IProdutoRepository produtoRepository)
         {
             _context = context;
             _produtoMovimentoRepository = produtoMovimentoRepository;
+            _produtoRepository = produtoRepository;
         }
 
         // LISTAR TODOS
@@ -46,6 +48,24 @@ namespace Varejo.Controllers
 
             return View(movimento);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> SearchProduto([FromQuery] string query)
+        {
+            Console.WriteLine($"[SearchProduto] Query recebida: '{query}'"); // <- log simples
+
+            if (string.IsNullOrWhiteSpace(query))
+                return Ok(new List<ProdutoViewModel>());
+
+            var produtos = await _produtoRepository.GetByNameAsync(query);
+
+            Console.WriteLine($"[SearchProduto] Produtos encontrados: {produtos.Count}"); // <- log quantidade de produtos
+
+            return Ok(produtos); // garante 200 OK com JSON
+        }
+
+
 
         // CRIAR (GET)
         public IActionResult Create()

@@ -59,17 +59,29 @@ namespace Varejo.Repositories
 
             if (movimento == null) return;
 
+            // 🔹 Busca o multiplicador da embalagem selecionada
+            var produtoEmbalagem = await _context.ProdutosEmbalagem
+                .Include(pe => pe.TipoEmbalagem)
+                .FirstOrDefaultAsync(pe => pe.IdProdutoEmbalagem == produtoMovimento.ProdutoEmbalagemId);
+
+            int multiplicador = 1; // padrão
+            if (produtoEmbalagem?.TipoEmbalagem != null)
+                multiplicador = produtoEmbalagem.TipoEmbalagem.Multiplicador;
+
+            // 🔹 Calcula a quantidade real em unidades
+            var quantidadeReal = produtoMovimento.Quantidade * multiplicador;
+
             var especieId = movimento.TipoMovimento.EspecieMovimento.IdEspecieMovimento;
 
-            // 1 = Entrada | 2 = Saída
+            // 🔹 1 = Entrada | 2 = Saída
             switch (especieId)
             {
                 case 1:
-                    produto.EstoqueAtual += produtoMovimento.Quantidade;
+                    produto.EstoqueAtual += quantidadeReal;
                     break;
 
                 case 2:
-                    produto.EstoqueAtual -= produtoMovimento.Quantidade;
+                    produto.EstoqueAtual -= quantidadeReal;
                     break;
             }
 

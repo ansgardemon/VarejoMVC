@@ -1,4 +1,5 @@
 ﻿using Varejo.Models;
+using Varejo.ViewModels;
 
 namespace Varejo.Interfaces
 {
@@ -6,8 +7,13 @@ namespace Varejo.Interfaces
     {
         Task<List<Produto>> GetAllAsync();
         Task<Produto> GetByIdAsync(int id);
+
+        Task<List<ProdutoViewModel>> GetByNameAsync(string query);
+
         Task AddAsync(Produto produto);
         Task UpdateAsync(Produto produto);
         Task DeleteAsync(int id);
+
+
     }
 }

@@ -27,6 +27,9 @@ builder.Services.AddScoped<IFamiliaRepository, FamiliaRepository>();
 builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
+builder.Services.AddScoped<IProdutoMovimentoRepository, ProdutoMovimentoRepository>();
+builder.Services.AddScoped<ITipoMovimentoRepository, TipoMovimentoRepository>();
+builder.Services.AddScoped<IMovimentoRepository, MovimentoRepository>();
 
 
 
@@ -94,6 +97,18 @@ app.UseCors("PermitirTudo");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path;
+    if (!context.User.Identity.IsAuthenticated && path.StartsWithSegments("/Home"))
+    {
+        context.Response.Redirect("/Landing");
+        return;
+    }
+
+    await next();
+});
+
 app.MapStaticAssets();
 
 // Rotas
@@ -103,7 +118,7 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Landing}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.MapControllers();

@@ -97,6 +97,18 @@ app.UseCors("PermitirTudo");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path;
+    if (!context.User.Identity.IsAuthenticated && path.StartsWithSegments("/Home"))
+    {
+        context.Response.Redirect("/Landing");
+        return;
+    }
+
+    await next();
+});
+
 app.MapStaticAssets();
 
 // Rotas

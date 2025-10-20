@@ -1,0 +1,47 @@
+﻿@model Varejo.Models.Movimento
+
+@{
+    ViewData["Title"] = "Detalhes do Movimento";
+}
+
+<h1>Detalhes do Movimento</h1>
+
+<!-- Dados gerais do movimento -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Movimento: @Model.IdMovimento</h5>
+        <p><strong>Documento:</strong> @Model.Documento</p>
+        <p><strong>Observação:</strong> @Model.Observacao</p>
+        <p><strong>Tipo de Movimento:</strong> @Model.TipoMovimento?.DescricaoTipoMovimento</p>
+        <p><strong>Cliente/Fornecedor:</strong> @Model.Pessoa?.NomeRazao</p>
+        <p><strong>Data:</strong> @Model.DataMovimento.ToString("dd/MM/yyyy HH:mm")</p>
+    </div>
+</div>
+
+<hr />
+
+<h3>Produtos do Movimento</h3>
+
+<div class="row">
+    @foreach (var pm in Model.ProdutosMovimento)
+    {
+        var produto = pm.Produto;
+        var imagem = produto?.UrlImagem ?? "/images/produto-padrao.png";
+        <div class="col-md-3 mb-3">
+            <div class="card h-100">
+                <img src="@imagem" class="card-img-top" alt="@produto?.NomeProduto" style="height:150px; object-fit:cover;">
+                <div class="card-body">
+                    <h5 class="card-title">@produto?.NomeProduto</h5>
+                    <p><strong>Quantidade:</strong> @pm.Quantidade</p>
+                    <p><strong>Embalagem:</strong> @(pm.ProdutoEmbalagem?.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "Padrão")</p>
+                    @if (pm.ProdutoEmbalagem != null)
+                    {
+                        <p><strong>Preço:</strong> R$ @pm.ProdutoEmbalagem.Preco.ToString("0.00")</p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Voltar</a>

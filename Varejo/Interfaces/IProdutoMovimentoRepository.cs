@@ -1,19 +1,16 @@
 ﻿using Varejo.Models;
-using Varejo.ViewModels;
 
 namespace Varejo.Interfaces
 {
-    public interface IProdutoRepository
+    public interface IProdutoMovimentoRepository
     {
         Task<List<Produto>> GetAllAsync();
         Task<Produto> GetByIdAsync(int id);
-
-        Task<List<ProdutoViewModel>> GetByNameAsync(string query);
-
-        Task<List<Produto>> GetByFamilia(int id);
         Task AddAsync(Produto produto);
         Task UpdateAsync(Produto produto);
         Task DeleteAsync(int id);
+
+        Task AtualizarEstoqueAsync(ProdutoMovimento produtoMovimento);
 
 
     }

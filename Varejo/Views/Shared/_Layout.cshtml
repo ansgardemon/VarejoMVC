@@ -36,25 +36,38 @@
 						@if (User.Identity?.IsAuthenticated ?? false)
 						{
 
-							<li class="nav-item pessoa">
-								<a class="nav-link" asp-area="" asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-person"></i><span>Pessoas</span></a>
-							</li>
-							<li class="nav-item dash">
-								<a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
-							</li>
+                            @if (role == "Administrador" || role == "Gerente")
+                            {
+                                <li class="nav-item tetx-white">
+                                    <a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-open"></i><span>Categorias</span></a>
+                                </li>
+                                <li class="nav-item tetx-white">
+                                    <a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tags"></i><span>Marcas</span></a>
+                                </li>
+                                <li class="nav-item tetx-white">
+                                    <a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Famílias</span></a>
+                                </li>                                    
+                                <li class="nav-item tetx-white">
+                                    <a class="nav-link" asp-area="" asp-controller="Movimento" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Movimentos</span></a>
+                                </li>                     
+          
+                            }
 
-							@if (role == "Administrador" || role == "Gerente")
-							{
-								<li class="nav-item categ">
-									<a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-open"></i><span>Categorias</span></a>
-								</li>
-								<li class="nav-item marca">
-									<a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tags"></i><span>Marcas</span></a>
-								</li>
-								<li class="nav-item prod">
-									<a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Famílias</span></a>
-								</li>
-							}
+                            @if (role == "Administrador")
+                            {
+                                <li class="nav-item tetx-white">
+                                    <a class="nav-link" asp-area="" asp-controller="TipoMovimento" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Tipo Movimento</span></a>
+                                </li>
+
+                                <li class="nav-item tetx-white">
+                                    <a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box"></i><span>Embalagens</span></a>
+                                </li>
+                                <li class="nav-item tetx-white">
+                                    <a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-secret"></i><span>Usuários</span></a>
+                                </li>
+                            }
+                        }
+                    </ul>
 
 							@if (role == "Administrador")
 							{

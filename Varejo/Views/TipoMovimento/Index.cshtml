@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Varejo.ViewModels.TipoMovimentoViewModel>
+
+@{
+    ViewData["Title"] = "Tipos de Movimento";
+}
+
+<h2>Tipos de Movimento</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Novo Tipo de Movimento</a>
+</p>
+
+<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+    <table class="w-100">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Tipo de Movimento</th>
+                <th>Espécie</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tipo in Model)
+            {
+                <tr>
+                    <td>@tipo.IdTipoMovimento</td>
+                    <td>@tipo.DescricaoTipoMovimento</td>
+                    <td>@tipo.DescricaoEspecie</td>
+                    <td class="text-center" id="acoes">
+                        <a class="btn btn-warning btn-sm text-white" asp-action="Edit" asp-route-id="@tipo.IdTipoMovimento">Editar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

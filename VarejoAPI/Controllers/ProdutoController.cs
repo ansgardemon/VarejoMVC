@@ -41,10 +41,10 @@ namespace VarejoAPI.Controllers
                     Complemento = produto.Complemento,
                     NomeProduto = produto.NomeProduto,
                     EstoqueInicial = produto.EstoqueInicial,
-                    Ativo = produto.Ativo,
+                   
                     UrlImagem = produto.UrlImagem,
                     CustoMedio = produto.CustoMedio,
-                    FamiliaId = produto.FamiliaId,
+          
 
                 });
             }

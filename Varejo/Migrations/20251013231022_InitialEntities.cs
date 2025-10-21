@@ -440,6 +440,12 @@ namespace Varejo.Migrations
                 column: "FamiliaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Produtos_NomeProduto",
+                table: "Produtos",
+                column: "NomeProduto",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProdutosEmbalagem_Ean",
                 table: "ProdutosEmbalagem",
                 column: "Ean",
@@ -471,14 +477,27 @@ namespace Varejo.Migrations
                 column: "ProdutoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TiposEmbalagem_DescricaoTipoEmbalagem",
+                table: "TiposEmbalagem",
+                column: "DescricaoTipoEmbalagem",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TiposMovimento_EspecieMovimentoId",
                 table: "TiposMovimento",
                 column: "EspecieMovimentoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_nomeUsuario",
+                table: "Usuarios",
+                column: "nomeUsuario",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Usuarios_PessoaId",
                 table: "Usuarios",
-                column: "PessoaId");
+                column: "PessoaId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Usuarios_TipoUsuarioId",

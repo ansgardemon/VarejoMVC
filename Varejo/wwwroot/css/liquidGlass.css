@@ -93,6 +93,7 @@ h1.vitrino {
 .container-fluid a:hover span {
     display: block;
     position: absolute;
+    z-index:1;
     background: linear-gradient(135deg, var(--glass-bg), var(--bg-gradient-end));
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(var(--glass-blur));
@@ -485,22 +486,27 @@ body.dark {
 
 
 @media (max-width: 992px) {
-
-    .navbar .container-fluid {
-        display: grid !important;
-        grid-template-columns: auto 1fr; /* Master | Switch */
-        grid-template-rows: 1fr auto; /* Linha 1: Master/Switch | Linha 2: navbar-nav */
-        grid-template-areas:
-            "master switch"
-            "nav nav";
-        align-items: center;
-        width: 100%;
-        gap: 0.5rem;
+    .navbar {
+        max-width: 675px !important;
+        max-height: 140px;
     }
+
+        .navbar .container-fluid {
+            display: grid !important;
+            grid-template-columns: auto 1fr; /* Master | Switch */
+            grid-template-rows: 1fr auto; /* Linha 1: Master/Switch | Linha 2: navbar-nav */
+            grid-template-areas:
+                "master switch"
+                "nav nav";
+            align-items: center;
+            width: 100%;
+            gap: 0.5rem;
+        }
 
     .master {
         grid-area: master;
         justify-self: start;
+        position: sticky;
     }
 
     .switch {
@@ -516,7 +522,9 @@ body.dark {
         gap: 1rem;
         width: 100%;
         padding-top: 0.5rem;
-        border-top: 1px solid rgba(255,255,255,0.2);
+        max-height: 120px;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
         /* Ajuste nos links */
@@ -531,15 +539,11 @@ body.dark {
 
 @media (max-width: 575px) {
     .navbar {
-        position: absolute;
         z-index: 1;
-        top: 0;
+        position: absolute;
+        top: 10px;
         left: 50%;
         transform: translateX(-50%)
-    }
-
-    .nav-content {
-        position: relative;
     }
 
     .container-fluid {
@@ -549,16 +553,18 @@ body.dark {
 
     navbar-collapse {
         display: flex;
-        justify-content: center!important;
-    }
-
-    .navbar-nav {
         flex-direction: column;
-        justify-content: center;
+        justify-content: center !important;
         align-items: center;
     }
 
+    .navbar-nav {
+        text-align: left;
+    }
+
     .switch {
+        left: 50%;
+        transform: translateX(-75%)
     }
 
     .navbar-nav a {
@@ -578,7 +584,6 @@ body.dark {
     }
 
     .navbar a span {
-        display: flex;
         transform: translateY(0px);
         width: fit-content;
     }
@@ -594,7 +599,7 @@ body.dark {
         transform: translateY(0px);
     }
 
-    main{
+    main {
         margin-top: 100px;
     }
 }

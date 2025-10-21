@@ -246,6 +246,11 @@ i {
     color: var(--subtext);
 }
 
+.card-img-details {
+    border-radius: 10px!important;
+    position: relative;
+}
+
 /* Card check */
 .card.check {
     cursor: pointer;
@@ -355,7 +360,7 @@ label {
     font-size: 1rem !important;
 }
 
-.endereco-item {
+.endereco-item, embalagem-item {
     width: 100%;
 }
 

@@ -36,6 +36,9 @@
 							@if (role == "Administrador" || role == "Gerente")
 							{
 								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+								</li>
+								<li class="nav-item tetx-white">
 									<a class="nav-link" asp-area="" asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-user"></i><span>Pessoa</span></a>
 								</li>
 								<li class="nav-item tetx-white">

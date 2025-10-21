@@ -33,52 +33,45 @@
 						@if (User.Identity?.IsAuthenticated ?? false)
 						{
 
-                            @if (role == "Administrador" || role == "Gerente")
-                            {
-                                <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-open"></i><span>Categorias</span></a>
-                                </li>
-                                <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tags"></i><span>Marcas</span></a>
-                                </li>
-                                <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Famílias</span></a>
-                                </li>                                    
-                                <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Movimento" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Movimentos</span></a>
-                                </li>                     
-          
-                            }
-
-                            @if (role == "Administrador")
-                            {
-                                <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="TipoMovimento" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Tipo Movimento</span></a>
-                                </li>
-
-                                <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box"></i><span>Embalagens</span></a>
-                                </li>
-                                <li class="nav-item tetx-white">
-                                    <a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-secret"></i><span>Usuários</span></a>
-                                </li>
-                            }
-                        }
-                    </ul>
+							@if (role == "Administrador" || role == "Gerente")
+							{
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+								</li>
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-user"></i><span>Pessoa</span></a>
+								</li>
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-open"></i><span>Categorias</span></a>
+								</li>
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tags"></i><span>Marcas</span></a>
+								</li>
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Famílias</span></a>
+								</li>
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="Movimento" asp-action="Index"><i class="fa-solid fa-shuffle"></i><span>Movimentos</span></a>
+								</li>
+							}
 
 							@if (role == "Administrador")
 							{
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="TipoMovimento" asp-action="Index"><i class="fa-solid fa-arrows-turn-to-dots"></i><span>Tipo Movimento</span></a>
+								</li>
+
 								<li class="nav-item embal">
 									<a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box"></i><span>Embalagens</span></a>
 								</li>
 								<li class="nav-item user">
-									<a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user"></i><span>Usuários</span></a>
+									<a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-secret"></i><span>Usuários</span></a>
 								</li>
 							}
-							<li class="nav-item home">
-								<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house"></i><span>Home</span></a>
-							</li>
 						}
+						<li class="nav-item home">
+							<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house"></i><span>Home</span></a>
+						</li>
 					</ul>
 
 					@* <!-- Usuário logado / Login --> *@
@@ -87,9 +80,9 @@
 					</div>
 
 					@* <!-- Switch --> *@
-					<label class="switch me-3">
-						<input type="checkbox" class="check">
-						<span class="slider"></span>
+					<label class="switch me-3 m-auto">
+						<input type="checkbox" class="check m-auto">
+						<span class="slider m-auto"></span>
 					</label>
 				</div>
 			</div>

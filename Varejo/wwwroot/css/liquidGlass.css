@@ -33,7 +33,7 @@
 
 body {
     background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-    color: var(--text);
+    color: var(--text) !important;
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: all 0.4s ease;
 }
@@ -49,6 +49,10 @@ h1.vitrino {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: -1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text) !important;
 }
 
 
@@ -93,7 +97,7 @@ h1.vitrino {
 .container-fluid a:hover span {
     display: block;
     position: absolute;
-    z-index:1;
+    z-index: 1;
     background: linear-gradient(135deg, var(--glass-bg), var(--bg-gradient-end));
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(var(--glass-blur));
@@ -223,6 +227,7 @@ i {
     border-radius: 20px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.3s ease;
+    color: var(--text) !important;
 }
 
     .card:hover {
@@ -247,7 +252,7 @@ i {
 }
 
 .card-img-details {
-    border-radius: 10px!important;
+    border-radius: 10px !important;
     position: relative;
 }
 
@@ -389,6 +394,7 @@ table {
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     transition: all 0.4s ease;
+    color: var(--text) !important;
 }
 
     table thead {
@@ -410,6 +416,10 @@ table {
     table tbody tr:nth-child(even), dl dd:nth-child(even) {
         background: linear-gradient(145deg, var(--table-even), rgba(200,200,200,0.5));
     }
+
+th {
+    color: var(--text);
+}
 
 dl {
     border: 1px solid var(--glass-border);

@@ -10,6 +10,9 @@ namespace Varejo.Interfaces
 
         Task<List<ProdutoViewModel>> GetByNameAsync(string query);
 
+        Task<bool> ProdutoEmbalagemPossuiMovimentoAsync(int idProdutoEmbalagem);
+
+
         Task AddAsync(Produto produto);
         Task UpdateAsync(Produto produto);
         Task DeleteAsync(int id);

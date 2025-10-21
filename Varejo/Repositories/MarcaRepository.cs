@@ -49,5 +49,6 @@ namespace Varejo.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
     }
 }

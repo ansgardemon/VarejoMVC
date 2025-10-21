@@ -135,7 +135,7 @@ namespace Varejo.Controllers
 
                 try
                 {
-                    await _categoriaRepository.AddAsync(categoria);
+                    await _categoriaRepository.UpdateAsync(categoria);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
@@ -171,8 +171,32 @@ namespace Varejo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _categoriaRepository.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            var categoria = await _categoriaRepository.GetByIdAsync(id);
+            if (categoria == null)
+                return NotFound();
+
+            try
+            {
+                await _categoriaRepository.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERRO] Falha ao excluir categoria Id={id}: {ex.Message}");
+
+                // Criar ViewModel para voltar à view
+                var viewModel = new CategoriaViewModel
+                {
+                    IdCategoria = categoria.IdCategoria,
+                    DescricaoCategoria = categoria.DescricaoCategoria,
+                    QuantidadeFamilia = categoria.Familias.Count
+                };
+
+                // Mensagem de erro para exibir na view
+                ViewData["DeleteError"] = "Não foi possível excluir a categoria. Ela pode estar sendo usada em algum registro.";
+
+                return View("Delete", viewModel);
+            }
         }
     }
 }

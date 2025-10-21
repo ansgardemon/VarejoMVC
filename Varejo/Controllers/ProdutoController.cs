@@ -306,22 +306,28 @@ namespace Varejo.Controllers
             return View(produtoVm);
         }
 
-        // EDIT POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ProdutoViewModel viewModel)
         {
+            Console.WriteLine($"[LOG] Iniciando edição do produto Id={viewModel.IdProduto}");
+
             var produto = await _produtoRepository.GetByIdAsync(viewModel.IdProduto);
-            if (produto == null) return NotFound();
+            if (produto == null)
+            {
+                Console.WriteLine("[LOG] Produto não encontrado");
+                return NotFound();
+            }
 
             var tipos = await _tipoEmbalagemRepository.GetAllAsync() ?? new List<TipoEmbalagem>();
 
-            // Validação
+            // Validação do ModelState
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("[LOG] ModelState inválido");
                 ViewBag.NomeFamilia = (await _familiaRepository.GetByIdAsync(viewModel.FamiliaId))?.NomeFamilia;
                 ViewBag.TiposEmbalagem = tipos;
-                // Repopular TiposEmbalagem para cada embalagem existente
+
                 if (viewModel.Embalagens != null)
                 {
                     foreach (var emb in viewModel.Embalagens)
@@ -336,11 +342,11 @@ namespace Varejo.Controllers
                 return View(viewModel);
             }
 
-            // Atualizar dados do produto
+            // Atualizar dados principais
             produto.Complemento = viewModel.Complemento;
-            produto.Ativo = viewModel.Ativo;
+            Console.WriteLine($"[LOG] Produto atualizado: Complemento='{produto.Complemento}'");
 
-            // Atualizar imagem se houver upload
+            // Atualizar imagem, se houver
             if (viewModel.ImagemUpload != null)
             {
                 var nomeArquivo = Guid.NewGuid().ToString() + Path.GetExtension(viewModel.ImagemUpload.FileName);
@@ -350,27 +356,35 @@ namespace Varejo.Controllers
                 await viewModel.ImagemUpload.CopyToAsync(stream);
 
                 produto.UrlImagem = "/img/" + nomeArquivo;
+                Console.WriteLine($"[LOG] Imagem atualizada: {produto.UrlImagem}");
             }
 
             // NomeProduto automático
             var familia = await _familiaRepository.GetByIdAsync(produto.FamiliaId);
             produto.NomeProduto = $"{familia?.NomeFamilia} {produto.Complemento}";
+            Console.WriteLine($"[LOG] NomeProduto definido: {produto.NomeProduto}");
 
-            // Atualizar embalagens
             var embalagensRecebidas = viewModel.Embalagens ?? new List<ProdutoEmbalagemViewModel>();
-
-            // Remover embalagens que não existem mais
             var idsRecebidos = embalagensRecebidas
                 .Where(e => e.IdProdutoEmbalagem != 0)
                 .Select(e => e.IdProdutoEmbalagem)
                 .ToList();
 
-            var paraRemover = produto.ProdutosEmbalagem
-                .Where(e => !idsRecebidos.Contains(e.IdProdutoEmbalagem))
-                .ToList();
+            // Remover apenas embalagens que não possuem movimentos
+            foreach (var emb in produto.ProdutosEmbalagem.ToList())
+            {
+                if (!idsRecebidos.Contains(emb.IdProdutoEmbalagem))
+                {
+                    bool possuiMovimento = await _produtoRepository.ProdutoEmbalagemPossuiMovimentoAsync(emb.IdProdutoEmbalagem);
+                    Console.WriteLine($"[LOG] Embalagem Id={emb.IdProdutoEmbalagem}, PossuiMovimento={possuiMovimento}");
 
-            foreach (var emb in paraRemover)
-                produto.ProdutosEmbalagem.Remove(emb);
+                    if (!possuiMovimento)
+                    {
+                        produto.ProdutosEmbalagem.Remove(emb);
+                        Console.WriteLine($"[LOG] Embalagem Id={emb.IdProdutoEmbalagem} removida");
+                    }
+                }
+            }
 
             // Atualizar ou adicionar embalagens
             foreach (var embVm in embalagensRecebidas)
@@ -384,33 +398,50 @@ namespace Varejo.Controllers
                         emb.Preco = embVm.Preco;
                         emb.Ean = embVm.Ean;
                         emb.TipoEmbalagemId = embVm.TipoEmbalagemId;
+                        Console.WriteLine($"[LOG] Embalagem Id={emb.IdProdutoEmbalagem} atualizada: Preco={emb.Preco}, EAN={emb.Ean}, TipoId={emb.TipoEmbalagemId}");
+                    }
+                    else
+                    {
+                        // Esse caso não deveria ocorrer, mas podemos logar
+                        Console.WriteLine($"[WARN] Embalagem Id={embVm.IdProdutoEmbalagem} não encontrada para atualizar");
                     }
                 }
                 else
                 {
-                    // Nova embalagem
-                    produto.ProdutosEmbalagem.Add(new ProdutoEmbalagem
+                    // Verificar se já existe embalagem com o mesmo EAN no produto
+                    var embExistente = produto.ProdutosEmbalagem.FirstOrDefault(e => e.Ean == embVm.Ean);
+                    if (embExistente != null)
                     {
-                        Preco = embVm.Preco,
-                        Ean = embVm.Ean,
-                        TipoEmbalagemId = embVm.TipoEmbalagemId
-                    });
+                        // Atualiza em vez de adicionar
+                        embExistente.Preco = embVm.Preco;
+                        embExistente.TipoEmbalagemId = embVm.TipoEmbalagemId;
+                        Console.WriteLine($"[LOG] Embalagem com EAN={embVm.Ean} já existe, atualizando em vez de inserir");
+                    }
+                    else
+                    {
+                        // Nova embalagem
+                        produto.ProdutosEmbalagem.Add(new ProdutoEmbalagem
+                        {
+                            Preco = embVm.Preco,
+                            Ean = embVm.Ean,
+                            TipoEmbalagemId = embVm.TipoEmbalagemId
+                        });
+                        Console.WriteLine($"[LOG] Nova embalagem adicionada: Preco={embVm.Preco}, EAN={embVm.Ean}, TipoId={embVm.TipoEmbalagemId}");
+                    }
                 }
             }
-
 
             try
             {
                 await _produtoRepository.UpdateAsync(produto);
+                Console.WriteLine("[LOG] Produto atualizado com sucesso no repositório");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[ERRO] Ao editar produto: " + ex.Message);
-                ModelState.AddModelError(string.Empty, "Não foi possível criar o produto. Verifique se o EAN ou Produto já existem.");
+                Console.WriteLine($"[ERRO] Ao editar produto: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Não foi possível atualizar o produto. Verifique se o EAN ou Produto já existem.");
 
-                // Recarregar listas para ViewBag
-                var tipo = await _tipoEmbalagemRepository.GetAllAsync() ?? new List<TipoEmbalagem>();
-                viewModel.Embalagens = viewModel.Embalagens ?? new List<ProdutoEmbalagemViewModel>();
+                viewModel.Embalagens ??= new List<ProdutoEmbalagemViewModel>();
                 foreach (var emb in viewModel.Embalagens)
                 {
                     emb.TiposEmbalagem = tipos.Select(t => new SelectListItem
@@ -425,8 +456,11 @@ namespace Varejo.Controllers
 
                 return View(viewModel);
             }
+
             return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
         }
+
+
 
 
 
@@ -451,17 +485,38 @@ namespace Varejo.Controllers
 
             return View(produtoVm);
         }
-
         // POST: Produto/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var produto = await _produtoRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
+            if (produto == null)
+                return NotFound();
 
-            await _produtoRepository.DeleteAsync(id);
-            return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
+            try
+            {
+                await _produtoRepository.DeleteAsync(id);
+                return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERRO] Falha ao excluir Produto Id={id}: {ex.Message}");
+
+                // Cria ViewModel para reexibir a página com mensagem de erro
+                var viewModel = new ProdutoViewModel
+                {
+                    IdProduto = produto.IdProduto,
+                    NomeProduto = produto.NomeProduto,
+                    Complemento = produto.Complemento,
+                    FamiliaId = produto.FamiliaId
+                };
+
+                // Mensagem de erro visível na view
+                ViewData["DeleteError"] = "Não foi possível excluir este produto. Ele pode estar sendo usado em algum movimento ou embalagem.";
+
+                return View("Delete", viewModel);
+            }
         }
 
 

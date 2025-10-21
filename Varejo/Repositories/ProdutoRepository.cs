@@ -86,6 +86,16 @@ namespace Varejo.Repositories
                 .ToListAsync();
         }
 
+        public async Task<bool> ProdutoEmbalagemPossuiMovimentoAsync(int idProdutoEmbalagem)
+        {
+            // Supondo que você tenha uma tabela de movimentos chamada "Movimentos"
+            // que tem uma FK chamada ProdutoEmbalagemId
+            return await _context.ProdutosMovimento
+                                 .AnyAsync(m => m.ProdutoEmbalagemId == idProdutoEmbalagem);
+        }
+
+
+
         public async Task UpdateAsync(Produto produto)
         {
             _context.Produtos.Update(produto);

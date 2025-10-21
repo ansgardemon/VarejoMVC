@@ -1,0 +1,6 @@
+@VarejoAPI_HostAddress = http://localhost:5018
+
+GET {{VarejoAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

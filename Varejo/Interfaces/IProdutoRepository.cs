@@ -10,6 +10,7 @@ namespace Varejo.Interfaces
 
         Task<List<ProdutoViewModel>> GetByNameAsync(string query);
 
+        Task<List<Produto>> GetByFamilia(int id);
         Task<bool> ProdutoEmbalagemPossuiMovimentoAsync(int idProdutoEmbalagem);
 
 

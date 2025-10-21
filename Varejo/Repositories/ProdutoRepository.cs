@@ -35,6 +35,15 @@ namespace Varejo.Repositories
             return await _context.Produtos.ToListAsync();
         }
 
+        public async Task<List<Produto>> GetByFamilia(int id)
+        {
+            return await _context.Produtos
+             .Include(p => p.Familia)
+             .Where(p => p.FamiliaId == id)
+             .ToListAsync();
+
+        }
+
         public async Task<Produto?> GetByIdAsync(int id)
         {
             return await _context.Produtos
@@ -92,5 +101,6 @@ namespace Varejo.Repositories
             _context.Produtos.Update(produto);
             await _context.SaveChangesAsync();
         }
+        
     }
 }

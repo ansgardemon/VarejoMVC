@@ -27,6 +27,10 @@
     transition: .3s ease;
 }
 
+    *::marker {
+        display: none !important;
+    }
+
 body {
     background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     color: var(--text);
@@ -59,6 +63,7 @@ h1.vitrino {
     border-radius: 16px;
     margin: 10px;
     padding: 0.5rem 1rem;
+    list-style: none !important;
 }
 
     .navbar .nav-link {
@@ -80,7 +85,9 @@ h1.vitrino {
 
 .navbar a span {
     display: none;
-    transform: translateY(45px);
+    transform: translateY(50px);
+    width: fit-content;
+    text-align: center;
 }
 
 .container-fluid a:hover span {
@@ -92,10 +99,6 @@ h1.vitrino {
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-radius: 8px;
     padding: .5rem;
-}
-
-.icon-home a span {
-    transform: translateY(0px);
 }
 
 .nav-content {
@@ -155,6 +158,10 @@ i {
         .navbar-nav a:hover i {
             filter: saturate(1.4);
         }
+
+.master {
+    color: var(--text);
+}
 
 /* ================== SWITCH ================== */
 
@@ -479,9 +486,8 @@ body.dark {
 
 @media (max-width: 992px) {
 
-    /* Navbar como grid */
     .navbar .container-fluid {
-        display: grid;
+        display: grid !important;
         grid-template-columns: auto 1fr; /* Master | Switch */
         grid-template-rows: 1fr auto; /* Linha 1: Master/Switch | Linha 2: navbar-nav */
         grid-template-areas:
@@ -492,7 +498,6 @@ body.dark {
         gap: 0.5rem;
     }
 
-    /* Primeira linha */
     .master {
         grid-area: master;
         justify-self: start;
@@ -503,24 +508,93 @@ body.dark {
         justify-self: end;
     }
 
-    /* Segunda linha */
     .navbar-nav {
         grid-area: nav;
-        display: flex; /* flex dentro da grid para distribuir os links */
+        display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 1rem;
         width: 100%;
         padding-top: 0.5rem;
         border-top: 1px solid rgba(255,255,255,0.2);
     }
 
         /* Ajuste nos links */
-        .navbar-nav .nav-link {
+        .navbar-nav a.nav-link {
             display: flex;
             align-items: center;
             gap: 0.3rem;
             padding: 0.4rem 0.8rem;
-            font-size: 0.9rem;
+            font-size: 1rem !important;
         }
+}
+
+@media (max-width: 575px) {
+    .navbar {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%)
+    }
+
+    .nav-content {
+        position: relative;
+    }
+
+    .container-fluid {
+        display: flex;
+        justify-content: flex-start !important;
+    }
+
+    navbar-collapse {
+        display: flex;
+        justify-content: center!important;
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .switch {
+    }
+
+    .navbar-nav a {
+        display: flex;
+        align-items: center;
+        border-radius: 16px;
+        font-size: 80%;
+    }
+
+        .navbar-nav a:hover {
+            box-shadow: none;
+            background: none;
+        }
+
+    .navbar li {
+        margin: auto;
+    }
+
+    .navbar a span {
+        display: flex;
+        transform: translateY(0px);
+        width: fit-content;
+    }
+
+    .container-fluid a:hover span {
+        display: flex;
+        position: relative;
+        background: none;
+        border: none;
+    }
+
+    .icon-home a span {
+        transform: translateY(0px);
+    }
+
+    main{
+        margin-top: 100px;
+    }
 }

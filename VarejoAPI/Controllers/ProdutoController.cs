@@ -40,12 +40,14 @@ namespace VarejoAPI.Controllers
                     IdProduto = produto.IdProduto,
                     Complemento = produto.Complemento,
                     NomeProduto = produto.NomeProduto,
-                    EstoqueInicial = produto.EstoqueInicial,
-                   
+                    EstoqueInicial = produto.EstoqueInicial,                  
                     UrlImagem = produto.UrlImagem,
                     CustoMedio = produto.CustoMedio,
-          
-
+                    FamiliaId = produto.FamiliaId,
+                    EmbalagemProd = produto.ProdutosEmbalagem?.Select(pe => new ProdutoEmbalagemOutputDTO
+                    {
+                        Preco = pe.Preco
+                    }).ToList()
                 });
             }
 
@@ -69,55 +71,63 @@ namespace VarejoAPI.Controllers
                 UrlImagem = produto.UrlImagem,
                 CustoMedio = produto.CustoMedio,
                 FamiliaId = produto.FamiliaId,
+                
+
+
+                EmbalagemProd = produto.ProdutosEmbalagem?.Select(pe => new ProdutoEmbalagemOutputDTO
+                {
+                    Preco = pe.Preco
+                }).ToList()
+
             };
 
             return Ok(resultado);
         }
 
-        [HttpGet("categoria/{idCategoria}")]
-        public async Task<IActionResult> Details(int idCategoria)
-        {
-            var categoria = await _categoriaRepository.GetByIdAsync(idCategoria);
+        //[HttpGet("categoria/{idCategoria}")]
+        //public async Task<IActionResult> Details(int idCategoria)
+        //{
+        //    var categoria = await _categoriaRepository.GetByIdAsync(idCategoria);
 
-            if (categoria == null)
-                return NotFound();
+        //    if (categoria == null)
+        //        return NotFound();
 
-            var viewModel = new CategoriaOutputDTO
-            {
-                IdCategoria = categoria.IdCategoria,
-                DescricaoCategoria = categoria.DescricaoCategoria ?? string.Empty,
+        //    var viewModel = new CategoriaOutputDTO
+        //    {
+        //        IdCategoria = categoria.IdCategoria,
+        //        DescricaoCategoria = categoria.DescricaoCategoria ?? string.Empty,
 
-                Familias = categoria.Familias?
-                    .Where(f => f != null)
-                    .Select(f =>
-                    {
-                        var produtos = f.Produtos?
-                            .Where(p => p != null)
-                            .Select(p => new ProdutoOutputDTO
-                            {
-                                IdProduto = p.IdProduto,
-                                NomeProduto = p.NomeProduto ?? string.Empty,
-                                Complemento = p.Complemento ?? string.Empty,
-                                EstoqueInicial = p.EstoqueInicial,
-                                Ativo = p.Ativo,
-                                UrlImagem = p.UrlImagem ?? string.Empty,
-                                CustoMedio = p.CustoMedio,
-                                FamiliaId = p.FamiliaId
-                            })
-                            .ToList() ?? new List<ProdutoOutputDTO>();
+        //        Familias = categoria.Familias?
+        //            .Where(f => f != null)
+        //            .Select(f =>
+        //            {
+        //                var produtos = f.Produtos?
+        //                    .Where(p => p != null)
+        //                    .Select(p => new ProdutoOutputDTO
+        //                    {
+        //                        IdProduto = p.IdProduto,
+        //                        NomeProduto = p.NomeProduto ?? string.Empty,
+        //                        Complemento = p.Complemento ?? string.Empty,
+        //                        EstoqueInicial = p.EstoqueInicial,
+        //                        Ativo = p.Ativo,
+        //                        UrlImagem = p.UrlImagem ?? string.Empty,
+        //                        CustoMedio = p.CustoMedio,
+        //                        FamiliaId = p.FamiliaId
+        //                    })
+        //                    .ToList() ?? new List<ProdutoOutputDTO>();
 
-                        return new FamiliaOutputDTO
-                        {
-                            IdFamilia = f.IdFamilia,
-                            NomeFamilia = f.NomeFamilia ?? string.Empty,
-                            Produtos = produtos
-                        };
-                    })
-                    .ToList() ?? new List<FamiliaOutputDTO>()
-            };
+        //                return new FamiliaOutputDTO
+        //                {
+        //                    IdFamilia = f.IdFamilia,
+        //                    NomeFamilia = f.NomeFamilia ?? string.Empty,
+        //                    Produtos = produtos
+        //                };
+        //            })
+        //            .ToList() ?? new List<FamiliaOutputDTO>()
+        //    };
 
-            return Ok(viewModel);
-        }
+        //    return Ok(viewModel);
+        //}
 
 
         [HttpGet("familia/{idFamilia}")]
@@ -139,6 +149,11 @@ namespace VarejoAPI.Controllers
                     UrlImagem = produto.UrlImagem,
                     CustoMedio = produto.CustoMedio,
                     FamiliaId = produto.FamiliaId,
+
+                    EmbalagemProd = produto.ProdutosEmbalagem?.Select(pe => new ProdutoEmbalagemOutputDTO
+                    {
+                        Preco = pe.Preco
+                    }).ToList()
                 });
             }
 

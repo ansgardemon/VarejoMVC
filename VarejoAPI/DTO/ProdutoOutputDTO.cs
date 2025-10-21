@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Varejo.Models;
+using Varejo.ViewModels;
 
 namespace VarejoAPI.DTO
 {
@@ -22,18 +23,11 @@ namespace VarejoAPI.DTO
 
         public decimal CustoMedio { get; set; }
 
-
-        //RELACIONAMENTO COM FAMILIA 
-
         public int FamiliaId { get; set; }
 
+        public List<ProdutoEmbalagemOutputDTO>? EmbalagemProd { get; set; }
 
-
-        public List<FamiliaOutputDTO> FamiliasProduto { get; set; } = new List<FamiliaOutputDTO>();
-        public List<CategoriaOutputDTO> CategoriaProduto { get; set; } = new List<CategoriaOutputDTO>();
     }
-
-
 
 }
 

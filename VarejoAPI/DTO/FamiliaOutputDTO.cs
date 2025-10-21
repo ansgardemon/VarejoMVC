@@ -11,6 +11,5 @@ public class FamiliaOutputDTO
     public string? CategoriaId { get; set; }
     public string? MarcaId { get; set; }
 
-    public List<ProdutoOutputDTO>? Produtos { get; internal set; }
 }
 

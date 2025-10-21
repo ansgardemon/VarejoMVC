@@ -77,6 +77,7 @@ namespace VarejoAPI.Controllers
         public async Task<ActionResult> GetFamilia(int idCategoria)
         {
             var familias = await _familiaRepository.GetByCategory(idCategoria);
+            //var familias = await _familiaRepository.GetByCategory(idCategoria);
 
             var resultado = new List<FamiliaOutputDTO>();
 
@@ -89,6 +90,7 @@ namespace VarejoAPI.Controllers
                     Ativo = familia.Ativo,
                     CategoriaId = familia.CategoriaId.ToString(),
                     MarcaId = familia.MarcaId?.ToString(),
+                    
                 });
             }
 

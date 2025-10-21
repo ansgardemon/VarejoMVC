@@ -161,14 +161,39 @@ namespace Varejo.Controllers
             return View(viewModel);
         }
 
-        // POST: Marca/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _marcaRepository.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            var marca = await _marcaRepository.GetByIdAsync(id);
+            if (marca == null)
+                return NotFound();
+
+            try
+            {
+                await _marcaRepository.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERRO] Falha ao excluir marca Id={id}: {ex.Message}");
+
+                // Carrega novamente a marca para enviar à view
+                marca = await _marcaRepository.GetByIdAsync(id);
+
+                var viewModel = new MarcaViewModel
+                {
+                    IdMarca = marca.IdMarca,
+                    NomeMarca = marca.NomeMarca,
+                    QuantidadeFamilia = marca.Familias.Count
+                };
+
+                ViewData["DeleteError"] = "Não foi possível excluir a marca. Ela pode ter famílias associadas.";
+
+                return View("Delete", viewModel);
+            }
         }
+
     }
 
 

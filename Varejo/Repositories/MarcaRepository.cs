@@ -42,12 +42,21 @@ namespace Varejo.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            var marca = await _context.Marcas.FindAsync(id);
-            if (marca != null)
-            {
-                _context.Marcas.Remove(marca);
-                await _context.SaveChangesAsync();
-            }
+            // Carrega a marca junto com suas famílias
+            var marca = await _context.Marcas
+                .Include(m => m.Familias)
+                .FirstOrDefaultAsync(m => m.IdMarca == id);
+
+            if (marca == null)
+                return;
+
+            // Se houver famílias associadas, lança exceção
+            if (marca.Familias.Any())
+                throw new InvalidOperationException("Não é possível deletar marca com famílias associadas.");
+
+            _context.Marcas.Remove(marca);
+            await _context.SaveChangesAsync();
         }
+
     }
 }

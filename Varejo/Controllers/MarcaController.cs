@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
+using Varejo.Repositories;
 using Varejo.ViewModels;
 
 namespace Varejo.Controllers
@@ -160,7 +161,7 @@ namespace Varejo.Controllers
 
             return View(viewModel);
         }
-
+        // POST: Marca/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -171,28 +172,32 @@ namespace Varejo.Controllers
 
             try
             {
+                // Se a marca tiver famílias associadas, impede a exclusão
+                if (marca.Familias != null && marca.Familias.Count > 0)
+                    throw new InvalidOperationException("A marca possui famílias associadas e não pode ser excluída.");
+
                 await _marcaRepository.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERRO] Falha ao excluir marca Id={id}: {ex.Message}");
+                Console.WriteLine($"[ERRO] Falha ao excluir Marca Id={id}: {ex.Message}");
 
-                // Carrega novamente a marca para enviar à view
-                marca = await _marcaRepository.GetByIdAsync(id);
-
+                // Cria o ViewModel para reexibir a tela com o erro
                 var viewModel = new MarcaViewModel
                 {
                     IdMarca = marca.IdMarca,
                     NomeMarca = marca.NomeMarca,
-                    QuantidadeFamilia = marca.Familias.Count
+                    QuantidadeFamilia = marca.Familias?.Count ?? 0
                 };
 
-                ViewData["DeleteError"] = "Não foi possível excluir a marca. Ela pode ter famílias associadas.";
+                // Mensagem de erro visível na view
+                ViewData["DeleteError"] = "❌ Não foi possível excluir esta marca, pois há famílias associadas.";
 
                 return View("Delete", viewModel);
             }
         }
+
 
     }
 

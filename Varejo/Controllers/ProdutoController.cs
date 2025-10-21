@@ -485,17 +485,38 @@ namespace Varejo.Controllers
 
             return View(produtoVm);
         }
-
         // POST: Produto/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var produto = await _produtoRepository.GetByIdAsync(id);
-            if (produto == null) return NotFound();
+            if (produto == null)
+                return NotFound();
 
-            await _produtoRepository.DeleteAsync(id);
-            return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
+            try
+            {
+                await _produtoRepository.DeleteAsync(id);
+                return RedirectToAction("Details", "Familia", new { id = produto.FamiliaId });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERRO] Falha ao excluir Produto Id={id}: {ex.Message}");
+
+                // Cria ViewModel para reexibir a página com mensagem de erro
+                var viewModel = new ProdutoViewModel
+                {
+                    IdProduto = produto.IdProduto,
+                    NomeProduto = produto.NomeProduto,
+                    Complemento = produto.Complemento,
+                    FamiliaId = produto.FamiliaId
+                };
+
+                // Mensagem de erro visível na view
+                ViewData["DeleteError"] = "Não foi possível excluir este produto. Ele pode estar sendo usado em algum movimento ou embalagem.";
+
+                return View("Delete", viewModel);
+            }
         }
 
 

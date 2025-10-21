@@ -137,6 +137,12 @@ namespace Varejo.Data
                 .HasForeignKey(pm => pm.MovimentoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Familia>()
+    .HasOne(f => f.Marca)
+    .WithMany(m => m.Familias)
+    .HasForeignKey(f => f.MarcaId)
+    .OnDelete(DeleteBehavior.Restrict);
+
 
 
 

@@ -1,50 +1,4 @@
 ﻿$(document).ready(function () {
-
-    // =========== CPF - CNPJ ===========
-
-    const cpfCnpjMask = function (val) {
-        const num = val.replace(/\D/g, '');
-        return num.length <= 11 ? '000.000.000-009' : '00.000.000/0000-00';
-    };
-
-    const cpfCnpjOptions = {
-        onKeyPress: function (val, e, field, options) {
-            field.mask(cpfCnpjMask.apply({}, arguments), options);
-        }
-    };
-
-    $('input[id*="CpfCnpj"], input[name*="CpfCnpj"]').mask(cpfCnpjMask, cpfCnpjOptions);
-
-    const $cpfCnpj = $('#CpfCnpj');
-    const $juridico = $('#EhJuridico');
-
-    $cpfCnpj.on('input', function () {
-        const valor = $(this).val().replace(/\D/g, ''); // remove tudo que não é número
-
-        if (valor.length > 11) {
-            $juridico.prop('checked', true); // ativa o checkbox
-        } else {
-            $juridico.prop('checked', false); // desativa
-        }
-    });
-
-    // =========== CEP ===========
-    $('input[id*="Cep"], input[name*="Cep"]').mask('00000-000');
-
-    // =========== TELEFONE ===========
-    const phoneMask = function (val) {
-        const num = val.replace(/\D/g, '');
-        return num.length > 8 ? '00000-0000' : '0000-00009';
-    };
-
-    const phoneOptions = {
-        onKeyPress: function (val, e, field, options) {
-            field.mask(phoneMask.apply({}, arguments), options);
-        }
-    };
-
-    $('input[id*="Telefone"], input[name*="Telefone"]').mask(phoneMask, phoneOptions);
-
     // =========== SWITCH ===========
     const check = document.querySelector('.check');
 
@@ -80,5 +34,29 @@
     ];
 
     $(`input[name="${campos.join('"], input[name="')}"]`).filter(':visible:first').focus();
+
+
+
+    // =========== ENTER NOS FORMS ===========
+
+    $('form').on('keydown', 'input, select, textarea', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            const form = $(this).closest('form');
+            const campos = form.find('input, select, textarea, button')
+                .filter(':visible:not([disabled])');
+            const indexAtual = campos.index(this);
+
+            // se houver próximo campo, foca nele
+            if (indexAtual > -1 && indexAtual + 1 < campos.length) {
+                campos.eq(indexAtual + 1).focus();
+            }
+            // se for o último campo, envia o formulário
+            else {
+                form.submit();
+            }
+        }
+    });
 
 });

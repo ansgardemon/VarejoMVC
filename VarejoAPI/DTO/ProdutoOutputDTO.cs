@@ -26,12 +26,14 @@ namespace VarejoAPI.DTO
         //RELACIONAMENTO COM FAMILIA 
 
         public int FamiliaId { get; set; }
-        public virtual Familia? Familia { get; set; }
-
-        //RELACIONAMENTO UM PARA MUITOS
-        public virtual ICollection<ProdutoEmbalagem>? ProdutosEmbalagem { get; set; }
 
 
 
+        public List<FamiliaOutputDTO> FamiliasProduto { get; set; } = new List<FamiliaOutputDTO>();
+        public List<CategoriaOutputDTO> CategoriaProduto { get; set; } = new List<CategoriaOutputDTO>();
     }
+
+
+
 }
+

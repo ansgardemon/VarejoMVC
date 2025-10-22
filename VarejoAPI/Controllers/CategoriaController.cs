@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
-using Varejo.ViewModels;
+using Varejo.Repositories;
 using VarejoAPI.DTO;
 
 namespace VarejoAPI.Controllers
@@ -11,25 +10,60 @@ namespace VarejoAPI.Controllers
     [ApiController]
     public class CategoriaController : ControllerBase
     {
+
         private readonly ICategoriaRepository _categoriaRepository;
 
-        public CategoriaController(ICategoriaRepository categoriaRepository)
+
+        public CategoriaController (ICategoriaRepository categoriaRepository)
         {
             _categoriaRepository = categoriaRepository;
+           _categoriaRepository = categoriaRepository;
         }
+
+
         [HttpGet]
-        public async Task<IActionResult> GetCategoria()
+        public async Task<ActionResult> Get()
         {
             var categorias = await _categoriaRepository.GetAllAsync();
-            var DTOlst = categorias.Select(c => new CategoriaOutputDTO
+
+
+            var resultado = new List<CategoriaOutputDTO>();
+
+            foreach (var categoria in categorias)
             {
-                IdCategoria = c.IdCategoria,
-                DescricaoCategoria = c.DescricaoCategoria,
-            }).ToList();
 
-            return Ok(DTOlst);
-        }    
 
+
+                resultado.Add(new CategoriaOutputDTO
+                {
+                    IdCategoria = categoria.IdCategoria,
+                    DescricaoCategoria = categoria.DescricaoCategoria
+
+                });
+            }
+
+            return Ok(resultado);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> Get(int id)
+        {
+             var categoria = await _categoriaRepository.GetByIdAsync(id);
+
+            if (categoria == null)
+                return NotFound();
+
+            var resultado = new List<CategoriaOutputDTO>();
+
+
+            resultado.Add(new CategoriaOutputDTO
+            {
+                IdCategoria = categoria.IdCategoria,
+                DescricaoCategoria = categoria.DescricaoCategoria
+            });
+
+            return Ok(resultado);
+        }
 
     }
 }

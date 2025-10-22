@@ -8,7 +8,7 @@ namespace Varejo.Models
         [Key]
         public int IdCategoria { get; set; }
 
-        
+
         [Required]
         [StringLength(50)]
         [Display(Name = "Categoria")]

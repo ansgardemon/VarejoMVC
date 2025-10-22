@@ -41,9 +41,10 @@
                     </div>
                 }
 
-                <div class="form-check mb-3">
-                    <input asp-for="Ativo" class="form-check-input" />
-                    <label asp-for="Ativo" class="form-check-label"></label>
+                <div class="mb-3">
+                    <label class="card check p-3 text-center ativo-btn mb-2">
+                        <input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
+                    </label>
                 </div>
 
                 <h4>Embalagens</h4>
@@ -72,7 +73,9 @@
                                 <label class="form-label">EAN</label>
                                 <input name="Embalagens[@i].Ean" class="form-control" value="@embalagem.Ean" />
 
-                                <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
+                                <div class="mb-3 d-flex justify-content-end">
+					                <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
+				                </div>
                             </div>
                         }
                     }
@@ -82,16 +85,13 @@
                     }
                 </div>
 
-                <button type="button" id="adicionar-embalagem" class="btn btn-success mb-3">+ Adicionar Embalagem</button>
+                <div class="btns-endereco d-inline-flex" style="margin-left: 8px; transform: translateY(-82px)">
+		            <button type="button" id="adicionar-embalagem" class="btn btn-success">+ Adicionar Embalagem</button>
 
-                <div class="d-flex justify-content-between">
-                    <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Voltar
-                    </a>
-                    <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-save"></i> Salvar Alterações
-                    </button>
-                </div>
+		            <button type="submit" class="btn btn-primary">Adicionar Produto</button>
+		
+                    <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-secondary">Voltar</a>
+	            </div>
             </form>
         </div>
     </div>
@@ -124,7 +124,9 @@
                         <label>EAN</label>
                         <input name="Embalagens[${index}].Ean" class="form-control" />
 
-                        <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
+                        <div class="mb-3 d-flex justify-content-end">
+					         <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
+				        </div>
                     </div>
                 `;
 

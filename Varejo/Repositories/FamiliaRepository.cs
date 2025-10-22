@@ -71,6 +71,18 @@ namespace Varejo.Repositories
             return _context.Categorias.ToList();
         }
 
+        public async Task<List<Familia>> GetByCategory(int id)
+        {
+       
+            return await _context.Familias
+             .Include(p => p.Categoria)
+             .Where(p => p.CategoriaId == id)
+             .ToListAsync();
+
+        }
+
+     
     }
 }
+
 

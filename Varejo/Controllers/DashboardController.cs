@@ -32,6 +32,10 @@ namespace Varejo.Controllers
             vm.TotalUsuarios = await _context.Usuarios.CountAsync();
             vm.TotalMarcas = await _context.Marcas.CountAsync();
 
+            // CARDS DE MOVIMENTOS
+            vm.TotalMovimentos = await _context.Movimentos.CountAsync();
+            vm.TotalProdutosMovimentados = await _context.ProdutosMovimento.CountAsync();
+
             // =====================
             // ÚLTIMOS 5 PRODUTOS ADICIONADOS
             // =====================
@@ -52,7 +56,7 @@ namespace Varejo.Controllers
                 .ToListAsync();
 
             // =====================
-            // PRODUTOS POR CATEGORIA (corrigido)
+            // PRODUTOS POR CATEGORIA
             // =====================
             vm.ProdutosPorCategoria = await _context.Produtos
                 .AsNoTracking()
@@ -69,7 +73,7 @@ namespace Varejo.Controllers
                 .ToListAsync();
 
             // =====================
-            // PRODUTOS POR FAMILIA (corrigido)
+            // PRODUTOS POR FAMILIA
             // =====================
             vm.ProdutosPorFamilia = await _context.Produtos
                 .AsNoTracking()
@@ -97,6 +101,42 @@ namespace Varejo.Controllers
                     TipoUsuario = u.TipoUsuario != null ? u.TipoUsuario.DescricaoTipoUsuario : ""
                 })
                 .Take(5)
+                .ToListAsync();
+
+            // =====================
+            // ÚLTIMOS 5 MOVIMENTOS
+            // =====================
+            vm.UltimosMovimentos = await _context.Movimentos
+                .AsNoTracking()
+                .Include(m => m.Pessoa)
+                .Include(m => m.TipoMovimento)
+                .Include(m => m.ProdutosMovimento)
+                .OrderByDescending(m => EF.Property<DateTime>(m, "DataCriacao"))
+                .Take(5)
+                .Select(m => new MovimentoItem
+                {
+                    IdMovimento = m.IdMovimento,
+                    Pessoa = m.Pessoa != null ? m.Pessoa.NomeRazao : "",
+                    TipoMovimento = m.TipoMovimento != null ? m.TipoMovimento.DescricaoTipoMovimento : "",
+                    Data = EF.Property<DateTime>(m, "DataCriacao"),
+                    QtdeProdutos = m.ProdutosMovimento.Count
+                })
+                .ToListAsync();
+
+            // =====================
+            // MOVIMENTOS POR TIPO
+            // =====================
+            vm.MovimentosPorTipo = await _context.Movimentos
+                .AsNoTracking()
+                .Include(m => m.TipoMovimento)
+                .GroupBy(m => new { m.TipoMovimento.IdTipoMovimento, m.TipoMovimento.DescricaoTipoMovimento })
+                .Select(g => new MovimentosPorTipo
+                {
+                    IdTipoMovimento = g.Key.IdTipoMovimento,
+                    TipoMovimento = g.Key.DescricaoTipoMovimento,
+                    QtdeMovimentos = g.Count()
+                })
+                .OrderByDescending(x => x.QtdeMovimentos)
                 .ToListAsync();
 
             return View(vm);

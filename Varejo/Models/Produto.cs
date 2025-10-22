@@ -23,7 +23,11 @@ namespace Varejo.Models
 
         [Column(TypeName = "decimal(18,4)")]
         [Display(Name = "Estoque Inicial")]
-        public decimal EstoqueInicial { get; set; } = 0;
+        public decimal EstoqueInicial { get; set; } = 0;        
+        
+        [Column(TypeName = "decimal(18,4)")]
+        [Display(Name = "Estoque Atual")]
+        public decimal EstoqueAtual { get; set; } = 0;
 
         [Display(Name = "Ativo")]
         public bool Ativo { get; set; } = true;

@@ -9,9 +9,7 @@ namespace Varejo.Interfaces
         Task AddAsync(Familia familia);
         Task UpdateAsync(Familia familia);
         Task DeleteAsync(int id);
-
-
-        //MÉTODOS PARA DROPDOWN
+        Task<List<Familia>> GetByCategory(int id);
         List<Marca> GetMarcas();
         List<Categoria> GetCategorias();
 

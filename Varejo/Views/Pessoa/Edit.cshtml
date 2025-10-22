@@ -82,6 +82,11 @@
 		{
 			<div class="endereco-item mb-3 border p-2">
 				<div class="mb-3">
+					<label asp-for="Enderecos[i].Cep" class="form-label"></label>
+					<input asp-for="Enderecos[i].Cep" class="form-control" />
+				</div>
+
+				<div class="mb-3">
 					<label asp-for="Enderecos[i].Logradouro" class="form-label"></label>
 					<input asp-for="Enderecos[i].Logradouro" class="form-control" />
 				</div>
@@ -89,11 +94,6 @@
 				<div class="mb-3">
 					<label asp-for="Enderecos[i].Numero" class="form-label"></label>
 					<input asp-for="Enderecos[i].Numero" class="form-control" />
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="Enderecos[i].Cep" class="form-label"></label>
-					<input asp-for="Enderecos[i].Cep" class="form-control" />
 				</div>
 
 				<div class="mb-3">
@@ -130,109 +130,5 @@
 		<a asp-action="Index" class="btn btn-secondary">Voltar</a>
 	</div>
 </form>
-
-@section Scripts {
-	<partial name="_ValidationScriptsPartial" />
-
-	<script>
-		// 👉 mantém apenas seu código do CEP
-		function limpa_formulario_cep(container) {
-			container.find("[name$='.Logradouro']").val('');
-			container.find("[name$='.Bairro']").val('');
-			container.find("[name$='.Cidade']").val('');
-			container.find("[name$='.Uf']").val('');
-		}
-
-		function consulta_cep(inputCep) {
-			var container = $(inputCep).closest('.endereco-item');
-			var cep = $(inputCep).val().replace(/\D/g, '');
-
-			if (cep !== '') {
-				var validacep = /^[0-9]{8}$/;
-
-				if (validacep.test(cep)) {
-					container.find("[name$='.Logradouro']").val('...');
-					container.find("[name$='.Bairro']").val('...');
-					container.find("[name$='.Cidade']").val('...');
-					container.find("[name$='.Uf']").val('...');
-
-					$.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function(dados) {
-						if (!("erro" in dados)) {
-							container.find("[name$='.Logradouro']").val(dados.logradouro);
-							container.find("[name$='.Bairro']").val(dados.bairro);
-							container.find("[name$='.Cidade']").val(dados.localidade);
-							container.find("[name$='.Uf']").val(dados.uf);
-						} else {
-							limpa_formulario_cep(container);
-							alert("CEP não encontrado.");
-						}
-					});
-				} else {
-					limpa_formulario_cep(container);
-					alert("Formato de CEP inválido.");
-				}
-			} else {
-				limpa_formulario_cep(container);
-			}
-		}
-
-		$(document).ready(function() {
-			$(document).on('blur', "[name$='.Cep']", function() {
-				consulta_cep(this);
-			});
-
-			$('#adicionar-endereco').on('click', function() {
-				var container = $('#enderecos-container');
-				var index = container.children().length;
-				var html = `
-		<div class="endereco-item mb-3 border p-2">
-			<div class="mb-3">
-				<label for="Enderecos_${index}__Logradouro" class="form-label">Logradouro</label>
-				<input name="Enderecos[${index}].Logradouro" class="form-control" />
-			</div>
-
-			<div class="mb-3">
-				<label for="Enderecos_${index}__Numero" class="form-label">Número</label>
-				<input name="Enderecos[${index}].Numero" class="form-control" />
-			</div>
-
-			<div class="mb-3">
-				<label for="Enderecos_${index}__Cep" class="form-label">CEP</label>
-				<input name="Enderecos[${index}].Cep" class="form-control" />
-			</div>
-
-			<div class="mb-3">
-				<label for="Enderecos_${index}__Bairro" class="form-label">Bairro</label>
-				<input name="Enderecos[${index}].Bairro" class="form-control" />
-			</div>
-
-			<div class="mb-3">
-				<label for="Enderecos_${index}__Cidade" class="form-label">Cidade</label>
-				<input name="Enderecos[${index}].Cidade" class="form-control" />
-			</div>
-
-			<div class="mb-3">
-				<label for="Enderecos_${index}__Uf" class="form-label">UF</label>
-				<input name="Enderecos[${index}].Uf" class="form-control" />
-			</div>
-
-			<div class="mb-3">
-				<label for="Enderecos_${index}__Complemento" class="form-label">Complemento</label>
-				<input name="Enderecos[${index}].Complemento" class="form-control" />
-			</div>
-
-			<button type="button" class="btn btn-danger mt-2 mb-3 remover-endereco">Remover</button>
-		</div>
-
-		`;
-				container.append(html);
-			});
-
-			$(document).on('click', '.remover-endereco', function() {
-				$(this).closest('.endereco-item').remove();
-			});
-		});
-	</script>
-}
 
 

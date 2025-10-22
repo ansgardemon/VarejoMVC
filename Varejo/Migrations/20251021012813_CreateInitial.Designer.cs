@@ -12,8 +12,8 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20251014002045_InitialEntities")]
-    partial class InitialEntities
+    [Migration("20251021012813_CreateInitial")]
+    partial class CreateInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -397,6 +397,9 @@ namespace Varejo.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<decimal>("EstoqueAtual")
+                        .HasColumnType("decimal(18,4)");
+
                     b.Property<decimal>("EstoqueInicial")
                         .HasColumnType("decimal(18,4)");
 
@@ -416,6 +419,9 @@ namespace Varejo.Migrations
                     b.HasKey("IdProduto");
 
                     b.HasIndex("FamiliaId");
+
+                    b.HasIndex("NomeProduto")
+                        .IsUnique();
 
                     b.ToTable("Produtos");
                 });
@@ -536,6 +542,9 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdTipoEmbalagem");
 
+                    b.HasIndex("DescricaoTipoEmbalagem")
+                        .IsUnique();
+
                     b.ToTable("TiposEmbalagem");
                 });
 
@@ -639,9 +648,13 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdUsuario");
 
-                    b.HasIndex("PessoaId");
+                    b.HasIndex("PessoaId")
+                        .IsUnique();
 
                     b.HasIndex("TipoUsuarioId");
+
+                    b.HasIndex("nomeUsuario")
+                        .IsUnique();
 
                     b.ToTable("Usuarios");
                 });

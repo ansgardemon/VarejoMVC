@@ -85,6 +85,10 @@ namespace Varejo.Data
 
             modelBuilder.Entity<Produto>()
                 .Property(p => p.EstoqueInicial)
+                .HasColumnType("decimal(18,4)");            
+            
+            modelBuilder.Entity<Produto>()
+                .Property(p => p.EstoqueAtual)
                 .HasColumnType("decimal(18,4)");
 
             modelBuilder.Entity<Produto>()
@@ -132,6 +136,12 @@ namespace Varejo.Data
                 .WithMany(m => m.ProdutosMovimento)
                 .HasForeignKey(pm => pm.MovimentoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Familia>()
+    .HasOne(f => f.Marca)
+    .WithMany(m => m.Familias)
+    .HasForeignKey(f => f.MarcaId)
+    .OnDelete(DeleteBehavior.Restrict);
 
 
 

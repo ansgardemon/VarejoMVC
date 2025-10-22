@@ -9,9 +9,28 @@
 <div class="container mt-4">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-danger text-white">
+
+            @if (ViewData["DeleteError"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewData["DeleteError"]
+                </div>
+            }
+
+
+
             <h5 class="mb-0">@ViewData["Title"]</h5>
         </div>
         <div class="card-body">
+
+            @if (ViewData["DeleteError"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewData["DeleteError"]
+                </div>
+            }
+
+
             <h5>Você tem certeza que deseja excluir esta categoria?</h5>
             <hr />
             <dl class="row">

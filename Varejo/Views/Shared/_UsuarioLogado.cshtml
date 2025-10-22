@@ -22,8 +22,8 @@
 @if (User.Identity?.IsAuthenticated ?? false)
 {
     <div class="d-flex align-items-center gap-2">
-        <img src="~/img/@icone"class="avatar" alt="Avatar" />
-        <div class="text-white small">
+        <img src="~/img/@icone"class="avatar avatar-master" alt="Avatar" />
+        <div class="small master">
             Olá, <strong>@nome</strong>
             <span class="badge bg-@badge">@role</span>
         </div>

@@ -2,6 +2,7 @@
 using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Models;
+using Varejo.ViewModels;
 
 namespace Varejo.Repositories
 {
@@ -34,16 +35,14 @@ namespace Varejo.Repositories
             return await _context.Produtos.ToListAsync();
         }
 
-        public async Task<Categoria?> GetByCategory(int idProduto)
+        public async Task<List<Produto>> GetByFamilia(int id)
         {
-            var produto = await _context.Produtos
-                .Include(p => p.Familia)
-                .ThenInclude(f => f.Categoria)
-                .FirstOrDefaultAsync(p => p.IdProduto == idProduto);
+            return await _context.Produtos
+             .Include(p => p.Familia)
+             .Where(p => p.FamiliaId == id)
+             .ToListAsync();
 
-            return produto?.Familia?.Categoria;
         }
-
 
         public async Task<Produto?> GetByIdAsync(int id)
         {
@@ -53,6 +52,48 @@ namespace Varejo.Repositories
                 .ThenInclude(e => e.TipoEmbalagem) // opcional, se quiser já carregar o tipo
                 .FirstOrDefaultAsync(p => p.IdProduto == id);
         }
+
+        public async Task<List<ProdutoViewModel>> GetByNameAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+                return new List<ProdutoViewModel>();
+
+            return await _context.Produtos
+                .Where(p => p.NomeProduto.Contains(query) && p.Ativo)
+                .Select(p => new ProdutoViewModel
+                {
+                    IdProduto = p.IdProduto,
+                    NomeProduto = p.NomeProduto,
+                    UrlImagem = p.UrlImagem,
+                    Complemento = p.Complemento,
+                    CustoMedio = p.CustoMedio,
+                    EstoqueInicial = p.EstoqueInicial,
+                    Ativo = p.Ativo,
+                    FamiliaId = p.FamiliaId,
+                    Familia = p.Familia,
+                    Embalagens = p.ProdutosEmbalagem
+                        .Select(e => new ProdutoEmbalagemViewModel
+                        {
+                            IdProdutoEmbalagem = e.IdProdutoEmbalagem,
+                            Preco = e.Preco,
+                            ProdutoId = e.ProdutoId,
+                            TipoEmbalagemId = e.TipoEmbalagemId,
+                            // TiposEmbalagem não precisa popular aqui, é só para forms
+                        })
+                        .ToList()
+                })
+                .Take(20) // limite para performance
+                .ToListAsync();
+        }
+
+        public async Task<bool> ProdutoEmbalagemPossuiMovimentoAsync(int idProdutoEmbalagem)
+        {
+            // Supondo que você tenha uma tabela de movimentos chamada "Movimentos"
+            // que tem uma FK chamada ProdutoEmbalagemId
+            return await _context.ProdutosMovimento
+                                 .AnyAsync(m => m.ProdutoEmbalagemId == idProdutoEmbalagem);
+        }
+
 
 
         public async Task UpdateAsync(Produto produto)

@@ -7,6 +7,15 @@
 <div class="container mt-4">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-warning text-dark">
+
+            @if (ViewData["EditError"] != null)
+            {
+                <div class="alert alert-danger mt-3">
+                    @ViewData["EditError"]
+                </div>
+            }
+
+
             <h5 class="mb-0">@ViewData["Title"]</h5>
         </div>
         <div class="card-body">

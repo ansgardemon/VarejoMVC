@@ -41,7 +41,10 @@ namespace Varejo.Controllers
                 .Include(m => m.Pessoa)
                 .Include(m => m.TipoMovimento)
                 .Include(m => m.ProdutosMovimento)
-                .ThenInclude(pm => pm.Produto)
+                    .ThenInclude(pm => pm.Produto)
+                .Include(m => m.ProdutosMovimento)
+                    .ThenInclude(pm => pm.ProdutoEmbalagem)
+                        .ThenInclude(pe => pe.TipoEmbalagem)
                 .FirstOrDefaultAsync(m => m.IdMovimento == id);
 
             if (movimento == null) return NotFound();

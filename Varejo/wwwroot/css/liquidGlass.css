@@ -27,9 +27,13 @@
     transition: .3s ease;
 }
 
+    *::marker {
+        display: none !important;
+    }
+
 body {
     background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-    color: var(--text);
+    color: var(--text) !important;
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: all 0.4s ease;
 }
@@ -47,6 +51,10 @@ h1.vitrino {
     z-index: -1;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text) !important;
+}
+
 
 /* ================== navbar ================== */
 
@@ -59,6 +67,7 @@ h1.vitrino {
     border-radius: 16px;
     margin: 10px;
     padding: 0.5rem 1rem;
+    list-style: none !important;
 }
 
     .navbar .nav-link {
@@ -80,22 +89,21 @@ h1.vitrino {
 
 .navbar a span {
     display: none;
-    transform: translateY(45px);
+    transform: translateY(50px);
+    width: fit-content;
+    text-align: center;
 }
 
 .container-fluid a:hover span {
     display: block;
     position: absolute;
+    z-index: 1;
     background: linear-gradient(135deg, var(--glass-bg), var(--bg-gradient-end));
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
     border-radius: 8px;
     padding: .5rem;
-}
-
-.icon-home a span {
-    transform: translateY(0px);
 }
 
 .nav-content {
@@ -156,6 +164,10 @@ i {
             filter: saturate(1.4);
         }
 
+.master {
+    color: var(--text);
+}
+
 /* ================== SWITCH ================== */
 
 .switch {
@@ -215,6 +227,7 @@ i {
     border-radius: 20px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease, box-shadow 0.3s ease;
+    color: var(--text) !important;
 }
 
     .card:hover {
@@ -236,6 +249,11 @@ i {
 
 .card-text {
     color: var(--subtext);
+}
+
+.card-img-details {
+    border-radius: 10px !important;
+    position: relative;
 }
 
 /* Card check */
@@ -347,7 +365,7 @@ label {
     font-size: 1rem !important;
 }
 
-.endereco-item {
+.endereco-item, embalagem-item {
     width: 100%;
 }
 
@@ -376,6 +394,7 @@ table {
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     transition: all 0.4s ease;
+    color: var(--text) !important;
 }
 
     table thead {
@@ -397,6 +416,10 @@ table {
     table tbody tr:nth-child(even), dl dd:nth-child(even) {
         background: linear-gradient(145deg, var(--table-even), rgba(200,200,200,0.5));
     }
+
+th {
+    color: var(--text);
+}
 
 dl {
     border: 1px solid var(--glass-border);
@@ -478,24 +501,27 @@ body.dark {
 
 
 @media (max-width: 992px) {
-
-    /* Navbar como grid */
-    .navbar .container-fluid {
-        display: grid;
-        grid-template-columns: auto 1fr; /* Master | Switch */
-        grid-template-rows: 1fr auto; /* Linha 1: Master/Switch | Linha 2: navbar-nav */
-        grid-template-areas:
-            "master switch"
-            "nav nav";
-        align-items: center;
-        width: 100%;
-        gap: 0.5rem;
+    .navbar {
+        max-width: 675px !important;
+        max-height: 140px;
     }
 
-    /* Primeira linha */
+        .navbar .container-fluid {
+            display: grid !important;
+            grid-template-columns: auto 1fr; /* Master | Switch */
+            grid-template-rows: 1fr auto; /* Linha 1: Master/Switch | Linha 2: navbar-nav */
+            grid-template-areas:
+                "master switch"
+                "nav nav";
+            align-items: center;
+            width: 100%;
+            gap: 0.5rem;
+        }
+
     .master {
         grid-area: master;
         justify-self: start;
+        position: sticky;
     }
 
     .switch {
@@ -503,24 +529,92 @@ body.dark {
         justify-self: end;
     }
 
-    /* Segunda linha */
     .navbar-nav {
         grid-area: nav;
-        display: flex; /* flex dentro da grid para distribuir os links */
+        display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 1rem;
         width: 100%;
         padding-top: 0.5rem;
-        border-top: 1px solid rgba(255,255,255,0.2);
+        max-height: 120px;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
         /* Ajuste nos links */
-        .navbar-nav .nav-link {
+        .navbar-nav a.nav-link {
             display: flex;
             align-items: center;
             gap: 0.3rem;
             padding: 0.4rem 0.8rem;
-            font-size: 0.9rem;
+            font-size: 1rem !important;
         }
+}
+
+@media (max-width: 575px) {
+    .navbar {
+        z-index: 1;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%)
+    }
+
+    .container-fluid {
+        display: flex;
+        justify-content: flex-start !important;
+    }
+
+    navbar-collapse {
+        display: flex;
+        flex-direction: column;
+        justify-content: center !important;
+        align-items: center;
+    }
+
+    .navbar-nav {
+        text-align: left;
+    }
+
+    .switch {
+        left: 50%;
+        transform: translateX(-75%)
+    }
+
+    .navbar-nav a {
+        display: flex;
+        align-items: center;
+        border-radius: 16px;
+        font-size: 80%;
+    }
+
+        .navbar-nav a:hover {
+            box-shadow: none;
+            background: none;
+        }
+
+    .navbar li {
+        margin: auto;
+    }
+
+    .navbar a span {
+        transform: translateY(0px);
+        width: fit-content;
+    }
+
+    .container-fluid a:hover span {
+        display: flex;
+        position: relative;
+        background: none;
+        border: none;
+    }
+
+    .icon-home a span {
+        transform: translateY(0px);
+    }
+
+    main {
+        margin-top: 100px;
+    }
 }

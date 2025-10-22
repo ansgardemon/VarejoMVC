@@ -14,8 +14,6 @@ namespace Varejo.ViewModels
         public int TotalFamilias { get; set; }
         public int TotalUsuarios { get; set; }
         public int TotalMarcas { get; set; }
-
-        // NOVOS CARDS DE MOVIMENTOS
         public int TotalMovimentos { get; set; }
         public int TotalProdutosMovimentados { get; set; }
 

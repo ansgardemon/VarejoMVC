@@ -281,14 +281,14 @@ i {
 
     .card.check.ativo-btn {
         border-color: #dc3545;
-        color: #dc3545;
+        color: #dc3545!important;
         background: #dc354533;
         font-weight: bold;
     }
 
         .card.check.ativo-btn:has(input:checked) {
             border-color: #198754;
-            color: #198754;
+            color: #198754!important;
             background: #19875433;
         }
 
@@ -300,8 +300,19 @@ i {
             content: 'Ativo';
         }
 
-/* ================== BUTTONS ================== */
+.movimento-card {
+    padding: .5rem;
+}
 
+.movimento-card img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit:cover;
+    margin:auto;
+    border-radius: 10px;
+}
+
+/* ================== BUTTONS ================== */
 .btn {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
     backdrop-filter: blur(var(--glass-blur));
@@ -419,6 +430,7 @@ table {
 
 th {
     color: var(--text);
+    border: none !important;
 }
 
 dl {

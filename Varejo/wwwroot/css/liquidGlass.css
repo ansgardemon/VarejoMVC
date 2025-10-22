@@ -281,14 +281,14 @@ i {
 
     .card.check.ativo-btn {
         border-color: #dc3545;
-        color: #dc3545;
+        color: #dc3545!important;
         background: #dc354533;
         font-weight: bold;
     }
 
         .card.check.ativo-btn:has(input:checked) {
             border-color: #198754;
-            color: #198754;
+            color: #198754!important;
             background: #19875433;
         }
 

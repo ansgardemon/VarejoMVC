@@ -1,175 +1,177 @@
 ﻿@model Varejo.ViewModels.MovimentoViewModel
 
 @{
-    ViewData["Title"] = "Novo Movimento";
+	ViewData["Title"] = "Novo Movimento";
 }
 
 <h1>Novo Movimento</h1>
 
 <form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label>Número do Documento</label>
-        <input asp-for="Documento" class="form-control" />
-    </div>
+	<div class="mb-3">
+		<label>Número do Documento</label>
+		<input asp-for="Documento" class="form-control" />
+	</div>
 
-    <div class="mb-3">
-        <label>Observação</label>
-        <textarea asp-for="Observacao" class="form-control"></textarea>
-    </div>
+	<div class="mb-3">
+		<label>Observação</label>
+		<textarea asp-for="Observacao" class="form-control"></textarea>
+	</div>
 
-    <div class="mb-3">
-        <label>Tipo de Movimento</label>
-        <select asp-for="TipoMovimentoId" class="form-select">
-            <option value="">Selecione...</option>
-            @foreach (var tipo in ViewBag.TiposMovimento)
-            {
-                <option value="@tipo.IdTipoMovimento">@tipo.DescricaoTipoMovimento</option>
-            }
-        </select>
-    </div>
+	<div class="mb-3">
+		<label>Tipo de Movimento</label>
+		<select asp-for="TipoMovimentoId" class="form-select">
+			<option value="">Selecione...</option>
+			@foreach (var tipo in ViewBag.TiposMovimento)
+			{
+				<option value="@tipo.IdTipoMovimento">@tipo.DescricaoTipoMovimento</option>
+			}
+		</select>
+	</div>
 
-    <div class="mb-3">
-        <label>Cliente/Fornecedor</label>
-        <select asp-for="PessoaId" class="form-select">
-            <option value="">Selecione...</option>
-            @foreach (var pessoa in ViewBag.Pessoas)
-            {
-                <option value="@pessoa.IdPessoa">@pessoa.NomeRazao</option>
-            }
-        </select>
-    </div>
+	<div class="mb-3">
+		<label>Cliente/Fornecedor</label>
+		<select asp-for="PessoaId" class="form-select">
+			<option value="">Selecione...</option>
+			@foreach (var pessoa in ViewBag.Pessoas)
+			{
+				<option value="@pessoa.IdPessoa">@pessoa.NomeRazao</option>
+			}
+		</select>
+	</div>
 
-    <hr />
-    <h3>Produtos</h3>
+	<hr />
+	<h3>Produtos</h3>
 
-    <!-- Barra de pesquisa -->
-    <div class="mb-3">
-        <input type="text" id="produtoSearch" class="form-control" placeholder="Buscar produto..." />
-    </div>
+	<!-- Barra de pesquisa -->
+	<div class="mb-3">
+		<input type="text" id="produtoSearch" class="form-control" placeholder="Buscar produto..." />
+	</div>
 
-    <div class="row" id="produtoCards"></div>
+	<div class="row" id="produtoCards"></div>
 
-    <hr />
-    <h3>Produtos Selecionados</h3>
-    <div id="produtosSelecionados" class="row"></div>
-
-    <button type="submit" class="btn btn-primary mt-3">Salvar Movimento</button>
+	<hr />
+	<h3>Produtos Selecionados</h3>
+	<div id="produtosSelecionados" class="row"></div>
+	<div class="mt-3 d-flex justify-content-between w-100">
+		<button type="submit" class="btn btn-primary">Salvar Movimento</button>
+		<a asp-action="" asp-controller="Movimento" asp-route-id="Index" class="btn btn-secondary">Voltar</a>
+	</div>
 </form>
 
 @section Scripts {
-    <script>
-        // Elementos principais
-        const produtosSelecionados = document.getElementById('produtosSelecionados'); // container dos produtos adicionados
-        const produtoCards = document.getElementById('produtoCards'); // container dos cards de pesquisa
-        const produtoSearch = document.getElementById('produtoSearch'); // input de pesquisa
+	<script>
+		// Elementos principais
+		const produtosSelecionados = document.getElementById('produtosSelecionados'); // container dos produtos adicionados
+		const produtoCards = document.getElementById('produtoCards'); // container dos cards de pesquisa
+		const produtoSearch = document.getElementById('produtoSearch'); // input de pesquisa
 
-        let debounceTimer; // timer para debounce da pesquisa
+		let debounceTimer; // timer para debounce da pesquisa
 
-        // Evento de input no campo de busca
-        produtoSearch.addEventListener('input', function () {
-            clearTimeout(debounceTimer);
+		// Evento de input no campo de busca
+		produtoSearch.addEventListener('input', function () {
+			clearTimeout(debounceTimer);
 
-            // Debounce: espera 300ms após digitar para fazer a requisição
-            debounceTimer = setTimeout(async () => {
-                const termo = produtoSearch.value.trim();
+			// Debounce: espera 300ms após digitar para fazer a requisição
+			debounceTimer = setTimeout(async () => {
+				const termo = produtoSearch.value.trim();
 
-                // Se a pesquisa tiver menos de 2 caracteres, limpa os cards e retorna
-                if (termo.length < 2) {
-                    produtoCards.innerHTML = '';
-                    return;
-                }
+				// Se a pesquisa tiver menos de 2 caracteres, limpa os cards e retorna
+				if (termo.length < 2) {
+					produtoCards.innerHTML = '';
+					return;
+				}
 
-                try {
-                    // Chamada AJAX para o endpoint SearchProduto
-                    const url = '@Url.Action("SearchProduto", "Movimento")?query=' + encodeURIComponent(termo);
-                    const response = await fetch(url);
-                    const produtos = await response.json();
+				try {
+					// Chamada AJAX para o endpoint SearchProduto
+					const url = '@Url.Action("SearchProduto", "Movimento")?query=' + encodeURIComponent(termo);
+					const response = await fetch(url);
+					const produtos = await response.json();
 
-                    // Limpa os cards atuais antes de adicionar novos
-                    produtoCards.innerHTML = '';
+					// Limpa os cards atuais antes de adicionar novos
+					produtoCards.innerHTML = '';
 
-                    // Loop para criar cada card de produto retornado
-                    produtos.forEach(produto => {
-                        const div = document.createElement('div');
-                        div.classList.add('col-md-3', 'mb-3', 'produto-card');
-                        div.dataset.id = produto.IdProduto;
-                        div.dataset.nome = (produto.NomeProduto || '').toLowerCase();
+					// Loop para criar cada card de produto retornado
+					produtos.forEach(produto => {
+						const div = document.createElement('div');
+						div.classList.add('col-md-3', 'mb-3', 'produto-card');
+						div.dataset.id = produto.IdProduto;
+						div.dataset.nome = (produto.NomeProduto || '').toLowerCase();
 
-                        // Pega a imagem do produto ou fallback caso não exista
-                        const imagem = produto.UrlImagem || '/images/produto-padrao.png';
+						// Pega a imagem do produto ou fallback caso não exista
+						const imagem = produto.UrlImagem || '/images/produto-padrao.png';
 
-                        // Monta o card do produto
-                        div.innerHTML = `
-                            <div class="card h-100">
-                                <img src="${imagem}" class="card-img-top" alt="${produto.NomeProduto}" style="height:150px; object-fit:cover;">
-                                <div class="card-body">
-                                    <h5 class="card-title">${produto.NomeProduto}</h5>
-                                    <label>Quantidade</label>
-                                    <input type="number" min="0" class="form-control quantidade" />
-                                    <label>Embalagem</label>
-                                    <select class="form-select embalagem">
-                                        ${produto.Embalagens.map(e => `
-                                            <option value="${e.IdProdutoEmbalagem}">${e.Preco.toFixed(2)} - Tipo ${e.TipoEmbalagemId}</option>
-                                        `).join('')}
-                                    </select>
-                                    <button type="button" class="btn btn-success btn-sm mt-2 addProdutoBtn">Adicionar</button>
-                                </div>
-                            </div>
-                        `;
-                        produtoCards.appendChild(div);
+						// Monta o card do produto
+						div.innerHTML = `
+							<div class="card h-100">
+								<img src="${imagem}" class="card-img-top" alt="${produto.NomeProduto}" style="height:150px; object-fit:cover;">
+								<div class="card-body">
+									<h5 class="card-title">${produto.NomeProduto}</h5>
+									<label>Quantidade</label>
+									<input type="number" min="0" class="form-control quantidade" />
+									<label>Embalagem</label>
+									<select class="form-select embalagem">
+										${produto.Embalagens.map(e => `
+											<option value="${e.IdProdutoEmbalagem}">${e.Preco.toFixed(2)} - Tipo ${e.TipoEmbalagemId}</option>
+										`).join('')}
+									</select>
+									<button type="button" class="btn btn-success btn-sm mt-2 addProdutoBtn">Adicionar</button>
+								</div>
+							</div>
+						`;
+						produtoCards.appendChild(div);
 
-                        // Evento do botão "Adicionar" para mover o produto para produtos selecionados
-                        div.querySelector('.addProdutoBtn').addEventListener('click', function () {
-                            const card = this.closest('.produto-card');
-                            const nome = card.querySelector('.card-title').innerText;
-                            const quantidade = card.querySelector('.quantidade').value;
-                            const embalagemSelect = card.querySelector('.embalagem');
-                            const embalagemId = embalagemSelect.value;
-                            const embalagemText = embalagemSelect.options[embalagemSelect.selectedIndex].text;
-                            const imagemSelecionado = card.querySelector('img')?.src || '/images/produto-padrao.png';
+						// Evento do botão "Adicionar" para mover o produto para produtos selecionados
+						div.querySelector('.addProdutoBtn').addEventListener('click', function () {
+							const card = this.closest('.produto-card');
+							const nome = card.querySelector('.card-title').innerText;
+							const quantidade = card.querySelector('.quantidade').value;
+							const embalagemSelect = card.querySelector('.embalagem');
+							const embalagemId = embalagemSelect.value;
+							const embalagemText = embalagemSelect.options[embalagemSelect.selectedIndex].text;
+							const imagemSelecionado = card.querySelector('img')?.src || '/images/produto-padrao.png';
 
-                            // Validação de quantidade
-                            if (!quantidade || quantidade <= 0) {
-                                alert('Informe uma quantidade válida.');
-                                return;
-                            }
+							// Validação de quantidade
+							if (!quantidade || quantidade <= 0) {
+								alert('Informe uma quantidade válida.');
+								return;
+							}
 
-                            // Índice para o array do ViewModel
-                            const idx = produtosSelecionados.children.length;
+							// Índice para o array do ViewModel
+							const idx = produtosSelecionados.children.length;
 
-                            // Cria o card para Produtos Selecionados
-                            const divSel = document.createElement('div');
-                            divSel.classList.add('col-md-3', 'mb-3');
-                            divSel.innerHTML = `
-                                <div class="card h-100">
-                                    <img src="${imagemSelecionado}" class="card-img-top" alt="${nome}" style="height:150px; object-fit:cover;">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${nome}</h5>
-                                        <p>Quantidade: ${quantidade}</p>
-                                        <p>Embalagem: ${embalagemText}</p>
-                                        <input type="hidden" name="Produtos[${idx}].ProdutoId" value="${card.dataset.id}" />
-                                        <input type="hidden" name="Produtos[${idx}].ProdutoEmbalagemId" value="${embalagemId}" />
-                                        <input type="hidden" name="Produtos[${idx}].Quantidade" value="${quantidade}" />
-                                        <button type="button" class="btn btn-danger btn-sm removeProdutoBtn">Remover</button>
-                                    </div>
-                                </div>
-                            `;
-                            produtosSelecionados.appendChild(divSel);
+							// Cria o card para Produtos Selecionados
+							const divSel = document.createElement('div');
+							divSel.classList.add('col-md-3', 'mb-3');
+							divSel.innerHTML = `
+								<div class="card h-100">
+									<img src="${imagemSelecionado}" class="card-img-top" alt="${nome}" style="height:150px; object-fit:cover;">
+									<div class="card-body">
+										<h5 class="card-title">${nome}</h5>
+										<p>Quantidade: ${quantidade}</p>
+										<p>Embalagem: ${embalagemText}</p>
+										<input type="hidden" name="Produtos[${idx}].ProdutoId" value="${card.dataset.id}" />
+										<input type="hidden" name="Produtos[${idx}].ProdutoEmbalagemId" value="${embalagemId}" />
+										<input type="hidden" name="Produtos[${idx}].Quantidade" value="${quantidade}" />
+										<button type="button" class="btn btn-danger btn-sm removeProdutoBtn">Remover</button>
+									</div>
+								</div>
+							`;
+							produtosSelecionados.appendChild(divSel);
 
-                            // Evento para remover o produto selecionado
-                            divSel.querySelector('.removeProdutoBtn').addEventListener('click', () => divSel.remove());
+							// Evento para remover o produto selecionado
+							divSel.querySelector('.removeProdutoBtn').addEventListener('click', () => divSel.remove());
 
-                            // Resetar campos do card original
-                            card.querySelector('.quantidade').value = '';
-                            card.querySelector('.embalagem').selectedIndex = 0;
-                        });
-                    });
+							// Resetar campos do card original
+							card.querySelector('.quantidade').value = '';
+							card.querySelector('.embalagem').selectedIndex = 0;
+						});
+					});
 
-                } catch (err) {
-                    console.error('Erro ao buscar produtos:', err);
-                }
-            }, 300); // tempo de debounce
-        });
-    </script>
+				} catch (err) {
+					console.error('Erro ao buscar produtos:', err);
+				}
+			}, 300); // tempo de debounce
+		});
+	</script>
 
 }

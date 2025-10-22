@@ -1,89 +1,86 @@
 ﻿@model Varejo.ViewModels.FamiliaViewModel
 
 @{
-    ViewData["Title"] = "Detalhes da Família";
+	ViewData["Title"] = "Detalhes da Família";
 }
 
 <div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-info text-white">
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-info text-white">
+			<h5 class="mb-0">@ViewData["Title"]</h5>
+		</div>
+		<div class="card-body">
 
+			<dl class="row">
+				<dt class="col-sm-3">ID</dt>
+				<dd class="col-sm-9">@Model.IdFamilia</dd>
 
+				<dt class="col-sm-3">Nome da Família</dt>
+				<dd class="col-sm-9">@Model.NomeFamilia</dd>
 
-            <h5 class="mb-0">@ViewData["Title"]</h5>
-        </div>
-        <div class="card-body">
+				<dt class="col-sm-3">Marca</dt>
+				<dd class="col-sm-9">@(!string.IsNullOrEmpty(Model.Marca?.NomeMarca) ? Model.Marca.NomeMarca : "N/A")</dd>
 
-            <dl class="row">
-                <dt class="col-sm-3">ID</dt>
-                <dd class="col-sm-9">@Model.IdFamilia</dd>
+				<dt class="col-sm-3">Categoria</dt>
+				<dd class="col-sm-9">@(!string.IsNullOrEmpty(Model.Categoria?.DescricaoCategoria) ? Model.Categoria.DescricaoCategoria : "N/A")</dd>
 
-                <dt class="col-sm-3">Nome da Família</dt>
-                <dd class="col-sm-9">@Model.NomeFamilia</dd>
+				<dt class="col-sm-3">Ativo</dt>
+				<dd class="col-sm-9">@((Model.Ativo) ? "✅" : "❌")</dd>
+			</dl>
 
-                <dt class="col-sm-3">Marca</dt>
-                <dd class="col-sm-9">@(!string.IsNullOrEmpty(Model.Marca?.NomeMarca) ? Model.Marca.NomeMarca : "N/A")</dd>
+			<hr />
 
-                <dt class="col-sm-3">Categoria</dt>
-                <dd class="col-sm-9">@(!string.IsNullOrEmpty(Model.Categoria?.DescricaoCategoria) ? Model.Categoria.DescricaoCategoria : "N/A")</dd>
+			<h5>Produtos da Família</h5>
+			@if (Model.FamiliaDetails != null && Model.FamiliaDetails.Any())
+			{
+				<div class="md-8 row g-4">
+					@foreach (var produto in Model.FamiliaDetails)
+					{
+						<div class="col-md-3 mt-4 text-center">
+							<div class="card p-4 align-self-center">
+								<a asp-controller="Produto" asp-action="Details" asp-route-id="@produto.IdProduto" class="text-decoration-none text-dark">
+									<div class="d-flex justify-content-center align-items-center card-img-details" style="height:200px; overflow:hidden;">
+										<img src="@produto.UrlImagem"
+											 class="card-img-top"
+											 alt="@(!string.IsNullOrEmpty(produto.NomeProduto) ? produto.NomeProduto : "Produto")"
+											 style="max-height:100%; max-width:100%; object-fit:contain;" />
+									</div>
+									<div class="card-body">
+										<h6 class="card-title">@produto.NomeProduto</h6>
+										<p class="card-text">Ativo: @(produto.Ativo ? "✅" : "❌")</p>
+									</div>
+								</a>
+							</div>
 
-                <dt class="col-sm-3">Ativo</dt>
-                <dd class="col-sm-9">@((Model.Ativo) ? "✅" : "❌")</dd>
-            </dl>
+							<div class="mt-2 md-8 d-flex justify-content-center gap-2">
+								<a asp-controller="Produto" asp-action="Edit" asp-route-id="@produto.IdProduto" class="btn btn-warning btn-sm">
+									<i class="bi bi-pencil-square"></i> Editar
+								</a>
+								<a asp-controller="Produto" asp-action="Delete" asp-route-id="@produto.IdProduto" class="btn btn-danger btn-sm">
+									<i class="bi bi-trash"></i> Deletar
+								</a>
+							</div>
+						</div>
+					}
+				</div>
 
-            <hr />
+			}
+			else
+			{
+				<p>Nenhum produto cadastrado nesta família.</p>
+			}
 
-            <h5>Produtos da Família</h5>
-            @if (Model.FamiliaDetails != null && Model.FamiliaDetails.Any())
-            {
-                <div class="md-8 row g-4">
-                    @foreach (var produto in Model.FamiliaDetails)
-                    {
-                        <div class="col-md-3 mt-4 text-center">
-                            <div class="card p-4 align-self-center">
-                                <a asp-controller="Produto" asp-action="Details" asp-route-id="@produto.IdProduto" class="text-decoration-none text-dark">
-                                    <div class="d-flex justify-content-center align-items-center" style="height:200px; overflow:hidden;">
-                                        <img src="@produto.UrlImagem"
-                                             class="card-img-top"
-                                             alt="@(!string.IsNullOrEmpty(produto.NomeProduto) ? produto.NomeProduto : "Produto")"
-                                             style="max-height:100%; max-width:100%; object-fit:contain;" />
-                                    </div>
-                                    <div class="card-body">
-                                        <h6 class="card-title">@produto.NomeProduto</h6>
-                                        <p class="card-text">Ativo: @(produto.Ativo ? "✅" : "❌")</p>
-                                    </div>
-                                </a>
-                            </div>
-
-                            <div class="mt-2 md-8 d-flex justify-content-center gap-2">
-                                <a asp-controller="Produto" asp-action="Edit" asp-route-id="@produto.IdProduto" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                <a asp-controller="Produto" asp-action="Delete" asp-route-id="@produto.IdProduto" class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i> Deletar
-                                </a>
-                            </div>
-                        </div>
-                    }
-                </div>
-
-            }
-            else
-            {
-                <p>Nenhum produto cadastrado nesta família.</p>
-            }
-
-            <div class="mt-5 d-flex gap-2">
-                <a asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Voltar
-                </a>
-                <a asp-action="Edit" asp-route-id="@Model.IdFamilia" class="btn btn-warning">
-                    <i class="bi bi-pencil-square"></i> Editar Família
-                </a>
-                <a asp-controller="Produto" asp-action="Create" asp-route-familiaId="@Model.IdFamilia" class="btn btn-success">
-                    <i class="bi bi-plus-circle"></i> Adicionar Produto
-                </a>
-            </div>
-        </div>
-    </div>
+			<div class="mt-5 d-flex gap-2">
+				<a asp-action="Index" class="btn btn-outline-secondary">
+					<i class="bi bi-arrow-left"></i> Voltar
+				</a>
+				<a asp-action="Edit" asp-route-id="@Model.IdFamilia" class="btn btn-warning">
+					<i class="bi bi-pencil-square"></i> Editar Família
+				</a>
+				<a asp-controller="Produto" asp-action="Create" asp-route-familiaId="@Model.IdFamilia" class="btn btn-success">
+					<i class="bi bi-plus-circle"></i> Adicionar Produto
+				</a>
+			</div>
+		</div>
+	</div>
 </div>

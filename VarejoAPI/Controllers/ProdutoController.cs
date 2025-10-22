@@ -1,0 +1,152 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Varejo.Interfaces;
+using VarejoAPI.DTO;
+
+namespace VarejoAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProdutoController : ControllerBase
+    {
+
+        private readonly IProdutoRepository _produtoRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
+        private readonly IFamiliaRepository _familiaRepository;
+
+        public ProdutoController(IProdutoRepository produtoRepository, ICategoriaRepository categoriaRepository, IFamiliaRepository familiaRepository)
+        {
+            _produtoRepository = produtoRepository;
+            _categoriaRepository = categoriaRepository;
+            _familiaRepository = familiaRepository;
+
+
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Get()
+        {
+            var produtos = await _produtoRepository.GetAllAsync();
+
+
+            var resultado = new List<ProdutoOutputDTO>();
+
+            foreach (var produto in produtos)
+            {
+
+
+
+                resultado.Add(new ProdutoOutputDTO
+                {
+                    IdProduto = produto.IdProduto,
+                    Complemento = produto.Complemento,
+                    NomeProduto = produto.NomeProduto,
+                    EstoqueInicial = produto.EstoqueInicial,
+                   
+                    UrlImagem = produto.UrlImagem,
+                    CustoMedio = produto.CustoMedio,
+          
+
+                });
+            }
+
+            return Ok(resultado);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProdutoOutputDTO>> Get(int id)
+        {
+            var produto = await _produtoRepository.GetByIdAsync(id);
+            if (produto == null)
+                return NotFound();
+
+            var resultado = new ProdutoOutputDTO
+            {
+                IdProduto = produto.IdProduto,
+                Complemento = produto.Complemento,
+                NomeProduto = produto.NomeProduto,
+                EstoqueInicial = produto.EstoqueInicial,
+                Ativo = produto.Ativo,
+                UrlImagem = produto.UrlImagem,
+                CustoMedio = produto.CustoMedio,
+                FamiliaId = produto.FamiliaId,
+            };
+
+            return Ok(resultado);
+        }
+
+        [HttpGet("categoria/{idCategoria}")]
+        public async Task<IActionResult> Details(int idCategoria)
+        {
+            var categoria = await _categoriaRepository.GetByIdAsync(idCategoria);
+
+            if (categoria == null)
+                return NotFound();
+
+            var viewModel = new CategoriaOutputDTO
+            {
+                IdCategoria = categoria.IdCategoria,
+                DescricaoCategoria = categoria.DescricaoCategoria ?? string.Empty,
+
+                Familias = categoria.Familias?
+                    .Where(f => f != null)
+                    .Select(f =>
+                    {
+                        var produtos = f.Produtos?
+                            .Where(p => p != null)
+                            .Select(p => new ProdutoOutputDTO
+                            {
+                                IdProduto = p.IdProduto,
+                                NomeProduto = p.NomeProduto ?? string.Empty,
+                                Complemento = p.Complemento ?? string.Empty,
+                                EstoqueInicial = p.EstoqueInicial,
+                                Ativo = p.Ativo,
+                                UrlImagem = p.UrlImagem ?? string.Empty,
+                                CustoMedio = p.CustoMedio,
+                                FamiliaId = p.FamiliaId
+                            })
+                            .ToList() ?? new List<ProdutoOutputDTO>();
+
+                        return new FamiliaOutputDTO
+                        {
+                            IdFamilia = f.IdFamilia,
+                            NomeFamilia = f.NomeFamilia ?? string.Empty,
+                            Produtos = produtos
+                        };
+                    })
+                    .ToList() ?? new List<FamiliaOutputDTO>()
+            };
+
+            return Ok(viewModel);
+        }
+
+
+        [HttpGet("familia/{idFamilia}")]
+        public async Task<ActionResult> GetFamilia(int idFamilia)
+        {
+            var familia = await _produtoRepository.GetByFamilia(idFamilia);
+
+            var resultado = new List<ProdutoOutputDTO>();
+
+            foreach (var produto in familia)
+            {
+                resultado.Add(new ProdutoOutputDTO
+                {
+                    IdProduto = produto.IdProduto,
+                    Complemento = produto.Complemento,
+                    NomeProduto = produto.NomeProduto,
+                    EstoqueInicial = produto.EstoqueInicial,
+                    Ativo = produto.Ativo,
+                    UrlImagem = produto.UrlImagem,
+                    CustoMedio = produto.CustoMedio,
+                    FamiliaId = produto.FamiliaId,
+                });
+            }
+
+            return Ok(resultado);
+
+        }
+
+
+
+    }
+}

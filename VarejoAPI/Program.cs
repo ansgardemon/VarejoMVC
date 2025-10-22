@@ -5,12 +5,15 @@ using Varejo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+// ==========================
+// Configurar o DbContext
+// ==========================
 builder.Services.AddDbContext<VarejoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-//REPOSITORIOS
+// ==========================
+// Repositórios
+// ==========================
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
 builder.Services.AddScoped<IProdutoEmbalagemRepository, ProdutoEmbalagemRepository>();
@@ -22,22 +25,38 @@ builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
 
+// ==========================
+// Adicionar CORS
+// ==========================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLanding", policy =>
+    {
+        policy.WithOrigins("http://localhost:5050") // URL da sua landing
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
-
-// Add services to the container.
-
+// ==========================
+// Serviços do ASP.NET
+// ==========================
 builder.Services.AddControllers();
-//trocando o openAPI pelo swagger
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ==========================
+// Middleware
+// ==========================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Habilitar CORS antes do MapControllers
+app.UseCors("AllowLanding");
 
 app.UseAuthorization();
 

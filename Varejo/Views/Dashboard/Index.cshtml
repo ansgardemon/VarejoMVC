@@ -3,6 +3,32 @@
     ViewData["Title"] = "Dashboard";
 }
 
+<style>
+    /* Garantir que cards e tabela usem glassmorphism */
+    .kpi-card .card-body, .chart-card .card-body {
+        background: var(--glass-bg);
+        color: var(--text);
+        min-height: 150px;
+        display: flex; 
+        flex-direction: column;
+        justify-content: center;    
+        align-items: center;
+    }
+
+    .chart-card {
+        border-radius: 12px;
+    }
+
+    table {
+        border-radius: 12px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+    }
+
+        table th, table td {
+            color: var(--text);
+        }
+</style>
 <h2 class="mb-4">📊 @ViewData["Title"]</h2>
 
 <div class="container-fluid py-3">

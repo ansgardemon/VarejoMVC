@@ -102,8 +102,8 @@
 
 						// Monta o card do produto
 						div.innerHTML = `
-							<div class="card h-100">
-								<img src="${imagem}" class="card-img-top" alt="${produto.NomeProduto}" style="height:150px; object-fit:cover;">
+							<div class="card movimento-card">
+								<img src="${imagem}" class="card-img-top" alt="${produto.NomeProduto}">
 								<div class="card-body">
 									<h5 class="card-title">${produto.NomeProduto}</h5>
 									<label>Quantidade</label>
@@ -143,8 +143,8 @@
 							const divSel = document.createElement('div');
 							divSel.classList.add('col-md-3', 'mb-3');
 							divSel.innerHTML = `
-								<div class="card h-100">
-									<img src="${imagemSelecionado}" class="card-img-top" alt="${nome}" style="height:150px; object-fit:cover;">
+								<div class="card movimento-card">
+									<img src="${imagemSelecionado}" class="card-img-top" alt="${nome}">
 									<div class="card-body">
 										<h5 class="card-title">${nome}</h5>
 										<p>Quantidade: ${quantidade}</p>

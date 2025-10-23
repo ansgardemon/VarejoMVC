@@ -13,6 +13,8 @@ namespace Varejo.Interfaces
         Task<List<Produto>> GetByFamilia(int id);
         Task<bool> ProdutoEmbalagemPossuiMovimentoAsync(int idProdutoEmbalagem);
 
+        Task<List<Produto>> GetProdutosDestaqueAsync(int take = 8);
+
 
         Task AddAsync(Produto produto);
         Task UpdateAsync(Produto produto);

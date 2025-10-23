@@ -74,6 +74,27 @@ namespace VarejoAPI.Controllers
             return Ok(resultado);
         }
 
+        [HttpGet("destaques")]
+        public async Task<ActionResult<List<ProdutoCardViewModel>>> GetDestaques()
+        {
+            var produtos = await _produtoRepository.GetProdutosDestaqueAsync(8);
+
+            var resultado = produtos.Select(p => new ProdutoCardViewModel
+            {
+                IdProduto = p.IdProduto,
+                NomeProduto = p.NomeProduto,
+                UrlImagem = p.UrlImagem,
+                //escolher menor preço entre embalagens
+                Preco = p.ProdutosEmbalagem != null && p.ProdutosEmbalagem.Any()
+                    ? p.ProdutosEmbalagem.Min(e => e.Preco)
+                    : 0m
+            }).ToList();
+
+            return Ok(resultado);
+        }
+
+
+
         [HttpGet("categoria/{idCategoria}")]
         public async Task<IActionResult> Details(int idCategoria)
         {

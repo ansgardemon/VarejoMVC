@@ -93,7 +93,18 @@ namespace Varejo.Repositories
             return await _context.ProdutosMovimento
                                  .AnyAsync(m => m.ProdutoEmbalagemId == idProdutoEmbalagem);
         }
-
+        public async Task<List<Produto>> GetProdutosDestaqueAsync(int take = 8)
+        {
+            // retorna produtos ativos, com embalagens carregadas (e tipo de embalagem se precisar do multiplicador)
+            return await _context.Produtos
+                .AsNoTracking()
+                .Where(p => p.Ativo)
+                .Include(p => p.ProdutosEmbalagem)
+                    .ThenInclude(pe => pe.TipoEmbalagem)
+                .OrderByDescending(p => EF.Property<DateTime>(p, "DataCriacao")) // ou outra regra de destaque
+                .Take(take)
+                .ToListAsync();
+        }
 
 
         public async Task UpdateAsync(Produto produto)

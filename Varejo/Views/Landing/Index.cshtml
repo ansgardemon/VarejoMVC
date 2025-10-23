@@ -16,12 +16,11 @@
 
 <body>
 
-    <!-- Navbar exclusiva da landing -->
+    <!-- Navbar-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-wine shadow-sm fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">
-                <img src="~/img/logo.png" alt="Logo" width="45" height="45" class="d-inline-block align-text-center me-2" />
-                Adega Dose Certa
+                <img src="~/img/logo.png" alt="Logo" width="90" height="90" class="d-inline-block align-text-center me-2" />
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -39,51 +38,41 @@
         </div>
     </nav>
 
-    <!-- Hero -->
-    <section class="hero-section text-light text-center d-flex align-items-center">
-        <div class="container">
-            <h1 class="display-4 fw-bold mb-3">Celebre o frango bovinho</h1>
-            <p class="lead mb-4">Olha a banana.</p>
-            <a href="/Landing/Produtos" class="btn btn-gold btn-lg px-4">Ver Catálogo</a>
+
+    <!-- Banner -->
+    <section class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content container">
+            <h1 class="display-4 fw-bold text-light">Celebre com um drink.</h1>
         </div>
     </section>
+
+
+
+
 
     <!-- Produtos -->
     <section id="produtos" class="py-5">
         <div class="container">
             <h2 class="text-center mb-4 fw-semibold">Produtos em Destaque</h2>
-            <div class="row g-4">
-                @for (int i = 0; i < 4; i++)
-                {
-                    <div class="col-md-3">
-                        <div class="card h-100 shadow-sm border-0">
-                            <img src="https://placehold.co/400x300?text=Vinho+@i" class="card-img-top" alt="Produto @i" />
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Vinho Reserva @i</h5>
-                                <p class="text-muted">R$ @(79 + i * 5),90</p>
-                                <a href="#" class="btn btn-outline-wine w-100">Ver detalhes</a>
-                            </div>
-                        </div>
-                    </div>
-                }
+            <div class="row g-4" id="produtosContainer">
+                <!-- Os cards serão carregados via AJAX -->
             </div>
         </div>
     </section>
 
+ 
     <!-- Marcas -->
     <section id="marcas" class="bg-beige py-5">
         <div class="container text-center">
             <h2 class="fw-semibold mb-4">Nossas Marcas</h2>
-            <div class="d-flex flex-wrap justify-content-center gap-4">
-                @for (int i = 1; i <= 6; i++)
-                {
-                    <div class="brand-card p-3">
-                        <img src="https://placehold.co/120x80?text=Marca+@i" alt="Marca @i" class="img-fluid" />
-                    </div>
-                }
+            <div id="marcasContainer" class="d-flex flex-wrap justify-content-center gap-4">
+                <!-- Marcas serão carregadas via AJAX -->
             </div>
         </div>
     </section>
+
 
     <!-- Categorias -->
     <section id="categorias" class="py-5">

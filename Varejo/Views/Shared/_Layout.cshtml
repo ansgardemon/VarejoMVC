@@ -21,7 +21,7 @@
 </head>
 <body class="w-100 page-bg">
 	<header>
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-lightaccept-policy border-bottom box-shadow mb-3 w-75 mx-auto @(ViewData["NavbarClass"] ?? "") @(User.Identity?.IsAuthenticated ?? false ? "logged-in" : "logged-out")">
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-lightaccept-policy border-bottom box-shadow mb-3 mx-auto @(ViewData["NavbarClass"] ?? "") @(User.Identity?.IsAuthenticated ?? false ? "logged-in" : "logged-out")">
 			<div class="container-fluid m-auto w-100">
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">

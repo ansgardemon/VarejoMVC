@@ -21,6 +21,7 @@
     --table-odd: rgba(255, 255, 255, 0.25);
     --table-even: rgba(200, 200, 200, 0.25);
 }
+/* ================== DARKMODE ================== */
 
 body.dark {
     --glass-bg: #ffffff14;
@@ -41,6 +42,7 @@ body.dark {
 /* ================== body ================== */
 * {
     transition: .3s ease !important;
+    box-sizing: border-box;
 }
 
     *::marker {
@@ -74,6 +76,11 @@ body {
     color: var(--text) !important;
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: all 0.4s ease;
+}
+
+main {
+    width: 90%;
+    margin: auto;
 }
 
 h1.vitrino {
@@ -130,6 +137,7 @@ span.btn-top {
     margin: 10px;
     padding: 0.5rem 1rem;
     list-style: none !important;
+    width:80%!important;
 }
 
     .navbar .nav-link {
@@ -324,13 +332,14 @@ i {
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    padding: 10px !important;
 }
 
-.card.p-4.align-self-center a{
-    margin: auto;
-}
-    /* Card check */
-    .card.check {
+    .card.p-4.align-self-center a {
+        margin: auto;
+    }
+/* Card check */
+.card.check {
     cursor: pointer;
     transition: all 0.2s ease;
     border: 2px solid transparent;
@@ -569,13 +578,13 @@ select {
         text-decoration: none;
     }
 
-/* ================== DARKMODE ================== */
-
-
-
-
 
 @media (max-width: 992px) {
+    main {
+        width: 90%;
+        margin: auto;
+    }
+
     .navbar {
         max-width: 675px !important;
         max-height: 140px;
@@ -597,6 +606,7 @@ select {
         grid-area: master;
         justify-self: start;
         position: sticky;
+        padding: 5px;
     }
 
     .switch {
@@ -625,9 +635,92 @@ select {
             padding: 0.4rem 0.8rem;
             font-size: 1rem !important;
         }
+    /* transforma tabela em blocos */
+    table {
+        border: none;
+    }
+
+    .table-responsive table,
+    .table-responsive thead,
+    .table-responsive tbody,
+    .table-responsive th,
+    .table-responsive td,
+    .table-responsive tr {
+        display: block;
+    }
+
+    .table-responsive thead {
+        display: none;
+    }
+
+    .table-responsive tr {
+        background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        margin: auto;
+        margin-bottom: 1rem;
+    }
+
+    .table-responsive td {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0.4rem 0.6rem;
+        border: none;
+        border-bottom: 1px solid var(--glass-border);
+        font-size: 0.9rem;
+        gap: 1rem;
+    }
+
+        .table-responsive td:last-child {
+            border-bottom: none;
+        }
+
+        .table-responsive td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-btn);
+            width: 25%;
+            text-align: left;
+            border-right: 1px solid var(--glass-border);
+            padding-right: 5px;
+        }
+
+        .table-responsive td a {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.6rem;
+        }
+
+    /* container dos cards */
+    .md-8.row.g-4 {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: stretch;
+        gap: 0px!important;
+        padding: 10px;
+    }
+
+    /* cada card individual */
+    .col-md-3.mt-4.text-center {
+        flex: 1 1 10%;
+        max-width: 32%;
+        min-width: 250px;
+        box-sizing: border-box;
+        padding: 5px;
+    }
+
+    .card.p-4.align-self-center {
+        width: 100%;
+        padding: 1rem;
+        margin: 0;
+    }
 }
 
-@media (max-width: 575px) { /*menu hamburguer*/
+@media (max-width: 575px) {
     .navbar {
         z-index: 1;
         position: absolute;
@@ -637,7 +730,6 @@ select {
         max-height: none;
         display: flex !important;
         justify-content: center;
-        width: 90% !important;
     }
 
     .container-fluid {
@@ -746,61 +838,13 @@ select {
             color: var(--text-btn) !important;
         }
 
-    /* transforma tabela em blocos */
-    table {
-        border: none;
-    }
-
-    .table-responsive table,
-    .table-responsive thead,
-    .table-responsive tbody,
-    .table-responsive th,
-    .table-responsive td,
-    .table-responsive tr {
-        display: block;
-    }
-
-    .table-responsive thead {
-        display: none; /* esconde cabeçalhos */
-    }
-
-    .table-responsive tr {
-        background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-        padding: 0.75rem;
-        width: 80%;
-        margin: auto;
-        margin-bottom: 1rem;
-    }
-
     .table-responsive td {
-        display: flex;
         justify-content: space-between;
-        align-items: center;
-        padding: 0.4rem 0.6rem;
-        border: none;
-        border-bottom: 1px solid var(--glass-border);
-        font-size: 0.9rem;
-        gap: 1rem;
     }
 
-        .table-responsive td:last-child {
-            border-bottom: none;
-        }
-
-        /* cabeçalhos gerados automaticamente */
         .table-responsive td::before {
-            content: attr(data-label);
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text);
-        }
-
-        /* botões de ação */
-        .table-responsive td a {
-            font-size: 0.8rem;
-            padding: 0.3rem 0.6rem;
+            width: auto;
+            text-align: left;
+            border: none;
         }
 }

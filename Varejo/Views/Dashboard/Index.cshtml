@@ -3,7 +3,6 @@
 	ViewData["Title"] = "Dashboard";
 }
 
-
 <h2 class="mb-4">📊 @ViewData["Title"]</h2>
 
 <div class="container-fluid py-3">
@@ -84,7 +83,6 @@
 					@if (Model.UltimosProdutos?.Count > 0)
 					{
 						<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-
 							<table class="w-100">
 								<thead class="table-dark">
 									<tr>
@@ -98,10 +96,10 @@
 									@foreach (var p in Model.UltimosProdutos)
 									{
 										<tr>
-											<td>@p.IdProduto</td>
-											<td>@p.Nome</td>
-											<td>@p.Categoria</td>
-											<td>@p.Familia</td>
+											<td data-label="#">@p.IdProduto</td>
+											<td data-label="Nome">@p.Nome</td>
+											<td data-label="Categoria">@p.Categoria</td>
+											<td data-label="Família">@p.Familia</td>
 										</tr>
 									}
 								</tbody>
@@ -123,7 +121,6 @@
 					@if (Model.ProdutosPorCategoria?.Count > 0)
 					{
 						<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-
 							<table class="w-100">
 								<thead class="table-dark">
 									<tr>
@@ -136,9 +133,9 @@
 									@foreach (var c in Model.ProdutosPorCategoria)
 									{
 										<tr>
-											<td>@c.IdCategoria</td>
-											<td>@c.Descricao</td>
-											<td>@c.QtdeProdutos</td>
+											<td data-label="#">@c.IdCategoria</td>
+											<td data-label="Categoria">@c.Descricao</td>
+											<td data-label="Qtd Produtos">@c.QtdeProdutos</td>
 										</tr>
 									}
 								</tbody>
@@ -165,7 +162,6 @@
 					@if (Model.ProdutosPorFamilia?.Count > 0)
 					{
 						<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-
 							<table class="w-100">
 								<thead class="table-dark">
 									<tr>
@@ -178,9 +174,9 @@
 									@foreach (var f in Model.ProdutosPorFamilia)
 									{
 										<tr>
-											<td>@f.IdFamilia</td>
-											<td>@f.Descricao</td>
-											<td>@f.QtdeProdutos</td>
+											<td data-label="#">@f.IdFamilia</td>
+											<td data-label="Família">@f.Descricao</td>
+											<td data-label="Qtd Produtos">@f.QtdeProdutos</td>
 										</tr>
 									}
 								</tbody>
@@ -202,7 +198,6 @@
 					@if (Model.UltimosMovimentos?.Count > 0)
 					{
 						<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-
 							<table class="w-100">
 								<thead class="table-dark">
 									<tr>
@@ -217,11 +212,11 @@
 									@foreach (var m in Model.UltimosMovimentos)
 									{
 										<tr>
-											<td>@m.IdMovimento</td>
-											<td>@m.Pessoa</td>
-											<td>@m.TipoMovimento</td>
-											<td>@m.QtdeProdutos</td>
-											<td>@m.Data.ToString("dd/MM/yyyy HH:mm")</td>
+											<td data-label="#">@m.IdMovimento</td>
+											<td data-label="Pessoa">@m.Pessoa</td>
+											<td data-label="Tipo">@m.TipoMovimento</td>
+											<td data-label="Qtde Produtos">@m.QtdeProdutos</td>
+											<td data-label="Data">@m.Data.ToString("dd/MM/yyyy HH:mm")</td>
 										</tr>
 									}
 								</tbody>
@@ -252,7 +247,6 @@
 	</div>
 
 </div>
-
 @section Scripts {
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script>

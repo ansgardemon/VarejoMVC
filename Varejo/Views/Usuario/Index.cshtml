@@ -15,21 +15,21 @@
 	<table class="w-100">
 		<thead>
 			<tr>
-				<th scope="col">ID</th>
+				<th scope="col">#</th>
 				<th scope="col">Nome</th>
 				<th scope="col">Ativo</th>
 				<th scope="col">ID da Pessoa</th>
 				<th scope="col">Tipo de Usuário</th>
-				<th scope="col" style="width: 340px;">Ações</th>
+				<th scope="col">Ações</th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach (var usuario in Model.Where(u => u.Ativo))
 			{
 				<tr>
-					<td>@usuario.IdUsuario</td>
-					<td>@usuario.nomeUsuario</td>
-					<td>
+					<td data-label="ID">@usuario.IdUsuario</td>
+					<td data-label="Usuário">@usuario.nomeUsuario</td>
+					<td data-label="Status">
 						@if (usuario.Ativo)
 						{
 							<span class="badge bg-success">Ativo</span>
@@ -39,12 +39,10 @@
 							<span class="badge bg-danger">Inativo</span>
 						}
 					</td>
-					<td>@usuario.PessoaId</td>
-					<td>@usuario.TipoUsuarioId</td>
-					<td>
-						<a class="btn btn-info btn-sm" asp-controller="Pessoa" asp-action="Details" asp-route-id="@usuario.PessoaId">
-							Ver Pessoa
-						</a>
+					<td data-label="Pessoa ID">@usuario.PessoaId</td>
+					<td data-label="Tipo Usuário ID">@usuario.TipoUsuarioId</td>
+					<td data-label="Ações">
+						<a class="btn btn-info btn-sm" asp-controller="Pessoa" asp-action="Details" asp-route-id="@usuario.PessoaId">Ver Pessoa</a>
 						<a class="btn btn-warning btn-sm me-1" asp-action="Edit" asp-route-id="@usuario.IdUsuario">Editar</a>
 						<a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@usuario.IdUsuario">Excluir</a>
 					</td>

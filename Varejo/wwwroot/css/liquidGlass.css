@@ -318,9 +318,19 @@ i {
     border-radius: 10px !important;
     position: relative;
 }
+/*card de produtos*/
+.card.p-4.align-self-center {
+    min-height: 400px !important;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
 
-/* Card check */
-.card.check {
+.card.p-4.align-self-center a{
+    margin: auto;
+}
+    /* Card check */
+    .card.check {
     cursor: pointer;
     transition: all 0.2s ease;
     border: 2px solid transparent;

@@ -93,6 +93,37 @@ namespace VarejoAPI.Controllers
             return Ok(resultado);
         }
 
+        [HttpGet("catalogo")]
+        public async Task<ActionResult<IEnumerable<ProdutoCatalogoViewModel>>> GetCatalogo(
+        int? IdCategoria = null, int? IdMarca = null)
+        {
+            try
+            {
+                var produtos = await _produtoRepository.GetProdutosCatalogoAsync(IdCategoria, IdMarca);
+
+                if (produtos == null || !produtos.Any())
+                    return NotFound("Nenhum produto encontrado.");
+
+                var resultado = produtos.Select(p => new ProdutoCatalogoViewModel
+                {
+                    IdProduto = p.IdProduto,
+                    IdCategoria = p.Familia?.Categoria?.IdCategoria ?? 0,
+                    IdMarca = p.Familia?.Marca?.IdMarca ?? 0,
+                    NomeProduto = p.NomeProduto,
+                    UrlImagem = p.UrlImagem,
+                    Preco = p.ProdutosEmbalagem
+                        .Where(pe => pe.Preco > 0)
+                        .Min(pe => pe.Preco)
+                });
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
+            }
+        }
+
 
 
         [HttpGet("categoria/{idCategoria}")]

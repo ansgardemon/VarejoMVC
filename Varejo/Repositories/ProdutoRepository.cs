@@ -106,6 +106,52 @@ namespace Varejo.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Produto>> GetProdutosCatalogoAsync(int? idCategoria, int? idMarca)
+        {
+            // Base query com todos os includes necessários
+            var query = _context.Produtos
+                .AsNoTracking()
+                .Where(p => p.Ativo)
+                .Include(p => p.ProdutosEmbalagem)
+                    .ThenInclude(pe => pe.TipoEmbalagem)
+                .Include(p => p.Familia)
+                    .ThenInclude(f => f.Categoria)
+                .Include(p => p.Familia)
+                    .ThenInclude(f => f.Marca)
+                .AsQueryable();
+
+            // Filtra por categoria se tiver valor
+            if (idCategoria.HasValue && idCategoria.Value > 0)
+            {
+                query = query.Where(p => p.Familia.CategoriaId == idCategoria.Value);
+            }
+
+            // Filtra por marca se tiver valor
+            if (idMarca.HasValue && idMarca.Value > 0)
+            {
+                query = query.Where(p => p.Familia.MarcaId == idMarca.Value);
+            }
+
+            // Ordena alfabeticamente
+            var produtos = await query
+                .OrderBy(p => p.NomeProduto)
+                .ToListAsync();
+
+            // Seleciona o menor preço disponível de cada produto
+            foreach (var produto in produtos)
+            {
+                produto.ProdutosEmbalagem = produto.ProdutosEmbalagem
+                    .OrderBy(pe => pe.Preco)
+                    .Take(1)
+                    .ToList();
+            }
+
+            return produtos;
+        }
+
+
+
+
 
         public async Task UpdateAsync(Produto produto)
         {

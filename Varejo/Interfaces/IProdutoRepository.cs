@@ -15,6 +15,8 @@ namespace Varejo.Interfaces
 
         Task<List<Produto>> GetProdutosDestaqueAsync(int take = 8);
 
+        Task<List<Produto>> GetProdutosCatalogoAsync(int? idCategoria, int? idMarca);
+
 
         Task AddAsync(Produto produto);
         Task UpdateAsync(Produto produto);

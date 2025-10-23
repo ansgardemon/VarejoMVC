@@ -2,6 +2,9 @@
     const urlBase = "http://localhost:5018/api/Categoria";
     const container = $("#categoriasContainer");
 
+    const urlBaseMarca = "http://localhost:5018/api/Marca";
+    const containerMarca = $("#marcasContainer");
+
     console.log("Página carregada. Iniciando requisição de categorias...");
 
     // Consumir API de categorias
@@ -11,7 +14,6 @@
         contentType: "application/json",
         success: function (dados) {
             console.log("Dados recebidos da API:", dados);
-
             container.empty(); // limpa qualquer conteúdo antigo
 
             dados.forEach(categoria => {
@@ -28,6 +30,7 @@
                         </div>
                     </div>
                 `;
+
                 container.append(card);
             });
 
@@ -36,6 +39,42 @@
         error: function (erro) {
             console.error("Erro ao carregar categorias:", erro);
             container.append('<p class="text-danger">Não foi possível carregar as categorias.</p>');
+        }
+    });
+
+    console.log("Página iniciando Marcas");
+
+    // Consumir API Marcas
+    $.ajax({
+        url: urlBaseMarca,
+        type: "GET",
+        contentType: "application/json",
+        success: function (dadosMarca) {
+            console.log("Dados recebidos da API:", dadosMarca);
+            containerMarca.empty(); // limpa qualquer conteúdo antigo
+
+            dadosMarca.forEach(marca => {
+                console.log("Processando marca:", marca);
+
+                const cardMarca = `
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm text-center h-100 category-card">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <h5 class="card-title">${marca.nomeMarca}</h5>
+                                <p class="card-text text-muted">Explore nossa seleção de ${marca.nomeMarca.toLowerCase()}.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                containerMarca.append(cardMarca);
+            });
+
+            console.log("Todas as marcas foram inseridas no container.");
+        },
+        error: function (erro) {
+            console.error("Erro ao carregar marcas:", erro);
+            containerMarca.append('<p class="text-danger">Não foi possível carregar as marcas.</p>');
         }
     });
 });

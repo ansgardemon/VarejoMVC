@@ -71,17 +71,12 @@
     </section>
 
     <!-- Marcas -->
-    <section id="marcas" class="bg-beige py-5">
-        <div class="container text-center">
-            <h2 class="fw-semibold mb-4">Nossas Marcas</h2>
-            <div class="d-flex flex-wrap justify-content-center gap-4">
-                @for (int i = 1; i <= 6; i++)
-                {
-                    <div class="brand-card p-3">
-                        <img src="https://placehold.co/120x80?text=Marca+@i" alt="Marca @i" class="img-fluid" />
-                    </div>
-                }
+    <section id="marca" class="bg-beige py-5">
+        <div class="container">
             </div>
+            <h2 class="text-center mb-4 fw-semibold">Marcas</h2>
+            <div class="row g-4" id="marcasContainer">
+                <!-- Os cards serão inseridos pelo landing.js -->
         </div>
     </section>
 

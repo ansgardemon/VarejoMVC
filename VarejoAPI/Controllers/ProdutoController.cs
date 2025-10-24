@@ -49,7 +49,6 @@ namespace VarejoAPI.Controllers
                     DescricaoCategoria = produto.Familia.Categoria.DescricaoCategoria,
                     NomeMarca = produto.Familia.Marca.NomeMarca,
                     UrlImagem = produto.UrlImagem,
-                    Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
                 });
             }
 
@@ -137,7 +136,7 @@ namespace VarejoAPI.Controllers
         [HttpGet("categoria/{idCategoria}")]
         public async Task<IActionResult> Details(int idCategoria)
         {
-            var produtos = await _produtoRepository.GetByCategory(id);
+            var produtos = await _produtoRepository.GetByCategory(idCategoria);
 
             if (produtos == null || !produtos.Any())
                 return NotFound();

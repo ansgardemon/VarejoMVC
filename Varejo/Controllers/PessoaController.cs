@@ -23,7 +23,7 @@ namespace Varejo.Controllers
 
         //CREATE READ
 
-        public async  Task<IActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             // Retorna o formulário em branco
             var vm = new PessoaViewModel
@@ -173,10 +173,9 @@ namespace Varejo.Controllers
                 EhFornecedor = pessoa.EhFornecedor,
                 Ativo = pessoa.Ativo,
 
-                // Mapear Enderecos da entidade para o ViewModel
                 Enderecos = pessoa.Enderecos?.Select(e => new EnderecoViewModel
                 {
-                    IdEndereco = e.IdEndereco, // adiciona isso
+                    IdEndereco = e.IdEndereco,
                     Logradouro = e.Logradouro,
                     Numero = e.Numero,
                     Cep = e.Cep,
@@ -186,6 +185,12 @@ namespace Varejo.Controllers
                     Complemento = e.Complemento
                 }).ToList() ?? new List<EnderecoViewModel>()
             };
+
+            // 🟢 Garante que pelo menos um endereço vazio exista
+            if (pessoaVm.Enderecos.Count == 0)
+            {
+                pessoaVm.Enderecos.Add(new EnderecoViewModel());
+            }
 
             return View(pessoaVm);
         }
@@ -250,5 +255,5 @@ namespace Varejo.Controllers
 
     }
 }
-    
+
 

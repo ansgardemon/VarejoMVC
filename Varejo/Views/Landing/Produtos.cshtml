@@ -15,17 +15,17 @@
 </head>
 
 <body>
-    <!-- Navbar exclusiva da landing -->
+    <!-- Navbar-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-wine shadow-sm fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">
-                <img src="~/img/logo.png" alt="Logo" width="45" height="45" class="d-inline-block align-text-center me-2" />
-                Adega Dose Certa
+                <img src="~/img/logo.png" alt="Logo" width="90" height="90" class="d-inline-block align-text-center me-2" />
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link" href="/Landing/Produtos">Catálogo</a></li>
@@ -43,40 +43,24 @@
 
             <!-- Filtro rápido (template) -->
             <div class="mb-4 text-center">
-                <select class="form-select d-inline-block w-auto me-2">
+                <select id="categoriaSelect" class="form-select d-inline-block w-auto me-2">
                     <option value="">Todas as Categorias</option>
-                    <option value="Tintos">Tintos</option>
-                    <option value="Brancos">Brancos</option>
-                    <option value="Rosés">Rosés</option>
-                    <option value="Espumantes">Espumantes</option>
-                    <option value="Destilados">Destilados</option>
-                    <option value="Sobremesa">Sobremesa</option>
+                    <!-- As outras opções serão inseridas via AJAX -->
                 </select>
 
-                <select class="form-select d-inline-block w-auto">
+                <select id="marcaSelect" class="form-select d-inline-block w-auto">
                     <option value="">Todas as Marcas</option>
-                    <option value="Marca 1">Marca 1</option>
-                    <option value="Marca 2">Marca 2</option>
-                    <option value="Marca 3">Marca 3</option>
+                    <!-- As outras opções serão inseridas via AJAX -->
                 </select>
             </div>
+
 
             <!-- Lista de produtos -->
-            <div class="row g-4">
-                @for (int i = 1; i <= 12; i++)
-                {
-                    <div class="col-md-3">
-                        <div class="card h-100 shadow-sm border-0">
-                            <img src="https://placehold.co/400x300?text=Produto+@i" class="card-img-top" alt="Produto @i" />
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Produto @i</h5>
-                                <p class="text-muted">R$ @(50 + i * 3),90</p>
-                                <a href="#" class="btn btn-outline-wine w-100">Ver detalhes</a>
-                            </div>
-                        </div>
-                    </div>
-                }
+            <div id="listaProdutos" class="row g-4">
+
+                <!-- Os cards serão inseridos via AJAX -->
             </div>
+
 
             <!-- Paginação (template) -->
             <nav class="mt-5">
@@ -91,6 +75,8 @@
         </div>
     </section>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/js/produtos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

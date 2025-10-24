@@ -22,12 +22,12 @@
 			@foreach (var movimento in Model)
 			{
 				<tr>
-					<td>@movimento.Documento</td>
-					<td>@movimento.DataMovimento.ToString("dd/MM/yyyy HH:mm")</td>
-					<td>@movimento.TipoMovimento?.DescricaoTipoMovimento</td>
-					<td>@movimento.Pessoa?.NomeRazao</td>
-					<td>@(movimento.ProdutosMovimento?.Count() ?? 0)</td>
-					<td>
+					<td data-label="Documento">@movimento.Documento</td>
+					<td data-label="Data">@movimento.DataMovimento.ToString("dd/MM/yyyy HH:mm")</td>
+					<td data-label="Tipo">@movimento.TipoMovimento?.DescricaoTipoMovimento</td>
+					<td data-label="Pessoa">@movimento.Pessoa?.NomeRazao</td>
+					<td data-label="Qtd Produtos">@(movimento.ProdutosMovimento?.Count() ?? 0)</td>
+					<td data-label="Ações">
 						<a class="btn btn-info btn-sm" href="@Url.Action("Details", "Movimento", new { id = movimento.IdMovimento })">Detalhes</a>
 					</td>
 				</tr>

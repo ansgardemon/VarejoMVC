@@ -46,7 +46,6 @@ namespace Varejo.Controllers
             ViewBag.TipoUsuario = new SelectList( _usuarioRepository.GetTiposUsuario(), "IdTipoUsuario", "DescricaoTipoUsuario", tipoUsuarioId);
             ViewBag.Search = search;
 
-
             return View(usuarios);
         }
 

@@ -21,13 +21,13 @@
 </head>
 <body class="w-100 page-bg">
 	<header>
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-lightaccept-policy border-bottom box-shadow mb-3 w-75 mx-auto @(ViewData["NavbarClass"] ?? "") navbar @(User.Identity?.IsAuthenticated ?? false ? "logged-in" : "logged-out")">
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-lightaccept-policy border-bottom box-shadow mb-3 mx-auto @(ViewData["NavbarClass"] ?? "") @(User.Identity?.IsAuthenticated ?? false ? "logged-in" : "logged-out")">
 			<div class="container-fluid m-auto w-100">
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
-				<div class="navbar-collapse collapse d-sm-inline-flex w-100 align-items-center justify-content-evenly">
+				<div class="navbar-collapse collapse w-100 align-items-center justify-content-evenly">
 					@* ul *@
 					<ul class="navbar-nav flex-grow-1 fs-4 fw-bold">
 						@if (User.Identity?.IsAuthenticated ?? false)
@@ -85,6 +85,7 @@
 						<span class="slider m-auto"></span>
 					</label>
 				</div>
+
 			</div>
 		</nav>
 	</header>
@@ -92,6 +93,10 @@
 	<div class="container mb-5 pb-3">
 		<main role="main" class="pb-3">
 			@RenderBody()
+
+			<span class="btn-top" onclick="window.scrollTo(0, 0)">
+				<i class="fa-solid fa-arrow-up"></i>
+			</span>
 		</main>
 	</div>
 

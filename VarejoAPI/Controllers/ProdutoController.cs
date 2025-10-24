@@ -27,19 +27,27 @@ namespace VarejoAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            var produtos = await _produtoRepository.GetAllAsync();
+            var produtos = await _produtoRepository.GetAllDetailedAsync();
 
 
-            var resultado = new List<ProdutoOutputDTO>();
+            var resultado = new List<ProdutoDTO>();
 
             foreach (var produto in produtos)
             {
 
 
-                resultado.Add(new ProdutoOutputDTO
+
+                resultado.Add(new ProdutoDTO
                 {
+                    IdFamilia = produto.Familia.IdFamilia,
+                    NomeFamilia = produto.Familia.NomeFamilia,
                     IdProduto = produto.IdProduto,
                     NomeProduto = produto.NomeProduto,
+                    EstoqueInicial = produto.EstoqueInicial,
+                    EstoqueAtual = produto.EstoqueAtual,
+                    Ativo = produto.Ativo,
+                    DescricaoCategoria = produto.Familia.Categoria.DescricaoCategoria,
+                    NomeMarca = produto.Familia.Marca.NomeMarca,
                     UrlImagem = produto.UrlImagem,
                     Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
                 });
@@ -49,27 +57,85 @@ namespace VarejoAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProdutoCategoriaDTO>> GetByIdAsync(int id)
+        public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {
-            var produto = await _produtoRepository.GetByIdAsync(id);
+            var produto = await _produtoRepository.GetByIdDetailedAsync(id);
             if (produto == null)
                 return NotFound();
 
-            var resultado = new ProdutoOutputDTO
+            var resultado = new ProdutoDTO
             {
-                IdProduto = produto.IdProduto,
-                NomeProduto = produto.NomeProduto,
-                Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
-                UrlImagem = produto.UrlImagem,
-               
-
+                  IdFamilia = produto.Familia.IdFamilia,
+                    NomeFamilia = produto.Familia.NomeFamilia,
+                    IdProduto = produto.IdProduto,
+                    Complemento = produto.Complemento,
+                    NomeProduto = produto.NomeProduto,
+                    EstoqueInicial = produto.EstoqueInicial,
+                    EstoqueAtual = produto.EstoqueAtual,
+                    Ativo = produto.Ativo,
+                    DescricaoCategoria = produto.Familia.Categoria.DescricaoCategoria,
+                    NomeMarca = produto.Familia.Marca.NomeMarca,
+                    UrlImagem = produto.UrlImagem,
+                    CustoMedio = produto.CustoMedio,
             };
 
             return Ok(resultado);
         }
 
-        [HttpGet("categoria/{id}")]
-        public async Task<ActionResult<List<ProdutoCategoriaDTO>>> GetByCategory(int id)
+        [HttpGet("destaques")]
+        public async Task<ActionResult<List<ProdutoCardViewModel>>> GetDestaques()
+        {
+            var produtos = await _produtoRepository.GetProdutosDestaqueAsync(8);
+
+            var resultado = produtos.Select(p => new ProdutoCardViewModel
+            {
+                IdProduto = p.IdProduto,
+                NomeProduto = p.NomeProduto,
+                UrlImagem = p.UrlImagem,
+                //escolher menor preço entre embalagens
+                Preco = p.ProdutosEmbalagem != null && p.ProdutosEmbalagem.Any()
+                    ? p.ProdutosEmbalagem.Min(e => e.Preco)
+                    : 0m
+            }).ToList();
+
+            return Ok(resultado);
+        }
+
+        [HttpGet("catalogo")]
+        public async Task<ActionResult<IEnumerable<ProdutoCatalogoViewModel>>> GetCatalogo(
+        int? IdCategoria = null, int? IdMarca = null)
+        {
+            try
+            {
+                var produtos = await _produtoRepository.GetProdutosCatalogoAsync(IdCategoria, IdMarca);
+
+                if (produtos == null || !produtos.Any())
+                    return NotFound("Nenhum produto encontrado.");
+
+                var resultado = produtos.Select(p => new ProdutoCatalogoViewModel
+                {
+                    IdProduto = p.IdProduto,
+                    IdCategoria = p.Familia?.Categoria?.IdCategoria ?? 0,
+                    IdMarca = p.Familia?.Marca?.IdMarca ?? 0,
+                    NomeProduto = p.NomeProduto,
+                    UrlImagem = p.UrlImagem,
+                    Preco = p.ProdutosEmbalagem
+                        .Where(pe => pe.Preco > 0)
+                        .Min(pe => pe.Preco)
+                });
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpGet("categoria/{idCategoria}")]
+        public async Task<IActionResult> Details(int idCategoria)
         {
             var produtos = await _produtoRepository.GetByCategory(id);
 

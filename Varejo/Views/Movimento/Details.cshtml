@@ -28,7 +28,7 @@
         var produto = pm.Produto;
         var imagem = produto?.UrlImagem ?? "/images/produto-padrao.png";
         <div class="col-md-3 mb-3">
-            <div class="card h-100">
+            <div class="card">
                 <img src="@imagem" class="card-img-top" alt="@produto?.NomeProduto" style="height:150px; object-fit:cover;">
                 <div class="card-body">
                     <h5 class="card-title">@produto?.NomeProduto</h5>

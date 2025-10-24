@@ -18,7 +18,7 @@ namespace Varejo.Migrations
                     {"Unidade", 1 },
                     {"Caixa C/6", 6 },
                     {"Caixa C/12", 12 },
-                     { "Caixa C/24", 24 },
+                    { "Caixa C/24", 24 },
                     {"Fardo C/6", 6 },
                     {"Fardo C/12", 12 },
                     {"Fardo C/24", 24 },

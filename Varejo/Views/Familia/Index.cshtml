@@ -49,16 +49,17 @@
 				foreach (var familia in Model)
 				{
 					<tr class="text-center">
-						<td>@familia.IdFamilia</td>
-						<td>@familia.NomeFamilia</td>
-						<td>@familia.Marca?.NomeMarca</td>
-						<td>@familia.Categoria?.DescricaoCategoria</td>
-						<td>@(familia.Ativo ? "✅" : "❌")</td>
-						<td>
+						<td data-label="ID">@familia.IdFamilia</td>
+						<td data-label="Família">@familia.NomeFamilia</td>
+						<td data-label="Marca">@familia.Marca?.NomeMarca</td>
+						<td data-label="Categoria">@familia.Categoria?.DescricaoCategoria</td>
+						<td data-label="Ativo">@(familia.Ativo ? "✅" : "❌")</td>
+						<td data-label="Ações">
 							<a asp-action="Details" asp-route-id="@familia.IdFamilia" class="btn btn-sm btn-info">Exibir Produtos</a>
 							<a asp-action="Edit" asp-route-id="@familia.IdFamilia" class="btn btn-sm btn-warning">Editar</a>
 						</td>
 					</tr>
+
 				}
 			}
 			else

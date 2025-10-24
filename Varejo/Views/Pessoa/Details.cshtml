@@ -63,13 +63,13 @@
 					@foreach (var endereco in Model.Enderecos)
 					{
 						<tr>
-							<td>@endereco.Logradouro</td>
-							<td>@endereco.Numero</td>
-							<td>@endereco.Cep</td>
-							<td>@endereco.Bairro</td>
-							<td>@endereco.Cidade</td>
-							<td>@endereco.Uf</td>
-							<td>@endereco.Complemento</td>
+							<td data-label="Logradouro">@endereco.Logradouro</td>
+							<td data-label="Número">@endereco.Numero</td>
+							<td data-label="CEP">@endereco.Cep</td>
+							<td data-label="Bairro">@endereco.Bairro</td>
+							<td data-label="Cidade">@endereco.Cidade</td>
+							<td data-label="UF">@endereco.Uf</td>
+							<td data-label="Complemento">@endereco.Complemento</td>
 						</tr>
 					}
 				</tbody>

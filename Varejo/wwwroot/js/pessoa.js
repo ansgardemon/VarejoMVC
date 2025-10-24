@@ -226,6 +226,6 @@
         const quantidade = $('#enderecos-container .endereco-item').length;
         const altura = 98; // altura fixa que você quer que o botão suba
         const translate = quantidade > 0 ? -altura : 0; // sobe apenas 1 vez
-        $('.btns-endereco').css('transform', `translateY(${translate}px)`);
+        $('.btns-add-ajust').css('transform', `translateY(${translate}px)`);
     }
 });

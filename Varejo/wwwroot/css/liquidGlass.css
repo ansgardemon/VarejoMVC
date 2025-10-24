@@ -21,21 +21,66 @@
     --table-odd: rgba(255, 255, 255, 0.25);
     --table-even: rgba(200, 200, 200, 0.25);
 }
+/* ================== DARKMODE ================== */
+
+body.dark {
+    --glass-bg: #ffffff14;
+    --glass-border: #ffffff30;
+    --text: #a4daf5;
+    --text-btn: #f0f0f0;
+    --subtext: rgba(255, 255, 255, 0.7);
+    --bg-gradient-start: #0f172a;
+    --bg-gradient-end: #1e293b;
+    --btn-info: #0a7cccCC;
+    --btn-success: #1f9b5dcc;
+    --btn-danger: #b02a37CC;
+    --btn-warning: #b38f0eCC;
+    --table-odd: rgba(255,255,255,0.25);
+    --table-even: rgba(200,200,200,0.25);
+}
 
 /* ================== body ================== */
 * {
-    transition: .3s ease;
+    transition: .3s ease !important;
+    box-sizing: border-box;
 }
 
     *::marker {
         display: none !important;
     }
 
+/* Largura da scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 10px;
+}
+
+/* Fundo da barra (trilho) */
+::-webkit-scrollbar-track {
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    border-radius: 6px;
+}
+
+/* Parte que você arrasta (polegar) */
+::-webkit-scrollbar-thumb {
+    background-color: var(--text);
+    border-radius: 6px;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
     color: var(--text) !important;
     font-family: "Inter", "Segoe UI", sans-serif;
     transition: all 0.4s ease;
+}
+
+main {
+    width: 90%;
+    margin: auto;
 }
 
 h1.vitrino {
@@ -55,7 +100,31 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text) !important;
 }
 
+span.btn-top {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid transparent;
+    height: 50px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    z-index: 1;
+}
 
+    span.btn-top:hover {
+        border: 1px solid var(--glass-border);
+        filter: saturate(1.5);
+    }
+
+    span.btn-top i {
+        font-size: 2rem;
+    }
 /* ================== navbar ================== */
 
 .navbar {
@@ -68,6 +137,7 @@ h1, h2, h3, h4, h5, h6 {
     margin: 10px;
     padding: 0.5rem 1rem;
     list-style: none !important;
+    width:80%!important;
 }
 
     .navbar .nav-link {
@@ -92,6 +162,7 @@ h1, h2, h3, h4, h5, h6 {
     transform: translateY(50px);
     width: fit-content;
     text-align: center;
+    position: absolute;
 }
 
 .container-fluid a:hover span {
@@ -255,7 +326,18 @@ i {
     border-radius: 10px !important;
     position: relative;
 }
+/*card de produtos*/
+.card.p-4.align-self-center {
+    min-height: 400px !important;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 10px !important;
+}
 
+    .card.p-4.align-self-center a {
+        margin: auto;
+    }
 /* Card check */
 .card.check {
     cursor: pointer;
@@ -281,14 +363,14 @@ i {
 
     .card.check.ativo-btn {
         border-color: #dc3545;
-        color: #dc3545!important;
+        color: #dc3545 !important;
         background: #dc354533;
         font-weight: bold;
     }
 
         .card.check.ativo-btn:has(input:checked) {
             border-color: #198754;
-            color: #198754!important;
+            color: #198754 !important;
             background: #19875433;
         }
 
@@ -304,13 +386,13 @@ i {
     padding: .5rem;
 }
 
-.movimento-card img {
-    width: 100%;
-    aspect-ratio: 1/1;
-    object-fit:cover;
-    margin:auto;
-    border-radius: 10px;
-}
+    .movimento-card img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        margin: auto;
+        border-radius: 10px;
+    }
 
 /* ================== BUTTONS ================== */
 .btn {
@@ -390,11 +472,11 @@ label {
     margin-left: 8px;
 }
 
-.btns-endereco {
+.btns-add-ajust {
     transform: translateY(-98px)
 }
 
-    .btns-endereco a, .btns-endereco button {
+    .btns-add-ajust a, .btns-add-ajust button {
         margin-right: .5rem;
         color: var(--text) !important;
     }
@@ -430,11 +512,15 @@ table {
 
 th {
     color: var(--text);
-    border: none !important;
+    border: 1px solid transparent !important;
+}
+
+tr, td {
+    border: 1px solid transparent !important;
 }
 
 dl {
-    border: 1px solid var(--glass-border);
+    border: 1px solid transparent !important;
     border-radius: 12px;
 }
 
@@ -492,27 +578,13 @@ select {
         text-decoration: none;
     }
 
-/* ================== DARKMODE ================== */
-
-body.dark {
-    --glass-bg: #ffffff14;
-    --glass-border: #ffffff30;
-    --text: #a4daf5;
-    --text-btn: #f0f0f0;
-    --subtext: rgba(255, 255, 255, 0.7);
-    --bg-gradient-start: #0f172a;
-    --bg-gradient-end: #1e293b;
-    --btn-info: #0a7cccCC;
-    --btn-success: #1f9b5dcc;
-    --btn-danger: #b02a37CC;
-    --btn-warning: #b38f0eCC;
-    --table-odd: rgba(255,255,255,0.25);
-    --table-even: rgba(200,200,200,0.25);
-}
-
-
 
 @media (max-width: 992px) {
+    main {
+        width: 90%;
+        margin: auto;
+    }
+
     .navbar {
         max-width: 675px !important;
         max-height: 140px;
@@ -534,6 +606,7 @@ body.dark {
         grid-area: master;
         justify-self: start;
         position: sticky;
+        padding: 5px;
     }
 
     .switch {
@@ -562,6 +635,89 @@ body.dark {
             padding: 0.4rem 0.8rem;
             font-size: 1rem !important;
         }
+    /* transforma tabela em blocos */
+    table {
+        border: none;
+    }
+
+    .table-responsive table,
+    .table-responsive thead,
+    .table-responsive tbody,
+    .table-responsive th,
+    .table-responsive td,
+    .table-responsive tr {
+        display: block;
+    }
+
+    .table-responsive thead {
+        display: none;
+    }
+
+    .table-responsive tr {
+        background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        margin: auto;
+        margin-bottom: 1rem;
+    }
+
+    .table-responsive td {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0.4rem 0.6rem;
+        border: none;
+        border-bottom: 1px solid var(--glass-border);
+        font-size: 0.9rem;
+        gap: 1rem;
+    }
+
+        .table-responsive td:last-child {
+            border-bottom: none;
+        }
+
+        .table-responsive td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-btn);
+            width: 25%;
+            text-align: left;
+            border-right: 1px solid var(--glass-border);
+            padding-right: 5px;
+        }
+
+        .table-responsive td a {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.6rem;
+        }
+
+    /* container dos cards */
+    .md-8.row.g-4 {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: stretch;
+        gap: 0px!important;
+        padding: 10px;
+    }
+
+    /* cada card individual */
+    .col-md-3.mt-4.text-center {
+        flex: 1 1 10%;
+        max-width: 32%;
+        min-width: 250px;
+        box-sizing: border-box;
+        padding: 5px;
+    }
+
+    .card.p-4.align-self-center {
+        width: 100%;
+        padding: 1rem;
+        margin: 0;
+    }
 }
 
 @media (max-width: 575px) {
@@ -570,63 +726,125 @@ body.dark {
         position: absolute;
         top: 10px;
         left: 50%;
-        transform: translateX(-50%)
+        transform: translateX(-50%);
+        max-height: none;
+        display: flex !important;
+        justify-content: center;
     }
 
     .container-fluid {
-        display: flex;
-        justify-content: flex-start !important;
+        display: flex !important;
+        justify-content: center !important;
+        flex-direction: column !important;
+        align-items: center;
     }
 
-    navbar-collapse {
+        .container-fluid a:hover span {
+            display: flex;
+            position: relative;
+            background: none;
+            border: none;
+        }
+
+    .navbar-collapse {
         display: flex;
-        flex-direction: column;
-        justify-content: center !important;
+        justify-content: center;
         align-items: center;
+        flex-direction: column;
     }
 
     .navbar-nav {
-        text-align: left;
+        flex-wrap: nowrap;
+        gap: 1rem;
+        width: 100%;
+        padding-top: 0.5rem;
+        max-height: none;
+        overflow-y: hidden;
+        overflow-x: hidden;
     }
 
-    .switch {
-        left: 50%;
-        transform: translateX(-75%)
-    }
+        .navbar-nav li {
+            width: 100%;
+            display: flex !important;
+            justify-content: center;
+        }
 
-    .navbar-nav a {
-        display: flex;
-        align-items: center;
-        border-radius: 16px;
-        font-size: 80%;
-    }
+        .navbar-nav .nav-item i {
+            position: relative !important;
+        }
+
+        .navbar-nav .nav-item span {
+            transform: translateY(0);
+            display: block;
+            position: relative;
+        }
 
         .navbar-nav a:hover {
             box-shadow: none;
             background: none;
         }
 
-    .navbar li {
-        margin: auto;
-    }
-
-    .navbar a span {
-        transform: translateY(0px);
-        width: fit-content;
-    }
-
-    .container-fluid a:hover span {
-        display: flex;
-        position: relative;
-        background: none;
-        border: none;
+    .switch {
+        left: 50%;
+        transform: translateX(-75%)
     }
 
     .icon-home a span {
         transform: translateY(0px);
     }
 
+    .navbar-toggler-icon {
+    }
+
     main {
         margin-top: 100px;
+        width: 90%;
+        margin: auto;
+        margin-top: 100px;
     }
+
+
+    /*    Ajuste nas tabelas defs detalhes*/
+    dd {
+        height: 50px
+    }
+
+    dl dt:last-of-type {
+        border-bottom-left-radius: 0;
+    }
+
+    dl dd:first-of-type {
+        border-radius: 0 !important;
+    }
+
+    dl dd:last-of-type {
+        border-radius: 0 0 12px 12px !important;
+    }
+
+    td a.btn {
+        width: 100%;
+        margin: auto !important;
+        margin-top: 3px
+    }
+
+    /*    botões defs adicionar/remover*/
+    .btns-add-ajust {
+        transform: translateY(-84px) !important;
+    }
+
+        .btns-add-ajust > * {
+            display: grid;
+            place-items: center;
+            color: var(--text-btn) !important;
+        }
+
+    .table-responsive td {
+        justify-content: space-between;
+    }
+
+        .table-responsive td::before {
+            width: auto;
+            text-align: left;
+            border: none;
+        }
 }

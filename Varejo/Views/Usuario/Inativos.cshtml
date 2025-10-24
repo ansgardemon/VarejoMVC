@@ -9,7 +9,7 @@
 	<table class="w-100">
 		<thead>
 			<tr>
-				<th scope="col">ID</th>
+				<th scope="col">#</th>
 				<th scope="col">Nome</th>
 				<th scope="col">Tipo de Usuário</th>
 				<th scope="col">Status</th>
@@ -20,16 +20,15 @@
 			@foreach (var usuario in Model)
 			{
 				<tr>
-					<td>@usuario.IdUsuario</td>
-					<td>@usuario.nomeUsuario</td>
-					<td>@(usuario.TipoUsuario?.DescricaoTipoUsuario ?? "Não definido)")</td>
-					<td>
+					<td data-label="ID">@usuario.IdUsuario</td>
+					<td data-label="Usuário">@usuario.nomeUsuario</td>
+					<td data-label="Tipo">@((usuario.TipoUsuario?.DescricaoTipoUsuario) ?? "Não definido")</td>
+					<td data-label="Status">
 						<span class="badge bg-danger">@((usuario.Ativo) ? "Ativo" : "Inativo")</span>
 					</td>
-					<td>
-						<a asp-action="Ativar" asp-route-id="@usuario.IdUsuario"
-						   class="btn btn-sm btn-success me-1">Ativar</a>
-						<a class="btn btn-info btn-sm" asp-controller="Pessoa" asp-action="Details" asp-route-id="@usuario.PessoaId">Ver Pessoa </a>
+					<td data-label="Ações">
+						<a asp-action="Ativar" asp-route-id="@usuario.IdUsuario" class="btn btn-sm btn-success me-1">Ativar</a>
+						<a class="btn btn-info btn-sm" asp-controller="Pessoa" asp-action="Details" asp-route-id="@usuario.PessoaId">Ver Pessoa</a>
 					</td>
 				</tr>
 			}

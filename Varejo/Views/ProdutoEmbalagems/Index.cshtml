@@ -16,11 +16,11 @@
 			@foreach (var item in Model)
 			{
 				<tr>
-					<td>@item.Produto?.Complemento</td>
-					<td>@item.TipoEmbalagem?.DescricaoTipoEmbalagem</td>
-					<td>@item.Preco</td>
-					<td>@item.Ean</td>
-					<td>
+					<td data-label="Complemento">@item.Produto?.Complemento</td>
+					<td data-label="Tipo de Embalagem">@item.TipoEmbalagem?.DescricaoTipoEmbalagem</td>
+					<td data-label="Preço">@item.Preco</td>
+					<td data-label="EAN">@item.Ean</td>
+					<td data-label="Ações">
 						@Html.ActionLink("Edit", "Edit", new { id = item.IdProdutoEmbalagem }) |
 						@Html.ActionLink("Details", "Details", new { id = item.IdProdutoEmbalagem }) |
 						@Html.ActionLink("Delete", "Delete", new { id = item.IdProdutoEmbalagem })

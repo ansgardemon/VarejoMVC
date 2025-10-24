@@ -20,6 +20,7 @@ namespace Varejo.Repositories
             await _context.SaveChangesAsync();
         }
 
+
         public async Task DeleteAsync(int id)
         {
             var produto = await _context.Produtos.FindAsync(id);
@@ -33,6 +34,16 @@ namespace Varejo.Repositories
         public async Task<List<Produto>> GetAllAsync()
         {
             return await _context.Produtos.ToListAsync();
+        }
+
+        public async Task<List<Produto>> GetAllDetailedAsync()
+        {
+            return await _context.Produtos
+                .Include(p => p.Familia)
+                .ThenInclude(f => f.Categoria)
+                .Include(p => p.Familia)
+                .ThenInclude(f => f.Marca)
+                .ToListAsync();
         }
 
         public async Task<List<Produto>> GetByFamilia(int id)
@@ -52,6 +63,18 @@ namespace Varejo.Repositories
                 .ThenInclude(e => e.TipoEmbalagem) // opcional, se quiser já carregar o tipo
                 .FirstOrDefaultAsync(p => p.IdProduto == id);
         }
+
+
+        public async Task<Produto?> GetByIdDetailedAsync(int id)
+        {
+            return await _context.Produtos
+                .Include(p => p.Familia)
+                .ThenInclude(f => f.Categoria)
+                .Include(p => p.Familia)
+                .ThenInclude(f => f.Marca)
+                .FirstOrDefaultAsync(p => p.IdProduto == id);
+        }
+
 
         public async Task<List<ProdutoViewModel>> GetByNameAsync(string query)
         {

@@ -25,23 +25,28 @@ namespace VarejoAPI.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            var produtos = await _produtoRepository.GetAllAsync();
+            var produtos = await _produtoRepository.GetAllDetailedAsync();
 
 
-            var resultado = new List<ProdutoOutputDTO>();
+            var resultado = new List<ProdutoDTO>();
 
             foreach (var produto in produtos)
             {
 
 
 
-                resultado.Add(new ProdutoOutputDTO
+                resultado.Add(new ProdutoDTO
                 {
+                    IdFamilia = produto.Familia.IdFamilia,
+                    NomeFamilia = produto.Familia.NomeFamilia,
                     IdProduto = produto.IdProduto,
                     Complemento = produto.Complemento,
                     NomeProduto = produto.NomeProduto,
                     EstoqueInicial = produto.EstoqueInicial,
-                   
+                    EstoqueAtual = produto.EstoqueAtual,
+                    Ativo = produto.Ativo,
+                    DescricaoCategoria = produto.Familia.Categoria.DescricaoCategoria,
+                    NomeMarca = produto.Familia.Marca.NomeMarca,
                     UrlImagem = produto.UrlImagem,
                     CustoMedio = produto.CustoMedio,
           
@@ -53,22 +58,26 @@ namespace VarejoAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProdutoOutputDTO>> Get(int id)
+        public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {
-            var produto = await _produtoRepository.GetByIdAsync(id);
+            var produto = await _produtoRepository.GetByIdDetailedAsync(id);
             if (produto == null)
                 return NotFound();
 
-            var resultado = new ProdutoOutputDTO
+            var resultado = new ProdutoDTO
             {
-                IdProduto = produto.IdProduto,
-                Complemento = produto.Complemento,
-                NomeProduto = produto.NomeProduto,
-                EstoqueInicial = produto.EstoqueInicial,
-                Ativo = produto.Ativo,
-                UrlImagem = produto.UrlImagem,
-                CustoMedio = produto.CustoMedio,
-                FamiliaId = produto.FamiliaId,
+                  IdFamilia = produto.Familia.IdFamilia,
+                    NomeFamilia = produto.Familia.NomeFamilia,
+                    IdProduto = produto.IdProduto,
+                    Complemento = produto.Complemento,
+                    NomeProduto = produto.NomeProduto,
+                    EstoqueInicial = produto.EstoqueInicial,
+                    EstoqueAtual = produto.EstoqueAtual,
+                    Ativo = produto.Ativo,
+                    DescricaoCategoria = produto.Familia.Categoria.DescricaoCategoria,
+                    NomeMarca = produto.Familia.Marca.NomeMarca,
+                    UrlImagem = produto.UrlImagem,
+                    CustoMedio = produto.CustoMedio,
             };
 
             return Ok(resultado);

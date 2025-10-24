@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
+using Varejo.Models;
 using VarejoAPI.DTO;
+using static VarejoAPI.DTO.ProdutoOutputDTO;
 
 namespace VarejoAPI.Controllers
 {
@@ -40,7 +42,6 @@ namespace VarejoAPI.Controllers
                     IdFamilia = produto.Familia.IdFamilia,
                     NomeFamilia = produto.Familia.NomeFamilia,
                     IdProduto = produto.IdProduto,
-                    Complemento = produto.Complemento,
                     NomeProduto = produto.NomeProduto,
                     EstoqueInicial = produto.EstoqueInicial,
                     EstoqueAtual = produto.EstoqueAtual,
@@ -48,9 +49,7 @@ namespace VarejoAPI.Controllers
                     DescricaoCategoria = produto.Familia.Categoria.DescricaoCategoria,
                     NomeMarca = produto.Familia.Marca.NomeMarca,
                     UrlImagem = produto.UrlImagem,
-                    CustoMedio = produto.CustoMedio,
-          
-
+                    Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
                 });
             }
 
@@ -138,68 +137,42 @@ namespace VarejoAPI.Controllers
         [HttpGet("categoria/{idCategoria}")]
         public async Task<IActionResult> Details(int idCategoria)
         {
-            var categoria = await _categoriaRepository.GetByIdAsync(idCategoria);
+            var produtos = await _produtoRepository.GetByCategory(id);
 
-            if (categoria == null)
+            if (produtos == null || !produtos.Any())
                 return NotFound();
 
-            var viewModel = new CategoriaOutputDTO
+            var resultado = produtos.Select(produto => new ProdutoCategoriaDTO
             {
-                IdCategoria = categoria.IdCategoria,
-                DescricaoCategoria = categoria.DescricaoCategoria ?? string.Empty,
+                IdProduto = produto.IdProduto,
+                DescricaoCategoria = produto.Familia.Categoria.DescricaoCategoria ,
+                IdCategoria = produto.Familia.Categoria.IdCategoria,
+                NomeProduto = produto.NomeProduto,
+                Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
+                UrlImagem = produto.UrlImagem,
+            });
 
-                Familias = categoria.Familias?
-                    .Where(f => f != null)
-                    .Select(f =>
-                    {
-                        var produtos = f.Produtos?
-                            .Where(p => p != null)
-                            .Select(p => new ProdutoOutputDTO
-                            {
-                                IdProduto = p.IdProduto,
-                                NomeProduto = p.NomeProduto ?? string.Empty,
-                                Complemento = p.Complemento ?? string.Empty,
-                                EstoqueInicial = p.EstoqueInicial,
-                                Ativo = p.Ativo,
-                                UrlImagem = p.UrlImagem ?? string.Empty,
-                                CustoMedio = p.CustoMedio,
-                                FamiliaId = p.FamiliaId
-                            })
-                            .ToList() ?? new List<ProdutoOutputDTO>();
-
-                        return new FamiliaOutputDTO
-                        {
-                            IdFamilia = f.IdFamilia,
-                            NomeFamilia = f.NomeFamilia ?? string.Empty,
-                            Produtos = produtos
-                        };
-                    })
-                    .ToList() ?? new List<FamiliaOutputDTO>()
-            };
-
-            return Ok(viewModel);
+            return Ok(resultado);
         }
 
 
         [HttpGet("familia/{idFamilia}")]
-        public async Task<ActionResult> GetFamilia(int idFamilia)
+        public async Task<ActionResult> GetByFamilia(int idFamilia)
         {
             var familia = await _produtoRepository.GetByFamilia(idFamilia);
 
-            var resultado = new List<ProdutoOutputDTO>();
+            var resultado = new List<ProdutoFamilia>();
 
             foreach (var produto in familia)
             {
-                resultado.Add(new ProdutoOutputDTO
+                resultado.Add(new ProdutoFamilia
                 {
                     IdProduto = produto.IdProduto,
-                    Complemento = produto.Complemento,
                     NomeProduto = produto.NomeProduto,
-                    EstoqueInicial = produto.EstoqueInicial,
-                    Ativo = produto.Ativo,
+                    Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
                     UrlImagem = produto.UrlImagem,
-                    CustoMedio = produto.CustoMedio,
-                    FamiliaId = produto.FamiliaId,
+                    IdFamilia = produto.Familia.IdFamilia,
+                    NomeFamilia = produto.Familia.NomeFamilia
                 });
             }
 

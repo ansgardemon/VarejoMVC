@@ -12,8 +12,6 @@ namespace VarejoAPI.DTO
             public bool Ativo { get; set; } = true;
             //RELACIONAMENTO COM PESSOA
             public int PessoaId { get; set; }
-            public virtual Pessoa? Pessoa { get; set; }
-            //RELACIONAMENTO COM PESSOA
             public int TipoUsuarioId { get; set; }
 
 

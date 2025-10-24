@@ -59,4 +59,39 @@
         }
     });
 
+    // =========== NAVBAR SOME QUANDO CLICA FORA ===========
+
+    document.addEventListener('click', function (event) {
+        // Seleciona o menu e o botão burger
+        const navbar = document.querySelector('.navbar-collapse');
+        const toggler = document.querySelector('.navbar-toggler');
+
+        // Verifica se o menu está aberto
+        const isOpen = navbar.classList.contains('show');
+
+        // Se estiver aberto e o clique não for dentro do nav nem no botão...
+        if (isOpen && !navbar.contains(event.target) && !toggler.contains(event.target)) {
+            // Fecha o menu
+            const bsCollapse = bootstrap.Collapse.getInstance(navbar);
+            bsCollapse.hide();
+        }
+    });
+
+    // =========== LIMITAR ALTURA DO BOTÃO DE BACK ===========
+    const btnTop = document.querySelector('.btn-top');
+    const footer = document.querySelector('footer');
+
+    window.addEventListener('scroll', () => {
+        const scrollBottom = window.innerHeight + window.scrollY;
+        const footerTop = footer.offsetTop;
+
+        if (scrollBottom >= footerTop) {
+            // A tela está tocando o footer → sobe o botão
+            const overlap = scrollBottom - footerTop;
+            btnTop.style.bottom = `${20 + overlap}px`;
+        } else {
+            // Valor normal
+            btnTop.style.bottom = '20px';
+        }
+    });
 });

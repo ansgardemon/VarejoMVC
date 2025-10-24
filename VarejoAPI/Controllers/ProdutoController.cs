@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
+using Varejo.Models;
 using VarejoAPI.DTO;
+using static VarejoAPI.DTO.ProdutoOutputDTO;
 
 namespace VarejoAPI.Controllers
 {
@@ -34,20 +36,12 @@ namespace VarejoAPI.Controllers
             {
 
 
-
                 resultado.Add(new ProdutoOutputDTO
                 {
                     IdProduto = produto.IdProduto,
-                    Complemento = produto.Complemento,
                     NomeProduto = produto.NomeProduto,
-                    EstoqueInicial = produto.EstoqueInicial,                  
                     UrlImagem = produto.UrlImagem,
-                    CustoMedio = produto.CustoMedio,
-                    FamiliaId = produto.FamiliaId,
-                    EmbalagemProd = produto.ProdutosEmbalagem?.Select(pe => new ProdutoEmbalagemOutputDTO
-                    {
-                        Preco = pe.Preco
-                    }).ToList()
+                    Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
                 });
             }
 
@@ -55,7 +49,7 @@ namespace VarejoAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProdutoOutputDTO>> Get(int id)
+        public async Task<ActionResult<ProdutoCategoriaDTO>> GetByIdAsync(int id)
         {
             var produto = await _produtoRepository.GetByIdAsync(id);
             if (produto == null)
@@ -64,96 +58,55 @@ namespace VarejoAPI.Controllers
             var resultado = new ProdutoOutputDTO
             {
                 IdProduto = produto.IdProduto,
-                Complemento = produto.Complemento,
                 NomeProduto = produto.NomeProduto,
-                EstoqueInicial = produto.EstoqueInicial,
-                Ativo = produto.Ativo,
+                Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
                 UrlImagem = produto.UrlImagem,
-                CustoMedio = produto.CustoMedio,
-                FamiliaId = produto.FamiliaId,
-                
-
-
-                EmbalagemProd = produto.ProdutosEmbalagem?.Select(pe => new ProdutoEmbalagemOutputDTO
-                {
-                    Preco = pe.Preco
-                }).ToList()
+               
 
             };
 
             return Ok(resultado);
         }
 
-        //[HttpGet("categoria/{idCategoria}")]
-        //public async Task<IActionResult> Details(int idCategoria)
-        //{
-        //    var categoria = await _categoriaRepository.GetByIdAsync(idCategoria);
+        [HttpGet("categoria/{id}")]
+        public async Task<ActionResult<List<ProdutoCategoriaDTO>>> GetByCategory(int id)
+        {
+            var produtos = await _produtoRepository.GetByCategory(id);
 
-        //    if (categoria == null)
-        //        return NotFound();
+            if (produtos == null || !produtos.Any())
+                return NotFound();
 
-        //    var viewModel = new CategoriaOutputDTO
-        //    {
-        //        IdCategoria = categoria.IdCategoria,
-        //        DescricaoCategoria = categoria.DescricaoCategoria ?? string.Empty,
+            var resultado = produtos.Select(produto => new ProdutoCategoriaDTO
+            {
+                IdProduto = produto.IdProduto,
+                DescricaoCategoria = produto.Familia.Categoria.DescricaoCategoria ,
+                IdCategoria = produto.Familia.Categoria.IdCategoria,
+                NomeProduto = produto.NomeProduto,
+                Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
+                UrlImagem = produto.UrlImagem,
+            });
 
-        //        Familias = categoria.Familias?
-        //            .Where(f => f != null)
-        //            .Select(f =>
-        //            {
-        //                var produtos = f.Produtos?
-        //                    .Where(p => p != null)
-        //                    .Select(p => new ProdutoOutputDTO
-        //                    {
-        //                        IdProduto = p.IdProduto,
-        //                        NomeProduto = p.NomeProduto ?? string.Empty,
-        //                        Complemento = p.Complemento ?? string.Empty,
-        //                        EstoqueInicial = p.EstoqueInicial,
-        //                        Ativo = p.Ativo,
-        //                        UrlImagem = p.UrlImagem ?? string.Empty,
-        //                        CustoMedio = p.CustoMedio,
-        //                        FamiliaId = p.FamiliaId
-        //                    })
-        //                    .ToList() ?? new List<ProdutoOutputDTO>();
-
-        //                return new FamiliaOutputDTO
-        //                {
-        //                    IdFamilia = f.IdFamilia,
-        //                    NomeFamilia = f.NomeFamilia ?? string.Empty,
-        //                    Produtos = produtos
-        //                };
-        //            })
-        //            .ToList() ?? new List<FamiliaOutputDTO>()
-        //    };
-
-        //    return Ok(viewModel);
-        //}
+            return Ok(resultado);
+        }
 
 
         [HttpGet("familia/{idFamilia}")]
-        public async Task<ActionResult> GetFamilia(int idFamilia)
+        public async Task<ActionResult> GetByFamilia(int idFamilia)
         {
             var familia = await _produtoRepository.GetByFamilia(idFamilia);
 
-            var resultado = new List<ProdutoOutputDTO>();
+            var resultado = new List<ProdutoFamilia>();
 
             foreach (var produto in familia)
             {
-                resultado.Add(new ProdutoOutputDTO
+                resultado.Add(new ProdutoFamilia
                 {
                     IdProduto = produto.IdProduto,
-                    Complemento = produto.Complemento,
                     NomeProduto = produto.NomeProduto,
-                    EstoqueInicial = produto.EstoqueInicial,
-                    Ativo = produto.Ativo,
+                    Preco = produto.ProdutosEmbalagem.Min(pe => pe.Preco),
                     UrlImagem = produto.UrlImagem,
-                    CustoMedio = produto.CustoMedio,
-                    FamiliaId = produto.FamiliaId,
-
-                    EmbalagemProd = produto.ProdutosEmbalagem?.Select(pe => new ProdutoEmbalagemOutputDTO
-                    {
-                        Preco = pe.Preco
-                    }).ToList()
+                    IdFamilia = produto.Familia.IdFamilia,
+                    NomeFamilia = produto.Familia.NomeFamilia
                 });
             }
 

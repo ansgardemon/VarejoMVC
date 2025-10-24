@@ -71,7 +71,7 @@ namespace Varejo.Repositories
             return _context.Categorias.ToList();
         }
 
-        public async Task<List<Familia>> GetByCategory(int id)
+        public async Task<List<Familia>> GetByFamiliaCategory(int id)
         {
        
             return await _context.Familias

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Models;
@@ -37,6 +38,17 @@ namespace Varejo.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Produto>> GetByCategory(int id)
+        {
+            return await _context.Produtos
+           .Include(p => p.Familia)
+               .ThenInclude(f => f.Categoria)
+           .Include(p => p.ProdutosEmbalagem)
+           .Where(p => p.Familia.Categoria.IdCategoria == id)
+           .ToListAsync();
+
+        }
+
         public async Task<List<Produto>> GetByFamilia(int id)
         {
             return await _context.Produtos
@@ -51,8 +63,8 @@ namespace Varejo.Repositories
         {
             return await _context.Produtos
                 .Include(p => p.Familia)
-                .Include(p => p.ProdutosEmbalagem) // <- adiciona isso
-                .ThenInclude(e => e.TipoEmbalagem) // opcional, se quiser já carregar o tipo
+                .Include(p => p.ProdutosEmbalagem) 
+                .ThenInclude(e => e.TipoEmbalagem) 
                 .FirstOrDefaultAsync(p => p.IdProduto == id);
         }
 

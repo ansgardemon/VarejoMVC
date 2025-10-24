@@ -37,10 +37,7 @@ namespace VarejoAPI.Controllers
                 resultado.Add(new FamiliaOutputDTO
                 {
                     IdFamilia = familia.IdFamilia,
-                    NomeFamilia = familia.NomeFamilia, 
-                    Ativo = familia.Ativo, 
-                    CategoriaId = familia.CategoriaId.ToString(), 
-                    MarcaId = familia.MarcaId?.ToString(), 
+                    NomeFamilia = familia.NomeFamilia
                    
                 });
             }
@@ -63,9 +60,7 @@ namespace VarejoAPI.Controllers
             {
                 IdFamilia = familia.IdFamilia,
                 NomeFamilia = familia.NomeFamilia,
-                Ativo = familia.Ativo,
-                CategoriaId = familia.CategoriaId.ToString(),
-                MarcaId = familia.MarcaId?.ToString(),
+               
             });
 
             return Ok(resultado);
@@ -76,14 +71,14 @@ namespace VarejoAPI.Controllers
         [HttpGet("familia/{idCategoria}")]
         public async Task<ActionResult> GetFamilia(int idCategoria)
         {
-            var familias = await _familiaRepository.GetByCategory(idCategoria);
+            var familias = await _familiaRepository.GetByFamiliaCategory(idCategoria);
             //var familias = await _familiaRepository.GetByCategory(idCategoria);
 
-            var resultado = new List<FamiliaOutputDTO>();
+            var resultado = new List<FamiliaGeneroOutputDTO>();
 
             foreach (var familia in familias) // aqui usar "familia" do loop
             {
-                resultado.Add(new FamiliaOutputDTO
+                resultado.Add(new FamiliaGeneroOutputDTO
                 {
                     IdFamilia = familia.IdFamilia,
                     NomeFamilia = familia.NomeFamilia,

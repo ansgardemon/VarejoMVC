@@ -9,7 +9,7 @@ namespace Varejo.Interfaces
         Task AddAsync(Familia familia);
         Task UpdateAsync(Familia familia);
         Task DeleteAsync(int id);
-        Task<List<Familia>> GetByCategory(int id);
+        Task<List<Familia>> GetByFamiliaCategory(int id);
         List<Marca> GetMarcas();
         List<Categoria> GetCategorias();
 

@@ -35,6 +35,15 @@ namespace Varejo.Repositories
             return await _context.Produtos.ToListAsync();
         }
 
+        public async Task<List<Produto>> GetByFamilia(int id)
+        {
+            return await _context.Produtos
+             .Include(p => p.Familia)
+             .Where(p => p.FamiliaId == id)
+             .ToListAsync();
+
+        }
+
         public async Task<Produto?> GetByIdAsync(int id)
         {
             return await _context.Produtos
@@ -84,6 +93,63 @@ namespace Varejo.Repositories
             return await _context.ProdutosMovimento
                                  .AnyAsync(m => m.ProdutoEmbalagemId == idProdutoEmbalagem);
         }
+        public async Task<List<Produto>> GetProdutosDestaqueAsync(int take = 8)
+        {
+            // retorna produtos ativos, com embalagens carregadas (e tipo de embalagem se precisar do multiplicador)
+            return await _context.Produtos
+                .AsNoTracking()
+                .Where(p => p.Ativo)
+                .Include(p => p.ProdutosEmbalagem)
+                    .ThenInclude(pe => pe.TipoEmbalagem)
+                .OrderByDescending(p => EF.Property<DateTime>(p, "DataCriacao")) // ou outra regra de destaque
+                .Take(take)
+                .ToListAsync();
+        }
+
+        public async Task<List<Produto>> GetProdutosCatalogoAsync(int? idCategoria, int? idMarca)
+        {
+            // Base query com todos os includes necessários
+            var query = _context.Produtos
+                .AsNoTracking()
+                .Where(p => p.Ativo)
+                .Include(p => p.ProdutosEmbalagem)
+                    .ThenInclude(pe => pe.TipoEmbalagem)
+                .Include(p => p.Familia)
+                    .ThenInclude(f => f.Categoria)
+                .Include(p => p.Familia)
+                    .ThenInclude(f => f.Marca)
+                .AsQueryable();
+
+            // Filtra por categoria se tiver valor
+            if (idCategoria.HasValue && idCategoria.Value > 0)
+            {
+                query = query.Where(p => p.Familia.CategoriaId == idCategoria.Value);
+            }
+
+            // Filtra por marca se tiver valor
+            if (idMarca.HasValue && idMarca.Value > 0)
+            {
+                query = query.Where(p => p.Familia.MarcaId == idMarca.Value);
+            }
+
+            // Ordena alfabeticamente
+            var produtos = await query
+                .OrderBy(p => p.NomeProduto)
+                .ToListAsync();
+
+            // Seleciona o menor preço disponível de cada produto
+            foreach (var produto in produtos)
+            {
+                produto.ProdutosEmbalagem = produto.ProdutosEmbalagem
+                    .OrderBy(pe => pe.Preco)
+                    .Take(1)
+                    .ToList();
+            }
+
+            return produtos;
+        }
+
+
 
 
 
@@ -92,5 +158,6 @@ namespace Varejo.Repositories
             _context.Produtos.Update(produto);
             await _context.SaveChangesAsync();
         }
+        
     }
 }

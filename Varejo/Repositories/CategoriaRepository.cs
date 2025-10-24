@@ -21,13 +21,13 @@ namespace Varejo.Repositories
                                  .ToListAsync();
         }
 
-        public async Task<Categoria?> GetByIdAsync(int id)
+        public async Task<Categoria?> GetByIdAsync(int idCategoria)
         {
             return await _context.Categorias
-                                 .Include(c => c.Familias) // inclui o relacionamento
-                                 .FirstOrDefaultAsync(c => c.IdCategoria == id);
+                .Include(c => c.Familias)
+                    .ThenInclude(f => f.Produtos)
+                .FirstOrDefaultAsync(c => c.IdCategoria == idCategoria);
         }
-
         public async Task AddAsync(Categoria categoria)
         {
             await _context.Categorias.AddAsync(categoria);

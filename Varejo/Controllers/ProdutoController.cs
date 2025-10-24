@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Varejo.Interfaces;
@@ -344,6 +343,7 @@ namespace Varejo.Controllers
 
             // Atualizar dados principais
             produto.Complemento = viewModel.Complemento;
+            produto.Ativo = viewModel.Ativo;
             Console.WriteLine($"[LOG] Produto atualizado: Complemento='{produto.Complemento}'");
 
             // Atualizar imagem, se houver

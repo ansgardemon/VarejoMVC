@@ -23,6 +23,8 @@ namespace Varejo.ViewModels
         // Para popular o dropdown
         public IEnumerable<SelectListItem>? TiposEmbalagem { get; set; }
 
+        public string? TipoEmbalagemDescricao { get; set; }
+
 
     }
 }

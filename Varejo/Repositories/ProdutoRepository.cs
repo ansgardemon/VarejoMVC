@@ -97,7 +97,11 @@ namespace Varejo.Repositories
                 return new List<ProdutoViewModel>();
 
             return await _context.Produtos
+                .AsNoTracking()
                 .Where(p => p.NomeProduto.Contains(query) && p.Ativo)
+                .Include(p => p.Familia)
+                .Include(p => p.ProdutosEmbalagem)
+                    .ThenInclude(pe => pe.TipoEmbalagem) // << ERA SÓ FAZER ISSO CHAT MALDITOOOOOOOOOOOO CARALHOOOOOOOOOOOO
                 .Select(p => new ProdutoViewModel
                 {
                     IdProduto = p.IdProduto,
@@ -116,13 +120,14 @@ namespace Varejo.Repositories
                             Preco = e.Preco,
                             ProdutoId = e.ProdutoId,
                             TipoEmbalagemId = e.TipoEmbalagemId,
-                            // TiposEmbalagem não precisa popular aqui, é só para forms
+                            TipoEmbalagemDescricao = e.TipoEmbalagem != null ? e.TipoEmbalagem.DescricaoTipoEmbalagem : null
                         })
                         .ToList()
                 })
-                .Take(20) // limite para performance
+                .Take(20)
                 .ToListAsync();
         }
+
 
         public async Task<bool> ProdutoEmbalagemPossuiMovimentoAsync(int idProdutoEmbalagem)
         {

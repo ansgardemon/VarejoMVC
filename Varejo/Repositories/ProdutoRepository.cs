@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Models;
@@ -33,7 +34,20 @@ namespace Varejo.Repositories
 
         public async Task<List<Produto>> GetAllAsync()
         {
-            return await _context.Produtos.ToListAsync();
+            return await _context.Produtos
+                .Include(p => p.ProdutosEmbalagem)
+                .ToListAsync();
+        }
+
+        public async Task<List<Produto>> GetByCategory(int id)
+        {
+            return await _context.Produtos
+           .Include(p => p.Familia)
+               .ThenInclude(f => f.Categoria)
+           .Include(p => p.ProdutosEmbalagem)
+           .Where(p => p.Familia.Categoria.IdCategoria == id)
+           .ToListAsync();
+
         }
 
         public async Task<List<Produto>> GetAllDetailedAsync()
@@ -50,6 +64,7 @@ namespace Varejo.Repositories
         {
             return await _context.Produtos
              .Include(p => p.Familia)
+             .Include(p => p.ProdutosEmbalagem)
              .Where(p => p.FamiliaId == id)
              .ToListAsync();
 
@@ -59,8 +74,8 @@ namespace Varejo.Repositories
         {
             return await _context.Produtos
                 .Include(p => p.Familia)
-                .Include(p => p.ProdutosEmbalagem) // <- adiciona isso
-                .ThenInclude(e => e.TipoEmbalagem) // opcional, se quiser já carregar o tipo
+                .Include(p => p.ProdutosEmbalagem) 
+                .ThenInclude(e => e.TipoEmbalagem) 
                 .FirstOrDefaultAsync(p => p.IdProduto == id);
         }
 
@@ -82,7 +97,11 @@ namespace Varejo.Repositories
                 return new List<ProdutoViewModel>();
 
             return await _context.Produtos
+                .AsNoTracking()
                 .Where(p => p.NomeProduto.Contains(query) && p.Ativo)
+                .Include(p => p.Familia)
+                .Include(p => p.ProdutosEmbalagem)
+                    .ThenInclude(pe => pe.TipoEmbalagem) // << ERA SÓ FAZER ISSO CHAT MALDITOOOOOOOOOOOO CARALHOOOOOOOOOOOO
                 .Select(p => new ProdutoViewModel
                 {
                     IdProduto = p.IdProduto,
@@ -101,13 +120,14 @@ namespace Varejo.Repositories
                             Preco = e.Preco,
                             ProdutoId = e.ProdutoId,
                             TipoEmbalagemId = e.TipoEmbalagemId,
-                            // TiposEmbalagem não precisa popular aqui, é só para forms
+                            TipoEmbalagemDescricao = e.TipoEmbalagem != null ? e.TipoEmbalagem.DescricaoTipoEmbalagem : null
                         })
                         .ToList()
                 })
-                .Take(20) // limite para performance
+                .Take(20)
                 .ToListAsync();
         }
+
 
         public async Task<bool> ProdutoEmbalagemPossuiMovimentoAsync(int idProdutoEmbalagem)
         {
@@ -181,6 +201,9 @@ namespace Varejo.Repositories
             _context.Produtos.Update(produto);
             await _context.SaveChangesAsync();
         }
-        
+
+       
+
+       
     }
 }

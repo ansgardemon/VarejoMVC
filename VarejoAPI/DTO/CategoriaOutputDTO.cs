@@ -6,7 +6,6 @@ namespace VarejoAPI.DTO
     {
         public int IdCategoria { get; set; }
         public string DescricaoCategoria { get; set; }
-        public List<FamiliaOutputDTO> Familias { get; set; } = new();
 
     }
 }

@@ -234,6 +234,7 @@ namespace Varejo.Controllers
                 NomeProduto = produto.NomeProduto,
                 Complemento = produto.Complemento,
                 EstoqueInicial = produto.EstoqueInicial,
+                EstoqueAtual = produto.EstoqueAtual,
                 CustoMedio = produto.CustoMedio,
                 Ativo = produto.Ativo,
                 UrlImagem = produto.UrlImagem,

@@ -20,6 +20,11 @@ namespace Varejo.ViewModels
         [Column(TypeName = "decimal(18,4)")]
         public decimal EstoqueInicial { get; set; } = 0;
 
+
+        [Column(TypeName = "decimal(18,4)")]
+        public decimal EstoqueAtual { get; set; }
+
+
         public bool Ativo { get; set; } = true;
 
 

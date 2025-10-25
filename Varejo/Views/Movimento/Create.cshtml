@@ -109,11 +109,13 @@
 									<label>Quantidade</label>
 									<input type="number" min="0" class="form-control quantidade" />
 									<label>Embalagem</label>
-									<select class="form-select embalagem">
-										${produto.Embalagens.map(e => `
-											<option value="${e.IdProdutoEmbalagem}">${e.Preco.toFixed(2)} - Tipo ${e.TipoEmbalagemId}</option>
-										`).join('')}
-									</select>
+							<select class="form-select embalagem">
+		  ${produto.Embalagens.map(e => `
+			<option value="${e.IdProdutoEmbalagem}">
+			  R$${Number(e.Preco).toFixed(2).replace('.',',')} - ${e.TipoEmbalagemDescricao ?? ('Tipo ' + e.TipoEmbalagemId)}
+			</option>
+		  `).join('')}
+		</select>
 									<button type="button" class="btn btn-success btn-sm mt-2 addProdutoBtn">Adicionar</button>
 								</div>
 							</div>

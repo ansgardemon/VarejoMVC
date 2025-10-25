@@ -6,11 +6,17 @@ namespace Varejo.Interfaces
     public interface IProdutoRepository
     {
         Task<List<Produto>> GetAllAsync();
+
+        Task<List<Produto>> GetAllDetailedAsync();
+
         Task<Produto> GetByIdAsync(int id);
+
+        Task<Produto> GetByIdDetailedAsync(int id);
 
         Task<List<ProdutoViewModel>> GetByNameAsync(string query);
 
         Task<List<Produto>> GetByFamilia(int id);
+        Task<List<Produto>> GetByCategory(int id);
         Task<bool> ProdutoEmbalagemPossuiMovimentoAsync(int idProdutoEmbalagem);
 
         Task<List<Produto>> GetProdutosDestaqueAsync(int take = 8);

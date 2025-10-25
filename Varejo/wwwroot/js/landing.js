@@ -127,7 +127,14 @@
 
     const heroBg = $(".hero-bg");
     const pexelsApiKey = "6jmswSf5W8nsVmOsVYwMSgzA4VzSNZaPSmfhDNcs0lb7G9x8JEWeYAUv";
-    const urlPexels = "https://api.pexels.com/v1/search?query=wine&orientation=landscape&per_page=1";
+
+    // Queries possíveis
+    const queries = ["beer", "wine", "drink"];
+    // Escolhe uma query aleatória
+    const query = queries[Math.floor(Math.random() * queries.length)];
+
+    // Puxa várias imagens (15) para ter mais opções
+    const urlPexels = `https://api.pexels.com/v1/search?query=${query}&orientation=landscape&per_page=15`;
 
     $.ajax({
         url: urlPexels,
@@ -135,17 +142,24 @@
         headers: { Authorization: pexelsApiKey },
         success: function (response) {
             if (response.photos && response.photos.length > 0) {
-                const imgUrl = response.photos[0].src.landscape;
+                const imagens = response.photos;
+                // Escolhe a imagem baseada no dia do mês
+                const hoje = new Date().getDate(); // 1-31
+                const index = hoje % imagens.length;
+                const imgUrl = imagens[index].src.landscape;
+
                 heroBg.css("background-image", `url(${imgUrl})`);
                 heroBg.css("opacity", 0);
                 heroBg.animate({ opacity: 1 }, 1000);
-                console.log("Imagem do dia carregada:", imgUrl);
+
+                console.log("Imagem do dia carregada:", imgUrl, "(Query:", query + ")");
             }
         },
         error: function (err) {
             console.error("Erro ao buscar imagem do Pexels:", err);
         }
     });
+
 
 
 

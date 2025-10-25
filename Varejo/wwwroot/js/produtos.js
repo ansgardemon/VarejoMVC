@@ -117,7 +117,7 @@ function carregarProdutos() {
                     : "Preço indisponível";
 
                 const card = `
-                    <div class="col-md-3">
+                    <div class="col-12 col-md-6 col-lg-3">
                         <div class="card h-100 shadow-sm border-0">
                             <img src="${urlImg}" class="card-img-top" alt="${nome}">
                             <div class="card-body text-center d-flex flex-column justify-content-between">

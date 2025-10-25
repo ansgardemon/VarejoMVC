@@ -24,10 +24,10 @@
             @foreach (var tipo in Model)
             {
                 <tr>
-                    <td>@tipo.IdTipoMovimento</td>
-                    <td>@tipo.DescricaoTipoMovimento</td>
-                    <td>@tipo.DescricaoEspecie</td>
-                    <td class="text-center" id="acoes">
+                    <td data-label="ID">@tipo.IdTipoMovimento</td>
+                    <td data-label="Descrição">@tipo.DescricaoTipoMovimento</td>
+                    <td data-label="Espécie">@tipo.DescricaoEspecie</td>
+                    <td data-label="Ações" class="text-center" id="acoes">
                         <a class="btn btn-warning btn-sm text-white" asp-action="Edit" asp-route-id="@tipo.IdTipoMovimento">Editar</a>
                     </td>
                 </tr>

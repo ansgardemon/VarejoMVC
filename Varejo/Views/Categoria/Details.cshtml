@@ -27,7 +27,7 @@
 		<table class="w-100">
 			<thead>
 				<tr>
-					<th>ID</th>
+					<th>#</th>
 					<th>Descrição</th>
 					<th>Status</th>
 				</tr>
@@ -36,9 +36,9 @@
 				@foreach (var familia in Model.Familias)
 				{
 					<tr>
-						<td>@familia.IdFamilia</td>
-						<td>@familia.NomeFamilia</td>
-						<td>@(familia.Ativo ? "✅" : "❌")</td>
+						<td data-label="#">@familia.IdFamilia</td>
+						<td data-label="Descrição">@familia.NomeFamilia</td>
+						<td data-label="Status">@(familia.Ativo ? "✅" : "❌")</td>
 					</tr>
 				}
 			</tbody>
@@ -51,5 +51,5 @@ else
 }
 
 <p>
-	<a class="btn btn-secondary" asp-action="Index">Voltar</a>
+	<a class="btn btn-secondary mt-3" asp-action="Index">Voltar</a>
 </p>

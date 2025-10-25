@@ -61,12 +61,11 @@
 					@foreach (var emb in Model.Embalagens)
 					{
 						<tr>
-							<td>
-								@* Se você não está trazendo o tipo de embalagem, precisa buscar o nome aqui ou incluir no ViewModel *@
+							<td data-label="Tipo de Embalagem">
 								@(emb.TiposEmbalagem?.FirstOrDefault(t => t.Value == emb.TipoEmbalagemId.ToString())?.Text ?? "—")
 							</td>
-							<td>@emb.Preco.ToString("C")</td>
-							<td>@emb.Ean</td>
+							<td data-label="Preço">@emb.Preco.ToString("C")</td>
+							<td data-label="EAN">@emb.Ean</td>
 						</tr>
 					}
 				</tbody>

@@ -29,13 +29,13 @@
 			@foreach (var pessoa in Model)
 			{
 				<tr class="text-center">
-					<td>@pessoa.IdPessoa</td>
-					<td>@pessoa.NomeRazao</td>
-					<td>@pessoa.CpfCnpj</td>
-					<td>@($"({pessoa.Ddd}) {pessoa.Telefone}")</td>
-					<td>@pessoa.Email</td>
-					<td>@(pessoa.Ativo ? "✅" : "❌")</td>
-					<td>
+					<td data-label="ID">@pessoa.IdPessoa</td>
+					<td data-label="Nome">@pessoa.NomeRazao</td>
+					<td data-label="CPF/CNPJ">@pessoa.CpfCnpj</td>
+					<td data-label="Telefone">@($"({pessoa.Ddd}) {pessoa.Telefone}")</td>
+					<td data-label="Email">@pessoa.Email</td>
+					<td data-label="Ativo">@(pessoa.Ativo ? "✅" : "❌")</td>
+					<td data-label="Ações">
 						<a asp-action="Details" asp-route-id="@pessoa.IdPessoa" class="btn btn-sm btn-info">Detalhes</a>
 						<a asp-action="Edit" asp-route-id="@pessoa.IdPessoa" class="btn btn-sm btn-warning">Editar</a>
 					</td>

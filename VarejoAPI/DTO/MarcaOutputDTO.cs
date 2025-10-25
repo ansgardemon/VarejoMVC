@@ -1,4 +1,6 @@
-﻿namespace VarejoAPI.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VarejoAPI.DTO
 {
     public class MarcaOutputDTO
     {

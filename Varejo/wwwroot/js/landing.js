@@ -8,7 +8,7 @@
 
     // CATEGORIAS
     $.ajax({
-        url: urlCategorias, 
+        url: urlCategorias,
         type: "GET",
         contentType: "application/json",
         success: function (dados) {
@@ -20,12 +20,12 @@
                 console.log("Processando categoria:", categoria);
 
                 const card = `
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-6 col-lg-3">
                         <div class="card border-0 shadow-sm text-center h-100 category-card">
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <h5 class="card-title">${categoria.descricaoCategoria}</h5>
                                 <p class="card-text text-muted">Explore nossa seleção de ${categoria.descricaoCategoria.toLowerCase()}.</p>
-                                <a href="/Landing/Produtos?categoriaId=${categoria.idCategoria}" class="btn btn-outline-wine mt-auto">Ver mais</a>
+                                <a href="/Landing/Produtos?categoriaId=${categoria.idCategoria}" class="btn btn-category">Ver mais</a>
                             </div>
                         </div>
                     </div>
@@ -92,19 +92,19 @@
                 const linkWhatsApp = `https://wa.me/5511985967421?text=${mensagem}`;
 
                 const card = `
-                <div class="col-md-3">
-                    <div class="card h-100 shadow-sm border-0">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm border-0" style="height: 200px;">
                         <img src="${produto.urlImagem || 'https://placehold.co/400x300?text=Sem+Imagem'}" 
-                             class="card-img-top" 
-                             alt="${produto.nomeProduto}" />
+                                class="card-img-top" 
+                                alt="${produto.nomeProduto}"/>
                         <div class="card-body text-center d-flex flex-column justify-content-between">
                             <div>
                                 <h5 class="card-title">${produto.nomeProduto}</h5>
                                 <p class="text-muted mb-3">${precoFormatado}</p>
                             </div>
                             <a href="${linkWhatsApp}" 
-                               target="_blank" 
-                               class="btn btn-success w-100 mt-auto">
+                                target="_blank" 
+                                class="btn btn-success w-100 mt-auto">
                                 Pedir pelo WhatsApp
                             </a>
                         </div>

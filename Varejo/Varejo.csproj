@@ -26,6 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\Landing\Index.cshtml" />
+    <None Include="Views\Landing\Produtos.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="wwwroot\js\produtos.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

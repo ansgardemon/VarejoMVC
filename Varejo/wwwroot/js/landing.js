@@ -20,7 +20,7 @@
                 console.log("Processando categoria:", categoria);
 
                 const card = `
-                    <div class="col-12 col-md-6 col-lg-3">
+                    <div class="col-12 col-md-6 col-lg-3 mx-auto">
                         <div class="card border-0 shadow-sm text-center h-100 category-card">
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <h5 class="card-title">${categoria.descricaoCategoria}</h5>
@@ -47,23 +47,37 @@
         type: "GET",
         contentType: "application/json",
         success: function (dados) {
-            console.log("Marcas recebidas:", dados);
-            marcasContainer.empty();
+            const $carousel = $("#marcasContainer");
+            $carousel.empty();
 
             dados.forEach(marca => {
                 const card = `
-                    <div class="brand-card p-3">
-                        <h5 class="card-title">${marca.nomeMarca}</h5>
-                    </div>
-                `;
-                marcasContainer.append(card);
+                <div class="brand-card">
+                    <h5>${marca.nomeMarca}</h5>
+                </div>
+            `;
+                $carousel.append(card);
+            });
+
+            // Inicializa o Slick APÓS adicionar os cards
+            $carousel.slick({
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                infinite: true,
+                dots: false,
+                arrows: true,
+                responsive: [
+                    { breakpoint: 992, settings: { slidesToShow: 3 } },
+                    { breakpoint: 768, settings: { slidesToShow: 2 } },
+                    { breakpoint: 480, settings: { slidesToShow: 1 } }
+                ]
             });
         },
         error: function (erro) {
             console.error("Erro ao carregar marcas:", erro);
-            marcasContainer.append('<p class="text-danger">Não foi possível carregar as marcas.</p>');
         }
     });
+
     // PRODUTOS
     const urlProdutos = "http://localhost:5018/api/Produto/destaques";
     const produtosContainer = $("#produtosContainer");
@@ -159,9 +173,5 @@
             console.error("Erro ao buscar imagem do Pexels:", err);
         }
     });
-
-
-
-
 
 });

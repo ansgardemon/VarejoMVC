@@ -5,26 +5,22 @@
 namespace Varejo.Migrations
 {
     /// <inheritdoc />
-    public partial class seedTipoUsuario : Migration
+    public partial class seedEspecieMovimento : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
             migrationBuilder.InsertData(
-table: "TiposUsuario",
-columns: new[] { "DescricaoTipoUsuario" },
-values: new object[,]
-{
-                    {"Administrador"},
-                    {"Gerente"},
-                    {"Usuário"},
-                    {"Cliente"}
-}
-);
+         table: "EspeciesMovimento",
+         columns: new[] { "DescricaoEspecieMovimento" },
+         values: new object[,]
+         {
+                    {"Entrada"},
+                    {"Saída"}
 
-
-
-
+         }
+     );
         }
 
         /// <inheritdoc />

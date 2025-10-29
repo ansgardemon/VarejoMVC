@@ -12,7 +12,7 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20251013232304_seedPessoa")]
+    [Migration("20251028235317_seedPessoa")]
     partial class seedPessoa
     {
         /// <inheritdoc />
@@ -397,6 +397,9 @@ namespace Varejo.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<decimal>("EstoqueAtual")
+                        .HasColumnType("decimal(18,4)");
+
                     b.Property<decimal>("EstoqueInicial")
                         .HasColumnType("decimal(18,4)");
 
@@ -677,7 +680,8 @@ namespace Varejo.Migrations
 
                     b.HasOne("Varejo.Models.Marca", "Marca")
                         .WithMany("Familias")
-                        .HasForeignKey("MarcaId");
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Categoria");
 

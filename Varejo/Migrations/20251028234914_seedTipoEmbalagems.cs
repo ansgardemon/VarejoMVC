@@ -5,16 +5,16 @@
 namespace Varejo.Migrations
 {
     /// <inheritdoc />
-    public partial class seedTipoEmbalagem : Migration
+    public partial class seedTipoEmbalagems : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-         table: "TiposEmbalagem",
-         columns: new[] {"DescricaoTipoEmbalagem", "Multiplicador" },
-         values: new object[,]
-         {
+table: "TiposEmbalagem",
+columns: new[] { "DescricaoTipoEmbalagem", "Multiplicador" },
+values: new object[,]
+{
                     {"Unidade", 1 },
                     {"Caixa C/6", 6 },
                     {"Caixa C/12", 12 },
@@ -26,9 +26,8 @@ namespace Varejo.Migrations
                     {"Pacote C/20", 20 },
                     {"Pacote C/50", 50 },
                     {"Lote C/100", 100 }
-         }
-     );
-
+}
+);
         }
 
         /// <inheritdoc />

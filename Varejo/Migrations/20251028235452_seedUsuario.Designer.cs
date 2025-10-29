@@ -12,8 +12,8 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20251013231102_seedTipoEmbalagem")]
-    partial class seedTipoEmbalagem
+    [Migration("20251028235452_seedUsuario")]
+    partial class seedUsuario
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -397,6 +397,9 @@ namespace Varejo.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<decimal>("EstoqueAtual")
+                        .HasColumnType("decimal(18,4)");
+
                     b.Property<decimal>("EstoqueInicial")
                         .HasColumnType("decimal(18,4)");
 
@@ -677,7 +680,8 @@ namespace Varejo.Migrations
 
                     b.HasOne("Varejo.Models.Marca", "Marca")
                         .WithMany("Familias")
-                        .HasForeignKey("MarcaId");
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Categoria");
 

@@ -12,8 +12,8 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20251021011614_restrict")]
-    partial class restrict
+    [Migration("20251028234914_seedTipoEmbalagems")]
+    partial class seedTipoEmbalagems
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

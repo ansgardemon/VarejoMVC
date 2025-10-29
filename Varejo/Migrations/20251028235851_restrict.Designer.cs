@@ -12,8 +12,8 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20251018000330_seedTipoMovimento")]
-    partial class seedTipoMovimento
+    [Migration("20251028235851_restrict")]
+    partial class restrict
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -680,7 +680,8 @@ namespace Varejo.Migrations
 
                     b.HasOne("Varejo.Models.Marca", "Marca")
                         .WithMany("Familias")
-                        .HasForeignKey("MarcaId");
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Categoria");
 

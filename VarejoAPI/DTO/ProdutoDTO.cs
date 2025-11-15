@@ -27,7 +27,7 @@
 
         public string UrlImagem { get; set; }
 
-        public decimal CustoMedio { get; set; }
+        public decimal CustoMedio { get; set; } 
 
     }
 }

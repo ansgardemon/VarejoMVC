@@ -1,0 +1,112 @@
+﻿@model IEnumerable<Varejo.ViewModels.ValidadeViewModel>
+
+@{
+    ViewData["Title"] = "Validades";
+    string aba = ViewBag.AbaAtual ?? "estoque";
+}
+
+<h2>Validades</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nova Validade</a>
+</p>
+
+<!-- ABAS -->
+<ul class="nav nav-pills mb-3 card">
+    <li class="nav-item">
+        <a class="nav-link @(aba == "estoque" ? "active text-white bg-success" : "")"
+           href="@Url.Action("Index", new { aba = "estoque" })">
+            Em Estoque
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link @(aba == "esgotados" ? "active text-white bg-danger" : "")"
+           href="@Url.Action("Index", new { aba = "esgotados" })">
+            Esgotados
+        </a>
+    </li>
+</ul>
+
+
+<!-- FILTROS -->
+<form method="get" class="mb-4 p-3 border rounded">
+    <input type="hidden" name="aba" value="@aba" />
+
+    <div class="row g-3 card-body">
+
+        <div class="col-md-3">
+            <label class="form-label">Data Inicial</label>
+            <input type="date" name="dataInicial" class="form-control"
+                   value="@(ViewBag.FiltroDataInicial?.ToString("yyyy-MM-dd"))" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Data Final</label>
+            <input type="date" name="dataFinal" class="form-control"
+                   value="@(ViewBag.FiltroDataFinal?.ToString("yyyy-MM-dd"))" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Produto</label>
+            <input type="text" name="produtoNome" class="form-control"
+                   placeholder="Buscar por nome..."
+                   value="@(ViewBag.FiltroProdutoNome ?? "")" />
+        </div>
+
+    </div>
+
+    <div class="mt-3">
+        <button class="btn btn-success" type="submit">Filtrar</button>
+        <a class="btn btn-secondary" href="@Url.Action("Index", new { aba = aba })">Limpar</a>
+    </div>
+</form>
+
+<!-- TABELA -->
+<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+    <table class="w-100">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Data de Validade</th>
+                <th>Produto</th>
+                <th>@(aba == "estoque" ? "Em Estoque" : "Status")</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var v in Model)
+            {
+                <tr>
+                    <td>@v.IdValidade</td>
+                    <td>@v.DataValidade.ToString("dd/MM/yyyy")</td>
+                    <td>@v.ProdutoNome</td>
+                    <td>
+                        @if (v.EmEstoque)
+                        {
+                            <span class="text-success">Sim</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">Não</span>
+                        }
+                    </td>
+                    <td>
+                        @if (v.EmEstoque)
+                        {
+                            <a class="btn btn-danger btn-sm"
+                               asp-action="Delete"
+                               asp-route-id="@v.IdValidade">
+                                Esgotar
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

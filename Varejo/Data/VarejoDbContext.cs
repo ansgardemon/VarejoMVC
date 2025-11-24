@@ -29,6 +29,7 @@ namespace Varejo.Data
         public DbSet<TipoMovimento> TiposMovimento { get; set; }
         public DbSet<Movimento> Movimentos { get; set; }
         public DbSet<ProdutoMovimento> ProdutosMovimento { get; set; }
+        public DbSet<Validade> Validades { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo
@@ -252,6 +253,14 @@ namespace Varejo.Data
                 .Property<DateTime>("DataAtualizacao")
                 .HasDefaultValueSql("GETDATE()");
 
+
+            modelBuilder.Entity<Validade>()
+            .Property<DateTime>("DataCriacao")
+            .HasDefaultValueSql("GETDATE()");
+
+            modelBuilder.Entity<Validade>()
+            .Property<DateTime>("DataAtualizacao")
+            .HasDefaultValueSql("GETDATE()");
 
 
         }

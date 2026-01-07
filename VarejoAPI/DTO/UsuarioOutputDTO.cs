@@ -1,25 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Varejo.Models;
-
-namespace VarejoAPI.DTO
+﻿namespace VarejoAPI.DTO
 {
     public class UsuarioOutputDTO
     {
-
-            public int IdUsuario { get; set; }
-            public string nomeUsuario { get; set; }      
-            public string Senha { get; set; }
-            public bool Ativo { get; set; } = true;
-            //RELACIONAMENTO COM PESSOA
-            public int PessoaId { get; set; }
-            public int TipoUsuarioId { get; set; }
-
-
-        
+        public int IdUsuario { get; set; }
+        public string nomeUsuario { get; set; }
+        public bool Ativo { get; set; }
+        public int PessoaId { get; set; }
+        public int TipoUsuarioId { get; set; }
     }
 }
-
-
-
-
-

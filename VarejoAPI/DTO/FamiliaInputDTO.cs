@@ -1,11 +1,17 @@
-﻿namespace VarejoAPI.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VarejoAPI.DTO
 {
-    public class FamiliaOutputDTO
+    public class FamiliaInputDTO
     {
-        public int IdFamilia { get; set; }
+        [Required]
         public string NomeFamilia { get; set; }
+
         public bool Ativo { get; set; }
+
+        [Required]
         public int CategoriaId { get; set; }
+
         public int? MarcaId { get; set; }
     }
 }

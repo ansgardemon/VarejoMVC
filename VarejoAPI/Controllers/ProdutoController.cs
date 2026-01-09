@@ -179,6 +179,62 @@ namespace VarejoAPI.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<ActionResult> Post([FromBody] ProdutoInputDTO dto)
+        {
+            var familia = await _familiaRepository.GetByIdAsync(dto.FamiliaId);
+            if (familia == null)
+                return BadRequest("Família inválida.");
+
+            var produto = new Produto
+            {
+                Complemento = dto.Complemento,
+                Ativo = dto.Ativo,
+                FamiliaId = dto.FamiliaId,
+                UrlImagem = dto.UrlImagem ?? "/img/sem-imagem.png",
+                EstoqueInicial = 0,
+                EstoqueAtual = 0,
+                CustoMedio = 0
+            };
+
+            produto.NomeProduto = $"{familia.NomeFamilia} {produto.Complemento}";
+
+            await _produtoRepository.AddAsync(produto);
+
+            return CreatedAtAction(nameof(Get), new { id = produto.IdProduto }, produto.IdProduto);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> Put(int id, [FromBody] ProdutoInputDTO dto)
+        {
+            var produto = await _produtoRepository.GetByIdAsync(id);
+            if (produto == null)
+                return NotFound();
+
+            var familia = await _familiaRepository.GetByIdAsync(produto.FamiliaId);
+            if (familia == null)
+                return BadRequest("Família inválida.");
+
+            produto.Complemento = dto.Complemento;
+            produto.Ativo = dto.Ativo;
+            produto.UrlImagem = dto.UrlImagem ?? produto.UrlImagem;
+            produto.NomeProduto = $"{familia.NomeFamilia} {produto.Complemento}";
+
+            await _produtoRepository.UpdateAsync(produto);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var produto = await _produtoRepository.GetByIdAsync(id);
+            if (produto == null)
+                return NotFound();
+
+            await _produtoRepository.DeleteAsync(id);
+            return NoContent();
+        }
 
 
     }

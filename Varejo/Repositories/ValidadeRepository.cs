@@ -80,5 +80,14 @@ namespace Varejo.Repositories
             _context.Validades.Update(validade);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Validade>> GetByEstoqueAsync(bool emEstoque)
+        {
+            return await _context.Validades
+                .Include(v => v.Produto)
+                .Where(v => v.EmEstoque == emEstoque)
+                .OrderBy(v => v.DataValidade)
+                .ToListAsync();
+        }
     }
 }

@@ -18,5 +18,7 @@ bool? emEstoque);
 
         Task DeleteAsync(int id);
 
+        Task<IEnumerable<Validade>> GetByEstoqueAsync(bool emEstoque);
+
     }
 }

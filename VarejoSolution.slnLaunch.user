@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Novo Perfil",
+    "Projects": [
+      {
+        "Path": "Varejo\\Varejo.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "VarejoAPI\\VarejoAPI.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

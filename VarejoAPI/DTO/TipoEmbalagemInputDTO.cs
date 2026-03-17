@@ -1,7 +1,14 @@
-﻿namespace VarejoAPI.DTO
+﻿using Varejo.Models;
+
+namespace VarejoAPI.DTO
 {
-    public class TipoEmbalagemDtoInput
+    public class TipoEmbalagemInputDTO
     {
-        public DescricaoTipoEmbalagem { get; set; };
+        public string DescricaoTipoEmbalagem { get; set; } = string.Empty;
+
+        public int Multiplicador { get; set; }
+
+        public int ProdutoEmbalagemId { get; set; }
+     
     }
 }

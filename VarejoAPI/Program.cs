@@ -25,6 +25,7 @@ builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
 builder.Services.AddScoped<IValidadeRepository, ValidadeRepository>();
+builder.Services.AddScoped<ITipoMovimentoRepository, TipoMovimentoRepository>();
 
 // ==========================
 // Adicionar CORS

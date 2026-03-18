@@ -237,5 +237,7 @@ namespace VarejoAPI.Controllers
         }
 
 
+        //GET BY NAME
+
     }
 }

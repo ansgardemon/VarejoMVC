@@ -2,6 +2,9 @@
 using Varejo.Interfaces;
 using Varejo.Models;
 using VarejoAPI.DTO;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace VarejoAPI.Controllers
 {
@@ -10,41 +13,59 @@ namespace VarejoAPI.Controllers
     public class TipoEmbalagemController : ControllerBase
     {
         private readonly ITipoEmbalagemRepository _tipoEmbalagemRepository;
-        private readonly IProdutoEmbalagemRepository _produtoEmbalagemRepository;
 
-        public TipoEmbalagemController(
-            ITipoEmbalagemRepository tipoEmbalagemRepository,
-            IProdutoEmbalagemRepository produtoEmbalagemRepository)
+        public TipoEmbalagemController(ITipoEmbalagemRepository tipoEmbalagemRepository)
         {
             _tipoEmbalagemRepository = tipoEmbalagemRepository;
-            _produtoEmbalagemRepository = produtoEmbalagemRepository;
+        }
+
+        // 🔹 GET ALL
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TipoEmbalagemOutputDTO>>> GetAll()
+        {
+            var tiposEmbalagem = await _tipoEmbalagemRepository.GetAllAsync();
+
+            var output = tiposEmbalagem.Select(t => new TipoEmbalagemOutputDTO
+            {
+                TipoEmbalagemId = t.IdTipoEmbalagem,
+                DescricaoTipoEmbalagem = t.DescricaoTipoEmbalagem,
+                Multiplicador = t.Multiplicador
+                // Nota: ProdutoEmbalagemId precisaria ser mapeado de algum item da ICollection se necessário
+            }).ToList();
+
+            return Ok(output);
         }
 
         // 🔹 GET por ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<TipoEmbalagem>> Get(int id)
+        public async Task<ActionResult<TipoEmbalagemOutputDTO>> Get(int id)
         {
             var tipoEmbalagem = await _tipoEmbalagemRepository.GetByIdAsync(id);
+
             if (tipoEmbalagem == null)
                 return NotFound();
 
-            return Ok(tipoEmbalagem);
+            var output = new TipoEmbalagemOutputDTO
+            {
+                TipoEmbalagemId = tipoEmbalagem.IdTipoEmbalagem,
+                DescricaoTipoEmbalagem = tipoEmbalagem.DescricaoTipoEmbalagem,
+                Multiplicador = tipoEmbalagem.Multiplicador
+            };
+
+            return Ok(output);
         }
 
         // 🔹 POST
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] TipoEmbalagemInputDTO dto)
+        public async Task<ActionResult<TipoEmbalagemOutputDTO>> Post([FromBody] TipoEmbalagemInputDTO dto)
         {
-            // Valida se o ProdutoEmbalagem vinculado realmente existe
-            var produtoEmbalagem = await _produtoEmbalagemRepository.GetByIdAsync(dto.ProdutoEmbalagemId);
-            if (produtoEmbalagem == null)
-                return BadRequest("Produto Embalagem inválido.");
+            if (dto == null) return BadRequest();
 
             var tipoEmbalagem = new TipoEmbalagem
             {
                 DescricaoTipoEmbalagem = dto.DescricaoTipoEmbalagem,
-                Multiplicador = dto.Multiplicador,
-                ProdutosEmbalagem = dto.ProdutoEmbalagemId
+                Multiplicador = dto.Multiplicador
+                // Se houver lógica para ProdutoEmbalagemId na criação, adicione aqui
             };
 
             await _tipoEmbalagemRepository.AddAsync(tipoEmbalagem);
@@ -53,8 +74,7 @@ namespace VarejoAPI.Controllers
             {
                 TipoEmbalagemId = tipoEmbalagem.IdTipoEmbalagem,
                 DescricaoTipoEmbalagem = tipoEmbalagem.DescricaoTipoEmbalagem,
-                Multiplicador = tipoEmbalagem.Multiplicador,
-                ProdutoEmbalagemId = tipoEmbalagem.IdProdutoEmbalagem
+                Multiplicador = tipoEmbalagem.Multiplicador
             };
 
             return Ok(output);
@@ -65,16 +85,15 @@ namespace VarejoAPI.Controllers
         public async Task<ActionResult> Put(int id, [FromBody] TipoEmbalagemInputDTO dto)
         {
             var tipoEmbalagem = await _tipoEmbalagemRepository.GetByIdAsync(id);
+
             if (tipoEmbalagem == null)
                 return NotFound();
 
             tipoEmbalagem.DescricaoTipoEmbalagem = dto.DescricaoTipoEmbalagem;
             tipoEmbalagem.Multiplicador = dto.Multiplicador;
 
-            // Opcional: Se permitir atualizar a chave estrangeira, seria ideal validar se ela existe igual no POST
-            tipoEmbalagem.ProdutoEmbalagemId = dto.ProdutoEmbalagemId;
-
             await _tipoEmbalagemRepository.UpdateAsync(tipoEmbalagem);
+
             return NoContent();
         }
 
@@ -83,10 +102,12 @@ namespace VarejoAPI.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var tipoEmbalagem = await _tipoEmbalagemRepository.GetByIdAsync(id);
+
             if (tipoEmbalagem == null)
                 return NotFound();
 
             await _tipoEmbalagemRepository.DeleteAsync(id);
+
             return NoContent();
         }
     }

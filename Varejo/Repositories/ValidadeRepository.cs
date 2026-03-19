@@ -24,12 +24,13 @@ namespace Varejo.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task EsgotarAsync(int id)
         {
-            var validade = _context.Validades.Find(id);
-            if (validade != null)
+            var validade = await _context.Validades.FindAsync(id);
+            if (validade != null && validade.EmEstoque)
             {
-                _context.Validades.Remove(validade);
+
+                validade.EmEstoque = false;
                 await _context.SaveChangesAsync();
             }
         }

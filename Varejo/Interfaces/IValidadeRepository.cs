@@ -16,7 +16,7 @@ bool? emEstoque);
 
         Task UpdateAsync(Validade validade);
 
-        Task DeleteAsync(int id);
+        Task EsgotarAsync(int id);
 
         Task<IEnumerable<Validade>> GetByEstoqueAsync(bool emEstoque);
 

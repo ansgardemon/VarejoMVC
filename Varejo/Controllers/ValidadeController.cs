@@ -208,6 +208,35 @@ namespace Varejo.Controllers
             return View(viewModel);
         }
 
+
+        //ESGOTAR VALIDADE
+
+        [Authorize(Roles = "Gerente, Administrador")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var c = await _validadeRepository.GetByIdAsync(id);
+            if (c == null) return NotFound();
+
+            var viewModel = new ValidadeViewModel
+            {
+                IdValidade = c.IdValidade,
+                DataValidade = c.DataValidade,
+                EmEstoque = c.EmEstoque,
+                ProdutoId = c.ProdutoId,
+                ProdutoNome = c.Produto.NomeProduto
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int IdValidade)
+        {
+            await _validadeRepository.EsgotarAsync(IdValidade);
+            return RedirectToAction(nameof(Index));
+        }
+
+
  
 
     }

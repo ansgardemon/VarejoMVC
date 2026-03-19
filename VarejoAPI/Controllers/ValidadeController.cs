@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
 using VarejoAPI.DTO;
@@ -20,69 +19,51 @@ namespace VarejoAPI.Controllers
             _produtoRepository = produtoRepository;
         }
 
-        // GET: api/Validade
+        // =========================
+        // GET ALL
+        // =========================
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ValidadeOutputDTO>>> GetAll()
         {
             var validades = await _validadeRepository.GetAllAsync();
-
-            var result = validades.Select(v => new ValidadeOutputDTO
-            {
-                IdValidade = v.IdValidade,
-                DataValidade = v.DataValidade,
-                EmEstoque = v.EmEstoque,
-                ProdutoId = v.ProdutoId,
-                ProdutoNome = v.Produto.NomeProduto
-            });
-
-            return Ok(result);
+            return Ok(validades.Select(Map));
         }
 
-
-        // GET: api/Validade/estoque/true
+        // =========================
+        // GET POR ESTOQUE
+        // =========================
         [HttpGet("estoque/{emEstoque}")]
         public async Task<ActionResult<IEnumerable<ValidadeOutputDTO>>> GetByEstoque(bool emEstoque)
         {
             var validades = await _validadeRepository.GetByEstoqueAsync(emEstoque);
-
-
-            var result = validades.Select(v => new ValidadeOutputDTO
-            {
-                IdValidade = v.IdValidade,
-                DataValidade = v.DataValidade,
-                EmEstoque = v.EmEstoque,
-                ProdutoId = v.ProdutoId,
-                ProdutoNome = v.Produto.NomeProduto
-            });
-
-
-            return Ok(result);
+            return Ok(validades.Select(Map));
         }
 
-        // GET: api/Validade/5
+        // =========================
+        // GET POR ID
+        // =========================
         [HttpGet("{id}")]
         public async Task<ActionResult<ValidadeOutputDTO>> GetById(int id)
         {
-            var v = await _validadeRepository.GetByIdAsync(id);
-            if (v == null)
+            var validade = await _validadeRepository.GetByIdAsync(id);
+            if (validade == null)
                 return NotFound();
 
-            return Ok(new ValidadeOutputDTO
-            {
-                IdValidade = v.IdValidade,
-                DataValidade = v.DataValidade,
-                EmEstoque = v.EmEstoque,
-                ProdutoId = v.ProdutoId,
-                ProdutoNome = v.Produto.NomeProduto
-            });
+            return Ok(Map(validade));
         }
 
-        // POST: api/Validade
+        // =========================
+        // POST
+        // =========================
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ValidadeInputDTO dto)
         {
-            if (dto.ProdutoId == 0)
-                return BadRequest("ProdutoId é obrigatório.");
+            if (dto.ProdutoId <= 0)
+                return BadRequest("ProdutoId inválido.");
+
+            var produto = await _produtoRepository.GetByIdAsync(dto.ProdutoId);
+            if (produto == null)
+                return BadRequest("Produto não existe.");
 
             var validade = new Validade
             {
@@ -98,20 +79,27 @@ namespace VarejoAPI.Controllers
                 new ValidadeOutputDTO
                 {
                     IdValidade = validade.IdValidade,
-                    DataValidade = validade.DataValidade,
+                    DataValidade = validade.DataValidade.ToString("dd/MM/yyyy"),
                     EmEstoque = validade.EmEstoque,
                     ProdutoId = validade.ProdutoId,
-                    ProdutoNome = (await _produtoRepository.GetByIdAsync(validade.ProdutoId)).NomeProduto
+                    ProdutoNome = produto.NomeProduto
                 });
         }
 
-        // PUT: api/Validade/5
+        // =========================
+        // PUT
+        // =========================
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] ValidadeInputDTO dto)
         {
             var validade = await _validadeRepository.GetByIdAsync(id);
             if (validade == null)
                 return NotFound();
+
+            // valida FK
+            var produto = await _produtoRepository.GetByIdAsync(dto.ProdutoId);
+            if (produto == null)
+                return BadRequest("Produto não existe.");
 
             validade.DataValidade = dto.DataValidade;
             validade.EmEstoque = dto.EmEstoque;
@@ -122,7 +110,9 @@ namespace VarejoAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Validade/5
+        // =========================
+        // DELETE (ESGOTAR)
+        // =========================
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -130,8 +120,24 @@ namespace VarejoAPI.Controllers
             if (validade == null)
                 return NotFound();
 
-            await _validadeRepository.DeleteAsync(id);
+            await _validadeRepository.EsgotarAsync(id);
+
             return NoContent();
+        }
+
+        // =========================
+        // MAPPER
+        // =========================
+        private ValidadeOutputDTO Map(Validade v)
+        {
+            return new ValidadeOutputDTO
+            {
+                IdValidade = v.IdValidade,
+                DataValidade = v.DataValidade.ToString("dd/MM/yyyy"),
+                EmEstoque = v.EmEstoque,
+                ProdutoId = v.ProdutoId,
+                ProdutoNome = v.Produto.NomeProduto
+            };
         }
     }
 }

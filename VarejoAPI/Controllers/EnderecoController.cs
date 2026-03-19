@@ -10,10 +10,14 @@ namespace VarejoAPI.Controllers
     public class EnderecoController : ControllerBase
     {
         private readonly IEnderecoRepository _enderecoRepository;
+        private readonly IPessoaRepository _pessoaRepository;
 
-        public EnderecoController(IEnderecoRepository enderecoRepository)
+        public EnderecoController(
+            IEnderecoRepository enderecoRepository,
+            IPessoaRepository pessoaRepository)
         {
             _enderecoRepository = enderecoRepository;
+            _pessoaRepository = pessoaRepository;
         }
 
         // 🔹 GET: api/endereco
@@ -47,7 +51,7 @@ namespace VarejoAPI.Controllers
             if (e == null)
                 return NotFound();
 
-            var dto = new EnderecoOutputDTO
+            return Ok(new EnderecoOutputDTO
             {
                 IdEndereco = e.IdEndereco,
                 Logradouro = e.Logradouro,
@@ -58,15 +62,46 @@ namespace VarejoAPI.Controllers
                 Complemento = e.Complemento,
                 Numero = e.Numero,
                 PessoaId = e.PessoaId
-            };
-
-            return Ok(dto);
+            });
         }
 
-        // 🔹 POST: api/endereco
-        [HttpPost]
-        public async Task<ActionResult> Create(EnderecoInputDTO dto)
+        // 🔥 NOVO: GET por pessoa (ESSENCIAL pro Blazor)
+        // GET: api/endereco/pessoa/1
+        [HttpGet("pessoa/{pessoaId}")]
+        public async Task<ActionResult<IEnumerable<EnderecoOutputDTO>>> GetByPessoa(int pessoaId)
         {
+            var pessoa = await _pessoaRepository.GetByIdAsync(pessoaId);
+            if (pessoa == null)
+                return NotFound("Pessoa não encontrada.");
+
+            var enderecos = pessoa.Enderecos?.Select(e => new EnderecoOutputDTO
+            {
+                IdEndereco = e.IdEndereco,
+                Logradouro = e.Logradouro,
+                Cep = e.Cep,
+                Bairro = e.Bairro,
+                Cidade = e.Cidade,
+                Uf = e.Uf,
+                Complemento = e.Complemento,
+                Numero = e.Numero,
+                PessoaId = e.PessoaId
+            });
+
+            return Ok(enderecos);
+        }
+
+        // 🔥 MELHORADO: POST vinculado à pessoa
+        // POST: api/endereco/pessoa/1
+        [HttpPost("pessoa/{pessoaId}")]
+        public async Task<ActionResult> Create(int pessoaId, [FromBody] EnderecoInputDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var pessoa = await _pessoaRepository.GetByIdAsync(pessoaId);
+            if (pessoa == null)
+                return NotFound("Pessoa não encontrada.");
+
             var endereco = new Endereco
             {
                 Logradouro = dto.Logradouro,
@@ -76,23 +111,29 @@ namespace VarejoAPI.Controllers
                 Uf = dto.Uf,
                 Complemento = dto.Complemento,
                 Numero = dto.Numero,
-                PessoaId = dto.PessoaId
+                PessoaId = pessoaId
             };
 
             await _enderecoRepository.AddAsync(endereco);
 
-            return CreatedAtAction(nameof(GetById), new { id = endereco.IdEndereco }, endereco.IdEndereco);
+            return CreatedAtAction(nameof(GetById),
+                new { id = endereco.IdEndereco },
+                endereco.IdEndereco);
         }
 
         // 🔹 PUT: api/endereco/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, EnderecoInputDTO dto)
+        public async Task<ActionResult> Update(int id, [FromBody] EnderecoInputDTO dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var endereco = await _enderecoRepository.GetByIdAsync(id);
 
             if (endereco == null)
                 return NotFound();
 
+            // ❌ NÃO deixa trocar PessoaId
             endereco.Logradouro = dto.Logradouro;
             endereco.Cep = dto.Cep;
             endereco.Bairro = dto.Bairro;
@@ -100,7 +141,6 @@ namespace VarejoAPI.Controllers
             endereco.Uf = dto.Uf;
             endereco.Complemento = dto.Complemento;
             endereco.Numero = dto.Numero;
-            endereco.PessoaId = dto.PessoaId;
 
             await _enderecoRepository.UpdateAsync(endereco);
 

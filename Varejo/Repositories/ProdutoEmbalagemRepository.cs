@@ -47,5 +47,26 @@ namespace Varejo.Repositories
             _context.ProdutosEmbalagem.Update(produtoEmbalagem);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> EanExisteAsync(string ean)
+        {
+            return await _context.ProdutosEmbalagem
+                .AnyAsync(e => e.Ean == ean);
+        }
+
+        public async Task<bool> EanExisteAsync(string ean, int? ignorarId = null)
+        {
+            return await _context.ProdutosEmbalagem
+                .AnyAsync(e => e.Ean == ean &&
+                              (!ignorarId.HasValue || e.IdProdutoEmbalagem != ignorarId));
+        }
+
+        public async Task<IEnumerable<ProdutoEmbalagem>> GetByProdutoIdAsync(int produtoId)
+        {
+            return await _context.ProdutosEmbalagem
+                .Where(e => e.ProdutoId == produtoId)
+                .Include(e => e.TipoEmbalagem)
+                .ToListAsync();
+        }
     }
 }

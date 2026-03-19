@@ -9,5 +9,9 @@ namespace Varejo.Interfaces
         Task AddAsync(ProdutoEmbalagem produtoEmbalagem);
         Task UpdateAsync(ProdutoEmbalagem produtoEmbalagem);
         Task DeleteAsync(int id);
+
+        Task<bool> EanExisteAsync(string ean, int? ignorarId = null);
+
+        Task<IEnumerable<ProdutoEmbalagem>> GetByProdutoIdAsync(int produtoId);
     }
 }

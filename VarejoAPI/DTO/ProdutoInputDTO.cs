@@ -4,4 +4,6 @@
     public bool Ativo { get; set; }
     public int FamiliaId { get; set; }
     public string? UrlImagem { get; set; }
+
+    public List<ProdutoEmbalagemInputDTO> Embalagens { get; set; }
 }

@@ -186,6 +186,9 @@ namespace VarejoAPI.Controllers
             if (familia == null)
                 return BadRequest("Família inválida.");
 
+            if (dto.Embalagens == null || !dto.Embalagens.Any())
+                return BadRequest("O produto deve ter ao menos uma embalagem.");
+
             var produto = new Produto
             {
                 Complemento = dto.Complemento,
@@ -194,10 +197,16 @@ namespace VarejoAPI.Controllers
                 UrlImagem = dto.UrlImagem ?? "/img/sem-imagem.png",
                 EstoqueInicial = 0,
                 EstoqueAtual = 0,
-                CustoMedio = 0
-            };
+                CustoMedio = 0,
+                NomeProduto = $"{familia.NomeFamilia} {dto.Complemento}",
 
-            produto.NomeProduto = $"{familia.NomeFamilia} {produto.Complemento}";
+                ProdutosEmbalagem = dto.Embalagens.Select(e => new ProdutoEmbalagem
+                {
+                    Preco = e.Preco,
+                    Ean = e.Ean,
+                    TipoEmbalagemId = e.TipoEmbalagemId
+                }).ToList()
+            };
 
             await _produtoRepository.AddAsync(produto);
 
@@ -218,7 +227,44 @@ namespace VarejoAPI.Controllers
             produto.Complemento = dto.Complemento;
             produto.Ativo = dto.Ativo;
             produto.UrlImagem = dto.UrlImagem ?? produto.UrlImagem;
-            produto.NomeProduto = $"{familia.NomeFamilia} {produto.Complemento}";
+            produto.NomeProduto = $"{familia.NomeFamilia} {dto.Complemento}";
+
+            var embalagensRecebidas = dto.Embalagens ?? new List<ProdutoEmbalagemInputDTO>();
+
+            // 🔥 Remove embalagens sem movimento
+            foreach (var emb in produto.ProdutosEmbalagem.ToList())
+            {
+                if (!embalagensRecebidas.Any(e => e.Ean == emb.Ean))
+                {
+                    bool possuiMovimento = await _produtoRepository
+                        .ProdutoEmbalagemPossuiMovimentoAsync(emb.IdProdutoEmbalagem);
+
+                    if (!possuiMovimento)
+                        produto.ProdutosEmbalagem.Remove(emb);
+                }
+            }
+
+            // 🔥 Atualiza ou adiciona
+            foreach (var embDto in embalagensRecebidas)
+            {
+                var embExistente = produto.ProdutosEmbalagem
+                    .FirstOrDefault(e => e.Ean == embDto.Ean);
+
+                if (embExistente != null)
+                {
+                    embExistente.Preco = embDto.Preco;
+                    embExistente.TipoEmbalagemId = embDto.TipoEmbalagemId;
+                }
+                else
+                {
+                    produto.ProdutosEmbalagem.Add(new ProdutoEmbalagem
+                    {
+                        Preco = embDto.Preco,
+                        Ean = embDto.Ean,
+                        TipoEmbalagemId = embDto.TipoEmbalagemId
+                    });
+                }
+            }
 
             await _produtoRepository.UpdateAsync(produto);
 
@@ -232,8 +278,15 @@ namespace VarejoAPI.Controllers
             if (produto == null)
                 return NotFound();
 
-            await _produtoRepository.DeleteAsync(id);
-            return NoContent();
+            try
+            {
+                await _produtoRepository.DeleteAsync(id);
+                return NoContent();
+            }
+            catch
+            {
+                return BadRequest("Produto possui vínculos e não pode ser excluído.");
+            }
         }
 
 

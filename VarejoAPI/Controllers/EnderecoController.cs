@@ -3,6 +3,8 @@ using Varejo.Interfaces;
 using Varejo.Models;
 using VarejoAPI.DTO;
 
+
+//NÃO UTILIZADO, POIS O ENDEREÇO É GERENCIADO DENTRO DO CONTROLLER DE PESSOA, MAS DEIXEI PARA FUTURAS IMPLEMENTAÇÕES
 namespace VarejoAPI.Controllers
 {
     [ApiController]

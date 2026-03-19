@@ -2,6 +2,8 @@
 using Varejo.Interfaces;
 using Varejo.Models;
 
+
+// NÃO UTILIZADO MAIS - DEIXEI SÓ PARA IMPLEMENTAÇÃO FUTURAS
 namespace VarejoAPI.Controllers
 {
     [ApiController]
@@ -30,34 +32,34 @@ namespace VarejoAPI.Controllers
             return Ok(embalagem);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] ProdutoEmbalagemInputDTO dto)
-        {
-            var produto = await _produtoRepository.GetByIdAsync(dto.ProdutoId);
-            if (produto == null)
-                return BadRequest("Produto inválido.");
+        //[HttpPost]
+        //public async Task<ActionResult> Post([FromBody] ProdutoEmbalagemInputDTO dto)
+        //{
+        //    var produto = await _produtoRepository.GetByIdAsync(dto.ProdutoId);
+        //    if (produto == null)
+        //        return BadRequest("Produto inválido.");
 
-            var embalagem = new ProdutoEmbalagem
-            {
-                ProdutoId = dto.ProdutoId,
-                Preco = dto.Preco,
-                Ean = dto.Ean,
-                TipoEmbalagemId = dto.TipoEmbalagemId
-            };
+        //    var embalagem = new ProdutoEmbalagem
+        //    {
+        //        ProdutoId = dto.ProdutoId,
+        //        Preco = dto.Preco,
+        //        Ean = dto.Ean,
+        //        TipoEmbalagemId = dto.TipoEmbalagemId
+        //    };
 
-            await _produtoEmbalagemRepository.AddAsync(embalagem);
+        //    await _produtoEmbalagemRepository.AddAsync(embalagem);
 
-            var output = new ProdutoEmbalagemOutputDTO
-            {
-                IdProdutoEmbalagem = embalagem.IdProdutoEmbalagem,
-                ProdutoId = embalagem.ProdutoId,
-                TipoEmbalagemId = embalagem.TipoEmbalagemId,
-                Preco = embalagem.Preco,
-                Ean = embalagem.Ean
-            };
+        //    var output = new ProdutoEmbalagemOutputDTO
+        //    {
+        //        IdProdutoEmbalagem = embalagem.IdProdutoEmbalagem,
+        //        ProdutoId = embalagem.ProdutoId,
+        //        TipoEmbalagemId = embalagem.TipoEmbalagemId,
+        //        Preco = embalagem.Preco,
+        //        Ean = embalagem.Ean
+        //    };
 
-            return Ok(output);
-        }
+        //    return Ok(output);
+        //}
 
 
         // 🔹 PUT

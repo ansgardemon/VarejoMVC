@@ -33,6 +33,7 @@ namespace VarejoAPI.Controllers
                 IdProdutoEmbalagem = e.IdProdutoEmbalagem,
                 ProdutoId = e.ProdutoId,
                 TipoEmbalagemId = e.TipoEmbalagemId,
+                TipoEmbalagemDescricao = e.TipoEmbalagem.DescricaoTipoEmbalagem,
                 Preco = e.Preco,
                 Ean = e.Ean
             });
@@ -49,6 +50,7 @@ namespace VarejoAPI.Controllers
                 IdProdutoEmbalagem = e.IdProdutoEmbalagem,
                 ProdutoId = e.ProdutoId,
                 TipoEmbalagemId = e.TipoEmbalagemId,
+                TipoEmbalagemDescricao = e.TipoEmbalagem.DescricaoTipoEmbalagem,
                 Preco = e.Preco,
                 Ean = e.Ean
             });
@@ -56,22 +58,22 @@ namespace VarejoAPI.Controllers
             return Ok(result);
         }
 
-        // 🔹 POST
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] ProdutoEmbalagemInputDTO dto)
+        // 🔥 POST CORRIGIDO
+        // api/produtoembalagem/produto/1
+        [HttpPost("produto/{produtoId}")]
+        public async Task<ActionResult> Post(int produtoId, [FromBody] ProdutoEmbalagemInputDTO dto)
         {
-            var produto = await _produtoRepository.GetByIdAsync(dto.ProdutoId);
+            var produto = await _produtoRepository.GetByIdAsync(produtoId);
             if (produto == null)
                 return BadRequest("Produto inválido.");
 
-            // 🔥 Validação de EAN duplicado
             var eanExiste = await _produtoEmbalagemRepository.EanExisteAsync(dto.Ean);
             if (eanExiste)
                 return BadRequest("Já existe uma embalagem com esse EAN.");
 
             var embalagem = new ProdutoEmbalagem
             {
-                ProdutoId = dto.ProdutoId,
+                ProdutoId = produtoId, // 🔥 vem da rota
                 Preco = dto.Preco,
                 Ean = dto.Ean,
                 TipoEmbalagemId = dto.TipoEmbalagemId
@@ -91,7 +93,7 @@ namespace VarejoAPI.Controllers
                 });
         }
 
-        // 🔹 PUT
+        // 🔹 PUT (mantido correto)
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] ProdutoEmbalagemInputDTO dto)
         {
@@ -116,7 +118,6 @@ namespace VarejoAPI.Controllers
             if (embalagem == null)
                 return NotFound();
 
-            // 🔥 REGRA IMPORTANTE
             var possuiMovimento = await _produtoRepository
                 .ProdutoEmbalagemPossuiMovimentoAsync(id);
 

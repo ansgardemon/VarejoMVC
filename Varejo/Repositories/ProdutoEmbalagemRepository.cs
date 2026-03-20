@@ -39,6 +39,7 @@ namespace Varejo.Repositories
         public async Task<ProdutoEmbalagem?> GetByIdAsync(int id)
         {
             return await _context.ProdutosEmbalagem
+                                 .Include(e => e.TipoEmbalagem)
                                  .FirstOrDefaultAsync(e => e.IdProdutoEmbalagem == id);
         }
 

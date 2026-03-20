@@ -239,5 +239,22 @@ namespace VarejoAPI.Controllers
 
         //GET BY NAME
 
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return Ok(new List<ProdutoOutputDTO>());
+
+            var produtos = await _produtoRepository.SearchAsync(query);
+
+            var result = produtos.Select(p => new ProdutoOutputDTO
+            {
+                IdProduto = p.IdProduto,
+                NomeProduto = p.NomeProduto
+            });
+
+            return Ok(result);
+        }
+
     }
 }

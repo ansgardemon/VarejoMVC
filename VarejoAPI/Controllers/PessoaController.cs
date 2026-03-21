@@ -20,11 +20,11 @@ namespace VarejoAPI.Controllers
 
 
             [HttpGet]
-            public async Task<ActionResult<IEnumerable<PessoaOutPutDTO>>> GetAll()
+            public async Task<ActionResult<IEnumerable<PessoaOutputDTO>>> GetAll()
             {
                 var pessoas = await _pessoaRepository.GetAllAsync();
 
-                var result = pessoas.Select(p => new PessoaOutPutDTO
+                var result = pessoas.Select(p => new PessoaOutputDTO
                 {
                     IdPessoa = p.IdPessoa,
                     NomeRazao = p.NomeRazao,
@@ -39,14 +39,14 @@ namespace VarejoAPI.Controllers
 
             // 🔹 GET: api/pessoa/5
             [HttpGet("{id}")]
-            public async Task<ActionResult<PessoaOutPutDTO>> GetById(int id)
+            public async Task<ActionResult<PessoaOutputDTO>> GetById(int id)
             {
                 var pessoa = await _pessoaRepository.GetByIdAsync(id);
 
                 if (pessoa == null)
                     return NotFound();
 
-                var dto = new PessoaOutPutDTO
+                var dto = new PessoaOutputDTO
                 {
                     IdPessoa = pessoa.IdPessoa,
                     NomeRazao = pessoa.NomeRazao,

@@ -1,6 +1,6 @@
 ﻿namespace VarejoAPI.DTO
 {
-    public class PessoaOutPutDTO
+    public class PessoaOutputDTO
     {
 
         public int IdPessoa { get; set; }

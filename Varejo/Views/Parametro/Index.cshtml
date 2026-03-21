@@ -1,0 +1,90 @@
+﻿@model Varejo.ViewModels.ParametroViewModel
+@{
+    ViewData["Title"] = "Parâmetros";
+    var tipos = ViewBag.Tipos as List<Varejo.Models.TipoMovimento>;
+}
+
+<h2 class="mb-4">⚙️ @ViewData["Title"]</h2>
+
+<div class="container-fluid py-3">
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+
+            <div class="card shadow-sm">
+                <div class="card-header fw-semibold">
+                    Configuração de Tipos de Movimento
+                </div>
+
+                <div class="card-body">
+
+                    <form asp-action="Index" method="post">
+
+                        <div class="row g-3">
+
+                            <!-- VENDA -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">🛒 Venda</label>
+                                <select asp-for="TipoMovimentoVendaId" class="form-select">
+                                    <option value="">-- selecione --</option>
+                                    @foreach (var t in tipos)
+                                    {
+                                        <option value="@t.IdTipoMovimento">
+                                            @t.DescricaoTipoMovimento
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            <!-- COMPRA -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">📦 Compra</label>
+                                <select asp-for="TipoMovimentoCompraId" class="form-select">
+                                    <option value="">-- selecione --</option>
+                                    @foreach (var t in tipos)
+                                    {
+                                        <option value="@t.IdTipoMovimento">
+                                            @t.DescricaoTipoMovimento
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            <!-- AVARIA -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">⚠️ Avaria</label>
+                                <select asp-for="TipoMovimentoAvariaId" class="form-select">
+                                    <option value="">-- selecione --</option>
+                                    @foreach (var t in tipos)
+                                    {
+                                        <option value="@t.IdTipoMovimento">
+                                            @t.DescricaoTipoMovimento
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                💾 Salvar Parâmetros
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+            @if (TempData["Sucesso"] != null)
+            {
+                <div class="alert alert-success mt-3">
+                    @TempData["Sucesso"]
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

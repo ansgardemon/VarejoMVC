@@ -30,6 +30,7 @@ namespace Varejo.Data
         public DbSet<Movimento> Movimentos { get; set; }
         public DbSet<ProdutoMovimento> ProdutosMovimento { get; set; }
         public DbSet<Validade> Validades { get; set; }
+        public DbSet<Parametro> Parametros { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo
@@ -143,6 +144,24 @@ namespace Varejo.Data
     .WithMany(m => m.Familias)
     .HasForeignKey(f => f.MarcaId)
     .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Parametro>()
+    .HasOne(p => p.TipoMovimentoVenda)
+    .WithMany()
+    .HasForeignKey(p => p.TipoMovimentoVendaId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Parametro>()
+                .HasOne(p => p.TipoMovimentoCompra)
+                .WithMany()
+                .HasForeignKey(p => p.TipoMovimentoCompraId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Parametro>()
+                .HasOne(p => p.TipoMovimentoAvaria)
+                .WithMany()
+                .HasForeignKey(p => p.TipoMovimentoAvariaId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
 

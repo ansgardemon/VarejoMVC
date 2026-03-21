@@ -59,7 +59,7 @@ namespace Varejo.Migrations
                 column: "TipoMovimentoVendaId");
 
 
-            // 🔥 SEED AQUI
+            // SEED AQUI
             migrationBuilder.InsertData(
                 table: "Parametros",
                 columns: new[]

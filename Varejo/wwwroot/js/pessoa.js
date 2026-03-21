@@ -169,6 +169,11 @@
         var index = container.children().length;
         var html = `
 		<div class="endereco-item mb-3 border p-2">
+        	<div class="mb-3">
+				<label for="Enderecos_${index}__Cep" class="form-label">CEP</label>
+				<input name="Enderecos[${index}].Cep" class="form-control" />
+			</div>
+
 			<div class="mb-3">
 				<label for="Enderecos_${index}__Logradouro" class="form-label">Logradouro</label>
 				<input name="Enderecos[${index}].Logradouro" class="form-control" />
@@ -177,11 +182,6 @@
 			<div class="mb-3">
 				<label for="Enderecos_${index}__Numero" class="form-label">Número</label>
 				<input name="Enderecos[${index}].Numero" class="form-control" />
-			</div>
-
-			<div class="mb-3">
-				<label for="Enderecos_${index}__Cep" class="form-label">CEP</label>
-				<input name="Enderecos[${index}].Cep" class="form-control" />
 			</div>
 
 			<div class="mb-3">

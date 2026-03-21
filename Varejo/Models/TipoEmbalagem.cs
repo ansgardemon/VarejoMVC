@@ -17,12 +17,8 @@ namespace Varejo.Models
         [Display(Name = "Multiplicador")]
         public int Multiplicador { get; set; }
 
-
-
         //RELACIONAMENTO UM PARA MUITOS
         [Display(Name = "Produtos Embalagem")]
         public virtual ICollection<ProdutoEmbalagem>? ProdutosEmbalagem { get; set; }
-
-
     }
 }

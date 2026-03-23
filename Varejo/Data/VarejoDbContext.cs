@@ -31,6 +31,11 @@ namespace Varejo.Data
         public DbSet<ProdutoMovimento> ProdutosMovimento { get; set; }
         public DbSet<Validade> Validades { get; set; }
         public DbSet<Parametro> Parametros { get; set; }
+        public DbSet<TituloFinanceiro> TitulosFinanceiro { get; set; }
+        public DbSet<FormaPagamento> FormasPagamento { get; set; }
+        public DbSet<PrazoPagamento> PrazosPagamento { get; set; }
+        public DbSet<EspecieTitulo> EspeciesTitulo { get; set; }
+
 
         /*
         metodo opcional deve ser usado para configurar o modelo

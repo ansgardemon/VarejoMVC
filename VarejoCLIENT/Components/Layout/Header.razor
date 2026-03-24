@@ -1,5 +1,39 @@
-﻿<h3>Header</h3>
+﻿<header class="header">
+
+    <div class="header-left">
+        <h3>@Title</h3>
+    </div>
+
+    <div class="header-right">
+
+        <!-- Toggle Dark Mode -->
+        <label class="switch">
+            <input type="checkbox" @onchange="ToggleTheme">
+            <span class="slider"></span>
+        </label>
+
+        <!-- Usuário -->
+        <div class="user-info">
+            <span>@UserName</span>
+            <img class="avatar" src="@UserAvatar" />
+        </div>
+
+    </div>
+
+</header>
 
 @code {
+    [Parameter] public string Title { get; set; } = "Dashboard";
+    [Parameter] public string UserName { get; set; } = "Usuário";
+    [Parameter] public string UserAvatar { get; set; } = "https://i.pravatar.cc/40";
 
+    private async Task ToggleTheme(ChangeEventArgs e)
+    {
+        var isDark = (bool)e.Value!;
+
+        // altera atributo no body
+        await JS.InvokeVoidAsync("toggleTheme", isDark);
+    }
+
+    [Inject] public IJSRuntime JS { get; set; } = default!;
 }

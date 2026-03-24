@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VarejoSHARED\VarejoSHARED.csproj" />
-    <ProjectReference Include="..\Varejo\Varejo.csproj" />
   </ItemGroup>
 
 </Project>

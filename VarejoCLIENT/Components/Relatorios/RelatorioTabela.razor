@@ -1,4 +1,7 @@
-﻿<table class="table">
+﻿@using Varejo.Client.Models.UI
+@typeparam TItem
+
+<table class="table">
 
     <thead>
         <tr>
@@ -19,13 +22,24 @@
     </thead>
 
     <tbody>
-        @foreach (var item in DadosPaginados)
+        @if (DadosPaginados.Any())
+        {
+            @foreach (var item in DadosPaginados)
+            {
+                <tr>
+                    @foreach (var col in Colunas)
+                    {
+                        <td>@col.Selector(item)</td>
+                    }
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                @foreach (var col in Colunas)
-                {
-                    <td>@col.Selector(item)</td>
-                }
+                <td colspan="@Colunas.Count">
+                    Nenhum registro encontrado
+                </td>
             </tr>
         }
     </tbody>
@@ -50,7 +64,6 @@
 @code {
     [Parameter] public List<RelatorioColuna<TItem>> Colunas { get; set; } = new();
     [Parameter] public List<TItem> Dados { get; set; } = new();
-
     [Parameter] public int ItensPorPagina { get; set; } = 10;
 
     private string? ColunaOrdenada;
@@ -59,6 +72,7 @@
     private int PaginaAtual = 1;
 
     private int TotalPaginas =>
+        Dados.Count == 0 ? 1 :
         (int)Math.Ceiling((double)Dados.Count / ItensPorPagina);
 
     private bool PodeVoltar => PaginaAtual > 1;
@@ -83,14 +97,18 @@
             Direcao = "asc";
         }
 
-        PaginaAtual = 1; // reset ao ordenar
+        PaginaAtual = 1;
     }
 
     private IEnumerable<TItem> AplicarOrdenacao()
     {
+        if (!Dados.Any())
+            return Dados;
+
         if (ColunaOrdenada == null)
         {
             var primeira = Colunas.FirstOrDefault();
+
             return primeira != null
                 ? Dados.OrderByDescending(x => primeira.Selector(x))
                 : Dados;

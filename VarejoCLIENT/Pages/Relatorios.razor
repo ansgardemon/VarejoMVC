@@ -1,27 +1,24 @@
 ﻿@page "/relatorios"
 
-<RelatorioTabela TItem="VendaDTO"
+@using Varejo.Client.Models.UI
+@using VarejoSHARED.DTO
+
+<RelatorioTabela TItem="ProdutoOutputDTO"
                  Dados="vendas"
-                 Colunas="colunas" />
+                 Colunas="colunas"
+                 ItensPorPagina="5" />
 
 @code {
-    private List<VendaDTO> vendas = new()
+    private List<ProdutoOutputDTO> vendas = new()
     {
-        new() { Produto = "Chocolate", Valor = 50, Data = DateTime.Now },
-        new() { Produto = "Bala", Valor = 10, Data = DateTime.Now.AddDays(-1) }
+        new() { IdProduto = 1, NomeProduto = "Chocolate", Preco = 50, UrlImagem = "" },
+        new() { IdProduto = 2, NomeProduto = "Bala", Preco = 10, UrlImagem = "" }
     };
 
-    private List<RelatorioColuna<VendaDTO>> colunas = new()
+    private List<RelatorioColuna<ProdutoOutputDTO>> colunas = new()
     {
-        new() { Titulo = "Produto", Campo = "produto", Selector = x => x.Produto },
-        new() { Titulo = "Valor", Campo = "valor", Selector = x => x.Valor },
-        new() { Titulo = "Data", Campo = "data", Selector = x => x.Data }
+        new() { Titulo = "ID", Campo = "id", Selector = x => x.IdProduto },
+        new() { Titulo = "Produto", Campo = "nome", Selector = x => x.NomeProduto },
+        new() { Titulo = "Preço", Campo = "preco", Selector = x => x.Preco }
     };
-
-    public class VendaDTO
-    {
-        public string Produto { get; set; }
-        public decimal Valor { get; set; }
-        public DateTime Data { get; set; }
-    }
 }

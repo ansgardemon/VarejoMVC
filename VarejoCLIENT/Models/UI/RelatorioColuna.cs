@@ -1,4 +1,4 @@
-﻿namespace Varejo.Models.UI
+﻿namespace Varejo.Client.Models.UI
 {
     public class RelatorioColuna<T>
     {

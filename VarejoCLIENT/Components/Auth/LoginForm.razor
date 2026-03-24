@@ -1,5 +1,40 @@
-﻿<h3>LoginForm</h3>
+﻿<div class="card p-4">
+
+    <h3>Login</h3>
+
+    <InputText @bind-Value="email" placeholder="Email" />
+    <InputText @bind-Value="senha" type="password" placeholder="Senha" />
+
+    <Button OnClick="Login">Entrar</Button>
+
+    @if (!string.IsNullOrEmpty(erro))
+    {
+        <p class="text-danger">@erro</p>
+    }
+
+</div>
 
 @code {
+    private string email = "";
+    private string senha = "";
+    private string erro = "";
 
+    [Inject] public AuthService AuthService { get; set; } = default!;
+    [Inject] public NavigationManager Nav { get; set; } = default!;
+
+    private async Task Login()
+    {
+        erro = "";
+
+        var sucesso = await AuthService.Login(email, senha);
+
+        if (sucesso)
+        {
+            Nav.NavigateTo("/dashboard");
+        }
+        else
+        {
+            erro = "Usuário ou senha inválidos";
+        }
+    }
 }

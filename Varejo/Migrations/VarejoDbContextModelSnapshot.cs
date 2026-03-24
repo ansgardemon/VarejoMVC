@@ -47,7 +47,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("TipoMovimentoVendaId");
 
-                    b.ToTable("Parametros");
+                    b.ToTable("Parametros", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Categoria", b =>
@@ -78,7 +78,7 @@ namespace Varejo.Migrations
                     b.HasIndex("DescricaoCategoria")
                         .IsUnique();
 
-                    b.ToTable("Categorias");
+                    b.ToTable("Categorias", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Endereco", b =>
@@ -141,7 +141,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("PessoaId");
 
-                    b.ToTable("Enderecos");
+                    b.ToTable("Enderecos", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.EspecieMovimento", b =>
@@ -169,7 +169,7 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdEspecieMovimento");
 
-                    b.ToTable("EspeciesMovimento");
+                    b.ToTable("EspeciesMovimento", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.EspecieTitulo", b =>
@@ -186,7 +186,7 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdEspecieTitulo");
 
-                    b.ToTable("EspeciesTitulo");
+                    b.ToTable("EspeciesTitulo", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Familia", b =>
@@ -230,7 +230,7 @@ namespace Varejo.Migrations
                     b.HasIndex("NomeFamilia")
                         .IsUnique();
 
-                    b.ToTable("Familias");
+                    b.ToTable("Familias", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.FormaPagamento", b =>
@@ -247,7 +247,7 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdFormaPagamento");
 
-                    b.ToTable("FormasPagamento");
+                    b.ToTable("FormasPagamento", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.FornecedorFamilia", b =>
@@ -280,7 +280,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("PessoaId");
 
-                    b.ToTable("FornecedoresFamilia");
+                    b.ToTable("FornecedoresFamilia", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Marca", b =>
@@ -311,7 +311,7 @@ namespace Varejo.Migrations
                     b.HasIndex("NomeMarca")
                         .IsUnique();
 
-                    b.ToTable("Marcas");
+                    b.ToTable("Marcas", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Movimento", b =>
@@ -354,7 +354,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("TipoMovimentoId");
 
-                    b.ToTable("Movimentos");
+                    b.ToTable("Movimentos", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Pessoa", b =>
@@ -424,7 +424,7 @@ namespace Varejo.Migrations
                     b.HasIndex("CpfCnpj")
                         .IsUnique();
 
-                    b.ToTable("Pessoas");
+                    b.ToTable("Pessoas", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.PrazoPagamento", b =>
@@ -447,7 +447,7 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdPrazoPagamento");
 
-                    b.ToTable("PrazosPagamento");
+                    b.ToTable("PrazosPagamento", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Produto", b =>
@@ -505,7 +505,7 @@ namespace Varejo.Migrations
                     b.HasIndex("NomeProduto")
                         .IsUnique();
 
-                    b.ToTable("Produtos");
+                    b.ToTable("Produtos", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.ProdutoEmbalagem", b =>
@@ -552,7 +552,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("TipoEmbalagemId");
 
-                    b.ToTable("ProdutosEmbalagem");
+                    b.ToTable("ProdutosEmbalagem", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.ProdutoMovimento", b =>
@@ -593,7 +593,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("ProdutoId");
 
-                    b.ToTable("ProdutosMovimento");
+                    b.ToTable("ProdutosMovimento", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.TipoEmbalagem", b =>
@@ -627,7 +627,7 @@ namespace Varejo.Migrations
                     b.HasIndex("DescricaoTipoEmbalagem")
                         .IsUnique();
 
-                    b.ToTable("TiposEmbalagem");
+                    b.ToTable("TiposEmbalagem", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.TipoMovimento", b =>
@@ -660,7 +660,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("EspecieMovimentoId");
 
-                    b.ToTable("TiposMovimento");
+                    b.ToTable("TiposMovimento", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.TipoUsuario", b =>
@@ -688,7 +688,7 @@ namespace Varejo.Migrations
 
                     b.HasKey("IdTipoUsuario");
 
-                    b.ToTable("TiposUsuario");
+                    b.ToTable("TiposUsuario", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.TituloFinanceiro", b =>
@@ -752,7 +752,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("PrazoPagamentoId");
 
-                    b.ToTable("TitulosFinanceiro");
+                    b.ToTable("TitulosFinanceiro", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Usuario", b =>
@@ -802,7 +802,7 @@ namespace Varejo.Migrations
                     b.HasIndex("nomeUsuario")
                         .IsUnique();
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
                 });
 
             modelBuilder.Entity("Varejo.Models.Validade", b =>
@@ -836,7 +836,7 @@ namespace Varejo.Migrations
 
                     b.HasIndex("ProdutoId");
 
-                    b.ToTable("Validades");
+                    b.ToTable("Validades", (string)null);
                 });
 
             modelBuilder.Entity("Parametro", b =>

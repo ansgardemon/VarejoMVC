@@ -20,15 +20,15 @@
         public bool Quitado { get; set; }
 
         public int EspecieTituloId { get; set; }
-        public string EspecieDescricao { get; set; }
+        public string? EspecieDescricao { get; set; }
 
         public int? FormaPagamentoId { get; set; }
-        public string FormaDescricao { get; set; }
+        public string? FormaDescricao { get; set; }
 
         public int? PrazoPagamentoId { get; set; }
-        public string PrazoDescricao { get; set; }
+        public string? PrazoDescricao { get; set; }
 
         public int? PessoaId { get; set; }
-        public string NomePessoa { get; set; }
+        public string? NomePessoa { get; set; }
     }
 }

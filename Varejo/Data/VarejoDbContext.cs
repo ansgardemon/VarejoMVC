@@ -185,7 +185,7 @@ namespace Varejo.Data
 
 
             //PROPRIEDADES OCULTAS PARA AUDITORIA
-            modelBuilder.Entity<Pessoa>()
+           modelBuilder.Entity<Pessoa>()
                 .Property<DateTime>("DataCriacao")
                 .HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Pessoa>()

@@ -57,6 +57,10 @@
 								<li class="nav-item tetx-white">
 									<a class="nav-link" asp-area="" asp-controller="Validade" asp-action="Index"><i class="fa-solid fa-clock"></i><span>Validades</span></a>
 								</li>
+
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="TituloFinanceiro" asp-action="Index"><i class="fa-solid fa-clock"></i><span>Financeiro</span></a>
+								</li>
 							}
 
 							@if (role == "Administrador")
@@ -74,6 +78,13 @@
 
 								<li class="nav-item user">
 									<a class="nav-link" asp-area="" asp-controller="Parametro" asp-action="Index"><i class="fa-solid fa-gear"></i><span>Parametros</span></a>
+								</li>
+
+								<li class="nav-item user">
+									<a class="nav-link" asp-area="" asp-controller="FormaPagamento" asp-action="Index"><i class="fa-solid fa-gear"></i><span>Formas de Pagamento</span></a>
+								</li>
+								<li class="nav-item user">
+									<a class="nav-link" asp-area="" asp-controller="PrazoPagamento" asp-action="Index"><i class="fa-solid fa-gear"></i><span>Prazos de Pagamento</span></a>
 								</li>
 							}
 						}

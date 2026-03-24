@@ -88,16 +88,64 @@ namespace Varejo.Repositories
         }
 
         public async Task GerarTitulosAsync(
-            int documento,
-            decimal valorTotal,
-            int prazoPagamentoId,
-            int especieTituloId,
-            int? formaPagamentoId,
-            int? pessoaId,
-            DateTime dataEmissao)
+    int documento,
+    decimal valorTotal,
+    int prazoPagamentoId,
+    int especieTituloId,
+    int? formaPagamentoId,
+    int? pessoaId,
+    DateTime dataEmissao)
         {
-            // vamos implementar depois com calma 👀
-            throw new NotImplementedException();
+            var prazo = await _context.PrazosPagamento
+                .FirstOrDefaultAsync(p => p.IdPrazoPagamento == prazoPagamentoId);
+
+            if (prazo == null)
+                throw new Exception("Prazo de pagamento não encontrado.");
+
+            if (prazo.NumeroParcelas <= 0)
+                throw new Exception("Prazo inválido.");
+
+            var numeroParcelas = prazo.NumeroParcelas;
+            var intervalo = prazo.IntervaloDias;
+
+            // Divide valor
+            var valorBase = Math.Round(valorTotal / numeroParcelas, 2);
+            decimal soma = 0;
+
+            var titulos = new List<TituloFinanceiro>();
+
+            for (int i = 1; i <= numeroParcelas; i++)
+            {
+                var valorParcela = valorBase;
+
+                // Ajuste de centavos na última parcela
+                if (i == numeroParcelas)
+                {
+                    valorParcela = valorTotal - soma;
+                }
+
+                var titulo = new TituloFinanceiro
+                {
+                    Documento = documento,
+                    Parcela = i,
+                    Valor = valorParcela,
+                    ValorPago = 0,
+                    DataEmissao = dataEmissao,
+                    DataVencimento = dataEmissao.AddDays(intervalo * i),
+                    EspecieTituloId = especieTituloId,
+                    FormaPagamentoId = formaPagamentoId,
+                    PrazoPagamentoId = prazoPagamentoId,
+                    PessoaId = pessoaId
+                };
+
+                titulo.AtualizarValores();
+
+                titulos.Add(titulo);
+                soma += valorParcela;
+            }
+
+            _context.TitulosFinanceiro.AddRange(titulos);
+            await _context.SaveChangesAsync();
         }
     }
 }

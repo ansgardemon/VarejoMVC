@@ -8,13 +8,15 @@ namespace Varejo.Models
         [Key]
         public int IdTituloFinanceiro { get; set; }
 
+        [Required]
         public int Documento { get; set; }
 
+        [Required]
         public int Parcela { get; set; }
 
 
         [StringLength(100)]
-        public string Observacao { get; set; }
+        public string? Observacao { get; set; }
 
         [Required]
         public decimal Valor { get; set; }

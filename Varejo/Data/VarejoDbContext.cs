@@ -169,6 +169,19 @@ namespace Varejo.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
+            modelBuilder.Entity<TituloFinanceiro>()
+    .Property(t => t.Valor)
+    .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<TituloFinanceiro>()
+                .Property(t => t.ValorPago)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<TituloFinanceiro>()
+                .Property(t => t.ValorAberto)
+                .HasColumnType("decimal(18,2)");
+
+
 
 
             //PROPRIEDADES OCULTAS PARA AUDITORIA

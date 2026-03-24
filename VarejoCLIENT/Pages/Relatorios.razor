@@ -1,5 +1,26 @@
-﻿<h3>Relatorios</h3>
+﻿
+<RelatorioTabela TItem="VendaDTO"
+                 Dados="vendas"
+                 Colunas="colunas" />
 
 @code {
+    private List<VendaDTO> vendas = new()
+    {
+        new() { Produto = "Chocolate", Valor = 50, Data = DateTime.Now },
+        new() { Produto = "Bala", Valor = 10, Data = DateTime.Now.AddDays(-1) }
+    };
 
+    private List<RelatorioColuna<VendaDTO>> colunas = new()
+    {
+        new() { Titulo = "Produto", Campo = "produto", Selector = x => x.Produto },
+        new() { Titulo = "Valor", Campo = "valor", Selector = x => x.Valor },
+        new() { Titulo = "Data", Campo = "data", Selector = x => x.Data }
+    };
+
+    public class VendaDTO
+    {
+        public string Produto { get; set; }
+        public decimal Valor { get; set; }
+        public DateTime Data { get; set; }
+    }
 }

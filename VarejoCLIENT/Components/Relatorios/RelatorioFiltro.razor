@@ -1,5 +1,55 @@
-﻿<h3>RelatorioFiltro</h3>
+﻿<Card CssClass="relatorio-filtro">
+
+    <h4>Filtros</h4>
+
+    <div class="filtros">
+
+        <InputText Label="Data Inicial" Type="date" @bind-Value="DataInicial" />
+
+        <InputText Label="Data Final" Type="date" @bind-Value="DataFinal" />
+
+        <InputText Label="Busca" Placeholder="Produto, cliente..." @bind-Value="Busca" />
+
+    </div>
+
+    <div class="acoes">
+        <button class="btn" @onclick="AplicarFiltro">
+            Filtrar
+        </button>
+
+        <button class="btn btn-secondary" @onclick="LimparFiltro">
+            Limpar
+        </button>
+    </div>
+
+</Card>
 
 @code {
+    private string? DataInicial;
+    private string? DataFinal;
+    private string? Busca;
 
+    [Parameter]
+    public EventCallback<FiltroRelatorioDTO> OnFiltrar { get; set; }
+
+    private async Task AplicarFiltro()
+    {
+        var filtro = new FiltroRelatorioDTO
+        {
+            DataInicial = DataInicial,
+            DataFinal = DataFinal,
+            Busca = Busca
+        };
+
+        await OnFiltrar.InvokeAsync(filtro);
+    }
+
+    private async Task LimparFiltro()
+    {
+        DataInicial = null;
+        DataFinal = null;
+        Busca = null;
+
+        await AplicarFiltro();
+    }
 }

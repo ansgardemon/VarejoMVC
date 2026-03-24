@@ -1,5 +1,29 @@
-﻿<h3>Card</h3>
+﻿<div class="card @CssClass">
+
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="card-header">
+            @Title
+        </div>
+    }
+
+    <div class="card-body">
+        @ChildContent
+    </div>
+
+    @if (Footer != null)
+    {
+        <div class="card-footer">
+            @Footer
+        </div>
+    }
+
+</div>
 
 @code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? CssClass { get; set; }
 
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? Footer { get; set; }
 }

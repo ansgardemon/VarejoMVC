@@ -1,5 +1,117 @@
-﻿<h3>RelatorioTabela</h3>
+﻿<table class="table">
+
+    <thead>
+        <tr>
+            @foreach (var col in Colunas)
+            {
+                <th @onclick="() => Ordenar(col)" style="cursor:pointer">
+                    @col.Titulo
+
+                    @if (ColunaOrdenada == col.Campo)
+                    {
+                        <span>
+                            @(Direcao == "asc" ? "↑" : "↓")
+                        </span>
+                    }
+                </th>
+            }
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in DadosPaginados)
+        {
+            <tr>
+                @foreach (var col in Colunas)
+                {
+                    <td>@col.Selector(item)</td>
+                }
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<!-- PAGINAÇÃO -->
+<div class="paginacao">
+
+    <button class="btn" @onclick="Anterior" disabled="@(!PodeVoltar)">
+        Anterior
+    </button>
+
+    <span>Página @PaginaAtual de @TotalPaginas</span>
+
+    <button class="btn" @onclick="Proxima" disabled="@(!PodeAvancar)">
+        Próxima
+    </button>
+
+</div>
 
 @code {
+    [Parameter] public List<RelatorioColuna<TItem>> Colunas { get; set; } = new();
+    [Parameter] public List<TItem> Dados { get; set; } = new();
 
+    [Parameter] public int ItensPorPagina { get; set; } = 10;
+
+    private string? ColunaOrdenada;
+    private string Direcao = "desc";
+
+    private int PaginaAtual = 1;
+
+    private int TotalPaginas =>
+        (int)Math.Ceiling((double)Dados.Count / ItensPorPagina);
+
+    private bool PodeVoltar => PaginaAtual > 1;
+    private bool PodeAvancar => PaginaAtual < TotalPaginas;
+
+    private IEnumerable<TItem> DadosOrdenados => AplicarOrdenacao();
+
+    private IEnumerable<TItem> DadosPaginados =>
+        DadosOrdenados
+            .Skip((PaginaAtual - 1) * ItensPorPagina)
+            .Take(ItensPorPagina);
+
+    private void Ordenar(RelatorioColuna<TItem> coluna)
+    {
+        if (ColunaOrdenada == coluna.Campo)
+        {
+            Direcao = Direcao == "asc" ? "desc" : "asc";
+        }
+        else
+        {
+            ColunaOrdenada = coluna.Campo;
+            Direcao = "asc";
+        }
+
+        PaginaAtual = 1; // reset ao ordenar
+    }
+
+    private IEnumerable<TItem> AplicarOrdenacao()
+    {
+        if (ColunaOrdenada == null)
+        {
+            var primeira = Colunas.FirstOrDefault();
+            return primeira != null
+                ? Dados.OrderByDescending(x => primeira.Selector(x))
+                : Dados;
+        }
+
+        var coluna = Colunas.First(c => c.Campo == ColunaOrdenada);
+
+        return Direcao == "asc"
+            ? Dados.OrderBy(coluna.Selector)
+            : Dados.OrderByDescending(coluna.Selector);
+    }
+
+    private void Proxima()
+    {
+        if (PodeAvancar)
+            PaginaAtual++;
+    }
+
+    private void Anterior()
+    {
+        if (PodeVoltar)
+            PaginaAtual--;
+    }
 }

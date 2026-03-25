@@ -1,5 +1,59 @@
-﻿<h3>Dashboard</h3>
+﻿@page "/dashboard"
+@using VarejoCLIENT.Components.Dashboard
+@using VarejoCLIENT.Services
+@inject DashboardService DashboardService
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Painel de Gestão</h1>
+
+    @if (dados == null)
+    {
+        <div class="text-center mt-5"><div class="spinner-border text-primary"></div></div>
+    }
+    else
+    {
+        <div class="row">
+            <DashboardCard Title="Produtos" Value="@dados.TotalProdutos.ToString()" Color="primary" Icon="bi-box" />
+            <DashboardCard Title="Categorias" Value="@dados.TotalCategorias.ToString()" Color="success" Icon="bi-tags" />
+            <DashboardCard Title="Movimentações" Value="@dados.TotalMovimentos.ToString()" Color="warning" Icon="bi-arrow-left-right" />
+            <DashboardCard Title="Usuários" Value="@dados.TotalUsuarios.ToString()" Color="info" Icon="bi-people" />
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <DashboardTable Title="Últimos Produtos" Items="@dados.UltimosProdutos">
+                    <HeaderTemplate>
+                        <th>Nome</th>
+                        <th class="text-end">Preço</th>
+                    </HeaderTemplate>
+                    <RowTemplate Context="p">
+                        <td>@p.NomeProduto</td>
+                        <td class="text-end">@p.Preco.ToString("C")</td>
+                    </RowTemplate>
+                </DashboardTable>
+            </div>
+
+            <div class="col-lg-6">
+                <DashboardTable Title="Produtos por Categoria" Items="@dados.ProdutosPorCategoria">
+                    <HeaderTemplate>
+                        <th>Categoria</th>
+                        <th class="text-center">Qtd</th>
+                    </HeaderTemplate>
+                    <RowTemplate Context="c">
+                        <td>@c.Descricao</td>
+                        <td class="text-center"><span class="badge bg-primary">@c.QtdeProdutos</span></td>
+                    </RowTemplate>
+                </DashboardTable>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
+    private DashboardDTO? dados;
 
+    protected override async Task OnInitializedAsync()
+    {
+        dados = await DashboardService.GetDashboardAsync();
+    }
 }

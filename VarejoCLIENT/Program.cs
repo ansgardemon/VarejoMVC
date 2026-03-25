@@ -15,5 +15,6 @@ builder.Services.AddScoped(sp => new HttpClient
 });
 
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<DashboardService>();
 
 await builder.Build().RunAsync();

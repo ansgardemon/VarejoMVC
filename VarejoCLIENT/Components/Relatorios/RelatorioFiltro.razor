@@ -1,32 +1,32 @@
 ﻿<Card CssClass="relatorio-filtro">
-
     <h4>Filtros</h4>
-
     <div class="filtros">
+        <div class="form-group">
+            <label>Data Inicial</label>
+            <InputDate @bind-Value="DataInicial" class="form-control" />
+        </div>
 
-        <InputText Label="Data Inicial" Type="date" @bind-Value="DataInicial" />
+        <div class="form-group">
+            <label>Data Final</label>
+            <InputDate @bind-Value="DataFinal" class="form-control" />
+        </div>
 
-        <InputText Label="Data Final" Type="date" @bind-Value="DataFinal" />
-
-        <InputText Label="Busca" Placeholder="Produto, cliente..." @bind-Value="Busca" />
-
+        <div class="form-group">
+            <label>Busca</label>
+            <InputText Placeholder="Produto, cliente..." @bind-Value="Busca" class="form-control" />
+        </div>
     </div>
 
     <div class="acoes">
-        <button class="btn" @onclick="AplicarFiltro">
-            Filtrar
-        </button>
-
-        <button class="btn btn-secondary" @onclick="LimparFiltro">
-            Limpar
-        </button>
+        <button class="btn" @onclick="AplicarFiltro">Filtrar</button>
+        <button class="btn btn-secondary" @onclick="LimparFiltro">Limpar</button>
     </div>
-
 </Card>
 
 @code {
-    private string? DataInicial;
-    private string? DataFinal;
+    // Agora os tipos batem com o DTO
+    private DateTime? DataInicial;
+    private DateTime? DataFinal;
     private string? Busca;
 
     [Parameter]

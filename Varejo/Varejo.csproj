@@ -38,6 +38,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VarejoSHARED\VarejoSHARED.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="wwwroot\js\produtos.js">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

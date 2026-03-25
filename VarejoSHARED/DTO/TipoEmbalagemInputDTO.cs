@@ -1,5 +1,4 @@
-﻿using Varejo.Models;
-
+﻿
 namespace VarejoSHARED.DTO
 {
     public class TipoEmbalagemInputDTO

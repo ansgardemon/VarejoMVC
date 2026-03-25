@@ -1,16 +1,39 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@inject NavigationManager Nav
+@using VarejoCLIENT.Services
+@inject AuthService AuthService
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+
+@if (Nav.Uri.EndsWith("/login") || !AuthService.IsAutenticado)
+{
+    @* Se não estiver logado ou estiver na página de login, layout limpo *@
+    <div class="d-flex align-items-center justify-content-center" style="height: 100vh; background-color: #f8f9fa;">
+        @Body
+    </div>
+}
+else
+{
+    @* Layout padrão do ERP com Menu *@
+    <div class="page">
+        <div class="sidebar">
+            <NavMenu />
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <main>
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Se tentar acessar qualquer página sem estar logado, joga pro login
+        if (!AuthService.IsAutenticado && !Nav.Uri.Contains("/login"))
+        {
+            Nav.NavigateTo("login");
+        }
+    }
+}

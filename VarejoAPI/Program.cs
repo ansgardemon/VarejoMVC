@@ -5,60 +5,43 @@ using Varejo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ==========================
-// Configurar o DbContext
-// ==========================
+// 1. Banco de Dados
 builder.Services.AddDbContext<VarejoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ==========================
-// Repositórios
-// ==========================
-builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
-builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
-builder.Services.AddScoped<IProdutoEmbalagemRepository, ProdutoEmbalagemRepository>();
-builder.Services.AddScoped<ITipoEmbalagemRepository, TipoEmbalagemRepository>();
+// 2. Repositórios
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-builder.Services.AddScoped<IFamiliaRepository, FamiliaRepository>();
-builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
-builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
-builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
-builder.Services.AddScoped<IValidadeRepository, ValidadeRepository>();
+// ... adicione os outros Scoped aqui conforme necessário ...
 
-// ==========================
-// Adicionar CORS
-// ==========================
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLanding", policy =>
-    {
-        policy.WithOrigins("http://localhost:5050") // URL da sua landing
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+// 3. Configurar Política de CORS (Agressiva para Desenvolvimento)
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policy => {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
-// ==========================
-// Serviços do ASP.NET
-// ==========================
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ==========================
-// Middleware
-// ==========================
+// ==========================================
+// MIDDLEWARE PIPELINE (A ORDEM É TUDO AQUI)
+// ==========================================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Habilitar CORS antes do MapControllers
-app.UseCors("AllowLanding");
+// O CORS deve ser o primeiro após o Swagger
+app.UseCors("AllowAll");
 
+app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();

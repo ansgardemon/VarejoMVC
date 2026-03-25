@@ -19,6 +19,8 @@
 	<link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/liquidGlass.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/Varejo.styles.css" asp-append-version="true" />
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+	
 </head>
 <body class="w-100 page-bg">
 	<header>
@@ -56,7 +58,11 @@
 								</li>
 
 								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Validade" asp-action="Index"><i class="fa-solid fa-shuffle"></i><span>Validades</span></a>
+									<a class="nav-link" asp-area="" asp-controller="Validade" asp-action="Index"><i class="fa-solid fa-clock"></i><span>Validades</span></a>
+								</li>
+
+								<li class="nav-item tetx-white">
+									<a class="nav-link" asp-area="" asp-controller="TituloFinanceiro" asp-action="Index"><i class="fa-solid fa-money-bill"></i><span>Financeiro</span></a>
 								</li>
 							}
 
@@ -71,6 +77,17 @@
 								</li>
 								<li class="nav-item user">
 									<a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-secret"></i><span>Usuários</span></a>
+								</li>
+
+								<li class="nav-item user">
+									<a class="nav-link" asp-area="" asp-controller="Parametro" asp-action="Index"><i class="fa-solid fa-gear"></i><span>Parametros</span></a>
+								</li>
+
+								<li class="nav-item user">
+									<a class="nav-link" asp-area="" asp-controller="FormaPagamento" asp-action="Index"><i class="fa-solid fa-handshake"></i><span>Formas de Pagamento</span></a>
+								</li>
+								<li class="nav-item user">
+									<a class="nav-link" asp-area="" asp-controller="PrazoPagamento" asp-action="Index"><i class="fa-solid fa-calendar"></i><span>Prazos de Pagamento</span></a>
 								</li>
 							}
 						}
@@ -116,6 +133,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 	<script src="~/js/pessoa.js" asp-append-version="true"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
 	@await RenderSectionAsync("Scripts", required: false)
 

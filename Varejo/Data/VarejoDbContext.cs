@@ -30,6 +30,14 @@ namespace Varejo.Data
         public DbSet<Movimento> Movimentos { get; set; }
         public DbSet<ProdutoMovimento> ProdutosMovimento { get; set; }
         public DbSet<Validade> Validades { get; set; }
+        public DbSet<Parametro> Parametros { get; set; }
+        public DbSet<TituloFinanceiro> TitulosFinanceiro { get; set; }
+        public DbSet<FormaPagamento> FormasPagamento { get; set; }
+        public DbSet<PrazoPagamento> PrazosPagamento { get; set; }
+        public DbSet<EspecieTitulo> EspeciesTitulo { get; set; }
+
+        public DbSet<PagamentoTitulo> PagamentosTitulo { get; set; }
+
 
         /*
         metodo opcional deve ser usado para configurar o modelo
@@ -144,11 +152,42 @@ namespace Varejo.Data
     .HasForeignKey(f => f.MarcaId)
     .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Parametro>()
+    .HasOne(p => p.TipoMovimentoVenda)
+    .WithMany()
+    .HasForeignKey(p => p.TipoMovimentoVendaId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Parametro>()
+                .HasOne(p => p.TipoMovimentoCompra)
+                .WithMany()
+                .HasForeignKey(p => p.TipoMovimentoCompraId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Parametro>()
+                .HasOne(p => p.TipoMovimentoAvaria)
+                .WithMany()
+                .HasForeignKey(p => p.TipoMovimentoAvariaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<TituloFinanceiro>()
+    .Property(t => t.Valor)
+    .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<PagamentoTitulo>()
+                .Property(t => t.ValorPago)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<TituloFinanceiro>()
+                .Property(t => t.ValorAberto)
+                .HasColumnType("decimal(18,2)");
+
 
 
 
             //PROPRIEDADES OCULTAS PARA AUDITORIA
-            modelBuilder.Entity<Pessoa>()
+           modelBuilder.Entity<Pessoa>()
                 .Property<DateTime>("DataCriacao")
                 .HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Pessoa>()

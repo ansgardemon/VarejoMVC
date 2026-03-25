@@ -1,0 +1,26 @@
+﻿@model Varejo.ViewModels.FormaPagamentoViewModel
+
+@{
+    ViewData["Title"] = "Editar Forma de Pagamento";
+}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">@ViewData["Title"]</h5>
+        </div>
+
+<div class="card-body">
+    <form asp-action="Edit">
+        <input type="hidden" asp-for="IdFormaPagamento" />
+        <div class="mb-3">
+            <label class="form-label">Descrição</label>
+            <input asp-for="DescricaoFormaPagamento" class="form-control" />
+            <span asp-validation-for="DescricaoFormaPagamento" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+    </div>
+</div>

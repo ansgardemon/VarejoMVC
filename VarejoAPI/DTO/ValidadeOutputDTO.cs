@@ -3,7 +3,7 @@
     public class ValidadeOutputDTO
     {
         public int IdValidade { get; set; }
-        public DateTime DataValidade { get; set; }
+        public string DataValidade { get; set; }
         public bool EmEstoque { get; set; }
 
 

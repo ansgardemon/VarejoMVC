@@ -1,0 +1,146 @@
+﻿@model Varejo.ViewModels.TituloFinanceiroCreateViewModel
+
+@{
+    ViewData["Title"] = "Adicionar Título Financeiro";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">@ViewData["Title"]</h5>
+        </div>
+
+        <div class="card-body">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <form asp-action="Create" method="post">
+
+                <!-- Documento e Parcela -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Documento</label>
+                        <input asp-for="Documento" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Parcela</label>
+                        <input asp-for="Parcela" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- Pessoa (Lookup Search) -->
+                <div class="mb-3">
+                    <label>Pessoa</label>
+
+                    <div class="input-group">
+                        <input type="hidden" asp-for="PessoaId" id="PessoaId" />
+                        <input type="text" id="PessoaNome" class="form-control" readonly />
+
+                        <button type="button" class="btn btn-outline-secondary" onclick="toggleSearchPessoa()">
+                            🔍
+                        </button>
+                    </div>
+
+                    <div id="searchPessoaBox" class="mt-2" style="display:none;">
+                        <input type="text" id="searchPessoaInput" class="form-control" placeholder="Digite o nome..." onkeyup="buscarPessoa()" />
+
+                        <ul id="searchResults" class="list-group mt-2"></ul>
+                    </div>
+                </div>
+
+                <!-- Espécie -->
+                <div class="mb-3">
+                    <label>Espécie</label>
+                    <select asp-for="EspecieTituloId" class="form-control" asp-items="ViewBag.Especies">
+                        <option value="">Selecione</option>
+                    </select>
+                </div>
+
+                <!-- Forma de Pagamento -->
+                <div class="mb-3">
+                    <label>Forma de Pagamento</label>
+                    <select asp-for="FormaPagamentoId" class="form-control" asp-items="ViewBag.Formas">
+                        <option value="">Selecione</option>
+                    </select>
+                </div>
+
+                <!-- Prazo -->
+                <div class="mb-3">
+                    <label>Prazo de Pagamento</label>
+                    <select asp-for="PrazoPagamentoId" class="form-control" asp-items="ViewBag.Prazos">
+                        <option value="">Selecione</option>
+                    </select>
+                </div>
+
+                <!-- Valores -->
+                <div class="mb-3">
+                    <label>Valor</label>
+                    <input asp-for="Valor" class="form-control" />
+                </div>
+
+                <!-- Datas -->
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label>Data Emissão</label>
+                        <input asp-for="DataEmissao" type="date" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Data Vencimento</label>
+                        <input asp-for="DataVencimento" type="date" class="form-control" />
+                    </div>
+
+                </div>
+
+                <!-- Observação -->
+                <div class="mb-3">
+                    <label>Observação</label>
+                    <textarea asp-for="Observacao" class="form-control"></textarea>
+                </div>
+
+                <!-- Botões -->
+                <button type="submit" class="btn btn-success">Salvar</button>
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<!-- SCRIPT: SEARCH PESSOA -->
+<script>
+    function toggleSearchPessoa() {
+        var box = document.getElementById("searchPessoaBox");
+        box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+
+    async function buscarPessoa() {
+        const term = document.getElementById("searchPessoaInput").value;
+
+        if (term.length < 2) return;
+
+        const response = await fetch(`/Pessoa/Search?term=${term}`);
+        const data = await response.json();
+
+        const list = document.getElementById("searchResults");
+        list.innerHTML = "";
+
+        data.forEach(p => {
+            const li = document.createElement("li");
+            li.className = "list-group-item list-group-item-action";
+            li.innerText = p.text;
+
+            li.onclick = function () {
+                document.getElementById("PessoaId").value = p.id;
+                document.getElementById("PessoaNome").value = p.text;
+
+                document.getElementById("searchResults").innerHTML = "";
+                document.getElementById("searchPessoaInput").value = "";
+                document.getElementById("searchPessoaBox").style.display = "none";
+            };
+
+            list.appendChild(li);
+        });
+    }
+</script>

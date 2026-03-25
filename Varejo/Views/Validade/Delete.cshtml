@@ -1,0 +1,47 @@
+﻿@model Varejo.ViewModels.ValidadeViewModel
+
+@{
+    ViewData["Title"] = "Esgotar Validade";
+}
+
+<h2 class="text-danger">Esgotar Validade</h2>
+
+<div class="alert alert-warning">
+    <strong>Atenção:</strong> Essa ação não remove o registro, apenas marca o item como <b>esgotado</b>.
+</div>
+
+<div class="card p-3">
+    <dl class="row">
+        <dt class="col-sm-3">Produto</dt>
+        <dd class="col-sm-9">@Model.ProdutoNome</dd>
+
+        <dt class="col-sm-3">Data de Validade</dt>
+        <dd class="col-sm-9">
+            @Model.DataValidade.ToString("dd/MM/yyyy")
+        </dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">
+            @if (Model.EmEstoque)
+            {
+                <span class="badge bg-success">Em estoque</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Esgotado</span>
+            }
+        </dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="IdValidade" />
+
+    <button type="submit" class="btn btn-danger">
+        Confirmar Esgotar
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancelar
+    </a>
+</form>

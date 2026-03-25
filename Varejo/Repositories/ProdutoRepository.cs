@@ -202,8 +202,19 @@ namespace Varejo.Repositories
             await _context.SaveChangesAsync();
         }
 
-       
 
-       
+        public async Task<IEnumerable<Produto>> SearchAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return new List<Produto>();
+
+            return await _context.Produtos
+                .Where(p => p.NomeProduto.Contains(query) && p.Ativo)
+                .Take(20)
+                .ToListAsync();
+        }
+
+
+
     }
 }

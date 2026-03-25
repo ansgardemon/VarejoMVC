@@ -60,7 +60,7 @@ namespace Varejo.Controllers
 
             var query = titulos.AsQueryable();
 
-            // 🔥 PERÍODO PADRÃO (30 dias)
+            // PERÍODO PADRÃO (30 dias)
             if (!dataInicio.HasValue && !dataFim.HasValue)
             {
                 dataInicio = DateTime.Today;

@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Varejo.ViewModels.FormaPagamentoViewModel>
+
+@{
+    ViewData["Title"] = "Formas de Pagamento";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nova Forma</a>
+</p>
+
+<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
+    <table class="w-100">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Descrição</th>
+                <th class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td data-label="#">@item.IdFormaPagamento</td>
+                    <td data-label="Descrição">@item.DescricaoFormaPagamento</td>
+                    <td data-label="Ações" class="text-center">
+                        <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.IdFormaPagamento">Editar</a>
+                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.IdFormaPagamento">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -32,6 +32,11 @@ builder.Services.AddScoped<ITipoMovimentoRepository, TipoMovimentoRepository>();
 builder.Services.AddScoped<IMovimentoRepository, MovimentoRepository>();
 builder.Services.AddScoped<IValidadeRepository, ValidadeRepository>();
 builder.Services.AddScoped<IParametroRepository, ParametroRepository>();
+builder.Services.AddScoped<IFormaPagamentoRepository, FormaPagamentoRepository>();
+builder.Services.AddScoped<IEspecieTituloRepository, EspecieTituloRepository>();
+builder.Services.AddScoped<ITituloFinanceiroRepository, TituloFinanceiroRepository>();
+builder.Services.AddScoped<IPrazoPagamentoRepository, PrazoPagamentoRepository>();
+builder.Services.AddScoped<IPagamentoTituloRepository, PagamentoTituloRepository>();
 
 
 

@@ -1,0 +1,61 @@
+﻿@model Varejo.ViewModels.TituloFinanceiroViewModel
+
+@{
+    ViewData["Title"] = "Editar Título";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">Editar Título</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                <input type="hidden" asp-for="IdTituloFinanceiro" />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Documento</label>
+                        <input asp-for="Documento" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Parcela</label>
+                        <input asp-for="Parcela" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Valor</label>
+                    <input asp-for="Valor" class="form-control" />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Data Emissão</label>
+                        <input asp-for="DataEmissao" type="date" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Data Vencimento</label>
+                        <input asp-for="DataVencimento" type="date" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Observação</label>
+                    <textarea asp-for="Observacao" class="form-control"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">Salvar</button>
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+
+            </form>
+
+        </div>
+    </div>
+</div>

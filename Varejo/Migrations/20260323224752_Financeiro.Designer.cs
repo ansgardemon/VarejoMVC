@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Varejo.Data;
 
@@ -11,9 +12,11 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    partial class VarejoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323224752_Financeiro")]
+    partial class Financeiro
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -355,34 +358,6 @@ namespace Varejo.Migrations
                     b.HasIndex("TipoMovimentoId");
 
                     b.ToTable("Movimentos");
-                });
-
-            modelBuilder.Entity("Varejo.Models.PagamentoTitulo", b =>
-                {
-                    b.Property<int>("IdPagamento")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPagamento"));
-
-                    b.Property<DateTime>("DataPagamento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Observacao")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("TituloFinanceiroId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("ValorPago")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("IdPagamento");
-
-                    b.HasIndex("TituloFinanceiroId");
-
-                    b.ToTable("PagamentosTitulo");
                 });
 
             modelBuilder.Entity("Varejo.Models.Pessoa", b =>
@@ -746,6 +721,7 @@ namespace Varejo.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Observacao")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -765,6 +741,9 @@ namespace Varejo.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ValorAberto")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ValorPago")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("IdTituloFinanceiro");
@@ -958,17 +937,6 @@ namespace Varejo.Migrations
                     b.Navigation("TipoMovimento");
                 });
 
-            modelBuilder.Entity("Varejo.Models.PagamentoTitulo", b =>
-                {
-                    b.HasOne("Varejo.Models.TituloFinanceiro", "TituloFinanceiro")
-                        .WithMany("Pagamentos")
-                        .HasForeignKey("TituloFinanceiroId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TituloFinanceiro");
-                });
-
             modelBuilder.Entity("Varejo.Models.Produto", b =>
                 {
                     b.HasOne("Varejo.Models.Familia", "Familia")
@@ -1156,11 +1124,6 @@ namespace Varejo.Migrations
             modelBuilder.Entity("Varejo.Models.TipoUsuario", b =>
                 {
                     b.Navigation("Usuarios");
-                });
-
-            modelBuilder.Entity("Varejo.Models.TituloFinanceiro", b =>
-                {
-                    b.Navigation("Pagamentos");
                 });
 #pragma warning restore 612, 618
         }

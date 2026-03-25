@@ -1,0 +1,38 @@
+﻿@model Varejo.Models.TituloFinanceiro
+
+@{
+    ViewData["Title"] = "Excluir Título";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Confirmar Exclusão</h5>
+        </div>
+
+        <div class="card-body">
+
+            <p>Tem certeza que deseja excluir este título?</p>
+
+            <ul>
+                <li><strong>Documento:</strong> @Model.Documento</li>
+                <li><strong>Parcela:</strong> @Model.Parcela</li>
+                <li><strong>Valor:</strong> @Model.Valor.ToString("C")</li>
+            </ul>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="IdTituloFinanceiro" />
+
+                <button type="submit" class="btn btn-danger">
+                    Confirmar Exclusão
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Cancelar
+                </a>
+            </form>
+
+        </div>
+    </div>
+</div>

@@ -253,6 +253,22 @@ namespace Varejo.Controllers
             return View(pessoaVm);
         }
 
+        // SEARCH
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string term)
+        {
+            var pessoas = await _pessoaRepository.SearchByNameAsync(term);
+
+            var result = pessoas.Select(p => new
+            {
+                id = p.IdPessoa,
+                text = p.NomeRazao
+            });
+
+            return Json(result);
+        }
+
     }
 }
 

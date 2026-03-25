@@ -6,13 +6,13 @@ using Varejo.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // ==========================
-// Configurar o DbContext
+// 1. Configurar o DbContext
 // ==========================
 builder.Services.AddDbContext<VarejoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ==========================
-// Repositórios
+// 2. Repositórios (Lista Completa)
 // ==========================
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
@@ -28,28 +28,27 @@ builder.Services.AddScoped<IValidadeRepository, ValidadeRepository>();
 builder.Services.AddScoped<ITipoMovimentoRepository, TipoMovimentoRepository>();
 
 // ==========================
-// Adicionar CORS
+// 3. Configurar CORS (Permissivo para facilitar o TCC)
 // ==========================
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLanding", policy =>
-    {
-        policy.WithOrigins("http://localhost:5050") // URL da sua landing
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policy => {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
 // ==========================
-// Serviços do ASP.NET
+// 4. Serviços do ASP.NET
 // ==========================
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer(); // Necessário para o Swagger moderno
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // ==========================
-// Middleware
+// 5. Middleware Pipeline
 // ==========================
 if (app.Environment.IsDevelopment())
 {
@@ -57,8 +56,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Habilitar CORS antes do MapControllers
-app.UseCors("AllowLanding");
+// O CORS DEVE vir antes de quase tudo para evitar erros no navegador
+app.UseCors("AllowAll");
+
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

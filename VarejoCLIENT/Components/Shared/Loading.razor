@@ -1,0 +1,17 @@
+﻿@if (IsVisible)
+{
+    <div class="loading-container @CssClass">
+        <div class="spinner"></div>
+
+        @if (!string.IsNullOrEmpty(Text))
+        {
+            <span>@Text</span>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; } = true;
+    [Parameter] public string? Text { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+}

@@ -1,0 +1,60 @@
+.navbar-toggler {
+    background-color: var(--ui-glass-bg);
+}
+
+.top-row {
+    min-height: 3.5rem;
+    background-color: var(--ui-glass-bg);
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+    color: var(--ui-text-primary);
+}
+
+.nav-item {
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+    .nav-item:first-of-type {
+        padding-top: 1rem;
+    }
+
+    .nav-item:last-of-type {
+        padding-bottom: 1rem;
+    }
+
+    .nav-item ::deep a {
+        color: var(--ui-text-secondary);
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+    }
+
+        .nav-item ::deep a.active {
+            background-color: var(--ui-glass-border);
+            color: var(--ui-text-button);
+        }
+
+        .nav-item ::deep a:hover {
+            background-color: var(--ui-glass-bg);
+            color: var(--ui-text-button);
+        }
+
+@media (min-width: 641px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .collapse {
+        display: block;
+    }
+
+    .nav-scrollable {
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}

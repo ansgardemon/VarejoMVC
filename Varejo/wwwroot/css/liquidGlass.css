@@ -2,43 +2,43 @@
 
 :root {
     /* Glass / Blur */
-    --glass-bg: #ffffff26;
-    --glass-border: #ffffff40;
-    --glass-blur: 20px;
+    --glass-bg: var(--ui-glass-bg);
+    --glass-border: var(--ui-glass-border);
+    --glass-blur: var(--ui-glass-blur);
     /* Texto */
-    --text: #163889;
-    --text-btn: #163889;
-    --subtext: rgba(15, 23, 42, 0.8);
+    --text: var(--ui-text-primary);
+    --text-btn: var(--ui-text-button);
+    --subtext: var(--ui-text-secondary);
     /* Fundo */
-    --bg-gradient-start: #e8f1ff;
-    --bg-gradient-end: #c8d8ff;
+    --bg-gradient-start: var(--ui-bg-gradient-start);
+    --bg-gradient-end: var(--ui-bg-gradient-end);
     /* Botões */
-    --btn-info: #0d9dfde6;
-    --btn-success: #27eb8fe6;
-    --btn-danger: #dc3545e6;
-    --btn-warning: #ffe200e6;
+    --btn-info: var(--state-info);
+    --btn-success: var(--state-success);
+    --btn-danger: var(--state-danger);
+    --btn-warning: var(--state-warning);
     /* Table / DL */
-    --table-odd: rgba(255, 255, 255, 0.25);
-    --table-even: rgba(200, 200, 200, 0.25);
+    --table-odd: var(--ui-table-odd);
+    --table-even: var(--ui-table-even);
 }
+
 /* ================== DARKMODE ================== */
 
 body.dark {
-    --glass-bg: #ffffff14;
-    --glass-border: #ffffff30;
-    --text: #a4daf5;
-    --text-btn: #f0f0f0;
-    --subtext: rgba(255, 255, 255, 0.7);
-    --bg-gradient-start: #0f172a;
-    --bg-gradient-end: #1e293b;
-    --btn-info: #0a7cccCC;
-    --btn-success: #1f9b5dcc;
-    --btn-danger: #b02a37CC;
-    --btn-warning: #b38f0eCC;
-    --table-odd: rgba(255,255,255,0.25);
-    --table-even: rgba(200,200,200,0.25);
+    --glass-bg: var(--ui-glass-bg);
+    --glass-border: var(--ui-glass-border);
+    --text: var(--ui-text-primary);
+    --text-btn: var(--ui-text-button);
+    --subtext: var(--ui-text-secondary);
+    --bg-gradient-start: var(--ui-bg-gradient-start);
+    --bg-gradient-end: var(--ui-bg-gradient-end);
+    --btn-info: var(--state-info);
+    --btn-success: var(--state-success);
+    --btn-danger: var(--state-danger);
+    --btn-warning: var(--state-warning);
+    --table-odd: var(--ui-table-odd);
+    --table-even: var(--ui-table-even);
 }
-
 /* ================== body ================== */
 * {
     transition: .3s ease !important;
@@ -94,6 +94,10 @@ h1.vitrino {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: -1;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Padrão moderno */
 }
 
 h1, h2, h3, h4, h5, h6 {

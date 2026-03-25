@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
-using VarejoAPI.DTO;
 using Varejo.Models;
+using VarejoSHARED.DTO;
 
 namespace VarejoAPI.Controllers
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
-using VarejoAPI.DTO;
-using static VarejoAPI.DTO.ProdutoOutputDTO;
+using VarejoSHARED.DTO;
+using static VarejoSHARED.DTO.ProdutoOutputDTO;
 
 namespace VarejoAPI.Controllers
 {

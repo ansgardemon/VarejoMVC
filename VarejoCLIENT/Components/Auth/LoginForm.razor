@@ -1,0 +1,60 @@
+﻿@namespace VarejoCLIENT.Components
+@using VarejoCLIENT.Services
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<div class="card p-4 shadow-sm" style="max-width: 400px; margin: auto;">
+    <h3 class="text-center">Varejo Gestor</h3>
+    <hr />
+
+    <div class="mb-3">
+        <label class="form-label">Usuário</label>
+        <InputText @bind-Value="usuarioInput" class="form-control" placeholder="Usuário" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Senha</label>
+        <InputText @bind-Value="senhaInput" type="password" class="form-control" placeholder="******" />
+    </div>
+
+    <button class="btn btn-primary w-100" @onclick="ExecutarLogin" disabled="@carregando">
+        @if (carregando)
+        {
+            <span class="spinner-border spinner-border-sm"></span>
+        }
+        else
+        {
+            <span>Entrar</span>
+        }
+    </button>
+
+    @if (!string.IsNullOrEmpty(erro))
+    {
+        <div class="alert alert-danger mt-3">@erro</div>
+    }
+</div>
+
+@code {
+    private string usuarioInput = "";
+    private string senhaInput = "";
+    private string erro = "";
+    private bool carregando = false;
+
+    private async Task ExecutarLogin()
+    {
+        carregando = true;
+        erro = "";
+
+        var sucesso = await AuthService.LoginAsync(usuarioInput, senhaInput);
+
+        if (sucesso)
+        {
+            Nav.NavigateTo("/dashboard");
+        }
+        else
+        {
+            erro = "Usuário ou senha inválidos.";
+        }
+        carregando = false;
+    }
+}

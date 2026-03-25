@@ -36,6 +36,7 @@ builder.Services.AddScoped<IFormaPagamentoRepository, FormaPagamentoRepository>(
 builder.Services.AddScoped<IEspecieTituloRepository, EspecieTituloRepository>();
 builder.Services.AddScoped<ITituloFinanceiroRepository, TituloFinanceiroRepository>();
 builder.Services.AddScoped<IPrazoPagamentoRepository, PrazoPagamentoRepository>();
+builder.Services.AddScoped<IPagamentoTituloRepository, PagamentoTituloRepository>();
 
 
 

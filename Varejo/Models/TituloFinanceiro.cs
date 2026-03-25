@@ -14,14 +14,11 @@ namespace Varejo.Models
         [Required]
         public int Parcela { get; set; }
 
-
         [StringLength(100)]
         public string? Observacao { get; set; }
 
         [Required]
         public decimal Valor { get; set; }
-
-        public decimal? ValorPago { get; set; }
 
         public decimal ValorAberto { get; set; }
 
@@ -33,29 +30,49 @@ namespace Varejo.Models
 
         public DateTime? DataPagamento { get; set; }
 
-       public bool Quitado { get; set; }
+        public bool Quitado { get; set; }
 
+        // =========================
         // RELACIONAMENTOS
+        // =========================
 
         [Required]
         public int EspecieTituloId { get; set; }
-        public EspecieTitulo EspecieTitulo { get; set; }
+        public EspecieTitulo? EspecieTitulo { get; set; }
 
         public int? FormaPagamentoId { get; set; }
-        public FormaPagamento FormaPagamento { get; set; }
+        public FormaPagamento? FormaPagamento { get; set; }
 
         public int? PrazoPagamentoId { get; set; }
-        public PrazoPagamento PrazoPagamento { get; set; }
+        public PrazoPagamento? PrazoPagamento { get; set; }
 
-        // Pessoa (cliente ou fornecedor)
         public int? PessoaId { get; set; }
-        public Pessoa Pessoa { get; set; }
+        public Pessoa? Pessoa { get; set; }
 
+        // histórico de pagamentos
+        public ICollection<PagamentoTitulo> Pagamentos { get; set; } = new List<PagamentoTitulo>();
 
+        // =========================
+        // REGRAS DE NEGÓCIO
+        // =========================
         public void AtualizarValores()
         {
-            ValorAberto = Valor - (ValorPago ?? 0);
+            var totalPago = Pagamentos != null
+                ? Pagamentos.Sum(p => p.ValorPago)
+                : 0;
+
+            ValorAberto = Valor - totalPago;
             Quitado = ValorAberto <= 0;
+
+            // opcional: define DataPagamento automaticamente
+            if (Quitado && Pagamentos.Any())
+            {
+                DataPagamento = Pagamentos.Max(p => p.DataPagamento);
+            }
+            else
+            {
+                DataPagamento = null;
+            }
         }
     }
 }

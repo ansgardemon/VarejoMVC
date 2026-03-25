@@ -1,5 +1,186 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Varejo.ViewModels.TituloFinanceiroViewModel
+
 @{
+    ViewData["Title"] = "Detalhes do Título";
+    var pagamentos = ViewBag.Pagamentos as List<Varejo.Models.PagamentoTitulo>;
 }
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Detalhes do Título</h5>
+        </div>
+
+        <div class="card-body">
+
+            <!-- 📄 INFORMAÇÕES -->
+            <div class="row mb-4">
+
+                <div class="col-md-3">
+                    <strong>Documento:</strong><br />
+                    @Model.Documento
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Parcela:</strong><br />
+                    @Model.Parcela
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Pessoa:</strong><br />
+                    @Model.NomePessoa
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Espécie:</strong><br />
+                    @Model.EspecieDescricao
+                </div>
+
+            </div>
+
+            <div class="row mb-4">
+
+                <div class="col-md-3">
+                    <strong>Valor Total:</strong><br />
+                    @Model.Valor.ToString("C")
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Total Pago:</strong><br />
+                    @(Model.ValorPago?.ToString("C") ?? "R$ 0,00")
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Saldo:</strong><br />
+                    @Model.ValorAberto.ToString("C")
+                </div>
+
+             
+
+                <div class="col-md-3">
+                    <strong>Status:</strong><br />
+                    @if (Model.Quitado)
+                    {
+                        <span class="badge bg-success">Quitado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Aberto</span>
+                    }
+                </div>
+
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <strong>Emissão:</strong><br />
+                    @Model.DataEmissao.ToShortDateString()
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Vencimento:</strong><br />
+                    @Model.DataVencimento.ToShortDateString()
+                </div>
+
+                <div class="col-md-3">
+                    <strong>Forma de Pagamento:</strong><br />
+                    @Model.FormaDescricao
+                </div>
+            </div>
+
+            <!-- 💰 REGISTRAR PAGAMENTO -->
+            @if (!Model.Quitado)
+            {
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <strong>Registrar Pagamento</strong>
+                    </div>
+
+                    <div class="card-body">
+                        <form asp-action="RegistrarPagamento" method="post">
+
+                            <input type="hidden" name="id" value="@Model.IdTituloFinanceiro" />
+
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <label>Valor</label>
+                                    <input type="number" step="0.01" name="valor" class="form-control" required />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Data</label>
+                                    <input type="date" name="data" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                                </div>
+
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        💰 Registrar
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            }
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <strong>Observação:</strong><br />
+                    @if (!string.IsNullOrWhiteSpace(Model.Observacao))
+                    {
+                        <span>@Model.Observacao</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Nenhuma observação</span>
+                    }
+                </div>
+            </div>
+
+            <!-- 📜 HISTÓRICO -->
+            <h5>Histórico de Pagamentos</h5>
+
+            <table class="table table-sm table-hover mt-2">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (pagamentos != null && pagamentos.Any())
+                    {
+                        foreach (var p in pagamentos)
+                        {
+                            <tr>
+                                <td>@p.DataPagamento.ToShortDateString()</td>
+                                <td>@p.ValorPago.ToString("C")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2" class="text-center text-muted">
+                                Nenhum pagamento registrado
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- 🔙 -->
+            <div class="mt-3">
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+                <a asp-action="Edit" asp-route-id="@Model.IdTituloFinanceiro" class="btn btn-warning">Editar</a>
+            </div>
+
+        </div>
+    </div>
+</div>

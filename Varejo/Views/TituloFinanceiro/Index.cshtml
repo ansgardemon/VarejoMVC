@@ -19,6 +19,20 @@
 
         <div class="card-body">
 
+
+            @if (TempData["Erro"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Erro"]
+                </div>
+            }
+
+            @if (TempData["Sucesso"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Sucesso"]
+                </div>
+            }
             <!-- 🔍 FILTROS -->
             <form method="get" class="mb-4">
 
@@ -90,7 +104,7 @@
                             </td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-warning">Editar</a>
-                                <a asp-action="Details" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-info">Detalhes</a>
+                                <a asp-action="Details" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-success">Detalhes</a>
                                 <a asp-action="Delete" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-danger">Excluir</a>
                             </td>
                         </tr>

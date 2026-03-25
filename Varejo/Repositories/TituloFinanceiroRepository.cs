@@ -21,6 +21,7 @@ namespace Varejo.Repositories
                 .Include(t => t.FormaPagamento)
                 .Include(t => t.PrazoPagamento)
                 .Include(t => t.Pessoa)
+                .Include(t => t.Pagamentos) // 🔥 IMPORTANTE
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -32,6 +33,7 @@ namespace Varejo.Repositories
                 .Include(t => t.FormaPagamento)
                 .Include(t => t.PrazoPagamento)
                 .Include(t => t.Pessoa)
+                .Include(t => t.Pagamentos) // 🔥 IMPORTANTE
                 .FirstOrDefaultAsync(t => t.IdTituloFinanceiro == id);
         }
 
@@ -40,6 +42,7 @@ namespace Varejo.Repositories
             return await _context.TitulosFinanceiro
                 .Where(t => t.Documento == documento)
                 .OrderBy(t => t.Parcela)
+                .Include(t => t.Pagamentos)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -54,7 +57,9 @@ namespace Varejo.Repositories
 
         public async Task UpdateAsync(TituloFinanceiro titulo)
         {
-            titulo.AtualizarValores();
+            // 🔥 recalcula baseado nos pagamentos
+            titulo.ValorAberto = titulo.Valor - titulo.Pagamentos.Sum(p => p.ValorPago);
+            titulo.Quitado = titulo.ValorAberto <= 0;
 
             _context.TitulosFinanceiro.Update(titulo);
             await _context.SaveChangesAsync();
@@ -71,30 +76,14 @@ namespace Varejo.Repositories
             }
         }
 
-        public async Task BaixarTituloAsync(int id, decimal valorPago, DateTime dataPagamento)
-        {
-            var titulo = await GetByIdAsync(id);
-
-            if (titulo == null)
-                throw new Exception("Título não encontrado.");
-
-            titulo.ValorPago = (titulo.ValorPago ?? 0) + valorPago;
-            titulo.DataPagamento = dataPagamento;
-
-            titulo.AtualizarValores();
-
-            _context.TitulosFinanceiro.Update(titulo);
-            await _context.SaveChangesAsync();
-        }
-
         public async Task GerarTitulosAsync(
-    int documento,
-    decimal valorTotal,
-    int prazoPagamentoId,
-    int especieTituloId,
-    int? formaPagamentoId,
-    int? pessoaId,
-    DateTime dataEmissao)
+            int documento,
+            decimal valorTotal,
+            int prazoPagamentoId,
+            int especieTituloId,
+            int? formaPagamentoId,
+            int? pessoaId,
+            DateTime dataEmissao)
         {
             var prazo = await _context.PrazosPagamento
                 .FirstOrDefaultAsync(p => p.IdPrazoPagamento == prazoPagamentoId);
@@ -108,7 +97,6 @@ namespace Varejo.Repositories
             var numeroParcelas = prazo.NumeroParcelas;
             var intervalo = prazo.IntervaloDias;
 
-            // Divide valor
             var valorBase = Math.Round(valorTotal / numeroParcelas, 2);
             decimal soma = 0;
 
@@ -118,24 +106,21 @@ namespace Varejo.Repositories
             {
                 var valorParcela = valorBase;
 
-                // Ajuste de centavos na última parcela
                 if (i == numeroParcelas)
-                {
                     valorParcela = valorTotal - soma;
-                }
 
                 var titulo = new TituloFinanceiro
                 {
                     Documento = documento,
                     Parcela = i,
                     Valor = valorParcela,
-                    ValorPago = 0,
                     DataEmissao = dataEmissao,
                     DataVencimento = dataEmissao.AddDays(intervalo * i),
                     EspecieTituloId = especieTituloId,
                     FormaPagamentoId = formaPagamentoId,
                     PrazoPagamentoId = prazoPagamentoId,
-                    PessoaId = pessoaId
+                    PessoaId = pessoaId,
+                    Pagamentos = new List<PagamentoTitulo>() // 🔥 importante
                 };
 
                 titulo.AtualizarValores();

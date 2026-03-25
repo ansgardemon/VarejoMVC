@@ -16,8 +16,6 @@ namespace Varejo.Interfaces
 
         Task DeleteAsync(int id);
 
-        Task BaixarTituloAsync(int id, decimal valorPago, DateTime dataPagamento);
-
         Task GerarTitulosAsync(
             int documento,
             decimal valorTotal,

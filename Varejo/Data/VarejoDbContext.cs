@@ -36,6 +36,8 @@ namespace Varejo.Data
         public DbSet<PrazoPagamento> PrazosPagamento { get; set; }
         public DbSet<EspecieTitulo> EspeciesTitulo { get; set; }
 
+        public DbSet<PagamentoTitulo> PagamentosTitulo { get; set; }
+
 
         /*
         metodo opcional deve ser usado para configurar o modelo
@@ -173,7 +175,7 @@ namespace Varejo.Data
     .Property(t => t.Valor)
     .HasColumnType("decimal(18,2)");
 
-            modelBuilder.Entity<TituloFinanceiro>()
+            modelBuilder.Entity<PagamentoTitulo>()
                 .Property(t => t.ValorPago)
                 .HasColumnType("decimal(18,2)");
 

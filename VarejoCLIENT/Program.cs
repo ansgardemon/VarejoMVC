@@ -10,7 +10,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 // IMPORTANTE: Barra "/" no final da URI
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7001/")
+    // porta de consumo da API
+    BaseAddress = new Uri("http://localhost:5018/")
 });
 
 builder.Services.AddScoped<AuthService>();

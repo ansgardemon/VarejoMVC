@@ -5,16 +5,31 @@ using Varejo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Banco de Dados
+// ==========================
+// 1. Configurar o DbContext
+// ==========================
 builder.Services.AddDbContext<VarejoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Repositórios
+// ==========================
+// 2. Repositórios (Lista Completa)
+// ==========================
+builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
+builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
+builder.Services.AddScoped<IProdutoEmbalagemRepository, ProdutoEmbalagemRepository>();
+builder.Services.AddScoped<ITipoEmbalagemRepository, TipoEmbalagemRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-// ... adicione os outros Scoped aqui conforme necessário ...
+builder.Services.AddScoped<IFamiliaRepository, FamiliaRepository>();
+builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
+builder.Services.AddScoped<IValidadeRepository, ValidadeRepository>();
+builder.Services.AddScoped<ITipoMovimentoRepository, TipoMovimentoRepository>();
 
-// 3. Configurar Política de CORS (Agressiva para Desenvolvimento)
+// ==========================
+// 3. Configurar CORS (Permissivo para facilitar o TCC)
+// ==========================
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy => {
         policy.AllowAnyOrigin()
@@ -23,25 +38,29 @@ builder.Services.AddCors(options => {
     });
 });
 
+// ==========================
+// 4. Serviços do ASP.NET
+// ==========================
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer(); // Necessário para o Swagger moderno
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ==========================================
-// MIDDLEWARE PIPELINE (A ORDEM É TUDO AQUI)
-// ==========================================
-
+// ==========================
+// 5. Middleware Pipeline
+// ==========================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// O CORS deve ser o primeiro após o Swagger
+// O CORS DEVE vir antes de quase tudo para evitar erros no navegador
 app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
+
 app.UseAuthorization();
 
 app.MapControllers();

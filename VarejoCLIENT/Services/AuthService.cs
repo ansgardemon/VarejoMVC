@@ -31,7 +31,7 @@ public class AuthService
                 if (dados != null)
                 {
                     NomeUsuario = dados.nomeUsuario;
-                    UsuarioId = dados.IdUsuario;
+                    UsuarioId = dados.idUsuario;
                     return true;
                 }
             }
@@ -46,7 +46,7 @@ public class AuthService
 
     private class LoginResult
     {
-        public int IdUsuario { get; set; }
+        public int idUsuario { get; set; }
         public string nomeUsuario { get; set; } = string.Empty;
     }
 

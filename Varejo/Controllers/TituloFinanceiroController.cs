@@ -249,7 +249,7 @@ namespace Varejo.Controllers
             if (titulo == null)
                 return NotFound();
 
-            // ✅ ATUALIZA OS CAMPOS EDITÁVEIS
+            //  ATUALIZA OS CAMPOS EDITÁVEIS
             titulo.Documento = viewModel.Documento;
             titulo.Parcela = viewModel.Parcela;
             titulo.Observacao = viewModel.Observacao;
@@ -257,7 +257,7 @@ namespace Varejo.Controllers
             titulo.DataEmissao = viewModel.DataEmissao;
             titulo.DataVencimento = viewModel.DataVencimento;
 
-            // 🔥 NÃO mexe nos FKs (porque não estão na view)
+            //  NÃO mexe nos FKs (porque não estão na view)
 
             titulo.AtualizarValores();
 

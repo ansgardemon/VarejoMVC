@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
-using VarejoAPI.DTO;
+using VarejoSHARED.DTO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;

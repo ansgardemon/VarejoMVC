@@ -1,0 +1,55 @@
+﻿<Card CssClass="relatorio-filtro">
+    <h4>Filtros</h4>
+    <div class="filtros">
+        <div class="form-group">
+            <label>Data Inicial</label>
+            <InputDate @bind-Value="DataInicial" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Data Final</label>
+            <InputDate @bind-Value="DataFinal" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Busca</label>
+            <InputText Placeholder="Produto, cliente..." @bind-Value="Busca" class="form-control" />
+        </div>
+    </div>
+
+    <div class="acoes">
+        <button class="btn" @onclick="AplicarFiltro">Filtrar</button>
+        <button class="btn btn-secondary" @onclick="LimparFiltro">Limpar</button>
+    </div>
+</Card>
+
+@code {
+    // Agora os tipos batem com o DTO
+    private DateTime? DataInicial;
+    private DateTime? DataFinal;
+    private string? Busca;
+
+    [Parameter]
+    public EventCallback<FiltroRelatorioDTO> OnFiltrar { get; set; }
+
+    private async Task AplicarFiltro()
+    {
+        var filtro = new FiltroRelatorioDTO
+        {
+            DataInicial = DataInicial,
+            DataFinal = DataFinal,
+            Busca = Busca
+        };
+
+        await OnFiltrar.InvokeAsync(filtro);
+    }
+
+    private async Task LimparFiltro()
+    {
+        DataInicial = null;
+        DataFinal = null;
+        Busca = null;
+
+        await AplicarFiltro();
+    }
+}

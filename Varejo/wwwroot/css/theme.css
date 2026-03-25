@@ -1,0 +1,53 @@
+﻿:root {
+    /* ================== SYSTEM (AZUIS) ================== */
+
+    --sys-primary: #163889;
+    --sys-primary-light: #0d9dfde6;
+    /* ================== BRAND (CLIENTE - VINHO/CREME) ================== */
+
+    --brand-primary: #6D213C; /* vinho */
+    --brand-secondary: #3e1021; /* vinho escuro */
+    --brand-accent: #E6C786; /* dourado */
+    --brand-bg: #FBF5E8; /* creme */
+    --brand-dark: #381D2A;
+    --brand-light: #FFFFFF;
+    /* ================== UI BASE ================== */
+
+    --ui-bg-gradient-start: #e8f1ff;
+    --ui-bg-gradient-end: #c8d8ff;
+    --ui-text-primary: var(--sys-primary);
+    --ui-text-secondary: #0f172acc;
+    --ui-text-button: var(--sys-primary);
+    /* ================== GLASS ================== */
+
+    --ui-glass-bg: #ffffff26;
+    --ui-glass-border: #ffffff40;
+    --ui-glass-blur: 20px;
+    /* ================== STATES ================== */
+
+    --state-info: #0d9dfde6;
+    --state-success: #27eb8fe6;
+    --state-danger: #dc3545e6;
+    --state-warning: #ffe200e6;
+    /* ================== TABLE ================== */
+
+    --ui-table-odd: #ffffff40;
+    --ui-table-even: #c8c8c840;
+}
+
+
+/* ================== DARK MODE ================== */
+
+[data-theme="dark"] {
+    --ui-bg-gradient-start: #0f172a;
+    --ui-bg-gradient-end: #1e293b;
+    --ui-text-primary: #a4daf5;
+    --ui-text-secondary: #ffffffb3;
+    --ui-text-button: #f0f0f0;
+    --ui-glass-bg: #ffffff14;
+    --ui-glass-border: #ffffff30;
+    --state-info: #0a7cccCC;
+    --state-success: #1f9b5dcc;
+    --state-danger: #b02a37CC;
+    --state-warning: #b38f0eCC;
+}

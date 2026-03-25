@@ -1,18 +1,6 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400..900&family=Poppins:wght@100..900&display=swap');
 
 :root {
-    /* Paleta de Cores - Adega Dose Certa (Clássica) */
-    /* Cor Principal (Vinho) */
-    --clr-primary: #6D213C;
-    --clr-secondary: #3e1021;
-    /* Cor de Destaque (Dourado) */
-    --clr-accent: #E6C786;
-    /* Cor de Fundo (Bege Claro) */
-    --clr-bg: #FBF5E8;
-    /* "Preto" (Marrom Escuro para texto) */
-    --clr-dark: #381D2A;
-    /* "Branco" (Branco puro para contraste) */
-    --clr-light: #FFFFFF;
     --font-head: "Playfair Display";
     --font-text: "Poppins";
 }
@@ -21,7 +9,7 @@
     transition: .3s ease !important;
     font-family: var(--font-text);
     cursor: default;
-    color: var(--clr-dark);
+    color: var(--brand-dark);
 }
 
 html {
@@ -29,7 +17,7 @@ html {
 }
 
 body {
-    background: var(--clr-bg);
+    background: var(--brand-bg);
 }
 
 a {
@@ -38,7 +26,7 @@ a {
 
 /* ========== Navbar ========== */
 .navbar {
-    background: var(--clr-primary) !important;
+    background: var(--brand-primary) !important;
 }
 
 .navbar-nav {
@@ -49,6 +37,7 @@ a {
 .nav-link {
     padding: .5rem;
     font-weight: 600;
+    color: var(--brand-light);
 }
 
     .nav-link:hover {
@@ -56,40 +45,39 @@ a {
         font-weight: 700;
     }
 
+/* Botão restrito */
 .btn-restrict {
-    background: var(--clr-secondary);
-    border: 2px solid var(--clr-primary);
-    color: var(--clr-primary);
+    background: var(--brand-secondary);
+    border: 2px solid var(--brand-primary);
+    color: var(--brand-light);
     border-radius: 10px;
 }
 
     .btn-restrict:hover {
-        background: var(--clr-primary);
-        border: 2px solid var(--clr-secondary);
-        color: var(--clr-secondary);
+        background: var(--brand-primary);
+        border: 2px solid var(--brand-secondary);
+        color: var(--brand-light);
     }
 
 /* ========== BANNER ========== */
-/* Animação pulsante */
+
 @keyframes neonPulse {
     from {
-        text-shadow: 0 0 5px var(--clr-accent), 0 0 10px var(--clr-accent), 0 0 20px var(--clr-light), 0 0 40px var(--clr-accent);
+        text-shadow: 0 0 5px var(--brand-accent), 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 40px var(--brand-accent);
     }
 
     to {
-        text-shadow: 0 0 10px var(--clr-accent), 0 0 20px var(--clr-light), 0 0 50px var(--clr-accent), 0 0 80px var(--clr-accent);
+        text-shadow: 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 50px var(--brand-accent), 0 0 80px var(--brand-accent);
     }
 }
 
 h1.home {
     font-family: var(--font-head) !important;
-    color: var(--clr-light);
-    transition: .3s ease;
-    color: var(--clr-accent);
+    color: var(--brand-accent);
     font-size: 3.5rem;
     font-weight: 700;
     text-transform: uppercase;
-    text-shadow: 0 0 5px var(--clr-accent), 0 0 10px var(--clr-accent), 0 0 20px var(--clr-light), 0 0 40px var(--clr-accent);
+    text-shadow: 0 0 5px var(--brand-accent), 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 40px var(--brand-accent);
     animation: neonPulse 2s infinite alternate;
 }
 
@@ -97,97 +85,36 @@ h2, h5 {
     font-family: var(--font-head);
 }
 
-.hero-section {
-    position: relative;
-    min-height: 90vh;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-}
-
-.hero-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-size: cover;
-    background-position: center;
-    z-index: 0;
-    transition: opacity 0.8s ease;
-}
-
 .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     background: rgba(40, 15, 10, 0.6);
-    z-index: 1;
 }
 
 .hero-section:hover .hero-overlay {
     background: rgba(40, 15, 10, 0.5);
 }
 
-.hero-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    width: 100%;
-    padding: 0 1rem;
-}
-
 /* ========== PRODUTOS ========== */
+
 .card-title {
-    color: var(--text);
+    color: var(--ui-text-primary);
     font-weight: 600;
 }
 
 .card-text {
-    color: var(--subtext);
+    color: var(--ui-text-secondary);
 }
-
-.card-img-details {
-    border-radius: 10px !important;
-    position: relative;
-}
-
-.card.p-4.align-self-center {
-    min-height: 400px !important;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 10px !important;
-}
-
-    .card.p-4.align-self-center a {
-        margin: auto;
-    }
 
 /* ========== MARCAS ========== */
+
 .brand-card {
-    width: 200px; /* Largura de cada slide */
-    margin: 0 10px; /* Espaço entre slides */
-    background: var(--clr-light);
+    width: 200px;
+    margin: 0 10px;
+    background: var(--brand-light);
     border-radius: 12px;
     padding: 1.5rem 1rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(139, 0, 0, 0.1);
+    border: 1px solid var(--ui-table-even);
     text-align: center;
-}
-
-/* Remover qualquer display no container */
-#marcasContainer {
-    /* nada aqui, Slick controla */
-}
-
-.slick-track {
-    padding: 3rem 0;
-}
-
-.brand-card {
     position: relative;
 }
 
@@ -199,42 +126,31 @@ h2, h5 {
         right: 0;
         height: 8px;
         border-radius: 12px 12px 0 0;
-        background: linear-gradient(90deg, var(--clr-primary) 90%, var(--clr-primary) 10%);
+        background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
     }
 
     .brand-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 8px 20px rgba(139, 0, 0, 0.15);
-        border-color: rgba(139, 0, 0, 0.3) !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
 
     .brand-card h5 {
-        color: var(--clr-dark);
+        color: var(--brand-dark);
         font-weight: 600;
-        font-size: 1rem;
-        margin: 0;
-        line-height: 1.3;
     }
 
 /* ========== CATEGORIAS ========== */
-#categorias {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
 
 .category-card {
-    background: var(--clr-light);
+    background: var(--brand-light);
     border-radius: 12px;
     padding: 1.5rem 1rem;
     flex: 1 1 200px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(139, 0, 0, 0.1) !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--ui-table-even);
     text-align: center;
     position: relative;
     overflow: hidden;
-    text-transform: capitalize;
 }
 
     .category-card::before {
@@ -244,39 +160,36 @@ h2, h5 {
         left: 0;
         right: 0;
         height: 5px;
-        background: linear-gradient(90deg, var(--clr-primary) 90%, var(--clr-primary) 10%);
+        background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
     }
 
     .category-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 12px 35px rgba(139, 0, 0, 0.15);
-        border-color: rgba(139, 0, 0, 0.3) !important;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
     }
 
     .category-card h5 {
-        color: var(--clr-dark);
+        color: var(--brand-dark);
         font-weight: 600;
-        font-size: 1rem;
-        margin: 0;
-        line-height: 1.3;
     }
 
+/* Botão categoria */
 .btn-category {
-    border: 1px solid var(--clr-secondary) !important;
+    border: 1px solid var(--brand-secondary) !important;
 }
 
     .btn-category:hover {
-        background: var(--clr-bg);
-        box-shadow: 0 4px 8px #6d213c6a;
+        background: var(--brand-bg);
+        box-shadow: 0 4px 8px rgba(109, 33, 60, 0.4);
         scale: 1.05;
     }
 
-/* ========== PRODUTOS ========== */
+/* ========== IMAGENS ========== */
+
 .card-img-top {
     height: 200px;
-    width: 200px;
-    object-fit: contain;
     width: 100%;
+    object-fit: contain;
     border-top-left-radius: .5rem;
     border-top-right-radius: .5rem;
 }

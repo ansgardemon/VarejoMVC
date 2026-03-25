@@ -1,0 +1,31 @@
+﻿<div class="input-group @CssClass">
+
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label>@Label</label>
+    }
+
+    <input 
+        type="@Type"
+        placeholder="@Placeholder"
+        value="@Value"
+        @oninput="OnInputChanged" />
+
+</div>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string Type { get; set; } = "text";
+    [Parameter] public string? CssClass { get; set; }
+
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
+using VarejoAPI.DTO;
 
 namespace VarejoAPI.Controllers
 {
@@ -19,27 +20,60 @@ namespace VarejoAPI.Controllers
             _produtoEmbalagemRepository = produtoEmbalagemRepository;
         }
 
-        // 🔹 GET por ID
+        // 🔹 GET: api/produtoembalagem/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProdutoEmbalagem>> Get(int id)
+        public async Task<ActionResult<ProdutoEmbalagemOutputDTO>> GetById(int id)
         {
-            var embalagem = await _produtoEmbalagemRepository.GetByIdAsync(id);
-            if (embalagem == null)
+            var e = await _produtoEmbalagemRepository.GetByIdAsync(id);
+            if (e == null)
                 return NotFound();
 
-            return Ok(embalagem);
+            return Ok(new ProdutoEmbalagemOutputDTO
+            {
+                IdProdutoEmbalagem = e.IdProdutoEmbalagem,
+                ProdutoId = e.ProdutoId,
+                TipoEmbalagemId = e.TipoEmbalagemId,
+                TipoEmbalagemDescricao = e.TipoEmbalagem.DescricaoTipoEmbalagem,
+                Preco = e.Preco,
+                Ean = e.Ean
+            });
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] ProdutoEmbalagemInputDTO dto)
+        // 🔹 GET: api/produtoembalagem/produto/1
+        [HttpGet("produto/{produtoId}")]
+        public async Task<ActionResult<IEnumerable<ProdutoEmbalagemOutputDTO>>> GetByProduto(int produtoId)
         {
-            var produto = await _produtoRepository.GetByIdAsync(dto.ProdutoId);
+            var lista = await _produtoEmbalagemRepository.GetByProdutoIdAsync(produtoId);
+
+            var result = lista.Select(e => new ProdutoEmbalagemOutputDTO
+            {
+                IdProdutoEmbalagem = e.IdProdutoEmbalagem,
+                ProdutoId = e.ProdutoId,
+                TipoEmbalagemId = e.TipoEmbalagemId,
+                TipoEmbalagemDescricao = e.TipoEmbalagem.DescricaoTipoEmbalagem,
+                Preco = e.Preco,
+                Ean = e.Ean
+            });
+
+            return Ok(result);
+        }
+
+        // 🔥 POST CORRIGIDO
+        // api/produtoembalagem/produto/1
+        [HttpPost("produto/{produtoId}")]
+        public async Task<ActionResult> Post(int produtoId, [FromBody] ProdutoEmbalagemInputDTO dto)
+        {
+            var produto = await _produtoRepository.GetByIdAsync(produtoId);
             if (produto == null)
                 return BadRequest("Produto inválido.");
 
+            var eanExiste = await _produtoEmbalagemRepository.EanExisteAsync(dto.Ean);
+            if (eanExiste)
+                return BadRequest("Já existe uma embalagem com esse EAN.");
+
             var embalagem = new ProdutoEmbalagem
             {
-                ProdutoId = dto.ProdutoId,
+                ProdutoId = produtoId, // 🔥 vem da rota
                 Preco = dto.Preco,
                 Ean = dto.Ean,
                 TipoEmbalagemId = dto.TipoEmbalagemId
@@ -47,20 +81,19 @@ namespace VarejoAPI.Controllers
 
             await _produtoEmbalagemRepository.AddAsync(embalagem);
 
-            var output = new ProdutoEmbalagemOutputDTO
-            {
-                IdProdutoEmbalagem = embalagem.IdProdutoEmbalagem,
-                ProdutoId = embalagem.ProdutoId,
-                TipoEmbalagemId = embalagem.TipoEmbalagemId,
-                Preco = embalagem.Preco,
-                Ean = embalagem.Ean
-            };
-
-            return Ok(output);
+            return CreatedAtAction(nameof(GetById),
+                new { id = embalagem.IdProdutoEmbalagem },
+                new ProdutoEmbalagemOutputDTO
+                {
+                    IdProdutoEmbalagem = embalagem.IdProdutoEmbalagem,
+                    ProdutoId = embalagem.ProdutoId,
+                    TipoEmbalagemId = embalagem.TipoEmbalagemId,
+                    Preco = embalagem.Preco,
+                    Ean = embalagem.Ean
+                });
         }
 
-
-        // 🔹 PUT
+        // 🔹 PUT (mantido correto)
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] ProdutoEmbalagemInputDTO dto)
         {
@@ -73,6 +106,7 @@ namespace VarejoAPI.Controllers
             embalagem.TipoEmbalagemId = dto.TipoEmbalagemId;
 
             await _produtoEmbalagemRepository.UpdateAsync(embalagem);
+
             return NoContent();
         }
 
@@ -84,7 +118,14 @@ namespace VarejoAPI.Controllers
             if (embalagem == null)
                 return NotFound();
 
+            var possuiMovimento = await _produtoRepository
+                .ProdutoEmbalagemPossuiMovimentoAsync(id);
+
+            if (possuiMovimento)
+                return BadRequest("Não é possível excluir. Embalagem possui movimentos.");
+
             await _produtoEmbalagemRepository.DeleteAsync(id);
+
             return NoContent();
         }
     }

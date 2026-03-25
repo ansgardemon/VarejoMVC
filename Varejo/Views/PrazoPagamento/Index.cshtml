@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Varejo.ViewModels.PrazoPagamentoViewModel>
+
+@{
+    ViewData["Title"] = "Prazos de Pagamento";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">@ViewData["Title"]</h5>
+            <a asp-action="Create" class="btn btn-light btn-sm">Novo</a>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Parcelas</th>
+                        <th>Intervalo (dias)</th>
+                        <th style="width: 150px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Descricao</td>
+                            <td>@item.NumeroParcelas</td>
+                            <td>@item.IntervaloDias</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.IdPrazoPagamento" class="btn btn-sm btn-warning">Editar</a>
+                                <a asp-action="Delete" asp-route-id="@item.IdPrazoPagamento" class="btn btn-sm btn-danger">Excluir</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

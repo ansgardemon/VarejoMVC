@@ -1,0 +1,31 @@
+﻿@model Varejo.ViewModels.PrazoPagamentoViewModel
+
+@{
+    ViewData["Title"] = "Excluir Prazo de Pagamento";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">@ViewData["Title"]</h5>
+        </div>
+
+        <div class="card-body">
+            <p>Tem certeza que deseja excluir?</p>
+
+            <strong>@Model.Descricao</strong>
+
+            @if (ViewData["DeleteError"] != null)
+            {
+                <p class="text-danger">@ViewData["DeleteError"]</p>
+            }
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="IdPrazoPagamento" />
+
+                <button type="submit" class="btn btn-danger">Excluir</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>

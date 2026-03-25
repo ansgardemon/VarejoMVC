@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Calendário de Títulos";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">📅 Calendário</h5>
+        </div>
+
+        <div class="card-body">
+            <div id="calendar"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'pt-br',
+
+            events: '/TituloFinanceiro/GetEventos',
+
+            eventClick: function(info) {
+                var id = info.event.id;
+                window.location.href = '/TituloFinanceiro/Details/' + id;
+            }
+        });
+
+        calendar.render();
+    });
+</script>

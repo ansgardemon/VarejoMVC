@@ -51,5 +51,16 @@ namespace Varejo.Repositories
 
 
         //DELETE - OFF
+
+        //SEARCH BY NAME
+
+        public async Task<List<Pessoa>> SearchByNameAsync(string nome)
+        {
+            return await _context.Pessoas
+                .Where(p => p.NomeRazao.Contains(nome))
+                .AsNoTracking()
+                .Take(10)
+                .ToListAsync();
+        }
     }
 }

@@ -9,5 +9,7 @@ namespace Varejo.Interfaces
         Task<Pessoa> GetByIdAsync(int id);
         Task AddAsync(Pessoa pessoa);
         Task UpdateAsync(Pessoa pessoa);
+
+        Task<List<Pessoa>> SearchByNameAsync(string nome);
     }
 }

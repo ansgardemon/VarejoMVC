@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Globalization;
 using Varejo.Interfaces;
 using Varejo.Models;
 using Varejo.ViewModels;
@@ -86,7 +87,8 @@ namespace Varejo.Controllers
             if (!string.IsNullOrEmpty(pessoa))
                 query = query.Where(t => t.Pessoa != null && t.Pessoa.NomeRazao.Contains(pessoa));
 
-            var vm = query.Select(t => new TituloFinanceiroViewModel
+            var vm = query
+                .Select(t => new TituloFinanceiroViewModel
             {
                 IdTituloFinanceiro = t.IdTituloFinanceiro,
                 Documento = t.Documento,
@@ -99,6 +101,7 @@ namespace Varejo.Controllers
                 NomePessoa = t.Pessoa != null ? t.Pessoa.NomeRazao : "",
                 EspecieDescricao = t.EspecieTitulo != null ? t.EspecieTitulo.Descricao : ""
             }).ToList();
+
 
             return View(vm);
         }
@@ -181,11 +184,13 @@ namespace Varejo.Controllers
         // REGISTRAR PAGAMENTO
         // =========================
         [HttpPost]
-        public async Task<IActionResult> RegistrarPagamento(int id, decimal valor, DateTime data)
+        public async Task<IActionResult> RegistrarPagamento(int id, string valor, DateTime data)
         {
             try
             {
-                await _pagamentoRepo.RegistrarPagamentoAsync(id, valor, data);
+                var valorDecimal = decimal.Parse(valor, new CultureInfo("pt-BR"));
+
+                await _pagamentoRepo.RegistrarPagamentoAsync(id, valorDecimal, data);
 
                 TempData["Sucesso"] = "Pagamento registrado com sucesso.";
             }

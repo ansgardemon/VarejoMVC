@@ -15,6 +15,20 @@
 
         <div class="card-body">
 
+            @if (TempData["Erro"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Erro"]
+                </div>
+            }
+
+            @if (TempData["Sucesso"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Sucesso"]
+                </div>
+            }
+
             <!-- 📄 INFORMAÇÕES -->
             <div class="row mb-4">
 

@@ -183,7 +183,16 @@ namespace Varejo.Controllers
         [HttpPost]
         public async Task<IActionResult> RegistrarPagamento(int id, decimal valor, DateTime data)
         {
-            await _pagamentoRepo.RegistrarPagamentoAsync(id, valor, data);
+            try
+            {
+                await _pagamentoRepo.RegistrarPagamentoAsync(id, valor, data);
+
+                TempData["Sucesso"] = "Pagamento registrado com sucesso.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Erro"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Details), new { id });
         }
@@ -195,6 +204,7 @@ namespace Varejo.Controllers
         {
             var t = await _repo.GetByIdAsync(id);
             if (t == null) return NotFound();
+
 
             await CarregarCombos();
 

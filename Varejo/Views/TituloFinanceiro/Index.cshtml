@@ -38,15 +38,17 @@
 
                 <div class="row g-2">
 
-                    <div class="col-md-3">
-                        <input type="text" name="documento" class="form-control" placeholder="Documento" value="@Context.Request.Query["documento"]" />
+                    <div class="col-md-2">
+                        <input type="text" name="documento" class="form-control" placeholder="Documento"
+                               value="@Context.Request.Query["documento"]" />
                     </div>
 
-                    <div class="col-md-3">
-                        <input type="text" name="pessoa" class="form-control" placeholder="Pessoa" value="@Context.Request.Query["pessoa"]" />
+                    <div class="col-md-2">
+                        <input type="text" name="pessoa" class="form-control" placeholder="Pessoa"
+                               value="@Context.Request.Query["pessoa"]" />
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <select name="status" class="form-control">
                             <option value="aberto" selected="@(Context.Request.Query["status"] == "aberto")">Em aberto</option>
                             <option value="quitado" selected="@(Context.Request.Query["status"] == "quitado")">Quitado</option>
@@ -54,7 +56,17 @@
                         </select>
                     </div>
 
-                    <div class="col-md-3 d-flex gap-2">
+                    <div class="col-md-2">
+                        <input type="date" name="dataInicio" class="form-control"
+                               value="@Context.Request.Query["dataInicio"]" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="date" name="dataFim" class="form-control"
+                               value="@Context.Request.Query["dataFim"]" />
+                    </div>
+
+                    <div class="col-md-2 d-flex gap-2">
                         <button type="submit" class="btn btn-primary w-100">Filtrar</button>
                         <a asp-action="Index" class="btn btn-secondary w-100">Limpar</a>
                     </div>

@@ -34,6 +34,12 @@ public class PagamentoTituloRepository : IPagamentoTituloRepository
         if (titulo == null)
             throw new Exception("Título não encontrado.");
 
+        if (valor <= 0)
+            throw new Exception("Valor inválido.");
+
+        if (valor > titulo.ValorAberto)
+            throw new Exception("Pagamento maior que o saldo.");
+
         var pagamento = new PagamentoTitulo
         {
             TituloFinanceiroId = tituloId,

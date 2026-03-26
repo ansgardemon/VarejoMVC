@@ -1,12 +1,9 @@
-﻿public class EstoqueViewModel
+﻿namespace Varejo.ViewModels
 {
-    public int ProdutoId { get; set; }
-    public string NomeProduto { get; set; }
+    public class EstoqueViewModel
+    {
+        public List<EstoqueItemViewModel> Itens { get; set; }
 
-    public decimal EstoqueAtual { get; set; }
-
-    public decimal EstoqueMinimo { get; set; }
-    public decimal EstoqueMaximo { get; set; }
-
-    public bool AbaixoDoMinimo => EstoqueAtual < EstoqueMinimo;
+        public EstoqueFiltroViewModel Filtro { get; set; }
+    }
 }

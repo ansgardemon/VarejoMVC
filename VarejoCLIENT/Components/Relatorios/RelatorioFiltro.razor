@@ -15,8 +15,8 @@
             </button>
             
             <div class="btn-group">
-
-                <button class="btn shadow-sm" style="background: rgba(22, 56, 137, 0.85); color: white; font-weight: 600;" @onclick='() => BotaoExportarClicado("pdf")'>
+                @* Ajuste na sintaxe do lambda para o VS não se perder *@
+                <button class="btn shadow-sm" style="background: rgba(22, 56, 137, 0.85); color: white; font-weight: 600;" @onclick="@(() => BotaoExportarClicado("pdf"))">
                     <i class="bi bi-file-pdf me-2"></i> Exportar PDF
                 </button>
             </div>

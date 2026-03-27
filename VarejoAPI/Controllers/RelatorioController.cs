@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
+using VarejoAPI.DTO;
 using VarejoAPI.Services;
 using VarejoSHARED.DTO;
 
@@ -83,7 +84,7 @@ public class RelatorioController : ControllerBase
 
     // 3. MOVIMENTAÇÕES (AJUSTADO)
     [HttpPost("movimentacoes")]
-    public async Task<ActionResult<List<MovimentoItemDTO>>> GetMovimentacoes(RelatorioFiltroMovimentacaoDTO filtro)
+    public async Task<ActionResult<List<MovimentoOutputDTO>>> GetMovimentacoes(RelatorioFiltroMovimentacaoDTO filtro)
     {
         var query = _context.Movimentos
             .Include(m => m.Pessoa)
@@ -100,18 +101,26 @@ public class RelatorioController : ControllerBase
         if (filtro.IdPessoa.HasValue)
             query = query.Where(m => m.PessoaId == filtro.IdPessoa);
 
-        var resultado = await query
-            .Select(m => new MovimentoItemDTO
-            {
-                IdMovimento = m.IdMovimento,
-                Pessoa = m.Pessoa != null ? m.Pessoa.NomeRazao : "Consumidor",
-                TipoMovimento = m.TipoMovimento != null ? m.TipoMovimento.DescricaoTipoMovimento : "Geral",
-                Data = m.DataMovimento,
-                QtdeProdutos = m.ProdutosMovimento != null ? m.ProdutosMovimento.Count : 0
-            })
-            .OrderByDescending(m => m.Data)
-            .ToListAsync();
+        var movimentos = await _context.Movimentos
+     .OrderByDescending(m => m.DataMovimento)
+     .Select(m => new MovimentoOutputDTO
+     {
+         IdMovimento = m.IdMovimento,
+         Pessoa = m.Pessoa != null ? m.Pessoa.NomeRazao : "Consumidor",
+         TipoMovimento = m.TipoMovimento != null ? m.TipoMovimento.DescricaoTipoMovimento : "Geral",
+         DataMovimento = m.DataMovimento,
 
-        return Ok(resultado);
+         // AQUI ESTAVA O ERRO! Trocamos de m.Produtos para m.ProdutosMovimento
+         Produtos = m.ProdutosMovimento.Select(p => new ProdutoMovimentoOutputDTO
+         {
+             IdProdutoMovimento = p.IdProdutoMovimento,
+             Quantidade = p.Quantidade,
+
+             // Verifique se a sua entidade ProdutoMovimento tem essas ligações:
+             Produto = p.Produto != null ? p.Produto.NomeProduto : "",
+             Embalagem = p.Embalagem != null ? p.Embalagem.DescricaoTipoEmbalagem : ""
+         }).ToList()
+     })
+     .ToListAsync();
     }
 }

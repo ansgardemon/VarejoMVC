@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using VarejoSHARED.DTO.Financeiro.PagamentoTitulo;
 
 namespace VarejoSHARED.DTO.Financeiro.tituloFinanceiro
 {

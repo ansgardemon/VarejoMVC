@@ -1,0 +1,94 @@
+﻿@page "/relatorios"
+@using Microsoft.AspNetCore.Authorization
+@using VarejoSHARED.DTO
+@using VarejoCLIENT.Services
+@attribute [Authorize]
+@inject RelatorioService RelService
+@inject NavigationManager Nav
+
+<main class="container-fluid py-4">
+    <div class="d-flex align-items-center mb-4">
+        <div class="me-3" style="width: 8px; height: 32px; background: var(--sys-primary); border-radius: 4px;"></div>
+        <h2 class="fw-bold mb-0" style="color: var(--sys-primary);">Central de Relatórios</h2>
+    </div>
+
+    <div class="row g-3 mb-5">
+        <div class="col-md-6">
+            <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);">
+                <span class="input-group-text border-0" style="background: rgba(255, 255, 255, 0.4); color: var(--sys-primary);"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-0" style="background: rgba(255, 255, 255, 0.4); color: var(--sys-primary);" placeholder="Buscar por código ou nome..."
+                       @bind="termoBusca" @bind:event="oninput" />
+            </div>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <button class="btn border-0 @(mostrarApenasFavoritos ? "active fw-bold" : "")"
+                        style="background: @(mostrarApenasFavoritos ? "var(--state-warning)" : "rgba(255, 255, 255, 0.3)"); color: @(mostrarApenasFavoritos ? "#000" : "var(--sys-primary)"); backdrop-filter: blur(10px);"
+                        @onclick="() => mostrarApenasFavoritos = !mostrarApenasFavoritos">
+                    <i class="bi @(mostrarApenasFavoritos ? "bi-star-fill" : "bi-star") me-1"></i> Favoritos
+                </button>
+                <button class="btn border-0 @(!mostrarApenasFavoritos ? "active fw-bold" : "")"
+                        style="background: @(!mostrarApenasFavoritos ? "var(--sys-primary)" : "rgba(255, 255, 255, 0.3)"); color: @(!mostrarApenasFavoritos ? "#fff" : "var(--sys-primary)"); backdrop-filter: blur(10px);"
+                        @onclick="() => mostrarApenasFavoritos = false">
+                    Todos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @foreach (var grupo in RelatoriosFiltrados.GroupBy(x => x.Categoria))
+    {
+        <h5 class="fw-bold mt-4 mb-3" style="color: var(--sys-primary); letter-spacing: 1px; border-bottom: 2px solid rgba(22, 56, 137, 0.1); padding-bottom: 5px;">@grupo.Key.ToUpper()</h5>
+        <div class="row g-4 mb-4">
+            @foreach (var rel in grupo)
+            {
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important; cursor: pointer; transition: transform 0.2s;"
+                         @onclick='() => Navegar(rel.Codigo)'
+                         onmouseover="this.style.transform='translateY(-5px)'"
+                         onmouseout="this.style.transform='translateY(0)'">
+                        
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge" style="background: rgba(22, 56, 137, 0.1); color: var(--sys-primary); font-size: 0.9rem; border: 1px solid rgba(22, 56, 137, 0.2);">
+                                    <i class="bi bi-file-text me-1"></i> @rel.Codigo
+                                </span>
+                                
+                                <button class="btn btn-link p-0 border-0 text-decoration-none"
+                                        style="color: @(rel.IsFavorito ? "var(--state-warning)" : "rgba(22, 56, 137, 0.3)"); transition: 0.2s;"
+                                        @onclick:stopPropagation
+                                        @onclick="() => rel.IsFavorito = !rel.IsFavorito">
+                                    <i class="bi @(rel.IsFavorito ? "bi-star-fill" : "bi-star") fs-5"></i>
+                                </button>
+                            </div>
+                            
+                            <h6 class="fw-bold mb-1" style="color: var(--sys-primary); font-size: 1.1rem;">@rel.Nome</h6>
+                            <small style="color: var(--subtext); opacity: 0.8;">Módulo Gerencial</small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</main>
+
+@code {
+    private string termoBusca = "";
+    private bool mostrarApenasFavoritos = false;
+    private List<RelatorioDefinicaoDTO> todosRelatorios = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        todosRelatorios = await RelService.GetMenuRelatoriosAsync();
+    }
+
+    private IEnumerable<RelatorioDefinicaoDTO> RelatoriosFiltrados =>
+        todosRelatorios
+            .Where(r => (!mostrarApenasFavoritos || r.IsFavorito) &&
+                        (string.IsNullOrEmpty(termoBusca) ||
+                         r.Nome.Contains(termoBusca, StringComparison.OrdinalIgnoreCase) ||
+                         r.Codigo.ToString().Contains(termoBusca)))
+            .OrderBy(r => r.Codigo);
+
+    private void Navegar(int cod) => Nav.NavigateTo($"/relatorio/{cod}");
+}

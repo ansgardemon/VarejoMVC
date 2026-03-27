@@ -1,23 +1,24 @@
-﻿<div class="card @CssClass">
+﻿<div class="card shadow-sm border-0 @CssClass" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
 
     @if (!string.IsNullOrEmpty(Title))
     {
-        <div class="card-header">
-            @Title
+        <div class="card-header bg-transparent border-0 border-bottom pt-3 pb-3" style="border-color: var(--glass-border) !important;">
+            <h5 class="mb-0 fw-bold" style="color: var(--sys-primary);">
+                @Title
+            </h5>
         </div>
     }
 
-    <div class="card-body">
+    <div class="card-body p-4">
         @ChildContent
     </div>
 
     @if (Footer != null)
     {
-        <div class="card-footer">
+        <div class="card-footer bg-transparent border-0 border-top pt-3 pb-3" style="border-color: var(--glass-border) !important;">
             @Footer
         </div>
     }
-
 </div>
 
 @code {

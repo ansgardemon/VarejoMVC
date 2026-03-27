@@ -3,23 +3,35 @@
 @using VarejoCLIENT.Services
 @inject DashboardService DashboardService
 
-<div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Painel de Gestão</h1>
+<main class="container-fluid py-4">
+    <h1 class="vitrino d-none d-lg-block">DASHBOARD</h1>
+
+    <div class="d-flex align-items-center mb-4">
+        <div class="me-3" style="width: 8px; height: 32px; background: var(--sys-primary); border-radius: 4px;"></div>
+        <h3 class="mb-0 fw-bold" style="color: var(--sys-primary);">Painel de Gestão</h3>
+    </div>
 
     @if (dados == null)
     {
-        <div class="text-center mt-5"><div class="spinner-border text-primary"></div></div>
+        <div class="card p-5 text-center border-0 shadow-sm mt-5">
+            <svg class="loading-progress mx-auto mb-3" style="position: relative; inset: auto; height: 6rem; width: 6rem;">
+                <circle r="40%" cx="50%" cy="50%" />
+                <circle r="40%" cx="50%" cy="50%" />
+            </svg>
+            <div class="mt-3 fw-bold" style="color: var(--sys-primary);">Carregando painel...</div>
+        </div>
     }
     else
     {
-        <div class="row">
-            <DashboardCard Title="Produtos" Value="@dados.TotalProdutos.ToString()" Color="primary" Icon="bi-box" />
-            <DashboardCard Title="Categorias" Value="@dados.TotalCategorias.ToString()" Color="success" Icon="bi-tags" />
-            <DashboardCard Title="Movimentações" Value="@dados.TotalMovimentos.ToString()" Color="warning" Icon="bi-arrow-left-right" />
-            <DashboardCard Title="Usuários" Value="@dados.TotalUsuarios.ToString()" Color="info" Icon="bi-people" />
+        <div class="row g-4">
+            @* Passando as variáveis CSS de cor diretamente para os cards *@
+            <DashboardCard Title="Produtos" Value="@dados.TotalProdutos.ToString()" Color="var(--sys-primary)" Icon="bi-box" />
+            <DashboardCard Title="Categorias" Value="@dados.TotalCategorias.ToString()" Color="var(--state-success)" Icon="bi-tags" />
+            <DashboardCard Title="Movimentações" Value="@dados.TotalMovimentos.ToString()" Color="var(--state-warning)" Icon="bi-arrow-left-right" />
+            <DashboardCard Title="Usuários" Value="@dados.TotalUsuarios.ToString()" Color="var(--sys-primary-light)" Icon="bi-people" />
         </div>
 
-        <div class="row mt-4">
+        <div class="row mt-4 g-4">
             <div class="col-lg-6">
                 <DashboardTable Title="Últimos Produtos" Items="@dados.UltimosProdutos">
                     <HeaderTemplate>
@@ -27,8 +39,8 @@
                         <th class="text-end">Preço</th>
                     </HeaderTemplate>
                     <RowTemplate Context="p">
-                        <td>@p.NomeProduto</td>
-                        <td class="text-end">@p.Preco.ToString("C")</td>
+                        <td class="fw-medium">@p.NomeProduto</td>
+                        <td class="text-end fw-bold" style="color: var(--state-success);">@p.Preco.ToString("C")</td>
                     </RowTemplate>
                 </DashboardTable>
             </div>
@@ -41,13 +53,17 @@
                     </HeaderTemplate>
                     <RowTemplate Context="c">
                         <td>@c.Descricao</td>
-                        <td class="text-center"><span class="badge bg-primary">@c.QtdeProdutos</span></td>
+                        <td class="text-center">
+                            <span class="badge" style="background-color: var(--sys-primary); color: white; padding: 0.5em 0.8em; border-radius: 8px;">
+                                @c.QtdeProdutos
+                            </span>
+                        </td>
                     </RowTemplate>
                 </DashboardTable>
             </div>
         </div>
     }
-</div>
+</main>
 
 @code {
     private DashboardDTO? dados;

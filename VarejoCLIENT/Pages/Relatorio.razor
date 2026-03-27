@@ -1,0 +1,169 @@
+﻿@page "/relatorio/{Codigo:int}"
+@using Microsoft.AspNetCore.Authorization
+@using VarejoSHARED.DTO
+@using VarejoCLIENT.Services
+@using VarejoCLIENT.Components.Relatorios
+@inject RelatorioService RelService
+@inject NavigationManager Nav
+@attribute [Authorize]
+
+<main class="container-fluid py-4">
+    @if (definicao != null)
+    {
+        @* Cabeçalho com Glassmorphism *@
+        <div class="card p-3 mb-4 border-0 shadow-sm" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm me-3" style="background: rgba(255, 255, 255, 0.2); border: 1px solid var(--glass-border);" @onclick='() => Nav.NavigateTo("/relatorios")'>
+                        <i class="bi bi-arrow-left" style="color: var(--sys-primary);"></i>
+                    </button>
+                    <h3 class="mb-0 fw-bold" style="color: var(--sys-primary);">
+                        <span class="badge" style="background: var(--sys-primary); color: white; margin-right: 0.5rem; font-size: 1rem;">@definicao.Codigo</span> @definicao.Nome
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        @* Componente de Filtro (Moldura Genérica) *@
+        <RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+            @if (Codigo == 101)
+            {
+                <div class="col-md-8">
+                    <label class="form-label fw-bold mb-1" style="color: var(--sys-primary); font-size: 0.9rem;">Descrição ou ID do Produto</label>
+                    <input type="text" class="form-control shadow-sm" style="background: rgba(255, 255, 255, 0.25); border: 1px solid var(--glass-border); color: var(--sys-primary);" @bind="filtroProdutos.TermoBusca" placeholder="Pesquisar..." />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold mb-1" style="color: var(--sys-primary); font-size: 0.9rem;">Situação</label>
+                    <select class="form-select shadow-sm" style="background: rgba(255, 255, 255, 0.25); border: 1px solid var(--glass-border); color: var(--sys-primary);" @bind="filtroProdutos.Ativo">
+                        <option value="true">Ativos</option>
+                        <option value="false">Inativos</option>
+                    </select>
+                </div>
+            }
+        </RelatorioFiltro>
+
+        @* Área de Processamento e Resultados *@
+        <div class="mt-4">
+            @if (loading)
+            {
+                <div class="card p-5 text-center border-0 shadow-sm" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+                    <div class="spinner-border mb-3" style="color: var(--sys-primary); width: 3rem; height: 3rem;" role="status"></div>
+                    <p class="mt-2 fw-bold" style="color: var(--sys-primary); font-size: 1.1rem;">Aguarde, processando informações...</p>
+                </div>
+            }
+            else
+            {
+                @if (Codigo == 101 && listaProdutos != null)
+                {
+                    @if (listaProdutos.Any())
+                    {
+                        var itensExibidos = listaProdutos
+                            .Skip((paginaAtual - 1) * itensPorPagina)
+                            .Take(itensPorPagina)
+                            .ToList();
+
+                        <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+                            <div class="table-responsive p-3">
+                                <RelatorioTabelaProdutos Dados="@itensExibidos" />
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <Paginacao TotalItems="@listaProdutos.Count"
+                                       ItensPorPagina="@itensPorPagina"
+                                       PaginaAtual="@paginaAtual"
+                                       OnPageChanged="(p) => { paginaAtual = p; StateHasChanged(); }" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert shadow-sm border-0 d-flex align-items-center" style="background: rgba(22, 56, 137, 0.1); color: var(--sys-primary); border-radius: 12px;">
+                            <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-0">Nenhum registro encontrado</h6>
+                                <span class="small">Não há dados que correspondam aos filtros aplicados.</span>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    }
+</main>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    
+    private RelatorioDefinicaoDTO? definicao;
+    private bool loading = false;
+    
+    // Estados de Paginação
+    private int paginaAtual = 1;
+    private int itensPorPagina = 10;
+    
+    // Filtros e Listas
+    private RelatorioFiltroProdutosDTO filtroProdutos = new();
+    private List<ProdutoDTO>? listaProdutos;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        loading = false;
+        listaProdutos = null;
+        paginaAtual = 1;
+        
+        definicao = await RelService.GetDefinicaoAsync(Codigo);
+        
+        if (definicao == null)
+            Nav.NavigateTo("/relatorios");
+    }
+
+    private async Task ExecutarBusca()
+    {
+        loading = true;
+        paginaAtual = 1;
+        StateHasChanged();
+
+        try
+        {
+            if (Codigo == 101)
+            {
+                filtroProdutos.CodigoRelatorio = Codigo;
+                listaProdutos = await RelService.GetProdutosFiltradosAsync(filtroProdutos);
+            }
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void Limpar()
+    {
+        filtroProdutos = new();
+        listaProdutos = null;
+        paginaAtual = 1;
+    }
+
+    private async Task Exportar(string formato)
+    {
+        if (formato == "pdf")
+        {
+            loading = true;
+            StateHasChanged();
+
+            try
+            {
+                if (Codigo == 101)
+                {
+                    filtroProdutos.CodigoRelatorio = Codigo;
+                    await RelService.DownloadPdfProdutosAsync(filtroProdutos);
+                }
+            }
+            finally
+            {
+                loading = false;
+                StateHasChanged();
+            }
+        }
+    }
+}

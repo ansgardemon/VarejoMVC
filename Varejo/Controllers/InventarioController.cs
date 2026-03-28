@@ -84,23 +84,27 @@ namespace Varejo.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> UpdateItemQuantity([FromForm] int inventarioId, [FromForm] int produtoId, [FromForm] int produtoEmbalagemId, [FromForm] string quantidade)
+        [IgnoreAntiforgeryToken] // Mantido conforme seu código
+        public async Task<IActionResult> UpdateItemQuantity([FromForm] int itemId, [FromForm] string quantidade)
         {
-            // BUSCA PELA CHAVE COMPOSTA: Inventário + Produto + Embalagem específica
+            // BUSCA DIRETA PELA CHAVE PRIMÁRIA
             var item = await _context.InventariosItem
                 .Include(i => i.ProdutoEmbalagem)
                     .ThenInclude(pe => pe.TipoEmbalagem)
-                .FirstOrDefaultAsync(it => it.InventarioId == inventarioId
-                                        && it.ProdutoId == produtoId
-                                        && it.ProdutoEmbalagemId == produtoEmbalagemId);
+                .FirstOrDefaultAsync(it => it.Id == itemId);
 
-            if (item == null) return NotFound("Item não encontrado.");
+            if (item == null) return NotFound("Item não encontrado no inventário.");
 
-            decimal.TryParse(quantidade.Replace(",", "."), System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out decimal qtdDigitada);
+            // Tratamento do decimal (mantendo sua lógica de Replace)
+            decimal.TryParse(quantidade.Replace(",", "."),
+                System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out decimal qtdDigitada);
 
+            // O multiplicador vem da Embalagem/TipoEmbalagem desta linha específica
             int mult = item.ProdutoEmbalagem?.TipoEmbalagem?.Multiplicador ?? 1;
+
+            // Atualiza a quantidade contada (ex: 1 caixa * 12 = 12 unidades)
             item.QuantidadeContada = qtdDigitada * mult;
 
             _context.Update(item);
@@ -133,15 +137,14 @@ namespace Varejo.Controllers
             await _inventarioRepository.CriarInventarioAsync(inventario);
             return RedirectToAction(nameof(Details), new { id = inventario.Id });
         }
-
         [HttpPost]
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> AddItem([FromForm] AddItemRequest request)
         {
-            Console.WriteLine($"======= DEBUG ADD ITEM =======");
-            Console.WriteLine($"Inv: {request.InventarioId} | Prod: {request.ProdutoId} | Emb: {request.ProdutoEmbalagemId}");
+            // Validação de segurança para o objeto request
+            if (request == null) return BadRequest("Dados da requisição inválidos.");
 
-            // 1. Busca o produto com as embalagens incluídas
+            // 1. Busca o produto garantindo que as embalagens existam
             var produto = await _context.Produtos
                 .Include(p => p.ProdutosEmbalagem)
                     .ThenInclude(pe => pe.TipoEmbalagem)
@@ -149,32 +152,43 @@ namespace Varejo.Controllers
 
             if (produto == null) return NotFound("Produto não encontrado no banco.");
 
-            // 2. Busca a embalagem específica selecionada para pegar o multiplicador
-            var embalagemSelecionada = produto.ProdutosEmbalagem
+            // 2. Busca a embalagem específica
+            var embalagemSelecionada = produto.ProdutosEmbalagem?
                 .FirstOrDefault(e => e.IdProdutoEmbalagem == request.ProdutoEmbalagemId);
 
             if (embalagemSelecionada == null || embalagemSelecionada.TipoEmbalagem == null)
-                return BadRequest("Embalagem inválida.");
+                return BadRequest("Embalagem ou Tipo de Embalagem inválidos.");
 
-            // 3. Converte a quantidade contada
-            decimal.TryParse(request.QuantidadeContada.Replace(",", "."),
+            // 3. Conversão da quantidade
+            decimal.TryParse(request.QuantidadeContada?.Replace(",", "."),
                 System.Globalization.NumberStyles.Any,
                 System.Globalization.CultureInfo.InvariantCulture, out decimal qtdDigitada);
 
-            // 4. APLICA O MULTIPLICADOR (Ex: 2 fardos * 12 unidades = 24)
-            decimal quantidadeFinal = qtdDigitada * embalagemSelecionada.TipoEmbalagem.Multiplicador;
+            // 4. Cálculo com multiplicador
+            decimal quantidadeFinal = qtdDigitada * (embalagemSelecionada.TipoEmbalagem.Multiplicador);
 
+            // 5. Criação do objeto (Preenchendo apenas os IDs para o EF)
             var item = new InventarioItem
             {
                 InventarioId = request.InventarioId,
                 ProdutoId = request.ProdutoId,
                 ProdutoEmbalagemId = request.ProdutoEmbalagemId,
                 QuantidadeSistema = produto.EstoqueAtual,
-                QuantidadeContada = quantidadeFinal // Agora com multiplicador aplicado
+                QuantidadeContada = quantidadeFinal,
+                ProdutoEmbalagem = embalagemSelecionada
             };
 
-            await _inventarioRepository.AddItemAsync(item);
-            return Ok();
+            try
+            {
+                // Se o erro morre aqui, o problema está DENTRO do método AddItemAsync do Repository
+                await _inventarioRepository.AddItemAsync(item);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                // Isso vai te mostrar exatamente onde no Repository a coisa fedeu
+                return StatusCode(500, $"Erro ao persistir no repositório: {ex.Message}");
+            }
         }
 
         [HttpPost]
@@ -193,70 +207,70 @@ namespace Varejo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Finalizar(int id)
         {
-            // 1. Busca o inventário e os itens (com os dados dos produtos)
+            // 1. Busca o inventário e os itens
             var inventario = await _context.Inventarios
                 .Include(i => i.Itens)
-                    .ThenInclude(it => it.Produto)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (inventario == null || inventario.Finalizado)
                 return BadRequest("Inventário não encontrado ou já finalizado.");
 
-            // 2. Criar o cabeçalho do Movimento
-            // IMPORTANTE: Ajuste os IDs abaixo (PessoaId e TipoMovimentoId) 
-            // conforme os registros que você tem no banco (ex: Pessoa "Sistema", Tipo "Ajuste")
+            // 2. Criar o cabeçalho do Movimento (Corrigido para não dar erro de NULL)
             var novoMovimento = new Movimento
             {
-                Documento = inventario.Id, // Usando o ID do inventário como número de documento
-                Observacao = $"Ajuste via Inventário #{inventario.Id} - {inventario.Observacao}",
+                Documento = inventario.Id,
+                // Garantimos que Observacao nunca seja null
+                Observacao = $"Ajuste via Inventário #{inventario.Id} - {inventario.Observacao ?? "Sem obs"}",
                 DataMovimento = DateTime.Now,
-                TipoMovimentoId = 7, // EX: ID 3 pode ser "Ajuste de Inventário" no seu banco
-                PessoaId = 1,        // EX: ID 1 pode ser seu "Consumidor Padrão" ou "Empresa"
+                TipoMovimentoId = 7,
+                PessoaId = 1,
                 ProdutosMovimento = new List<ProdutoMovimento>()
             };
 
             _context.Movimentos.Add(novoMovimento);
 
-            // 3. Agrupar itens para atualizar o estoque e gerar os itens do movimento
-            // Agrupamos por Produto e Embalagem para respeitar sua estrutura de ProdutoMovimento
-            var itensParaProcessar = inventario.Itens
-                .GroupBy(it => new { it.ProdutoId, it.ProdutoEmbalagemId })
-                .Select(g => new {
-                    IdProduto = g.Key.ProdutoId,
-                    IdEmbalagem = g.Key.ProdutoEmbalagemId,
-                    TotalContado = g.Sum(x => x.QuantidadeContada)
-                });
+            // --- LÓGICA DE PROCESSAMENTO ---
 
-            foreach (var item in itensParaProcessar)
+            // 3. Primeiro, registramos CADA linha de contagem no histórico de movimento
+            foreach (var item in inventario.Itens)
             {
-                // 4. Cria o item do movimento (ProdutoMovimento)
                 var prodMov = new ProdutoMovimento
                 {
-                    ProdutoId = item.IdProduto,
-                    ProdutoEmbalagemId = item.IdEmbalagem,
-                    Quantidade = item.TotalContado,
+                    ProdutoId = item.ProdutoId,
+                    ProdutoEmbalagemId = item.ProdutoEmbalagemId,
+                    Quantidade = item.QuantidadeContada,
                     Movimento = novoMovimento
                 };
                 _context.ProdutosMovimento.Add(prodMov);
+            }
 
-                // 5. Atualiza o saldo real na tabela Produto
-                var produtoNoBanco = await _context.Produtos.FindAsync(item.IdProduto);
+            // 4. Agora a MÁGICA: Agrupamos por Produto para somar o estoque TOTAL (12 + 1 = 13)
+            var totaisParaEstoque = inventario.Itens
+                .GroupBy(it => it.ProdutoId)
+                .Select(g => new {
+                    IdProduto = g.Key,
+                    SomaTotalUnidades = g.Sum(x => x.QuantidadeContada)
+                });
+
+            foreach (var consolidado in totaisParaEstoque)
+            {
+                var produtoNoBanco = await _context.Produtos.FindAsync(consolidado.IdProduto);
                 if (produtoNoBanco != null)
                 {
-                    // O estoque atual do produto vira o total contado no inventário
-                    produtoNoBanco.EstoqueAtual = item.TotalContado;
+                    // Aqui o estoque vira 13, independente de quantas embalagens foram usadas
+                    produtoNoBanco.EstoqueAtual = consolidado.SomaTotalUnidades;
                     _context.Update(produtoNoBanco);
                 }
             }
 
-            // 6. Fecha o inventário para evitar re-processamento
+            // 5. Fecha o inventário
             inventario.Finalizado = true;
             _context.Update(inventario);
 
-            // 7. Salva tudo em uma única transação
+            // 6. Salva tudo (Transação atômica)
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Inventário finalizado, estoque ajustado e movimentação registrada!";
+            TempData["Success"] = "Estoque atualizado com sucesso (soma de todas as embalagens)!";
             return RedirectToAction(nameof(Details), new { id = id });
         }
 

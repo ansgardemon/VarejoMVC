@@ -1,9 +1,7 @@
 ﻿@model Varejo.ViewModels.InventarioViewModel
 
-
-
-
 <div class="container mt-4">
+    @* --- CABEÇALHO --- *@
     <div class="card mb-4 shadow-sm border-0">
         <div class="card-body d-flex justify-content-between align-items-center">
             <div>
@@ -17,12 +15,8 @@
                     </span>
                     | 📅 @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")
                 </p>
-                @if (!string.IsNullOrEmpty(Model.Observacao))
-                {
-                    <small class="text-muted">📝 @Model.Observacao</small>
-                }
             </div>
-            @* Adicione logo abaixo do cabeçalho *@
+
             @if (Model.Finalizado)
             {
                 <div class="alert alert-info shadow-sm d-flex align-items-center" role="alert">
@@ -34,50 +28,51 @@
                     <a asp-action="Index" class="btn btn-sm btn-outline-primary ms-auto">Voltar para a Lista</a>
                 </div>
             }
-
-
-            @if (!Model.Finalizado)
+            else
             {
-                <form asp-action="Finalizar" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Deseja realmente finalizar? Isso ajustará o estoque real no sistema!')">
+                <form asp-action="Finalizar" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Deseja realmente finalizar?')">
                     <button type="submit" class="btn btn-success shadow-sm">
                         ✅ Finalizar e Ajustar Estoque
                     </button>
                 </form>
             }
-
-
         </div>
     </div>
 
+    @* --- BUSCA DE PRODUTOS --- *@
     @if (!Model.Finalizado)
     {
         <div class="card mb-4 border-primary shadow-sm">
             <div class="card-body">
                 <h5 class="card-title text-primary">🔍 Adicionar Itens à Contagem</h5>
-                <input type="text" id="produtoSearch" class="form-control form-control-lg mb-3" placeholder="Digite o nome do produto para pesquisar..." autocomplete="off" />
+                <input type="text" id="produtoSearch" class="form-control form-control-lg mb-3" placeholder="Digite o nome do produto..." autocomplete="off" />
                 <div id="produtoCards" class="row"></div>
             </div>
         </div>
     }
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h6 class="mb-0">Itens no Inventário</h6>
+    @* --- TABELA DE ITENS --- *@
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+            <h6 class="mb-0"><i class="bi bi-list-check me-2"></i>Itens no Inventário</h6>
             @if (!Model.Finalizado)
             {
-                <small class="text-info">💡 A contagem é salva automaticamente ao sair do campo.</small>
+                <small class="badge bg-primary-subtle text-primary border border-primary-subtle fw-normal">
+                    💡 Salvamento automático ativo
+                </small>
             }
         </div>
-        <div class="table-responsive" id="areaImpressao">
-            <table class="table table-hover align-middle mb-0">
+      
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 custom-table">
                 <thead class="table-light">
                     <tr>
-                        <th>Produto</th>
+                        <th class="ps-4">Produto</th>
                         <th>Embalagem</th>
                         <th class="text-center">Qtd. Sistema</th>
-                        <th class="text-center" style="width: 180px;">Contagem Real</th>
-                        <th class="text-center">Diferença (Un)</th>
-                        <th class="text-end">Ações</th>
+                        <th class="text-center" style="width: 180px;">Sua Contagem</th>
+                        <th class="text-center">Diferença</th>
+                        <th class="text-end pe-4">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -86,41 +81,43 @@
                         foreach (var item in Model.Itens)
                         {
                             <tr>
-                                <td><strong>@item.NomeProduto</strong></td>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">@item.NomeProduto</div>
+                                    <small class="text-muted">ID: @item.ProdutoId</small>
+                                </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">
-                                        @item.DescricaoEmbalagem
+                                    <span class="badge rounded-pill bg-light text-dark border">
+                                        @(item.DescricaoEmbalagem ?? "N/A")
                                     </span>
                                 </td>
-                                <td class="text-center text-muted">@item.QuantidadeSistema</td>
                                 <td class="text-center">
-                                    <div class="input-group input-group-sm">
-                                        @* IMPORTANTE: data-prodid E data-embid para identificar a linha única *@
-                                        <input type="number"
-                                               class="form-control text-center fw-bold input-qtd-tabela"
-                                               data-prodid="@item.ProdutoId"
-                                               data-embid="@item.ProdutoEmbalagemId"
-                                               value="@((item.QuantidadeContada / (item.Multiplicador > 0 ? item.Multiplicador : 1)).ToString().Replace(",", "."))"
-                                        @(Model.Finalizado ? "disabled" : "") />
-                                    </div>
+                                    <span class="text-muted fw-medium">@item.QuantidadeSistema</span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="fw-bold @(item.Diferenca < 0 ? "text-danger" : (item.Diferenca > 0 ? "text-success" : "text-muted"))">
+                                    <input type="number" step="0.01"
+                                           class="form-control form-control-sm text-center fw-bold input-qtd-tabela shadow-none"
+                                           data-itemid="@item.Id"
+                                           value="@((item.QuantidadeContada / (item.Multiplicador > 0 ? item.Multiplicador : 1)).ToString().Replace(",", "."))"
+                                    @(Model.Finalizado ? "disabled" : "") />
+                                </td>
+                                <td class="text-center">
+                                    @{
+                                        var diffClass = item.Diferenca < 0 ? "bg-danger-subtle text-danger" :
+                                                        item.Diferenca > 0 ? "bg-success-subtle text-success" : "bg-light text-muted";
+                                    }
+                                    <span class="badge @diffClass px-3 py-2" style="min-width: 60px;">
                                         @(item.Diferenca > 0 ? "+" : "")@item.Diferenca
                                     </span>
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end pe-4">
                                     @if (!Model.Finalizado)
                                     {
-                                        @* Exclusão agora envia o ProdutoEmbalagemId para não apagar duplicados por erro *@
-                                        <form asp-controller="Inventario" asp-action="RemoveItem" method="post" style="display:inline;">
+                                        <form asp-action="RemoveItem" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
-    
-                                            @* O 'name' precisa ser identico ao parametro do Controller: itemId *@
                                             <input type="hidden" name="itemId" value="@item.Id" />
-    
-                                            <button type="submit" class="btn btn-sm btn-outline-danger border-0"
-                                                    onclick="return confirm('Deseja remover este item?')">
+                                            <button type="submit" class="btn btn-sm btn-light text-danger btn-delete-row shadow-sm"
+                                                    onclick="return confirm('Remover item?')">
+         
                                                 🗑️ Excluir
                                             </button>
                                         </form>
@@ -132,7 +129,10 @@
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-muted italic">Nenhum item contado ainda.</td>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-box-seam d-block fs-2 mb-2"></i>
+                                Nenhum item adicionado ainda.
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -141,174 +141,80 @@
     </div>
 </div>
 
-<style>
-    @@media print {
-        /* 1. ESCONDE O QUE NÃO É DOCUMENTO POR ID E CLASSE ESPECÍFICA */
-        nav, footer, .navbar, .btn, .alert, form,
-        #produtoSearch, #produtoCards, .card-header,
-        .text-info, .text-muted.italic {
-            display: none !important;
-        }
-        /* 2. CONFIGURAÇÃO DA PÁGINA */
-        @@page {
-            size: A4;
-            margin: 1cm;
-        }
-        
-        body {
-            background-color: white !important;
-            color: black !important;
-            font-family: sans-serif;
-        }
-        /* 3. FORÇA A EXIBIÇÃO DO CONTAINER E DOS CARDS QUE CONTÊM A TABELA */
-        .container, .card, .card-body, .table-responsive, .table {
-            display: block !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-            /* 4. CABEÇALHO PERSONALIZADO NO TOPO DA CARD-BODY */
-            .card-body:first-child::before {
-                content: "RELATÓRIO DE CONFERÊNCIA DE INVENTÁRIO";
-                display: block;
-                text-align: center;
-                font-size: 18pt;
-                font-weight: bold;
-                margin-bottom: 10px;
-                border-bottom: 2px solid #000;
-            }
-        /* 5. FORMATAÇÃO DA TABELA DE ITENS */
-        .table {
-            display: table !important;
-            border-collapse: collapse !important;
-            margin-top: 20px !important;
-        }
-
-            .table th, .table td {
-                border: 1px solid #000 !important;
-                padding: 8px !important;
-                color: black !important;
-                background-color: transparent !important;
-            }
-                /* Esconde colunas: Qtd Sistema (3), Diferença (5) e Ações (6) */
-                .table th:nth-child(3), .table td:nth-child(3),
-                .table th:nth-child(5), .table td:nth-child(5),
-                .table th:nth-child(6), .table td:nth-child(6) {
-                    display: none !important;
-                }
-        /* Transforma o input em uma linha de escrita _____ */
-        .input-qtd-tabela {
-            border: none !important;
-            border-bottom: 1px solid #000 !important;
-            background: transparent !important;
-            width: 100px !important;
-            /* Esconde o valor atual para a pessoa não "colar" */
-            color: white !important;
-        }
-        /* 6. RODAPÉ DE ASSINATURA */
-        .table::after {
-            content: "\A\A\A __________________________________________\A Assinatura do Conferente";
-            white-space: pre;
-            display: block;
-            text-align: center;
-            margin-top: 30px;
-        }
-    }
-</style>
-
 @section Scripts {
-
-
-
-
     <script>
-
-        const estaFinalizado = @Model.Finalizado.ToString().ToLower();
-        if (estaFinalizado) {
-            console.log("Inventário finalizado. Scripts de edição desativados.");
-        }
-
         const produtoSearch = document.getElementById('produtoSearch');
         const produtoCards = document.getElementById('produtoCards');
         let debounceTimer;
 
+        if(produtoSearch) {
+            produtoSearch.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(async () => {
+                    const termo = produtoSearch.value.trim();
+                    if (termo.length < 2) { produtoCards.innerHTML = ''; return; }
 
-
-
-
-
-        // 1. BUSCA DE PRODUTOS VIA AJAX
-        produtoSearch.addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(async () => {
-                const termo = produtoSearch.value.trim();
-                if (termo.length < 2) { produtoCards.innerHTML = ''; return; }
-
-                try {
                     const response = await fetch(`@Url.Action("SearchProduto", "Produto")?query=${termo}`);
                     const produtos = await response.json();
                     produtoCards.innerHTML = '';
 
-                    if (!produtos || produtos.length === 0) {
-                        produtoCards.innerHTML = '<div class="col-12 text-muted p-2">Nenhum produto encontrado.</div>';
-                        return;
-                    }
-
                     produtos.forEach(p => {
                         const id = p.idProduto || p.IdProduto;
                         const nome = p.nomeProduto || p.NomeProduto;
-                        const embalagens = p.embalagens || p.Embalagens || [];
+                        const emb = p.embalagens || p.Embalagens || [];
+                        const img = p.urlImagem || p.UrlImagem || '/images/sem-foto.png';
 
                         const div = document.createElement('div');
                         div.className = 'col-md-3 mb-3';
                         div.innerHTML = `
-                            <div class="card h-100 shadow-sm border-0 bg-light text-center p-2">
-                                <h6 style="font-size:0.8rem; height:2rem; overflow:hidden;">${nome}</h6>
-                                <select class="form-select form-select-sm mb-2 embalagem-select">
-                                    ${embalagens.map(e => `<option value="${e.idProdutoEmbalagem || e.IdProdutoEmbalagem}">${e.TipoEmbalagemDescricao || 'Unidade'}</option>`).join('')}
+                            <div class="card h-100 shadow-sm text-center p-2 border-0 bg-light">
+                                <img src="${img}" style="height:60px; object-fit:contain;" class="mb-2 mx-auto">
+                                <h6 style="font-size:0.75rem; min-height: 2.2rem;" class="mb-2">${nome}</h6>
+                                <select class="form-select form-select-sm mb-2 sel-emb">
+                                    ${emb.map(e => {
+                                        // Garante que pega a descrição independente do nome da propriedade (C# vs JS)
+                                        const desc = e.tipoEmbalagemDescricao || e.TipoEmbalagemDescricao || "Unidade";
+                                        return `<option value="${e.idProdutoEmbalagem || e.IdProdutoEmbalagem}">${desc}</option>`;
+                                    }).join('')}
                                 </select>
-                                <button type="button" class="btn btn-primary btn-sm btnAdd" data-id="${id}">➕ Adicionar</button>
+                                <button class="btn btn-primary btn-sm btn-add" data-id="${id}">➕ Adicionar</button>
                             </div>`;
                         
-                        div.querySelector('.btnAdd').addEventListener('click', function() {
-                            const embId = div.querySelector('.embalagem-select').value;
+                        div.querySelector('.btn-add').addEventListener('click', () => {
+                            const embId = div.querySelector('.sel-emb').value;
                             enviarItem(id, embId);
                         });
                         produtoCards.appendChild(div);
                     });
-                } catch (err) { console.error("Erro na busca:", err); }
-            }, 400);
-        });
+                }, 400);
+            });
+        }
 
-        // 2. ADICIONAR ITEM (Inicia com zero)
         async function enviarItem(prodId, embId) {
             const fd = new FormData();
             fd.append('InventarioId', '@Model.Id');
             fd.append('ProdutoId', prodId);
             fd.append('ProdutoEmbalagemId', embId);
-            fd.append('QuantidadeContada', '0');
+            fd.append('QuantidadeContada', '0'); // Inicia zerado
 
             const resp = await fetch('@Url.Action("AddItem", "Inventario")', { method: 'POST', body: fd });
-            if (resp.ok) location.reload();
-            else alert("Erro ao adicionar item ao inventário.");
+            if (resp.ok) {
+                location.reload();
+            } else {
+                alert("Erro ao adicionar item.");
+            }
         }
 
-        // 3. ATUALIZAÇÃO AUTOMÁTICA AO DIGITAR NA TABELA
         document.querySelectorAll('.input-qtd-tabela').forEach(input => {
             input.addEventListener('change', async function() {
-                const prodId = this.dataset.prodid;
-                const embId = this.dataset.embid; // Captura o ID da embalagem da linha
-                const valor = this.value;
+                const itemId = this.dataset.itemid;
+                const qtdDigitada = this.value.replace('.', ',');
+
+                this.classList.add('is-invalid');
 
                 const fd = new FormData();
-                fd.append('inventarioId', '@Model.Id');
-                fd.append('produtoId', prodId);
-                fd.append('produtoEmbalagemId', embId); // Envia o ID da embalagem para o Controller
-                fd.append('quantidade', valor);
-
-                this.classList.add('is-invalid'); // Feedback visual de carregamento
+                fd.append('itemId', itemId);
+                fd.append('quantidade', qtdDigitada);
 
                 try {
                     const resp = await fetch('@Url.Action("UpdateItemQuantity", "Inventario")', {
@@ -317,22 +223,15 @@
                     });
 
                     if (resp.ok) {
-                        location.reload(); // Recarrega para processar multiplicadores e diferenças no C#
+                        location.reload();
                     } else {
-                        const msg = await resp.text();
-                        alert('Erro ao salvar: ' + msg);
+                        alert('Erro ao salvar.');
                         this.classList.remove('is-invalid');
                     }
                 } catch (err) {
-                    alert('Erro de conexão ao salvar.');
+                    console.error(err);
                 }
             });
         });
-
-
-
-
-
-
     </script>
 }

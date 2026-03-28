@@ -7,6 +7,7 @@
         public int ProdutoId { get; set; }
         public int ProdutoEmbalagemId { get; set; }
 
+
         public string DescricaoEmbalagem { get; set; }
         public int Multiplicador { get; set; }
 

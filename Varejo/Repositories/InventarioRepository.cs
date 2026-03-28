@@ -40,7 +40,7 @@ namespace Varejo.Repositories
 
         public async Task AddItemAsync(InventarioItem item)
         {
-            // Verifica se o item já existe para o mesmo produto/embalagem no mesmo inventário
+            // 1. Busca apenas pelos IDs (que o controller enviou)
             var existente = await _context.InventariosItem
                 .FirstOrDefaultAsync(i => i.InventarioId == item.InventarioId
                                      && i.ProdutoId == item.ProdutoId
@@ -48,11 +48,13 @@ namespace Varejo.Repositories
 
             if (existente != null)
             {
+                // Se já existe essa combinação no inventário, apenas soma a nova contagem
                 existente.QuantidadeContada += item.QuantidadeContada;
                 _context.InventariosItem.Update(existente);
             }
             else
             {
+                // Se é novo, adiciona
                 _context.InventariosItem.Add(item);
             }
 

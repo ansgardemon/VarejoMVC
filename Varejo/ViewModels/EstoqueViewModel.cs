@@ -2,7 +2,7 @@
 {
     public class EstoqueViewModel
     {
-        public List<EstoqueItemViewModel> Itens { get; set; }
+        public List<EstoqueListViewModel> Itens { get; set; }
 
         public EstoqueFiltroViewModel Filtro { get; set; }
     }

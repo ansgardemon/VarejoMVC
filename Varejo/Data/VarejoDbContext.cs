@@ -226,6 +226,18 @@ namespace Varejo.Data
                 .Property(i => i.QuantidadeContada)
                 .HasPrecision(18, 4);
 
+            modelBuilder.Entity<InventarioItem>()
+    .HasOne(i => i.ProdutoEmbalagem)
+    .WithMany()
+    .HasForeignKey(i => i.ProdutoEmbalagemId)
+    .OnDelete(DeleteBehavior.NoAction); 
+
+            modelBuilder.Entity<InventarioItem>()
+                .HasOne(i => i.Produto)
+                .WithMany()
+                .HasForeignKey(i => i.ProdutoId)
+                .OnDelete(DeleteBehavior.Cascade); 
+
 
 
 

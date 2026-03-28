@@ -189,46 +189,74 @@ namespace Varejo.Controllers
             return RedirectToAction(nameof(Details), new { id = inventarioId });
         }
 
-        // FINALIZAÇÃO (Chama a lógica de Espécie 3 no Repo)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Finalizar(int id)
         {
-            // 1. Busca o inventário e seus itens
+            // 1. Busca o inventário e os itens (com os dados dos produtos)
             var inventario = await _context.Inventarios
                 .Include(i => i.Itens)
+                    .ThenInclude(it => it.Produto)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (inventario == null || inventario.Finalizado)
                 return BadRequest("Inventário não encontrado ou já finalizado.");
 
-            // 2. Agrupa por produto (caso o usuário tenha contado o mesmo item em embalagens diferentes)
-            var itensAgrupados = inventario.Itens
-                .GroupBy(it => it.ProdutoId)
+            // 2. Criar o cabeçalho do Movimento
+            // IMPORTANTE: Ajuste os IDs abaixo (PessoaId e TipoMovimentoId) 
+            // conforme os registros que você tem no banco (ex: Pessoa "Sistema", Tipo "Ajuste")
+            var novoMovimento = new Movimento
+            {
+                Documento = inventario.Id, // Usando o ID do inventário como número de documento
+                Observacao = $"Ajuste via Inventário #{inventario.Id} - {inventario.Observacao}",
+                DataMovimento = DateTime.Now,
+                TipoMovimentoId = 7, // EX: ID 3 pode ser "Ajuste de Inventário" no seu banco
+                PessoaId = 1,        // EX: ID 1 pode ser seu "Consumidor Padrão" ou "Empresa"
+                ProdutosMovimento = new List<ProdutoMovimento>()
+            };
+
+            _context.Movimentos.Add(novoMovimento);
+
+            // 3. Agrupar itens para atualizar o estoque e gerar os itens do movimento
+            // Agrupamos por Produto e Embalagem para respeitar sua estrutura de ProdutoMovimento
+            var itensParaProcessar = inventario.Itens
+                .GroupBy(it => new { it.ProdutoId, it.ProdutoEmbalagemId })
                 .Select(g => new {
-                    ProdutoId = g.Key,
+                    IdProduto = g.Key.ProdutoId,
+                    IdEmbalagem = g.Key.ProdutoEmbalagemId,
                     TotalContado = g.Sum(x => x.QuantidadeContada)
                 });
 
-            foreach (var itemContado in itensAgrupados)
+            foreach (var item in itensParaProcessar)
             {
-                // 3. Busca o produto no cadastro principal
-                var produto = await _context.Produtos.FindAsync(itemContado.ProdutoId);
-                if (produto != null)
+                // 4. Cria o item do movimento (ProdutoMovimento)
+                var prodMov = new ProdutoMovimento
                 {
-                    // 4. ATUALIZAÇÃO DO ESTOQUE REAL
-                    produto.EstoqueAtual = itemContado.TotalContado;
-                    _context.Update(produto);
+                    ProdutoId = item.IdProduto,
+                    ProdutoEmbalagemId = item.IdEmbalagem,
+                    Quantidade = item.TotalContado,
+                    Movimento = novoMovimento
+                };
+                _context.ProdutosMovimento.Add(prodMov);
+
+                // 5. Atualiza o saldo real na tabela Produto
+                var produtoNoBanco = await _context.Produtos.FindAsync(item.IdProduto);
+                if (produtoNoBanco != null)
+                {
+                    // O estoque atual do produto vira o total contado no inventário
+                    produtoNoBanco.EstoqueAtual = item.TotalContado;
+                    _context.Update(produtoNoBanco);
                 }
             }
 
-            // 5. Fecha o inventário para edição
+            // 6. Fecha o inventário para evitar re-processamento
             inventario.Finalizado = true;
             _context.Update(inventario);
 
+            // 7. Salva tudo em uma única transação
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Estoque atualizado com sucesso!";
+            TempData["Success"] = "Inventário finalizado, estoque ajustado e movimentação registrada!";
             return RedirectToAction(nameof(Details), new { id = id });
         }
 

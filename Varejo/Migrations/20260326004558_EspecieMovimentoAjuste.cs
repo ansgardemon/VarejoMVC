@@ -20,7 +20,19 @@ namespace Varejo.Migrations
                     {"Ajuste"}
 
          }
+
+
      );
+
+            migrationBuilder.InsertData(
+                    table: "TiposMovimento",
+                    columns: new[] { "IdTipoMovimento", "DescricaoTipoMovimento", "EspecieMovimentoId" },
+                    values: new object[,]
+                    {
+                    { 7, "Ajuste", 3 }
+
+                    });
+
         }
 
         /// <inheritdoc />

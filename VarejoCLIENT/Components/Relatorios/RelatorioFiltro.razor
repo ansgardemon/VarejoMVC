@@ -11,13 +11,13 @@
             </button>
             
             <button class="btn px-4 shadow-sm" style="background: var(--sys-primary); color: white; font-weight: 600;" @onclick="OnSearch">
-                <i class="bi bi-search me-2"></i> Pesquisar
+                <i class="fa-solid fa-magnifying-glass me-2"></i> Pesquisar
             </button>
             
             <div class="btn-group">
                 @* Ajuste na sintaxe do lambda para o VS não se perder *@
                 <button class="btn shadow-sm" style="background: rgba(22, 56, 137, 0.85); color: white; font-weight: 600;" @onclick="@(() => BotaoExportarClicado("pdf"))">
-                    <i class="bi bi-file-pdf me-2"></i> Exportar PDF
+                    <i class="fa-solid fa-file-pdf me-2"></i> Exportar PDF
                 </button>
             </div>
 

@@ -1,0 +1,97 @@
+﻿@typeparam TItem
+@using System.Reflection
+
+<table class="table mb-0 align-middle" style="color: var(--sys-primary);">
+    <thead style="background: linear-gradient(145deg, rgba(150,150,150,0.15), rgba(150,150,150,0.05)); color: var(--sys-primary);">
+        <tr style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+            @foreach (var coluna in Colunas)
+            {
+                <th style="border-bottom: 1px solid var(--glass-border); cursor: pointer;"
+                    @onclick="() => OrdenarPor(coluna.Propriedade)">
+                    <div class="d-flex align-items-center">
+                        @coluna.Titulo
+                        @if (colunaOrdenacaoAtual == coluna.Propriedade)
+                        {
+                            <i class="bi @(ordemCrescente ? "bi-caret-up-fill" : "bi-caret-down-fill") ms-2"></i>
+                        }
+                    </div>
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody style="font-size: 0.95rem;">
+        @foreach (var item in DadosOrdenados)
+        {
+            <tr>
+                @foreach (var coluna in Colunas)
+                {
+                    <td style="border-color: var(--glass-border);">
+                        @ObterValor(item, coluna.Propriedade, coluna.Formato)
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public List<TItem> Dados { get; set; } = new();
+    [Parameter] public List<ConfigColuna> Colunas { get; set; } = new();
+
+    private string colunaOrdenacaoAtual = "";
+    private bool ordemCrescente = true;
+
+    // Classe auxiliar para definir as colunas
+    public class ConfigColuna
+    {
+        public string Titulo { get; set; } = "";
+        public string Propriedade { get; set; } = "";
+        public string Formato { get; set; } = ""; // Ex: "C2" para moeda, "N2" para número, "dd/MM/yyyy" para data
+    }
+
+    private IEnumerable<TItem> DadosOrdenados
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(colunaOrdenacaoAtual) || !Dados.Any())
+                return Dados;
+
+            var propInfo = typeof(TItem).GetProperty(colunaOrdenacaoAtual);
+            if (propInfo == null) return Dados;
+
+            return ordemCrescente
+                ? Dados.OrderBy(x => propInfo.GetValue(x, null))
+                : Dados.OrderByDescending(x => propInfo.GetValue(x, null));
+        }
+    }
+
+    private void OrdenarPor(string propriedade)
+    {
+        if (colunaOrdenacaoAtual == propriedade)
+        {
+            ordemCrescente = !ordemCrescente; // Inverte A-Z para Z-A
+        }
+        else
+        {
+            colunaOrdenacaoAtual = propriedade;
+            ordemCrescente = true;
+        }
+    }
+
+    private string ObterValor(TItem item, string propriedade, string formato)
+    {
+        var propInfo = typeof(TItem).GetProperty(propriedade);
+        if (propInfo == null) return "";
+
+        var valor = propInfo.GetValue(item, null);
+        if (valor == null) return "-";
+
+        // Se tiver formatação (ex: Moeda), aplica aqui
+        if (!string.IsNullOrEmpty(formato) && valor is IFormattable formattable)
+        {
+            return formattable.ToString(formato, System.Globalization.CultureInfo.CurrentCulture);
+        }
+
+        return valor.ToString() ?? "";
+    }
+}

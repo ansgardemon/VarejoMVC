@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Varejo.Data;
-using Varejo.ViewModels;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Varejo.Data; // Ajuste para o namespace do seu DbContext
+using VarejoSHARED.DTO; // Onde moram as nossas novas DTOs
 
 namespace VarejoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    // [Authorize] // Descomente se a sua API exigir token JWT
     public class DashboardController : ControllerBase
     {
         private readonly VarejoDbContext _context;
@@ -18,56 +22,62 @@ namespace VarejoAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<DashboardViewModel>> Get()
+        public async Task<ActionResult<DashboardDTO>> GetDashboard()
         {
-            var vm = new DashboardViewModel();
+            var dto = new DashboardDTO();
+            var hoje = DateTime.Today;
+            var dataLimiteValidade = hoje.AddDays(30);
 
-            // =====================
-            // CARDS
-            // =====================
-            vm.TotalProdutos = await _context.Produtos.CountAsync();
-            vm.TotalCategorias = await _context.Categorias.CountAsync();
-            vm.TotalFamilias = await _context.Familias.CountAsync();
-            vm.TotalUsuarios = await _context.Usuarios.CountAsync();
-            vm.TotalMarcas = await _context.Marcas.CountAsync();
+            // =====================================
+            // 1. KPIs GERAIS
+            // =====================================
+            dto.TotalProdutos = await _context.Produtos.CountAsync();
+            dto.TotalCategorias = await _context.Categorias.CountAsync();
+            dto.TotalFamilias = await _context.Familias.CountAsync();
+            dto.TotalUsuarios = await _context.Usuarios.CountAsync();
+            dto.TotalMarcas = await _context.Marcas.CountAsync();
+            dto.TotalMovimentos = await _context.Movimentos.CountAsync();
+            dto.TotalProdutosMovimentados = await _context.ProdutosMovimento.CountAsync();
 
-            vm.TotalMovimentos = await _context.Movimentos.CountAsync();
-            vm.TotalProdutosMovimentados = await _context.ProdutosMovimento.CountAsync();
+            // =====================================
+            // 2. KPIs ESTRATÉGICOS (Alertas)
+            // =====================================
+            dto.TotalClientes = await _context.Pessoas
+                .CountAsync(p => p.EhCliente && p.Ativo);
 
-            // =====================
-            // ÚLTIMOS PRODUTOS
-            // =====================
-            vm.UltimosProdutos = await _context.Produtos
+            dto.ProdutosSemEstoque = await _context.Produtos
+                .CountAsync(p => p.Ativo && p.EstoqueAtual <= 0);
+
+            dto.ProdutosVencendo = await _context.Validades
+                .CountAsync(v => v.EmEstoque && v.DataValidade >= hoje && v.DataValidade <= dataLimiteValidade);
+
+            // =====================================
+            // 3. LISTAS PARA TABELAS E GRÁFICOS
+            // =====================================
+
+            // A. Últimos 5 Produtos Adicionados (Mapeado para ProdutoOutputDTO)
+            dto.UltimosProdutos = await _context.Produtos
                 .AsNoTracking()
-                .Include(p => p.Familia)
-                    .ThenInclude(f => f.Categoria)
-                .OrderByDescending(p => EF.Property<DateTime>(p, "DataCriacao"))
-                .Select(p => new ProdutoItem
+                // Se não tiver DataCriacao, ordene pelo IdProduto decrescente
+                .OrderByDescending(p => p.IdProduto)
+                .Take(5)
+                .Select(p => new ProdutoOutputDTO
                 {
                     IdProduto = p.IdProduto,
-                    Nome = p.NomeProduto,
-                    Familia = p.Familia != null ? p.Familia.NomeFamilia : "",
-                    Categoria = p.Familia != null && p.Familia.Categoria != null
-                        ? p.Familia.Categoria.DescricaoCategoria
-                        : "",
-                    UrlImagem = p.UrlImagem ?? ""
+                    NomeProduto = p.NomeProduto,
+                    UrlImagem = p.UrlImagem ?? "",
+                    Preco = p.CustoMedio // Mapeando CustoMedio para Preco caso não tenha Preco direto
                 })
-                .Take(5)
                 .ToListAsync();
 
-            // =====================
-            // PRODUTOS POR CATEGORIA
-            // =====================
-            vm.ProdutosPorCategoria = await _context.Produtos
+            // B. Produtos por Categoria (Mapeado para CategoriaCountDTO)
+            dto.ProdutosPorCategoria = await _context.Produtos
                 .AsNoTracking()
                 .Include(p => p.Familia)
                     .ThenInclude(f => f.Categoria)
-                .GroupBy(p => new
-                {
-                    p.Familia.Categoria.IdCategoria,
-                    p.Familia.Categoria.DescricaoCategoria
-                })
-                .Select(g => new CategoriaCount
+                .Where(p => p.Familia != null && p.Familia.Categoria != null)
+                .GroupBy(p => new { p.Familia.Categoria.IdCategoria, p.Familia.Categoria.DescricaoCategoria })
+                .Select(g => new CategoriaCountDTO
                 {
                     IdCategoria = g.Key.IdCategoria,
                     Descricao = g.Key.DescricaoCategoria,
@@ -76,86 +86,45 @@ namespace VarejoAPI.Controllers
                 .OrderByDescending(x => x.QtdeProdutos)
                 .ToListAsync();
 
-            // =====================
-            // PRODUTOS POR FAMÍLIA
-            // =====================
-            vm.ProdutosPorFamilia = await _context.Produtos
-                .AsNoTracking()
-                .Include(p => p.Familia)
-                .GroupBy(p => new
-                {
-                    p.Familia.IdFamilia,
-                    p.Familia.NomeFamilia
-                })
-                .Select(g => new FamiliaCount
-                {
-                    IdFamilia = g.Key.IdFamilia,
-                    Descricao = g.Key.NomeFamilia,
-                    QtdeProdutos = g.Count()
-                })
-                .OrderByDescending(x => x.QtdeProdutos)
-                .ToListAsync();
-
-            // =====================
-            // USUÁRIOS RECENTES
-            // =====================
-            vm.UltimosUsuarios = await _context.Usuarios
-                .AsNoTracking()
-                .OrderByDescending(u => EF.Property<DateTime>(u, "DataCriacao"))
-                .Select(u => new UsuarioItem
-                {
-                    IdUsuario = u.IdUsuario,
-                    NomeUsuario = u.nomeUsuario,
-                    TipoUsuario = u.TipoUsuario != null
-                        ? u.TipoUsuario.DescricaoTipoUsuario
-                        : ""
-                })
-                .Take(5)
-                .ToListAsync();
-
-            // =====================
-            // ÚLTIMOS MOVIMENTOS
-            // =====================
-            vm.UltimosMovimentos = await _context.Movimentos
+            // C. Últimos 5 Movimentos (Mapeado para MovimentoItemDTO)
+            dto.UltimosMovimentos = await _context.Movimentos
                 .AsNoTracking()
                 .Include(m => m.Pessoa)
                 .Include(m => m.TipoMovimento)
-                .Include(m => m.ProdutosMovimento)
-                .OrderByDescending(m => EF.Property<DateTime>(m, "DataCriacao"))
+                .Include(m => m.ProdutosMovimento) // <- Usando a navegação correta que arrumamos antes!
+                .OrderByDescending(m => m.DataMovimento) // ou DataCriacao, dependendo do seu banco
                 .Take(5)
-                .Select(m => new MovimentoItem
+                .Select(m => new MovimentoItemDTO
                 {
                     IdMovimento = m.IdMovimento,
-                    Pessoa = m.Pessoa != null ? m.Pessoa.NomeRazao : "",
-                    TipoMovimento = m.TipoMovimento != null
-                        ? m.TipoMovimento.DescricaoTipoMovimento
-                        : "",
-                    Data = EF.Property<DateTime>(m, "DataCriacao"),
-                    QtdeProdutos = m.ProdutosMovimento.Count
+                    Pessoa = m.Pessoa != null ? m.Pessoa.NomeRazao : "Não Informado",
+                    TipoMovimento = m.TipoMovimento != null ? m.TipoMovimento.DescricaoTipoMovimento : "Geral",
+                    Data = m.DataMovimento,
+                    QtdeProdutos = m.ProdutosMovimento.Count()
                 })
                 .ToListAsync();
 
-            // =====================
-            // MOVIMENTOS POR TIPO
-            // =====================
-            vm.MovimentosPorTipo = await _context.Movimentos
+            // D. Validades Próximas (Mapeado para ValidadeOutputDTO)
+            // Primeiro trazemos os dados do banco para a memória...
+            var validadesCruas = await _context.Validades
                 .AsNoTracking()
-                .Include(m => m.TipoMovimento)
-                .GroupBy(m => new
-                {
-                    m.TipoMovimento.IdTipoMovimento,
-                    m.TipoMovimento.DescricaoTipoMovimento
-                })
-                .Select(g => new MovimentosPorTipo
-                {
-                    IdTipoMovimento = g.Key.IdTipoMovimento,
-                    TipoMovimento = g.Key.DescricaoTipoMovimento,
-                    QtdeMovimentos = g.Count()
-                })
-                .OrderByDescending(x => x.QtdeMovimentos)
+                .Include(v => v.Produto)
+                .Where(v => v.EmEstoque && v.DataValidade >= hoje && v.DataValidade <= dataLimiteValidade)
+                .OrderBy(v => v.DataValidade)
+                .Take(6)
                 .ToListAsync();
 
-            return Ok(vm);
+            // ...depois formatamos a data (o banco não entende .ToString("dd/MM/yyyy"))
+            dto.ValidadesProximas = validadesCruas.Select(v => new ValidadeOutputDTO
+            {
+                IdValidade = v.IdValidade,
+                DataValidade = v.DataValidade.ToString("dd/MM/yyyy"),
+                EmEstoque = v.EmEstoque,
+                ProdutoId = v.ProdutoId,
+                ProdutoNome = v.Produto != null ? v.Produto.NomeProduto : "Desconhecido"
+            }).ToList();
+
+            return Ok(dto);
         }
     }
 }

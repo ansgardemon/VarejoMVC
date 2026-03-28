@@ -1,5 +1,4 @@
-﻿using NuGet.Packaging;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using VarejoSHARED.DTO;
@@ -10,8 +9,7 @@ namespace VarejoAPI.Services
     {
         public byte[] GerarPdfProdutos(List<ProdutoDTO> produtos)
         {
-            // QuestPDF precisa de uma licença definida (Community é grátis para uso pessoal/estudos)
-            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+            QuestPDF.Settings.License = LicenseType.Community;
 
             var documento = Document.Create(container =>
             {
@@ -20,69 +18,88 @@ namespace VarejoAPI.Services
                     page.Size(PageSizes.A4);
                     page.Margin(1, Unit.Centimetre);
                     page.PageColor(Colors.White);
-                    page.DefaultTextStyle(x => x.FontSize(10));
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
 
-                    // CABEÇALHO
+                    // CABEÇALHO PROFISSIONAL
                     page.Header().Row(row =>
                     {
                         row.RelativeItem().Column(col =>
                         {
-                            col.Item().Text("RELATÓRIO DE ESTOQUE").FontSize(20).SemiBold().FontColor(Colors.Blue.Medium);
-                            col.Item().Text($"{DateTime.Now:dd/MM/yyyy HH:mm}");
+                            col.Item().Text("RELATÓRIO DE ESTOQUE").FontSize(22).ExtraBold().FontColor("#163889");
+                            col.Item().Text(text =>
+                            {
+                                text.Span("Data de emissão: ").SemiBold();
+                                text.Span($"{DateTime.Now:dd/MM/yyyy HH:mm}");
+                            });
+                        });
+
+                        row.ConstantItem(100).AlignRight().Column(col => {
+                            col.Item().Text("#101").FontSize(14).Bold().FontColor(Colors.Grey.Medium);
                         });
                     });
 
-                    // CONTEÚDO (TABELA)
+                    // CONTEÚDO DA TABELA
                     page.Content().PaddingVertical(10).Table(table =>
                     {
+                        // DEFINIÇÃO DAS 5 COLUNAS (Ajustado para não sobrar/faltar)
                         table.ColumnsDefinition(columns =>
                         {
-                            columns.ConstantColumn(50); // ID
-                            columns.RelativeColumn();   // Produto
-                            columns.RelativeColumn();   // Categoria
-                            columns.ConstantColumn(80); // Estoque
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto (Mais largo)
+                            columns.RelativeColumn(2);   // Categoria
+                            columns.RelativeColumn(2);   // Marca
+                            columns.ConstantColumn(60);  // Estoque
                         });
 
-                        // Header da Tabela
+                        // HEADER DA TABELA (Estilizado)
                         table.Header(header =>
                         {
-                            header.Cell().Element(CellStyle).Text("ID");
-                            header.Cell().Element(CellStyle).Text("Produto");
-                            header.Cell().Element(CellStyle).Text("Categoria");
-                            header.Cell().Element(CellStyle).Text("Estoque");
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("CATEGORIA");
+                            header.Cell().Element(HeaderStyle).Text("MARCA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("ESTOQUE");
 
-                            static IContainer CellStyle(IContainer container) =>
-                                container.DefaultTextStyle(x => x.SemiBold()).PaddingVertical(5).BorderBottom(1).BorderColor(Colors.Black);
+                            static IContainer HeaderStyle(IContainer container) =>
+                                container.DefaultTextStyle(x => x.SemiBold().FontColor(Colors.White))
+                                         .PaddingVertical(5)
+                                         .PaddingHorizontal(5)
+                                         .Background("#163889"); // Azul do seu sistema
                         });
 
-                        // Linhas da Tabela
-                        // Linhas da Tabela
+                        // LINHAS (Dados)
                         foreach (var item in produtos)
                         {
-                            // ID (Sempre tem valor pois é int, mas convertemos com segurança)
                             table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
-
-                            // Produto (Se for nulo no banco, vira string vazia "")
-                            table.Cell().Element(RowStyle).Text(item.NomeProduto ?? "");
-
-                            // Categoria (Se for nulo, vira string vazia)
-                            table.Cell().Element(RowStyle).Text(item.DescricaoCategoria ?? "");
-
-                            // Marca (Caso você tenha adicionado essa coluna)
-                            table.Cell().Element(RowStyle).Text(item.NomeMarca ?? "Sem Marca");
-
-                            // Estoque (Decimal não é nulo, mas garantimos a formatação)
-                            table.Cell().Element(RowStyle).Text(item.EstoqueAtual.ToString("N2"));
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.DescricaoCategoria ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.NomeMarca ?? "-");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2"));
 
                             static IContainer RowStyle(IContainer container) =>
-                                container.PaddingVertical(5).BorderBottom(1).BorderColor(Colors.Grey.Lighten2);
+                                container.PaddingVertical(5)
+                                         .PaddingHorizontal(5)
+                                         .BorderBottom(1)
+                                         .BorderColor(Colors.Grey.Lighten3);
                         }
                     });
 
-                    page.Footer().AlignCenter().Text(x =>
+                    // RODAPÉ
+                    page.Footer().PaddingTop(10).Row(row =>
                     {
-                        x.Span("Página ");
-                        x.CurrentPageNumber();
+                        row.RelativeItem().Text(x =>
+                        {
+                            x.Span("Total de registros: ").SemiBold();
+                            x.Span(produtos.Count.ToString());
+                        });
+
+                        row.RelativeItem().AlignRight().Text(x =>
+                        {
+                            x.Span("Página ");
+                            x.CurrentPageNumber();
+                            x.Span(" de ");
+                            x.TotalPages();
+                        });
                     });
                 });
             });

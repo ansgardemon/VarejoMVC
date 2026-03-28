@@ -1,65 +1,87 @@
 ﻿@page "/dashboard"
+@implements IDisposable
+@using VarejoSHARED.DTO
 @using VarejoCLIENT.Components.Dashboard
 @using VarejoCLIENT.Services
 @inject DashboardService DashboardService
+@inject IJSRuntime JSRuntime
 
 <main class="container-fluid py-4">
-    <h1 class="vitrino d-none d-lg-block">DASHBOARD</h1>
-
-    <div class="d-flex align-items-center mb-4">
-        <div class="me-3" style="width: 8px; height: 32px; background: var(--sys-primary); border-radius: 4px;"></div>
-        <h3 class="mb-0 fw-bold" style="color: var(--sys-primary);">Painel de Gestão</h3>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center">
+            <div class="me-3" style="width: 8px; height: 32px; background: var(--sys-primary); border-radius: 4px;"></div>
+            <h3 class="mb-0 fw-bold" style="color: var(--sys-primary);">Painel Gerencial</h3>
+        </div>
+        
+        @if (atualizando)
+        {
+            <div class="spinner-border spinner-border-sm text-secondary" role="status" title="Atualizando dados..."></div>
+        }
     </div>
 
     @if (dados == null)
     {
-        <div class="card p-5 text-center border-0 shadow-sm mt-5">
-            <svg class="loading-progress mx-auto mb-3" style="position: relative; inset: auto; height: 6rem; width: 6rem;">
-                <circle r="40%" cx="50%" cy="50%" />
-                <circle r="40%" cx="50%" cy="50%" />
-            </svg>
-            <div class="mt-3 fw-bold" style="color: var(--sys-primary);">Carregando painel...</div>
+        <div class="card p-5 text-center border-0 shadow-sm mt-5" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+            <div class="spinner-border mb-3 mx-auto" style="color: var(--sys-primary); width: 3rem; height: 3rem;" role="status"></div>
+            <div class="mt-3 fw-bold" style="color: var(--sys-primary); font-size: 1.2rem;">Sincronizando dados com o servidor...</div>
         </div>
     }
     else
     {
         <div class="row g-4">
-            @* Passando as variáveis CSS de cor diretamente para os cards *@
-            <DashboardCard Title="Produtos" Value="@dados.TotalProdutos.ToString()" Color="var(--sys-primary)" Icon="bi-box" />
-            <DashboardCard Title="Categorias" Value="@dados.TotalCategorias.ToString()" Color="var(--state-success)" Icon="bi-tags" />
-            <DashboardCard Title="Movimentações" Value="@dados.TotalMovimentos.ToString()" Color="var(--state-warning)" Icon="bi-arrow-left-right" />
-            <DashboardCard Title="Usuários" Value="@dados.TotalUsuarios.ToString()" Color="var(--sys-primary-light)" Icon="bi-people" />
+            <DashboardCard Title="Clientes Ativos" Value="@dados.TotalClientes.ToString()" Color="var(--sys-primary)" Icon="bi-people" />
+            <DashboardCard Title="Produtos Catálogo" Value="@dados.TotalProdutos.ToString()" Color="var(--sys-primary-light)" Icon="bi-box-seam" />
+            <DashboardCard Title="Sem Estoque (Ruptura)" Value="@dados.ProdutosSemEstoque.ToString()" Color="#dc3545" Icon="bi-exclamation-octagon" />
+            <DashboardCard Title="Vencendo (< 30 dias)" Value="@dados.ProdutosVencendo.ToString()" Color="#ffc107" Icon="bi-calendar-x" />
         </div>
 
         <div class="row mt-4 g-4">
             <div class="col-lg-6">
-                <DashboardTable Title="Últimos Produtos" Items="@dados.UltimosProdutos">
+                <DashboardTable Title="Lotes Críticos (Vencendo)" Items="@dados.ValidadesProximas">
                     <HeaderTemplate>
-                        <th>Nome</th>
-                        <th class="text-end">Preço</th>
+                        <th>Produto</th>
+                        <th class="text-end">Vencimento</th>
                     </HeaderTemplate>
-                    <RowTemplate Context="p">
-                        <td class="fw-medium">@p.NomeProduto</td>
-                        <td class="text-end fw-bold" style="color: var(--state-success);">@p.Preco.ToString("C")</td>
+                    <RowTemplate Context="v">
+                        <td class="fw-bold">@v.ProdutoNome</td>
+                        <td class="text-end text-danger fw-bold">@v.DataValidade</td>
                     </RowTemplate>
                 </DashboardTable>
             </div>
 
             <div class="col-lg-6">
-                <DashboardTable Title="Produtos por Categoria" Items="@dados.ProdutosPorCategoria">
+                <DashboardTable Title="Últimos Movimentos" Items="@dados.UltimosMovimentos">
                     <HeaderTemplate>
-                        <th>Categoria</th>
-                        <th class="text-center">Qtd</th>
+                        <th>Pessoa</th>
+                        <th class="text-center">Tipo</th>
+                        <th class="text-end">Data</th>
                     </HeaderTemplate>
-                    <RowTemplate Context="c">
-                        <td>@c.Descricao</td>
+                    <RowTemplate Context="m">
+                        <td class="fw-medium">@m.Pessoa</td>
                         <td class="text-center">
-                            <span class="badge" style="background-color: var(--sys-primary); color: white; padding: 0.5em 0.8em; border-radius: 8px;">
-                                @c.QtdeProdutos
+                            <span class="badge" style="background: rgba(22, 56, 137, 0.1); color: var(--sys-primary); border: 1px solid rgba(22, 56, 137, 0.2);">
+                                @m.TipoMovimento
                             </span>
                         </td>
+                        <td class="text-end" style="font-size: 0.9rem;">@m.Data.ToString("dd/MM HH:mm")</td>
                     </RowTemplate>
                 </DashboardTable>
+            </div>
+        </div>
+
+        <div class="row mt-4 g-4 mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm h-100" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+                    <div class="card-header bg-transparent border-0 pt-4 pb-0">
+                        <h5 class="fw-bold mb-0" style="color: var(--sys-primary);"><i class="fa-solid fa-chart-column me-2"></i> Distribuição por Categoria</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="height: 300px;">
+                            @* O Chart.js vai desenhar o gráfico dentro deste canvas *@
+                            <canvas id="chartCategorias"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     }
@@ -67,9 +89,76 @@
 
 @code {
     private DashboardDTO? dados;
+    private PeriodicTimer? _timer;
+    private CancellationTokenSource _cts = new();
+    private bool atualizando = false;
 
     protected override async Task OnInitializedAsync()
     {
+        await CarregarDados();
+
+        // Configura o Auto-Refresh para rodar a cada 3 minutos
+        _timer = new PeriodicTimer(TimeSpan.FromMinutes(0.5));
+        _ = IniciarLoopDeAtualizacao();
+    }
+
+    private async Task CarregarDados()
+    {
         dados = await DashboardService.GetDashboardAsync();
+    }
+
+    // Loop que roda em segundo plano sem travar a tela
+    private async Task IniciarLoopDeAtualizacao()
+    {
+        try
+        {
+            while (await _timer!.WaitForNextTickAsync(_cts.Token))
+            {
+                atualizando = true;
+                await InvokeAsync(StateHasChanged); // Mostra o spinnerzinho de atualizar no topo
+
+                await CarregarDados();
+                
+                atualizando = false;
+                await InvokeAsync(StateHasChanged); // Esconde o spinnerzinho
+                
+                // Pede pro JavaScript redesenhar o gráfico com os novos dados
+                await ChamarJavaScriptDoGrafico();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Execução cancelada em segurança porque o usuário mudou de tela
+        }
+    }
+
+    // Dispara assim que o HTML for renderizado na tela pela primeira vez
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && dados != null)
+        {
+            await ChamarJavaScriptDoGrafico();
+        }
+    }
+
+    private async Task ChamarJavaScriptDoGrafico()
+    {
+        if (dados?.ProdutosPorCategoria != null && dados.ProdutosPorCategoria.Any())
+        {
+            // Separa os dados em dois arrays para o Chart.js entender
+            var labels = dados.ProdutosPorCategoria.Select(c => c.Descricao).ToArray();
+            var valores = dados.ProdutosPorCategoria.Select(c => c.QtdeProdutos).ToArray();
+
+            // Chama a função JS que criamos no index.html
+            await JSRuntime.InvokeVoidAsync("renderizarGrafico", "chartCategorias", labels, valores);
+        }
+    }
+
+    // Quando o usuário for para outra página (ex: Relatórios), a gente desliga o motor
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _timer?.Dispose();
+        _cts.Dispose();
     }
 }

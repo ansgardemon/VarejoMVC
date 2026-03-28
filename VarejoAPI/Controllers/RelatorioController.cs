@@ -86,11 +86,7 @@ public class RelatorioController : ControllerBase
     [HttpPost("movimentacoes")]
     public async Task<ActionResult<List<MovimentoOutputDTO>>> GetMovimentacoes(RelatorioFiltroMovimentacaoDTO filtro)
     {
-        var query = _context.Movimentos
-            .Include(m => m.Pessoa)
-            .Include(m => m.TipoMovimento)
-            .Include(m => m.ProdutosMovimento)
-            .AsNoTracking();
+        var query = _context.Movimentos.AsNoTracking();
 
         if (filtro.DataInicio.HasValue)
             query = query.Where(m => m.DataMovimento >= filtro.DataInicio.Value);
@@ -101,26 +97,68 @@ public class RelatorioController : ControllerBase
         if (filtro.IdPessoa.HasValue)
             query = query.Where(m => m.PessoaId == filtro.IdPessoa);
 
-        var movimentos = await _context.Movimentos
-     .OrderByDescending(m => m.DataMovimento)
-     .Select(m => new MovimentoOutputDTO
-     {
-         IdMovimento = m.IdMovimento,
-         Pessoa = m.Pessoa != null ? m.Pessoa.NomeRazao : "Consumidor",
-         TipoMovimento = m.TipoMovimento != null ? m.TipoMovimento.DescricaoTipoMovimento : "Geral",
-         DataMovimento = m.DataMovimento,
+        var movimentos = await query
+             .OrderByDescending(m => m.DataMovimento)
+             .Select(m => new MovimentoOutputDTO
+             {
+                 IdMovimento = m.IdMovimento,
+                 Pessoa = m.Pessoa != null ? m.Pessoa.NomeRazao : "Consumidor",
+                 TipoMovimento = m.TipoMovimento != null ? m.TipoMovimento.DescricaoTipoMovimento : "Geral",
+                 DataMovimento = m.DataMovimento,
 
-         // AQUI ESTAVA O ERRO! Trocamos de m.Produtos para m.ProdutosMovimento
-         Produtos = m.ProdutosMovimento.Select(p => new ProdutoMovimentoOutputDTO
-         {
-             IdProdutoMovimento = p.IdProdutoMovimento,
-             Quantidade = p.Quantidade,
+                 // Dentro do seu Select de Produtos:
+                 Produtos = m.ProdutosMovimento.Select(p => new ProdutoMovimentoOutputDTO
+                 {
+                     IdProdutoMovimento = p.IdProdutoMovimento,
+                     Quantidade = p.Quantidade,
+                     Produto = p.Produto != null ? p.Produto.NomeProduto : "",
 
-             // Verifique se a sua entidade ProdutoMovimento tem essas ligações:
-             Produto = p.Produto != null ? p.Produto.NomeProduto : "",
-             Embalagem = p.Embalagem != null ? p.Embalagem.DescricaoTipoEmbalagem : ""
-         }).ToList()
-     })
-     .ToListAsync();
+                     // O CAMINHO CORRETO: ProdutoMovimento -> ProdutoEmbalagem -> TipoEmbalagem -> Descricao
+                     Embalagem = p.ProdutoEmbalagem != null && p.ProdutoEmbalagem.TipoEmbalagem != null
+                                 ? p.ProdutoEmbalagem.TipoEmbalagem.DescricaoTipoEmbalagem
+                                 : "Sem Embalagem"
+                 }).ToList()
+             })
+             .ToListAsync();
+
+        return Ok(movimentos);
     }
+
+    [HttpPost("favoritar")]
+    public async Task<IActionResult> ToggleFavorito([FromBody] RelatorioFavoritoDTO dto)
+    {
+        // Em um cenário real, você pegaria o ID do usuário do Token JWT (User.Identity)
+        // Aqui usaremos o dto.IdUsuario para simplificar
+
+        var favoritoExistente = await _context.UsuarioRelatoriosFavoritos
+            .FirstOrDefaultAsync(f => f.UsuarioId == dto.IdUsuario && f.CodigoRelatorio == dto.CodigoRelatorio);
+
+        if (favoritoExistente != null)
+        {
+            _context.UsuarioRelatoriosFavoritos.Remove(favoritoExistente);
+            await _context.SaveChangesAsync();
+            return Ok(false); // Retorna que agora NÃO é mais favorito
+        }
+
+        _context.UsuarioRelatoriosFavoritos.Add(new UsuarioRelatorioFavorito
+        {
+            UsuarioId = dto.IdUsuario,
+            CodigoRelatorio = dto.CodigoRelatorio
+        });
+
+        await _context.SaveChangesAsync();
+        return Ok(true); // Retorna que agora É favorito
+    }
+
+    [HttpGet("meus-favoritos/{usuarioId}")]
+    public async Task<ActionResult<List<int>>> GetMeusFavoritos(int usuarioId)
+    {
+        var codigos = await _context.UsuarioRelatoriosFavoritos
+            .Where(f => f.UsuarioId == usuarioId)
+            .Select(f => f.CodigoRelatorio)
+            .ToListAsync();
+
+        return Ok(codigos);
+    }
+    
 }

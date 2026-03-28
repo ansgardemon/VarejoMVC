@@ -35,9 +35,8 @@ namespace Varejo.Data
         public DbSet<FormaPagamento> FormasPagamento { get; set; }
         public DbSet<PrazoPagamento> PrazosPagamento { get; set; }
         public DbSet<EspecieTitulo> EspeciesTitulo { get; set; }
-
         public DbSet<PagamentoTitulo> PagamentosTitulo { get; set; }
-
+        public DbSet<UsuarioRelatorioFavorito> UsuarioRelatoriosFavoritos { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo
@@ -183,11 +182,15 @@ namespace Varejo.Data
                 .Property(t => t.ValorAberto)
                 .HasColumnType("decimal(18,2)");
 
+            modelBuilder.Entity<UsuarioRelatorioFavorito>()
+    .HasIndex(f => new { f.UsuarioId, f.CodigoRelatorio })
+    .IsUnique();
+
 
 
 
             //PROPRIEDADES OCULTAS PARA AUDITORIA
-           modelBuilder.Entity<Pessoa>()
+            modelBuilder.Entity<Pessoa>()
                 .Property<DateTime>("DataCriacao")
                 .HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Pessoa>()

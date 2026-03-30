@@ -214,7 +214,103 @@ namespace Varejo.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<EstoqueListViewModel>> GetEstoqueAsync(EstoqueFiltroViewModel filtro)
+        {
+            var query = _context.Produtos
+                .Include(p => p.Familia)
+                .Include(p => p.EstoqueConfig)
+                .AsQueryable();
 
+            // 🔎 PRODUTO
+            if (!string.IsNullOrEmpty(filtro.NomeProduto))
+                query = query.Where(p => p.NomeProduto.Contains(filtro.NomeProduto));
 
+            // 🔎 MARCA / CATEGORIA (ajusta conforme sua model real)
+            if (filtro.MarcaId.HasValue)
+                query = query.Where(p => p.FamiliaId == filtro.MarcaId); // ajustar se tiver tabela própria
+
+            if (filtro.CategoriaId.HasValue)
+                query = query.Where(p => p.FamiliaId == filtro.CategoriaId); // ajustar também
+
+            // 🔎 INTERVALO DE ESTOQUE
+            if (filtro.EstoqueMin.HasValue)
+                query = query.Where(p => p.EstoqueAtual >= filtro.EstoqueMin.Value);
+
+            if (filtro.EstoqueMax.HasValue)
+                query = query.Where(p => p.EstoqueAtual <= filtro.EstoqueMax.Value);
+
+            // 🔎 FLAGS
+            if (filtro.EstoqueNegativo)
+                query = query.Where(p => p.EstoqueAtual < 0);
+
+            if (filtro.EstoqueZerado)
+                query = query.Where(p => p.EstoqueAtual == 0);
+
+            if (filtro.AbaixoMinimo)
+                query = query.Where(p =>
+                    p.EstoqueConfig != null &&
+                    p.EstoqueAtual < p.EstoqueConfig.EstoqueMinimo);
+
+            if (filtro.AcimaMaximo)
+                query = query.Where(p =>
+                    p.EstoqueConfig != null &&
+                    p.EstoqueAtual > p.EstoqueConfig.EstoqueMaximo);
+
+            // 🔥 MOVIMENTAÇÃO (parte interessante)
+            if (filtro.DiasSemMovimento.HasValue || filtro.DiasComMovimento.HasValue)
+            {
+                var movimentos = _context.ProdutosMovimento
+                    .Include(pm => pm.Movimento)
+                    .AsQueryable();
+
+                if (filtro.DiasSemMovimento.HasValue)
+                {
+                    var limite = DateTime.Now.AddDays(-filtro.DiasSemMovimento.Value);
+
+                    query = query.Where(p =>
+                        !_context.ProdutosMovimento
+                            .Any(pm => pm.ProdutoId == p.IdProduto &&
+                                       pm.Movimento.DataMovimento >= limite));
+                }
+
+                if (filtro.DiasComMovimento.HasValue)
+                {
+                    var limite = DateTime.Now.AddDays(-filtro.DiasComMovimento.Value);
+
+                    query = query.Where(p =>
+                        _context.ProdutosMovimento
+                            .Any(pm => pm.ProdutoId == p.IdProduto &&
+                                       pm.Movimento.DataMovimento >= limite));
+                }
+            }
+
+            return await query.Select(p => new EstoqueListViewModel
+            {
+                ProdutoId = p.IdProduto,
+                NomeProduto = p.NomeProduto,
+
+                EstoqueAtual = p.EstoqueAtual,
+
+                EstoqueMinimo = p.EstoqueConfig != null ? p.EstoqueConfig.EstoqueMinimo : 0,
+                EstoqueMaximo = p.EstoqueConfig != null ? p.EstoqueConfig.EstoqueMaximo : 0,
+
+                AbaixoMinimo = p.EstoqueConfig != null && p.EstoqueAtual < p.EstoqueConfig.EstoqueMinimo,
+                AcimaMaximo = p.EstoqueConfig != null && p.EstoqueAtual > p.EstoqueConfig.EstoqueMaximo
+            }).ToListAsync();
+        }
+
+        // Dentro de IProdutoRepository ou um novo IEstoqueRepository
+        public async Task<List<HistoricoProduto>> GetHistoricoAsync(int produtoId, DateTime? inicio, DateTime? fim)
+        {
+            var query = _context.HistoricosProduto // Sua model de log
+                .Where(h => h.ProdutoId == produtoId)
+                .OrderByDescending(h => h.Data)
+                .AsQueryable();
+
+            if (inicio.HasValue) query = query.Where(h => h.Data >= inicio);
+            if (fim.HasValue) query = query.Where(h => h.Data <= fim);
+
+            return await query.ToListAsync();
+        }
     }
 }

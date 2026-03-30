@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Varejo.ViewModels
+﻿namespace Varejo.ViewModels
 {
     // ViewModel principal da Dashboard
     public class DashboardViewModel

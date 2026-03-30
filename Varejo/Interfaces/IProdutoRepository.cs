@@ -25,6 +25,9 @@ namespace Varejo.Interfaces
 
         Task<List<Produto>> GetProdutosCatalogoAsync(int? idCategoria, int? idMarca);
 
+        Task<List<EstoqueListViewModel>> GetEstoqueAsync(EstoqueFiltroViewModel filtro);
+
+        Task<List<HistoricoProduto>> GetHistoricoAsync(int produtoId, DateTime? inicio, DateTime? fim);
 
         Task AddAsync(Produto produto);
         Task UpdateAsync(Produto produto);

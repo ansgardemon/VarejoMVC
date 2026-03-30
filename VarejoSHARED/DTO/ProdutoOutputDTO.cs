@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace VarejoSHARED.DTO
+﻿namespace VarejoSHARED.DTO
 {
     public class ProdutoOutputDTO
     {

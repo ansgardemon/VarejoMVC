@@ -1,16 +1,18 @@
-﻿<div class="input-group @CssClass">
+﻿<div class="mb-3 @CssClass">
 
     @if (!string.IsNullOrEmpty(Label))
     {
-        <label>@Label</label>
+        <label class="form-label fw-bold mb-1" style="color: var(--sys-primary); font-size: 0.9rem;">
+            @Label
+        </label>
     }
 
-    <input 
-        type="@Type"
-        placeholder="@Placeholder"
-        value="@Value"
-        @oninput="OnInputChanged" />
-
+    <input type="@Type"
+           class="form-control shadow-sm"
+           style="background: rgba(255, 255, 255, 0.25); border: 1px solid var(--glass-border); color: var(--sys-primary); backdrop-filter: blur(10px);"
+           placeholder="@Placeholder"
+           value="@Value"
+           @oninput="OnInputChanged" />
 </div>
 
 @code {

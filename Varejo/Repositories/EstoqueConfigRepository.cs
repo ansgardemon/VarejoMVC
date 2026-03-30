@@ -122,9 +122,12 @@ namespace Varejo.Repositories
         public async Task<EstoqueViewModel> ObterEstoqueGeralAsync(EstoqueFiltroViewModel filtro)
         {
             var query = _context.Produtos
-                .Include(p => p.Familia)
-                .Include(p => p.EstoqueConfig) // Assume-se que Produto tem uma navigation property para EstoqueConfig
-                .AsQueryable();
+     .Include(p => p.Familia)
+         .ThenInclude(f => f.Marca) // Carrega a marca via família
+     .Include(p => p.Familia)
+         .ThenInclude(f => f.Categoria) // Carrega a categoria via família
+     .Include(p => p.EstoqueConfig)
+     .AsQueryable();
 
             // --- Filtros de Texto e IDs ---
             if (!string.IsNullOrEmpty(filtro.NomeProduto))

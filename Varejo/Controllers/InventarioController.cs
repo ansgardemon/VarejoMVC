@@ -13,15 +13,18 @@ namespace Varejo.Controllers
     {
         private readonly IInventarioRepository _inventarioRepository;
         private readonly IProdutoRepository _produtoRepository; // Adicionado para buscar dados do produto
+        private readonly IEstoqueRepository _estoqueRepo; // Adicionado para buscar dados do produto
         private readonly VarejoDbContext _context;
 
         public InventarioController(
             IInventarioRepository inventarioRepository,
             IProdutoRepository produtoRepository,
+            IEstoqueRepository estoqueRepo,
             VarejoDbContext context)
         {
             _inventarioRepository = inventarioRepository;
             _produtoRepository = produtoRepository;
+            _estoqueRepo = estoqueRepo;
             _context = context;
         }
 
@@ -276,12 +279,11 @@ namespace Varejo.Controllers
         }
 
         //FINALIZAR INVENTARIO
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Finalizar(int id)
         {
-            // 1. Busca o inventário e os itens
+            // 1. Busca o inventário e os itens (incluindo o que é necessário para o processamento)
             var inventario = await _context.Inventarios
                 .Include(i => i.Itens)
                 .FirstOrDefaultAsync(i => i.Id == id);
@@ -289,23 +291,22 @@ namespace Varejo.Controllers
             if (inventario == null || inventario.Finalizado)
                 return BadRequest("Inventário não encontrado ou já finalizado.");
 
-            // 2. Criar o cabeçalho do Movimento (Corrigido para não dar erro de NULL)
+            // 2. Criar o cabeçalho do Movimento
             var novoMovimento = new Movimento
             {
                 Documento = inventario.Id,
-                // Garantimos que Observacao nunca seja null
                 Observacao = $"Ajuste via Inventário #{inventario.Id} - {inventario.Observacao ?? "Sem obs"}",
                 DataMovimento = DateTime.Now,
-                TipoMovimentoId = 7,
+                TipoMovimentoId = 7, // Inventário/Ajuste
                 PessoaId = 1,
                 ProdutosMovimento = new List<ProdutoMovimento>()
             };
 
             _context.Movimentos.Add(novoMovimento);
+            // Salva o movimento primeiro para garantir que o ID esteja disponível para o histórico
+            await _context.SaveChangesAsync();
 
-            // --- LÓGICA DE PROCESSAMENTO ---
-
-            // 3. Primeiro, registramos CADA linha de contagem no histórico de movimento
+            // 3. Registra CADA linha de contagem na tabela de detalhe do movimento (mantendo o que você fez)
             foreach (var item in inventario.Itens)
             {
                 var prodMov = new ProdutoMovimento
@@ -313,12 +314,12 @@ namespace Varejo.Controllers
                     ProdutoId = item.ProdutoId,
                     ProdutoEmbalagemId = item.ProdutoEmbalagemId,
                     Quantidade = item.QuantidadeContada,
-                    Movimento = novoMovimento
+                    MovimentoId = novoMovimento.IdMovimento // Usando o ID gerado
                 };
                 _context.ProdutosMovimento.Add(prodMov);
             }
 
-            // 4. Agora a MÁGICA: Agrupamos por Produto para somar o estoque TOTAL (12 + 1 = 13)
+            // 4. A MÁGICA DO AGRUPAMENTO: Soma o estoque total das diferentes embalagens
             var totaisParaEstoque = inventario.Itens
                 .GroupBy(it => it.ProdutoId)
                 .Select(g => new {
@@ -326,25 +327,26 @@ namespace Varejo.Controllers
                     SomaTotalUnidades = g.Sum(x => x.QuantidadeContada)
                 });
 
+            // 5. ATUALIZAÇÃO DE ESTOQUE + GRAVAÇÃO DE HISTÓRICO
             foreach (var consolidado in totaisParaEstoque)
             {
-                var produtoNoBanco = await _context.Produtos.FindAsync(consolidado.IdProduto);
-                if (produtoNoBanco != null)
-                {
-                    // Aqui o estoque vira 13, independente de quantas embalagens foram usadas
-                    produtoNoBanco.EstoqueAtual = consolidado.SomaTotalUnidades;
-                    _context.Update(produtoNoBanco);
-                }
+                // Aqui chamamos o seu novo Repository para fazer a atualização 
+                // e a inserção na tabela HistoricoProduto ao mesmo tempo
+                await _estoqueRepo.AjustarEstoqueInventarioAsync(
+                    consolidado.IdProduto,
+                    inventario.Id,
+                    consolidado.SomaTotalUnidades,
+                    novoMovimento.Observacao);
             }
 
-            // 5. Fecha o inventário
+            // 6. Fecha o inventário
             inventario.Finalizado = true;
             _context.Update(inventario);
 
-            // 6. Salva tudo (Transação atômica)
+            // 7. Salva todas as alterações (ProdutosMovimento, Produtos, HistoricoProduto e Inventario)
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Estoque atualizado com sucesso (soma de todas as embalagens)!";
+            TempData["Success"] = "Inventário finalizado! Estoque atualizado e histórico gerado com sucesso.";
             return RedirectToAction(nameof(Details), new { id = id });
         }
 

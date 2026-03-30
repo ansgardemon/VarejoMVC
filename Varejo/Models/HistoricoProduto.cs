@@ -1,7 +1,14 @@
-﻿using Varejo.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using Varejo.Models;
 
-public class HistoricoProduto
+
+namespace Varejo.Models {
+
+
+    public class HistoricoProduto
 {
+
+    [Key]
     public int Id { get; set; }
 
     public int ProdutoId { get; set; }
@@ -19,4 +26,5 @@ public class HistoricoProduto
     public decimal EstoqueDepois { get; set; }
 
     public string? Observacao { get; set; }
+}
 }

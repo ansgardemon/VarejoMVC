@@ -1,19 +1,20 @@
 .navbar-toggler {
-    background-color: var(--ui-glass-bg);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .top-row {
-    min-height: 3.5rem;
-    background-color: var(--ui-glass-bg);
+    min-height: 4rem;
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .navbar-brand {
     font-size: 1.1rem;
-    color: var(--ui-text-primary);
+    color: #ffffff;
 }
 
 .nav-item {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     padding-bottom: 0.5rem;
 }
 
@@ -21,27 +22,26 @@
         padding-top: 1rem;
     }
 
-    .nav-item:last-of-type {
-        padding-bottom: 1rem;
-    }
-
     .nav-item ::deep a {
-        color: var(--ui-text-secondary);
-        border-radius: 4px;
-        height: 3rem;
+        color: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        height: 3.2rem;
         display: flex;
         align-items: center;
-        line-height: 3rem;
+        line-height: 3.2rem;
+        transition: all 0.3s ease;
     }
 
         .nav-item ::deep a.active {
-            background-color: var(--ui-glass-border);
-            color: var(--ui-text-button);
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-weight: bold;
+            box-shadow: inset 4px 0 0 0 #ffffff; /* Linha de destaque na esquerda */
         }
 
-        .nav-item ::deep a:hover {
-            background-color: var(--ui-glass-bg);
-            color: var(--ui-text-button);
+        .nav-item ::deep a:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
         }
 
 @media (min-width: 641px) {
@@ -54,7 +54,7 @@
     }
 
     .nav-scrollable {
-        height: calc(100vh - 3.5rem);
+        height: calc(100vh - 4rem);
         overflow-y: auto;
     }
 }

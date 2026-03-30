@@ -9,14 +9,17 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, var(--sys-primary) 0%, var(--brand-secondary) 70%);
+    /* Degradê de Azul Padrão para um Azul Marinho Profundo */
+    background: linear-gradient(180deg, var(--sys-primary) 0%, rgba(13, 33, 80, 1) 100%);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
 }
 
 .top-row {
-    background-color: var(--brand-bg);
-    border-bottom: 1px solid var(--ui-table-even);
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border-bottom: 1px solid var(--glass-border);
     justify-content: flex-end;
-    height: 3.5rem;
+    height: 4rem;
     display: flex;
     align-items: center;
 }
@@ -25,7 +28,8 @@ main {
         white-space: nowrap;
         margin-left: 1.5rem;
         text-decoration: none;
-        color: var(--ui-text-primary);
+        color: var(--sys-primary);
+        font-weight: 500;
     }
 
         .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
@@ -53,7 +57,7 @@ main {
     }
 
     .sidebar {
-        width: 250px;
+        width: 260px;
         height: 100vh;
         position: sticky;
         top: 0;

@@ -1,0 +1,29 @@
+﻿@using VarejoSHARED.DTO
+
+<table class="table mb-0 align-middle" style="color: var(--sys-primary);">
+    <thead style="background: linear-gradient(145deg, rgba(150,150,150,0.15), rgba(150,150,150,0.05)); color: var(--sys-primary);">
+        <tr style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+            <th style="border-bottom: 1px solid var(--glass-border);">ID</th>
+            <th style="border-bottom: 1px solid var(--glass-border);">Produto</th>
+            <th style="border-bottom: 1px solid var(--glass-border);">Categoria</th>
+            <th style="border-bottom: 1px solid var(--glass-border);">Estoque</th>
+            <th class="text-end" style="border-bottom: 1px solid var(--glass-border);">Custo</th>
+        </tr>
+    </thead>
+    <tbody style="font-size: 0.95rem;">
+        @foreach (var p in Dados)
+        {
+            <tr>
+                <td style="border-color: var(--glass-border);">@p.IdProduto</td>
+                <td style="border-color: var(--glass-border); font-weight: 500;">@p.NomeProduto</td>
+                <td style="border-color: var(--glass-border);">@p.DescricaoCategoria</td>
+                <td style="border-color: var(--glass-border);">@p.EstoqueAtual.ToString("N2")</td>
+                <td class="text-end fw-bold" style="border-color: var(--glass-border);">@p.CustoMedio.ToString("C2")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public List<ProdutoDTO> Dados { get; set; } = new();
+}

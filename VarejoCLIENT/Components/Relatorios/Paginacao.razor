@@ -1,0 +1,58 @@
+﻿<div class="d-flex justify-content-between align-items-center mt-3 p-3 shadow-sm"
+     style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border-radius: 12px; border: 1px solid var(--glass-border);">
+    
+    <small style="color: var(--sys-primary); font-weight: 600;">
+        Exibindo @ItemsNoIntervalo de @TotalItems registros
+    </small>
+    
+    <nav>
+        <ul class="pagination pagination-sm mb-0">
+            <li class="page-item @(PaginaAtual == 1 ? "disabled" : "")">
+                <button class="page-link"
+                        style="background: rgba(255, 255, 255, 0.2); border-color: var(--glass-border); color: var(--sys-primary);"
+                        @onclick="() => MudarPagina(PaginaAtual - 1)">
+                    Anterior
+                </button>
+            </li>
+
+            @for (int i = 1; i <= TotalPaginas; i++)
+            {
+                var p = i;
+                bool isAtiva = PaginaAtual == p;
+                <li class="page-item @(isAtiva ? "active" : "")">
+                    <button class="page-link"
+                            style="background: @(isAtiva ? "var(--sys-primary)" : "rgba(255, 255, 255, 0.2)"); border-color: var(--glass-border); color: @(isAtiva ? "white" : "var(--sys-primary)");"
+                            @onclick="() => MudarPagina(p)">
+                        @p
+                    </button>
+                </li>
+            }
+
+            <li class="page-item @(PaginaAtual == TotalPaginas ? "disabled" : "")">
+                <button class="page-link"
+                        style="background: rgba(255, 255, 255, 0.2); border-color: var(--glass-border); color: var(--sys-primary);"
+                        @onclick="() => MudarPagina(PaginaAtual + 1)">
+                    Próxima
+                </button>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+@code {
+    [Parameter] public int TotalItems { get; set; }
+    [Parameter] public int ItensPorPagina { get; set; } = 10;
+    [Parameter] public int PaginaAtual { get; set; } = 1;
+    [Parameter] public EventCallback<int> OnPageChanged { get; set; }
+
+    private int TotalPaginas => (int)Math.Ceiling((double)TotalItems / ItensPorPagina);
+    private int ItemsNoIntervalo => Math.Min(PaginaAtual * ItensPorPagina, TotalItems);
+
+    private async Task MudarPagina(int novaPagina)
+    {
+        if (novaPagina >= 1 && novaPagina <= TotalPaginas)
+        {
+            await OnPageChanged.InvokeAsync(novaPagina);
+        }
+    }
+}

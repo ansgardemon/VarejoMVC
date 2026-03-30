@@ -1,11 +1,15 @@
 ﻿@if (IsVisible)
 {
-    <div class="loading-container @CssClass">
-        <div class="spinner"></div>
+    <div class="d-flex flex-column align-items-center justify-content-center p-4 shadow-sm @CssClass"
+         style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border-radius: 16px; border: 1px solid var(--glass-border);">
+        
+        <div class="spinner-border mb-3" style="color: var(--sys-primary); width: 3rem; height: 3rem; border-width: 0.25em;" role="status"></div>
 
         @if (!string.IsNullOrEmpty(Text))
         {
-            <span>@Text</span>
+            <span class="fw-bold" style="color: var(--sys-primary); font-size: 1rem; letter-spacing: 0.5px;">
+                @Text
+            </span>
         }
     </div>
 }

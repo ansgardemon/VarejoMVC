@@ -54,10 +54,10 @@
 
 							<div class="mt-2 md-8 d-flex justify-content-center gap-2">
 								<a asp-controller="Produto" asp-action="Edit" asp-route-id="@produto.IdProduto" class="btn btn-warning btn-sm">
-									<i class="bi bi-pencil-square"></i> Editar
+									<i class="fa-solid fa-pen-to-square"></i> Editar
 								</a>
 								<a asp-controller="Produto" asp-action="Delete" asp-route-id="@produto.IdProduto" class="btn btn-danger btn-sm">
-									<i class="bi bi-trash"></i> Deletar
+									<i class="fa-solid fa-trash"></i> Deletar
 								</a>
 							</div>
 						</div>
@@ -72,13 +72,13 @@
 
 			<div class="mt-5 d-flex gap-2">
 				<a asp-action="Index" class="btn btn-outline-secondary">
-					<i class="bi bi-arrow-left"></i> Voltar
+					<i class="fa-solid fa-chevron-left"></i> Voltar
 				</a>
 				<a asp-action="Edit" asp-route-id="@Model.IdFamilia" class="btn btn-warning">
-					<i class="bi bi-pencil-square"></i> Editar Família
+					<i class="fa-solid fa-pen-to-square"></i> Editar Família
 				</a>
 				<a asp-controller="Produto" asp-action="Create" asp-route-familiaId="@Model.IdFamilia" class="btn btn-success">
-					<i class="bi bi-plus-circle"></i> Adicionar Produto
+					<i class="fa-solid fa-circle-plus"></i> Adicionar Produto
 				</a>
 			</div>
 		</div>

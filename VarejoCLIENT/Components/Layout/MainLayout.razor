@@ -3,24 +3,22 @@
 @using VarejoCLIENT.Services
 @inject AuthService AuthService
 
-
 @if (Nav.Uri.EndsWith("/login") || !AuthService.IsAutenticado)
 {
-    @* Se não estiver logado ou estiver na página de login, layout limpo *@
-    <div class="d-flex align-items-center justify-content-center" style="height: 100vh; background-color: #f8f9fa;">
+    @* Fundo transparente para herdar o Glass do app.css *@
+    <div class="d-flex align-items-center justify-content-center w-100" style="min-height: 100vh;">
         @Body
     </div>
 }
 else
 {
-    @* Layout padrão do ERP com Menu *@
     <div class="page">
-        <div class="sidebar">
+        <div class="sidebar shadow-lg">
             <NavMenu />
         </div>
 
         <main>
-            <article class="content px-4">
+            <article class="content px-4 py-4">
                 @Body
             </article>
         </main>
@@ -30,7 +28,6 @@ else
 @code {
     protected override void OnInitialized()
     {
-        // Se tentar acessar qualquer página sem estar logado, joga pro login
         if (!AuthService.IsAutenticado && !Nav.Uri.Contains("/login"))
         {
             Nav.NavigateTo("login");

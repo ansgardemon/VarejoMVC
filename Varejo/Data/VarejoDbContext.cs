@@ -35,7 +35,6 @@ namespace Varejo.Data
         public DbSet<FormaPagamento> FormasPagamento { get; set; }
         public DbSet<PrazoPagamento> PrazosPagamento { get; set; }
         public DbSet<EspecieTitulo> EspeciesTitulo { get; set; }
-
         public DbSet<PagamentoTitulo> PagamentosTitulo { get; set; }
         public DbSet<EstoqueConfig> EstoquesConfig { get; set; }
         public DbSet<EstoqueSnapshot> EstoquesSnapshot { get; set; }
@@ -43,6 +42,7 @@ namespace Varejo.Data
         public DbSet<Inventario> Inventarios { get; set; }
         public DbSet<InventarioItem> InventariosItem { get; set; }
 
+        public DbSet<UsuarioRelatorioFavorito> UsuarioRelatoriosFavoritos { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo
@@ -237,6 +237,9 @@ namespace Varejo.Data
                 .WithMany()
                 .HasForeignKey(i => i.ProdutoId)
                 .OnDelete(DeleteBehavior.Cascade); 
+            modelBuilder.Entity<UsuarioRelatorioFavorito>()
+    .HasIndex(f => new { f.UsuarioId, f.CodigoRelatorio })
+    .IsUnique();
 
 
 

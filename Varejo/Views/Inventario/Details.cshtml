@@ -1,0 +1,237 @@
+﻿@model Varejo.ViewModels.InventarioViewModel
+
+<div class="container mt-4">
+    @* --- CABEÇALHO --- *@
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-1">Inventário #@Model.Id</h4>
+                <a asp-action="Imprimir" asp-route-id="@Model.Id" target="_blank" class="btn btn-outline-secondary shadow-sm">
+                    🖨️ Imprimir Lista
+                </a>
+                <p class="text-muted mb-0">
+                    <span class="badge @(Model.Finalizado ? "bg-success" : "bg-warning text-dark")">
+                        @(Model.Finalizado ? "Finalizado" : "Em Aberto")
+                    </span>
+                    | 📅 @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")
+                </p>
+            </div>
+
+            @if (Model.Finalizado)
+            {
+                <div class="alert alert-info shadow-sm d-flex align-items-center" role="alert">
+                    <span class="me-3 fs-4">🔒</span>
+                    <div>
+                        <strong>Este inventário está finalizado.</strong>
+                        Os itens abaixo estão bloqueados para alteração e o estoque já foi ajustado.
+                    </div>
+                    <a asp-action="Index" class="btn btn-sm btn-outline-primary ms-auto">Voltar para a Lista</a>
+                </div>
+            }
+            else
+            {
+                <form asp-action="Finalizar" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Deseja realmente finalizar?')">
+                    <button type="submit" class="btn btn-success shadow-sm">
+                        ✅ Finalizar e Ajustar Estoque
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    @* --- BUSCA DE PRODUTOS --- *@
+    @if (!Model.Finalizado)
+    {
+        <div class="card mb-4 border-primary shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-primary">🔍 Adicionar Itens à Contagem</h5>
+                <input type="text" id="produtoSearch" class="form-control form-control-lg mb-3" placeholder="Digite o nome do produto..." autocomplete="off" />
+                <div id="produtoCards" class="row"></div>
+            </div>
+        </div>
+    }
+
+    @* --- TABELA DE ITENS --- *@
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+            <h6 class="mb-0"><i class="bi bi-list-check me-2"></i>Itens no Inventário</h6>
+            @if (!Model.Finalizado)
+            {
+                <small class="badge bg-primary-subtle text-primary border border-primary-subtle fw-normal">
+                    💡 Salvamento automático ativo
+                </small>
+            }
+        </div>
+      
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 custom-table">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Produto</th>
+                        <th>Embalagem</th>
+                        <th class="text-center">Qtd. Sistema</th>
+                        <th class="text-center" style="width: 180px;">Sua Contagem</th>
+                        <th class="text-center">Diferença</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Itens != null && Model.Itens.Any())
+                    {
+                        foreach (var item in Model.Itens)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">@item.NomeProduto</div>
+                                    <small class="text-muted">ID: @item.ProdutoId</small>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill bg-light text-dark border">
+                                        @(item.DescricaoEmbalagem ?? "N/A")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="text-muted fw-medium">@item.QuantidadeSistema</span>
+                                </td>
+                                <td class="text-center">
+                                    <input type="number" step="0.01"
+                                           class="form-control form-control-sm text-center fw-bold input-qtd-tabela shadow-none"
+                                           data-itemid="@item.Id"
+                                           value="@((item.QuantidadeContada / (item.Multiplicador > 0 ? item.Multiplicador : 1)).ToString().Replace(",", "."))"
+                                    @(Model.Finalizado ? "disabled" : "") />
+                                </td>
+                                <td class="text-center">
+                                    @{
+                                        var diffClass = item.Diferenca < 0 ? "bg-danger-subtle text-danger" :
+                                                        item.Diferenca > 0 ? "bg-success-subtle text-success" : "bg-light text-muted";
+                                    }
+                                    <span class="badge @diffClass px-3 py-2" style="min-width: 60px;">
+                                        @(item.Diferenca > 0 ? "+" : "")@item.Diferenca
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    @if (!Model.Finalizado)
+                                    {
+                                        <form asp-action="RemoveItem" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="itemId" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm btn-light text-danger btn-delete-row shadow-sm"
+                                                    onclick="return confirm('Remover item?')">
+         
+                                                🗑️ Excluir
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-box-seam d-block fs-2 mb-2"></i>
+                                Nenhum item adicionado ainda.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const produtoSearch = document.getElementById('produtoSearch');
+        const produtoCards = document.getElementById('produtoCards');
+        let debounceTimer;
+
+        if(produtoSearch) {
+            produtoSearch.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(async () => {
+                    const termo = produtoSearch.value.trim();
+                    if (termo.length < 2) { produtoCards.innerHTML = ''; return; }
+
+                    const response = await fetch(`@Url.Action("SearchProduto", "Produto")?query=${termo}`);
+                    const produtos = await response.json();
+                    produtoCards.innerHTML = '';
+
+                    produtos.forEach(p => {
+                        const id = p.idProduto || p.IdProduto;
+                        const nome = p.nomeProduto || p.NomeProduto;
+                        const emb = p.embalagens || p.Embalagens || [];
+                        const img = p.urlImagem || p.UrlImagem || '/images/sem-foto.png';
+
+                        const div = document.createElement('div');
+                        div.className = 'col-md-3 mb-3';
+                        div.innerHTML = `
+                            <div class="card h-100 shadow-sm text-center p-2 border-0 bg-light">
+                                <img src="${img}" style="height:60px; object-fit:contain;" class="mb-2 mx-auto">
+                                <h6 style="font-size:0.75rem; min-height: 2.2rem;" class="mb-2">${nome}</h6>
+                                <select class="form-select form-select-sm mb-2 sel-emb">
+                                    ${emb.map(e => {
+                                        // Garante que pega a descrição independente do nome da propriedade (C# vs JS)
+                                        const desc = e.tipoEmbalagemDescricao || e.TipoEmbalagemDescricao || "Unidade";
+                                        return `<option value="${e.idProdutoEmbalagem || e.IdProdutoEmbalagem}">${desc}</option>`;
+                                    }).join('')}
+                                </select>
+                                <button class="btn btn-primary btn-sm btn-add" data-id="${id}">➕ Adicionar</button>
+                            </div>`;
+                        
+                        div.querySelector('.btn-add').addEventListener('click', () => {
+                            const embId = div.querySelector('.sel-emb').value;
+                            enviarItem(id, embId);
+                        });
+                        produtoCards.appendChild(div);
+                    });
+                }, 400);
+            });
+        }
+
+        async function enviarItem(prodId, embId) {
+            const fd = new FormData();
+            fd.append('InventarioId', '@Model.Id');
+            fd.append('ProdutoId', prodId);
+            fd.append('ProdutoEmbalagemId', embId);
+            fd.append('QuantidadeContada', '0'); // Inicia zerado
+
+            const resp = await fetch('@Url.Action("AddItem", "Inventario")', { method: 'POST', body: fd });
+            if (resp.ok) {
+                location.reload();
+            } else {
+                alert("Erro ao adicionar item.");
+            }
+        }
+
+        document.querySelectorAll('.input-qtd-tabela').forEach(input => {
+            input.addEventListener('change', async function() {
+                const itemId = this.dataset.itemid;
+                const qtdDigitada = this.value.replace('.', ',');
+
+                this.classList.add('is-invalid');
+
+                const fd = new FormData();
+                fd.append('itemId', itemId);
+                fd.append('quantidade', qtdDigitada);
+
+                try {
+                    const resp = await fetch('@Url.Action("UpdateItemQuantity", "Inventario")', {
+                        method: 'POST',
+                        body: fd
+                    });
+
+                    if (resp.ok) {
+                        location.reload();
+                    } else {
+                        alert('Erro ao salvar.');
+                        this.classList.remove('is-invalid');
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+        });
+    </script>
+}

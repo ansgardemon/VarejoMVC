@@ -852,3 +852,55 @@ select {
             border: none;
         }
 }
+
+
+/*ADICIONADO param TESTE. PODE REMOVER se QUISER*/
+
+/* Estilo da Tabela Customizada */
+.custom-table thead th {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.custom-table tbody tr {
+    transition: background-color 0.2s;
+}
+
+/* Input de Quantidade */
+.input-qtd-tabela {
+    width: 100px;
+    margin: 0 auto;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.2s;
+    height: 38px;
+}
+
+    .input-qtd-tabela:focus {
+        border-color: #0d6efd;
+        background-color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1) !important;
+    }
+
+/* Botão de Excluir */
+.btn-delete-row {
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+    .btn-delete-row:hover {
+        background-color: #dc3545 !important;
+        color: white !important;
+    }
+
+/* Estilo para itens finalizados */
+input:disabled {
+    background-color: #f8f9fa !important;
+    border-color: #eee !important;
+    color: #adb5bd !important;
+}

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Varejo.Data;
 
@@ -11,9 +12,11 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    partial class VarejoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260326004558_EspecieMovimentoAjuste")]
+    partial class EspecieMovimentoAjuste
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,50 +24,6 @@ namespace Varejo.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("HistoricoProduto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EspecieMovimentoId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("EstoqueAntes")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<decimal>("EstoqueDepois")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<int>("MovimentoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Observacao")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProdutoId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("QuantidadeMovimento")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Data");
-
-                    b.HasIndex("ProdutoId");
-
-                    b.ToTable("HistoricosProduto");
-                });
 
             modelBuilder.Entity("Parametro", b =>
                 {
@@ -233,56 +192,6 @@ namespace Varejo.Migrations
                     b.ToTable("EspeciesTitulo");
                 });
 
-            modelBuilder.Entity("Varejo.Models.EstoqueConfig", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("EstoqueMaximo")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<decimal>("EstoqueMinimo")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<int>("ProdutoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProdutoId")
-                        .IsUnique();
-
-                    b.ToTable("EstoquesConfig");
-                });
-
-            modelBuilder.Entity("Varejo.Models.EstoqueSnapshot", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Estoque")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<int>("ProdutoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EstoquesSnapshot");
-                });
-
             modelBuilder.Entity("Varejo.Models.Familia", b =>
                 {
                     b.Property<int>("IdFamilia")
@@ -375,64 +284,6 @@ namespace Varejo.Migrations
                     b.HasIndex("PessoaId");
 
                     b.ToTable("FornecedoresFamilia");
-                });
-
-            modelBuilder.Entity("Varejo.Models.Inventario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Finalizado")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Observacao")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Inventarios");
-                });
-
-            modelBuilder.Entity("Varejo.Models.InventarioItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("InventarioId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProdutoEmbalagemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProdutoId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("QuantidadeContada")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<decimal>("QuantidadeSistema")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InventarioId");
-
-                    b.HasIndex("ProdutoEmbalagemId");
-
-                    b.HasIndex("ProdutoId");
-
-                    b.ToTable("InventariosItem");
                 });
 
             modelBuilder.Entity("Varejo.Models.Marca", b =>
@@ -1016,17 +867,6 @@ namespace Varejo.Migrations
                     b.ToTable("Validades");
                 });
 
-            modelBuilder.Entity("HistoricoProduto", b =>
-                {
-                    b.HasOne("Varejo.Models.Produto", "Produto")
-                        .WithMany("Historicos")
-                        .HasForeignKey("ProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Produto");
-                });
-
             modelBuilder.Entity("Parametro", b =>
                 {
                     b.HasOne("Varejo.Models.TipoMovimento", "TipoMovimentoAvaria")
@@ -1065,17 +905,6 @@ namespace Varejo.Migrations
                     b.Navigation("Pessoa");
                 });
 
-            modelBuilder.Entity("Varejo.Models.EstoqueConfig", b =>
-                {
-                    b.HasOne("Varejo.Models.Produto", "Produto")
-                        .WithOne("EstoqueConfig")
-                        .HasForeignKey("Varejo.Models.EstoqueConfig", "ProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Produto");
-                });
-
             modelBuilder.Entity("Varejo.Models.Familia", b =>
                 {
                     b.HasOne("Varejo.Models.Categoria", "Categoria")
@@ -1111,33 +940,6 @@ namespace Varejo.Migrations
                     b.Navigation("Familia");
 
                     b.Navigation("Pessoa");
-                });
-
-            modelBuilder.Entity("Varejo.Models.InventarioItem", b =>
-                {
-                    b.HasOne("Varejo.Models.Inventario", "Inventario")
-                        .WithMany("Itens")
-                        .HasForeignKey("InventarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Varejo.Models.ProdutoEmbalagem", "ProdutoEmbalagem")
-                        .WithMany()
-                        .HasForeignKey("ProdutoEmbalagemId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Varejo.Models.Produto", "Produto")
-                        .WithMany()
-                        .HasForeignKey("ProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Inventario");
-
-                    b.Navigation("Produto");
-
-                    b.Navigation("ProdutoEmbalagem");
                 });
 
             modelBuilder.Entity("Varejo.Models.Movimento", b =>
@@ -1324,11 +1126,6 @@ namespace Varejo.Migrations
                     b.Navigation("Titulos");
                 });
 
-            modelBuilder.Entity("Varejo.Models.Inventario", b =>
-                {
-                    b.Navigation("Itens");
-                });
-
             modelBuilder.Entity("Varejo.Models.Marca", b =>
                 {
                     b.Navigation("Familias");
@@ -1351,11 +1148,6 @@ namespace Varejo.Migrations
 
             modelBuilder.Entity("Varejo.Models.Produto", b =>
                 {
-                    b.Navigation("EstoqueConfig")
-                        .IsRequired();
-
-                    b.Navigation("Historicos");
-
                     b.Navigation("ProdutosEmbalagem");
                 });
 

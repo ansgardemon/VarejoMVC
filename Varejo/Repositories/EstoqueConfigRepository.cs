@@ -70,7 +70,7 @@ namespace Varejo.Repositories
             return true;
         }
 
-        public async Task<bool> AjustarEstoqueInventarioAsync(int produtoId, int inventarioId, decimal novaQuantidade, string? observacao)
+        public async Task<bool> AjustarEstoqueInventarioAsync(int produtoId, int movimentoId, int inventarioId, decimal novaQuantidade, string? observacao)
         {
             var produto = await _context.Produtos.FindAsync(produtoId);
             if (produto == null) return false;
@@ -81,7 +81,7 @@ namespace Varejo.Repositories
             var historico = new HistoricoProduto
             {
                 ProdutoId = produtoId,
-                MovimentoId = 0, // No inventário o vínculo é pelo campo Observacao ou Documento
+                MovimentoId = movimentoId, // No inventário o vínculo é pelo campo Observacao ou Documento
                 Data = DateTime.Now,
                 EspecieMovimentoId = 7, // ID fixo para Inventário/Ajuste
                 QuantidadeMovimento = novaQuantidade - estoqueAnterior, // A diferença gerada

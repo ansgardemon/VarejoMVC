@@ -279,11 +279,12 @@ namespace Varejo.Controllers
         }
 
         //FINALIZAR INVENTARIO
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Finalizar(int id)
         {
-            // 1. Busca o inventário e os itens (incluindo o que é necessário para o processamento)
+            // 1. Busca o inventário e os itens
             var inventario = await _context.Inventarios
                 .Include(i => i.Itens)
                 .FirstOrDefaultAsync(i => i.Id == id);
@@ -297,16 +298,17 @@ namespace Varejo.Controllers
                 Documento = inventario.Id,
                 Observacao = $"Ajuste via Inventário #{inventario.Id} - {inventario.Observacao ?? "Sem obs"}",
                 DataMovimento = DateTime.Now,
-                TipoMovimentoId = 7, // Inventário/Ajuste
+                TipoMovimentoId = 7, // Inventário
                 PessoaId = 1,
                 ProdutosMovimento = new List<ProdutoMovimento>()
             };
 
             _context.Movimentos.Add(novoMovimento);
-            // Salva o movimento primeiro para garantir que o ID esteja disponível para o histórico
+
+            // SALVAMOS AQUI para gerar o ID do movimento que o Repository precisa
             await _context.SaveChangesAsync();
 
-            // 3. Registra CADA linha de contagem na tabela de detalhe do movimento (mantendo o que você fez)
+            // 3. Registramos as linhas de contagem no detalhe do movimento
             foreach (var item in inventario.Itens)
             {
                 var prodMov = new ProdutoMovimento
@@ -314,12 +316,12 @@ namespace Varejo.Controllers
                     ProdutoId = item.ProdutoId,
                     ProdutoEmbalagemId = item.ProdutoEmbalagemId,
                     Quantidade = item.QuantidadeContada,
-                    MovimentoId = novoMovimento.IdMovimento // Usando o ID gerado
+                    MovimentoId = novoMovimento.IdMovimento // Usando o ID já gerado
                 };
                 _context.ProdutosMovimento.Add(prodMov);
             }
 
-            // 4. A MÁGICA DO AGRUPAMENTO: Soma o estoque total das diferentes embalagens
+            // 4. Agrupamos por Produto para somar o estoque TOTAL
             var totaisParaEstoque = inventario.Itens
                 .GroupBy(it => it.ProdutoId)
                 .Select(g => new {
@@ -327,14 +329,14 @@ namespace Varejo.Controllers
                     SomaTotalUnidades = g.Sum(x => x.QuantidadeContada)
                 });
 
-            // 5. ATUALIZAÇÃO DE ESTOQUE + GRAVAÇÃO DE HISTÓRICO
+            // 5. ATUALIZAÇÃO VIA REPOSITORY (Centralizado)
             foreach (var consolidado in totaisParaEstoque)
             {
-                // Aqui chamamos o seu novo Repository para fazer a atualização 
-                // e a inserção na tabela HistoricoProduto ao mesmo tempo
+                // AJUSTE: Passando os 5 parâmetros conforme sua nova assinatura no Repository
                 await _estoqueRepo.AjustarEstoqueInventarioAsync(
                     consolidado.IdProduto,
-                    inventario.Id,
+                    novoMovimento.IdMovimento, // O ID do movimento (FK)
+                    inventario.Id,             // O ID do inventário (para a observação)
                     consolidado.SomaTotalUnidades,
                     novoMovimento.Observacao);
             }
@@ -343,14 +345,12 @@ namespace Varejo.Controllers
             inventario.Finalizado = true;
             _context.Update(inventario);
 
-            // 7. Salva todas as alterações (ProdutosMovimento, Produtos, HistoricoProduto e Inventario)
+            // 7. Salva tudo (Itens do movimento, Históricos e Status do Inventário)
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Inventário finalizado! Estoque atualizado e histórico gerado com sucesso.";
+            TempData["Success"] = "Estoque atualizado com sucesso e histórico gerado!";
             return RedirectToAction(nameof(Details), new { id = id });
         }
-
-
         //DELETAR INVENTARIO
 
 

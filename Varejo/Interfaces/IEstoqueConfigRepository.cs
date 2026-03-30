@@ -15,7 +15,7 @@ namespace Varejo.Interfaces
         Task<bool> RegistrarMovimentacaoAsync(int produtoId, int movimentoId, int especieId, decimal quantidade, string? observacao);
 
         // Para o Inventário: Força o estoque a um valor específico e calcula a diferença para o histórico
-        Task<bool> AjustarEstoqueInventarioAsync(int produtoId, int inventarioId, decimal novaQuantidade, string? observacao);
+        Task<bool> AjustarEstoqueInventarioAsync(int produtoId, int movimentoId, int inventarioId, decimal novaQuantidade, string? observacao);
 
         // Snapshot Diário
         Task<int> GerarSnapshotDiarioAsync();

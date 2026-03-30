@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Varejo.Data;
 
@@ -11,9 +12,11 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    partial class VarejoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260326011529_Estoque")]
+    partial class Estoque
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -410,9 +413,6 @@ namespace Varejo.Migrations
                     b.Property<int>("InventarioId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProdutoEmbalagemId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProdutoId")
                         .HasColumnType("int");
 
@@ -427,8 +427,6 @@ namespace Varejo.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("InventarioId");
-
-                    b.HasIndex("ProdutoEmbalagemId");
 
                     b.HasIndex("ProdutoId");
 
@@ -1121,12 +1119,6 @@ namespace Varejo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Varejo.Models.ProdutoEmbalagem", "ProdutoEmbalagem")
-                        .WithMany()
-                        .HasForeignKey("ProdutoEmbalagemId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Varejo.Models.Produto", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoId")
@@ -1136,8 +1128,6 @@ namespace Varejo.Migrations
                     b.Navigation("Inventario");
 
                     b.Navigation("Produto");
-
-                    b.Navigation("ProdutoEmbalagem");
                 });
 
             modelBuilder.Entity("Varejo.Models.Movimento", b =>

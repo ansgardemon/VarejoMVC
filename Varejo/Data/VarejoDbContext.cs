@@ -36,6 +36,12 @@ namespace Varejo.Data
         public DbSet<PrazoPagamento> PrazosPagamento { get; set; }
         public DbSet<EspecieTitulo> EspeciesTitulo { get; set; }
         public DbSet<PagamentoTitulo> PagamentosTitulo { get; set; }
+        public DbSet<EstoqueConfig> EstoquesConfig { get; set; }
+        public DbSet<EstoqueSnapshot> EstoquesSnapshot { get; set; }
+        public DbSet<HistoricoProduto> HistoricosProduto { get; set; }
+        public DbSet<Inventario> Inventarios { get; set; }
+        public DbSet<InventarioItem> InventariosItem { get; set; }
+
         public DbSet<UsuarioRelatorioFavorito> UsuarioRelatoriosFavoritos { get; set; }
 
         /*
@@ -182,6 +188,55 @@ namespace Varejo.Data
                 .Property(t => t.ValorAberto)
                 .HasColumnType("decimal(18,2)");
 
+            modelBuilder.Entity<HistoricoProduto>()
+    .HasIndex(h => h.ProdutoId);
+
+            modelBuilder.Entity<HistoricoProduto>()
+                .HasIndex(h => h.Data);
+
+            modelBuilder.Entity<HistoricoProduto>()
+       .Property(h => h.EstoqueAntes)
+       .HasPrecision(18, 4);
+
+            modelBuilder.Entity<HistoricoProduto>()
+                .Property(h => h.EstoqueDepois)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<HistoricoProduto>()
+                .Property(h => h.QuantidadeMovimento)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<EstoqueSnapshot>()
+                .Property(e => e.Estoque)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<EstoqueConfig>()
+                .Property(e => e.EstoqueMinimo)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<EstoqueConfig>()
+                .Property(e => e.EstoqueMaximo)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<InventarioItem>()
+                .Property(i => i.QuantidadeSistema)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<InventarioItem>()
+                .Property(i => i.QuantidadeContada)
+                .HasPrecision(18, 4);
+
+            modelBuilder.Entity<InventarioItem>()
+    .HasOne(i => i.ProdutoEmbalagem)
+    .WithMany()
+    .HasForeignKey(i => i.ProdutoEmbalagemId)
+    .OnDelete(DeleteBehavior.NoAction); 
+
+            modelBuilder.Entity<InventarioItem>()
+                .HasOne(i => i.Produto)
+                .WithMany()
+                .HasForeignKey(i => i.ProdutoId)
+                .OnDelete(DeleteBehavior.Cascade); 
             modelBuilder.Entity<UsuarioRelatorioFavorito>()
     .HasIndex(f => new { f.UsuarioId, f.CodigoRelatorio })
     .IsUnique();

@@ -1,0 +1,119 @@
+﻿@model IEnumerable<Varejo.ViewModels.InventarioViewModel>
+
+@{
+    ViewData["Title"] = "Inventários";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm border-0">
+
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Inventários</h5>
+
+            <a asp-action="Create" class="btn btn-light btn-sm">
+                ➕ Novo Inventário
+            </a>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+
+            <!-- ALERTAS -->
+            @if (TempData["Erro"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Erro"]
+                </div>
+            }
+
+            @if (TempData["Sucesso"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Sucesso"]
+                </div>
+            }
+
+            <!-- TABELA -->
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Qtd Itens</th>
+                        <th style="width: 240px;">Ações</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var inv in Model)
+                        {
+                            <tr>
+                                <td>@inv.Id</td>
+
+                                <td>@inv.DataCriacao.ToString("dd/MM/yyyy HH:mm")</td>
+
+                                <td>
+                                    @if (inv.Finalizado)
+                                    {
+                                        <span class="badge bg-success">Finalizado</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Aberto</span>
+                                    }
+                                </td>
+
+                                <td>@(inv.Itens?.Count ?? 0)</td>
+
+                                <td class="d-flex gap-1">
+
+                                    <!-- ABRIR -->
+                                    <a asp-action="Details" asp-route-id="@inv.Id"
+                                           class="btn btn-sm btn-info">
+                                        🔍 Abrir
+                                    </a>
+
+                                    @if (!inv.Finalizado)
+                                    {
+                                        <!-- EDITAR -->
+                                        <a asp-action="Edit" asp-route-id="@inv.Id"
+                                               class="btn btn-sm btn-warning">
+                                            ✏️ Editar
+                                        </a>
+
+                                        <!-- EXCLUIR -->
+                                        <a asp-action="Delete" asp-route-id="@inv.Id"
+                                               class="btn btn-sm btn-danger">
+                                            🗑️ Excluir
+                                        </a>
+                                    }
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                Nenhum inventário encontrado
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

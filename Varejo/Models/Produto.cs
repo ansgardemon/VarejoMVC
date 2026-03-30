@@ -53,5 +53,9 @@ namespace Varejo.Models
         //RELACIONAMENTO UM PARA MUITOS
         [Display(Name = "Embalagens")]
         public virtual ICollection<ProdutoEmbalagem>? ProdutosEmbalagem  { get; set; }
+
+        public ICollection<HistoricoProduto> Historicos { get; set; }
+
+        public EstoqueConfig EstoqueConfig { get; set; }
     }
 }

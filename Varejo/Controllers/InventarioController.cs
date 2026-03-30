@@ -46,7 +46,7 @@ namespace Varejo.Controllers
             return View(viewModel);
         }
 
-        // TELA DE LANÇAMENTO (Onde a mágica acontece)
+        // TELA DE LANÇAMENTO
         public async Task<IActionResult> Details(int id)
         {
             var inventario = await _context.Inventarios
@@ -83,8 +83,12 @@ namespace Varejo.Controllers
             return View(viewModel);
         }
 
+
+
+        //ATUALIZAR QUANTIDADE NO INVENTARIO
+
         [HttpPost]
-        [IgnoreAntiforgeryToken] // Mantido conforme seu código
+        [IgnoreAntiforgeryToken] 
         public async Task<IActionResult> UpdateItemQuantity([FromForm] int itemId, [FromForm] string quantidade)
         {
             // BUSCA DIRETA PELA CHAVE PRIMÁRIA
@@ -137,6 +141,71 @@ namespace Varejo.Controllers
             await _inventarioRepository.CriarInventarioAsync(inventario);
             return RedirectToAction(nameof(Details), new { id = inventario.Id });
         }
+
+
+        //EDITAR INVENTARIO
+
+        // GET: Inventario/Edit/5
+        [Authorize(Roles = "Administrador, Gerente")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var inventario = await _context.Inventarios.FindAsync(id);
+            if (inventario == null) return NotFound();
+
+            var viewModel = new InventarioViewModel
+            {
+                Id = inventario.Id,
+                DataCriacao = inventario.Data,
+                Observacao = inventario.Observacao
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Inventario/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, InventarioViewModel viewModel)
+        {
+            if (id != viewModel.Id) return BadRequest();
+
+            // Buscamos o objeto original do banco
+            var inventarioBanco = await _context.Inventarios.FindAsync(id);
+            if (inventarioBanco == null) return NotFound();
+
+            // Em vez de if(ModelState.IsValid), verificamos apenas os campos que importam
+            if (!string.IsNullOrEmpty(viewModel.Observacao))
+            {
+                try
+                {
+                    inventarioBanco.Data = viewModel.DataCriacao;
+                    inventarioBanco.Observacao = viewModel.Observacao;
+
+                    _context.Update(inventarioBanco);
+                    await _context.SaveChangesAsync();
+
+                    TempData["Sucesso"] = "Inventário atualizado com sucesso!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, "Erro ao salvar: " + ex.Message);
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("Observacao", "A observação é obrigatória.");
+            }
+
+            return View(viewModel);
+        }
+
+
+
+
+
+        //ADICIONAR ITEM AO INVENTÁRIO
+
         [HttpPost]
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> AddItem([FromForm] AddItemRequest request)
@@ -191,6 +260,9 @@ namespace Varejo.Controllers
             }
         }
 
+
+        //REMOVER ITEM DO INVENTARIO
+
         [HttpPost]
         public async Task<IActionResult> RemoveItem(int itemId)
         {
@@ -202,6 +274,8 @@ namespace Varejo.Controllers
 
             return RedirectToAction(nameof(Details), new { id = inventarioId });
         }
+
+        //FINALIZAR INVENTARIO
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -274,20 +348,70 @@ namespace Varejo.Controllers
             return RedirectToAction(nameof(Details), new { id = id });
         }
 
-        [HttpPost]
+
+        //DELETAR INVENTARIO
+
+
+        // GET: Inventario/Delete/5
+        [Authorize(Roles = "Administrador, Gerente")]
         public async Task<IActionResult> Delete(int id)
         {
+            var inventario = await _context.Inventarios
+                .Include(i => i.Itens)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (inventario == null) return NotFound();
+
+            var viewModel = new InventarioViewModel
+            {
+                Id = inventario.Id,
+                DataCriacao = inventario.Data,
+                Observacao = inventario.Observacao,
+                Itens = inventario.Itens.Select(it => new InventarioItemViewModel()).ToList() // Para contar os itens
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Inventario/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var inventario = await _context.Inventarios
+                .Include(i => i.Itens)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (inventario == null) return NotFound();
+
             try
             {
+                // Regra: Não deleta se tiver itens
+                if (inventario.Itens != null && inventario.Itens.Any())
+                    throw new InvalidOperationException("O inventário possui itens lançados e não pode ser excluído.");
+
+                if (inventario.Finalizado)
+                    throw new InvalidOperationException("Não é possível excluir um inventário finalizado.");
+
                 await _inventarioRepository.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                TempData["Erro"] = ex.Message;
-                return RedirectToAction(nameof(Index));
+                ViewData["DeleteError"] = "❌ " + ex.Message;
+
+                var viewModel = new InventarioViewModel
+                {
+                    Id = inventario.Id,
+                    DataCriacao = inventario.Data,
+                    Observacao = inventario.Observacao
+                };
+                return View("Delete", viewModel);
             }
         }
+
+
+        //IMPRIMIR INVENTARIO
 
         public async Task<IActionResult> Imprimir(int id)
         {

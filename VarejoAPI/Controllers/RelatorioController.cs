@@ -92,6 +92,62 @@ namespace VarejoAPI.Controllers
 
         #endregion
 
+        #region RELATÓRIO 103 - MOVIMENTO DE ESTOQUE POR PRODUTO
+
+        [HttpPost("103/dados")]
+        public async Task<ActionResult<List<Relatorio103DTO>>> GetDadosRelatorio103([FromBody] RelatorioFiltro103DTO filtro)
+        {
+            // Começamos pela tabela de itens do movimento
+            var query = _context.ProdutosMovimento
+                .Include(pm => pm.Movimento).ThenInclude(m => m.TipoMovimento)
+                .Include(pm => pm.Movimento).ThenInclude(m => m.Pessoa)
+                .Include(pm => pm.Produto)
+                .Include(pm => pm.ProdutoEmbalagem).ThenInclude(pe => pe.TipoEmbalagem)
+                .AsNoTracking()
+                .AsQueryable();
+
+            // 1. Filtro de Data
+            if (filtro.DataInicio.HasValue)
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio.Value);
+
+            if (filtro.DataFim.HasValue)
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim.Value);
+
+            // 2. Filtro Multi-Select de Produtos
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(pm => filtro.ProdutosIds.Contains(pm.ProdutoId));
+
+            // 3. Projeção
+            var lista = await query
+                .Select(pm => new Relatorio103DTO
+                {
+                    IdMovimento = pm.MovimentoId,
+                    DataMovimento = pm.Movimento != null ? pm.Movimento.DataMovimento : DateTime.MinValue,
+
+                    TipoMovimento = pm.Movimento != null && pm.Movimento.TipoMovimento != null
+                                    ? pm.Movimento.TipoMovimento.DescricaoTipoMovimento
+                                    : "Geral",
+
+                    Pessoa = pm.Movimento != null && pm.Movimento.Pessoa != null
+                             ? pm.Movimento.Pessoa.NomeRazao
+                             : "Não Informado",
+
+                    ProdutoId = pm.ProdutoId,
+                    ProdutoNome = pm.Produto != null ? pm.Produto.NomeProduto : "Desconhecido",
+
+                    Quantidade = pm.Quantidade,
+                    Embalagem = pm.ProdutoEmbalagem != null && pm.ProdutoEmbalagem.TipoEmbalagem != null
+                                ? pm.ProdutoEmbalagem.TipoEmbalagem.DescricaoTipoEmbalagem
+                                : "Un."
+                })
+                .OrderByDescending(x => x.DataMovimento) // Regra: movimentos mais recentes primeiro
+                .ToListAsync();
+
+            return Ok(lista);
+        }
+
+        #endregion
+
         #region MÓDULO 300 - MOVIMENTAÇÕES (Legado/Em Adaptação)
         // Mantive intacto para não quebrar outras partes do seu sistema
         [HttpPost("movimentacoes")]

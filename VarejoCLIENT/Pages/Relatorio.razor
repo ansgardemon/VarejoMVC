@@ -40,30 +40,55 @@
                         </select>
                     </div>
 
-                    @* COMPONENTES MULTI-SELECT COM AS SUAS DTOS *@
                     <div class="col-md-6">
-                        <FiltroMultiSelect TItem="CategoriaOutputDTO"
-                                           Titulo="Categorias"
+                        <FiltroMultiSelect TItem="CategoriaOutputDTO" 
+                                           Titulo="Categorias" 
                                            IconeClass="fa-solid fa-tags"
-                                           Itens="listaCategorias"
-                                           GetId="c => c.IdCategoria.ToString()"
-                                           GetNome="c => c.DescricaoCategoria"
-                                           Selecionados="selecionadosCategorias"
+                                           Itens="listaCategorias" 
+                                           GetId="c => c.IdCategoria.ToString()" 
+                                           GetNome="c => c.DescricaoCategoria" 
+                                           Selecionados="selecionadosCategorias" 
                                            SelecionadosChanged="v => selecionadosCategorias = v" />
                     </div>
                     
                     <div class="col-md-6">
-                        <FiltroMultiSelect TItem="MarcaOutputDTO"
-                                           Titulo="Marcas"
+                        <FiltroMultiSelect TItem="MarcaOutputDTO" 
+                                           Titulo="Marcas" 
                                            IconeClass="fa-solid fa-copyright"
-                                           Itens="listaMarcas"
-                                           GetId="m => m.IdMarca.ToString()"
-                                           GetNome="m => m.NomeMarca"
-                                           Selecionados="selecionadosMarcas"
+                                           Itens="listaMarcas" 
+                                           GetId="m => m.IdMarca.ToString()" 
+                                           GetNome="m => m.NomeMarca" 
+                                           Selecionados="selecionadosMarcas" 
                                            SelecionadosChanged="v => selecionadosMarcas = v" />
                     </div>
                 </div>
             }
+            @* ======= AQUI ENTRA A TELA DO NOSSO RELATÓRIO 103 ======= *@
+            else if (Codigo == 103)
+            {
+                <div class="row g-3">
+                    @* COMPONENTE DE DATA (Início, Fim e Atalhos) *@
+                    <div class="col-md-6">
+                        <FiltroData DataInicio="filtro103.DataInicio" 
+                                    DataInicioChanged="v => filtro103.DataInicio = v"
+                                    DataFim="filtro103.DataFim"
+                                    DataFimChanged="v => filtro103.DataFim = v" />
+                    </div>
+
+                    @* COMPONENTE MULTI-SELECT PARA PRODUTOS *@
+                    <div class="col-md-6">
+                        <FiltroMultiSelect TItem="ProdutoDTO" 
+                                           Titulo="Produtos" 
+                                           IconeClass="fa-solid fa-box"
+                                           Itens="listaTodosProdutos" 
+                                           GetId="p => p.IdProduto.ToString()" 
+                                           GetNome="p => p.NomeProduto" 
+                                           Selecionados="selecionadosProdutos103" 
+                                           SelecionadosChanged="v => selecionadosProdutos103 = v" />
+                    </div>
+                </div>
+            }
+            @* ========================================================= *@
             else if (Codigo >= 300 && Codigo < 400)
             {
                 <div class="row g-3">
@@ -100,6 +125,12 @@
                         {
                             <RelatorioTabelaDinamica TItem="ProdutoDTO" Dados="listaProdutos" Colunas="colunasProdutos" />
                         }
+                        @* ======= AQUI A TABELA DO 103 É RENDERIZADA ======= *@
+                        else if (Codigo == 103 && lista103 != null && lista103.Any())
+                        {
+                            <RelatorioTabelaDinamica TItem="Relatorio103DTO" Dados="lista103" Colunas="colunas103" />
+                        }
+                        @* ==================================================== *@
                         else if (Codigo == 301 && listaMovimentos != null && listaMovimentos.Any())
                         {
                             <RelatorioTabelaDinamica TItem="MovimentoOutputDTO" Dados="listaMovimentos" Colunas="colunasMovimentos" />
@@ -118,6 +149,7 @@
     }
 </main>
 
+
 @code {
     [Parameter] public int Codigo { get; set; }
     private RelatorioDefinicaoDTO? definicao;
@@ -128,13 +160,19 @@
     private RelatorioFiltroProdutosDTO filtroProdutos = new();
     private List<ProdutoDTO>? listaProdutos;
     
-    // Listas para os filtros (Preenchidas no OnInitialized)
+    // Listas para os filtros do 101
     private List<CategoriaOutputDTO> listaCategorias = new();
     private List<MarcaOutputDTO> listaMarcas = new();
-    
-    // Controle do que o usuário selecionou nos checkboxes
     private List<string> selecionadosCategorias = new();
     private List<string> selecionadosMarcas = new();
+
+    // --- VARIÁVEIS RELATÓRIO 103 (MOVIMENTO DE ESTOQUE POR PRODUTO) ---
+    private RelatorioFiltro103DTO filtro103 = new();
+    private List<Relatorio103DTO>? lista103;
+    
+    // Listas para o filtro do 103
+    private List<ProdutoDTO> listaTodosProdutos = new();
+    private List<string> selecionadosProdutos103 = new();
 
     // --- VARIÁVEIS RELATÓRIO 301 (MOVIMENTOS) ---
     private RelatorioFiltroMovimentacaoDTO filtroMov = new();
@@ -150,6 +188,16 @@
         new() { Titulo = "Custo", Propriedade = "CustoMedio", Formato = "C2" }
     };
 
+    private List<RelatorioTabelaDinamica<Relatorio103DTO>.ConfigColuna> colunas103 = new() {
+        new() { Titulo = "ID Mov", Propriedade = "IdMovimento" },
+        new() { Titulo = "Data", Propriedade = "DataMovimento", Formato = "dd/MM/yyyy" },
+        new() { Titulo = "Produto", Propriedade = "ProdutoNome" },
+        new() { Titulo = "Qtd", Propriedade = "Quantidade", Formato = "N2" },
+        new() { Titulo = "Unid", Propriedade = "Embalagem" },
+        new() { Titulo = "Tipo Mov.", Propriedade = "TipoMovimento" },
+        new() { Titulo = "Pessoa", Propriedade = "Pessoa" }
+    };
+
     private List<RelatorioTabelaDinamica<MovimentoOutputDTO>.ConfigColuna> colunasMovimentos = new() {
         new() { Titulo = "ID", Propriedade = "IdMovimento" },
         new() { Titulo = "Data", Propriedade = "DataMovimento", Formato = "dd/MM/yyyy" },
@@ -159,11 +207,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // NOTA: Certifique-se de ter esses métodos no seu RelService para popular os filtros!
-        // Se ainda não tiver, deixe comentado por enquanto só para testar a tabela.
+        // NOTA: Certifique-se de ter esses métodos no seu RelService ou outro Service para popular os filtros!
         /*
         listaCategorias = await RelService.GetCategoriasAsync() ?? new();
         listaMarcas = await RelService.GetMarcasAsync() ?? new();
+        
+        // Chamada para preencher a lista de produtos no filtro do 103
+        var filtroVazio = new RelatorioFiltroProdutosDTO();
+        listaTodosProdutos = await RelService.GetProdutosFiltradosAsync(filtroVazio) ?? new();
         */
     }
 
@@ -183,13 +234,18 @@
         {
             if (Codigo == 101)
             {
-                // Converte as seleções de string para INT antes de enviar para a API
                 filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
                 filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
 
-                // Lembre-se de confirmar se este é o nome exato do seu método no Service!
                 listaProdutos = await RelService.GetProdutosFiltradosAsync(filtroProdutos);
                 dadosVazios = listaProdutos == null || !listaProdutos.Any();
+            }
+            else if (Codigo == 103)
+            {
+                filtro103.ProdutosIds = selecionadosProdutos103.Select(int.Parse).ToList();
+                
+                lista103 = await RelService.GetDadosRelatorio103Async(filtro103);
+                dadosVazios = lista103 == null || !lista103.Any();
             }
             else if (Codigo == 301)
             {
@@ -209,14 +265,22 @@
 
     private void Limpar()
     {
+        // Limpa 101
         listaProdutos = null;
-        listaMovimentos = null;
-        
         filtroProdutos = new();
         selecionadosCategorias.Clear();
         selecionadosMarcas.Clear();
         
+        // Limpa 103
+        lista103 = null;
+        filtro103 = new();
+        selecionadosProdutos103.Clear();
+
+        // Limpa 301
+        listaMovimentos = null;
         filtroMov = new();
+        
+        // Limpa Estado Geral
         dadosVazios = false;
     }
 
@@ -231,11 +295,16 @@
         {
             if (Codigo == 101)
             {
-                // Converte as strings para INT também na exportação
                 filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
                 filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
                 
                 await RelService.DownloadPdfAsync(Codigo, definicao.Nome, filtroProdutos);
+            }
+            else if (Codigo == 103)
+            {
+                filtro103.ProdutosIds = selecionadosProdutos103.Select(int.Parse).ToList();
+                
+                await RelService.DownloadPdfAsync(Codigo, definicao.Nome, filtro103);
             }
             else if (Codigo == 301)
             {

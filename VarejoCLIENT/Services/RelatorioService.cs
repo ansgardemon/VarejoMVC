@@ -19,13 +19,23 @@ namespace VarejoCLIENT.Services
         // --- MENU E DEFINIÇÕES ---
         public async Task<List<RelatorioDefinicaoDTO>> GetMenuRelatoriosAsync()
         {
-            // Lista mockada com a sua nova regra de prefixos #100, #200...
+            // É daqui que a sua tela de menu puxa os "Cards". 
+            // Quando tiver banco de dados para isso, é só trocar esse Task.FromResult por uma chamada _http.GetFromJsonAsync
             return await Task.FromResult(new List<RelatorioDefinicaoDTO>
             {
-                new RelatorioDefinicaoDTO { Codigo = 101, Nome = "Relação Geral de Produtos", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 102, Nome = "Tabela de Preços e Custos", Categoria = "#100 - Produtos" },
+                // MÓDULO 100 - PRODUTOS
+                new RelatorioDefinicaoDTO { Codigo = 101, Nome = "Produtos Categorizados", Categoria = "#100 - Produtos", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 102, Nome = "Produtos por Valores", Categoria = "#100 - Produtos" },
+                new RelatorioDefinicaoDTO { Codigo = 103, Nome = "Movimento de Estoque por Produto", Categoria = "#100 - Produtos" }, // <-- NOSSO NOVO RELATÓRIO AQUI!
+                new RelatorioDefinicaoDTO { Codigo = 104, Nome = "Curva ABC de Produtos", Categoria = "#100 - Produtos" },
+                new RelatorioDefinicaoDTO { Codigo = 105, Nome = "Produtos Sem Giro", Categoria = "#100 - Produtos" },
+                
+                // MÓDULO 200 - ESTOQUE
                 new RelatorioDefinicaoDTO { Codigo = 201, Nome = "Posição Atual de Estoque", Categoria = "#200 - Estoque" },
                 new RelatorioDefinicaoDTO { Codigo = 202, Nome = "Lotes e Validades", Categoria = "#200 - Estoque" },
+                new RelatorioDefinicaoDTO { Codigo = 203, Nome = "Movimentação de Estoque Geral", Categoria = "#200 - Estoque" },
+                
+                // MÓDULO 300 - MOVIMENTAÇÕES
                 new RelatorioDefinicaoDTO { Codigo = 301, Nome = "Histórico de Movimentações", Categoria = "#300 - Movimentações" }
             });
         }
@@ -43,6 +53,17 @@ namespace VarejoCLIENT.Services
         {
             var response = await _http.PostAsJsonAsync("api/relatorio/101/dados", filtro);
             return await response.Content.ReadFromJsonAsync<List<ProdutoDTO>>() ?? new();
+        }
+
+        // Relatório 103 (Movimento por Produto)
+        public async Task<List<Relatorio103DTO>> GetDadosRelatorio103Async(RelatorioFiltro103DTO filtro)
+        {
+            var response = await _http.PostAsJsonAsync("api/relatorio/103/dados", filtro);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<Relatorio103DTO>>() ?? new();
+            }
+            return new List<Relatorio103DTO>();
         }
 
         // Relatório 301 (Movimentações)
@@ -66,8 +87,8 @@ namespace VarejoCLIENT.Services
             string rotaApi = codigo switch
             {
                 101 => "api/relatorio/101/exportar/pdf",
-                // Quando criarmos o de movimentações será: 301 => "api/relatorio/301/exportar/pdf"
-                _ => $"api/relatorio/exportar/pdf" // fallback provisório
+                103 => "api/relatorio/103/exportar/pdf",
+                _ => $"api/relatorio/exportar/pdf"
             };
 
             var response = await _http.PostAsJsonAsync(rotaApi, filtro);
@@ -84,20 +105,6 @@ namespace VarejoCLIENT.Services
             {
                 Console.WriteLine($"Erro ao gerar PDF: {response.StatusCode}");
             }
-        }
-
-        //#101
-        public async Task<List<Relatorio101DTO>> GetDadosRelatorio101Async(RelatorioFiltro101DTO filtro)
-        {
-            // Fazemos um POST enviando o filtro no corpo da requisição
-            var response = await _http.PostAsJsonAsync("api/relatorio/101/dados", filtro);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<List<Relatorio101DTO>>() ?? new List<Relatorio101DTO>();
-            }
-
-            return new List<Relatorio101DTO>(); // Retorna vazio em caso de erro para não quebrar a tela
         }
     }
 }

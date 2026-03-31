@@ -38,7 +38,7 @@ namespace Varejo.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> RegistrarMovimentacaoAsync(int produtoId, int movimentoId, int produtoEmbalagemId, decimal quantidadeInformada, string? observacao)
+        public async Task<bool> RegistrarMovimentacaoAsync(int produtoId, int movimentoId, int tipoId, int produtoEmbalagemId, decimal quantidadeInformada, string? observacao)
         {
             var produto = await _context.Produtos.FindAsync(produtoId);
             if (produto == null) return false;
@@ -88,7 +88,8 @@ namespace Varejo.Repositories
                 ProdutoId = produtoId,
                 MovimentoId = movimentoId,
                 Data = DateTime.Now,
-                EspecieMovimentoId = especieId,
+                TipoMovimentoId = tipoId, // GRAVA O TIPO (Venda, Compra...)
+                EspecieMovimentoId = especieId, // GRAVA A ESPÉCIE (Entrada, Saída...)
                 QuantidadeMovimento = quantidadeParaHistorico,
                 EstoqueAntes = estoqueAnterior,
                 EstoqueDepois = estoquePosterior,
@@ -118,7 +119,8 @@ namespace Varejo.Repositories
                 ProdutoId = produtoId,
                 MovimentoId = movimentoId, // No inventário o vínculo é pelo campo Observacao ou Documento
                 Data = DateTime.Now,
-                EspecieMovimentoId = 7, // ID fixo para Inventário/Ajuste
+                TipoMovimentoId = 7, // FIXO PARA AJUSTE DE ESTOQUE
+                EspecieMovimentoId = 3, //FIXO PARA AJUSTE DE ESTOQUE
                 QuantidadeMovimento = novaQuantidade - estoqueAnterior, // A diferença gerada
                 EstoqueAntes = estoqueAnterior,
                 EstoqueDepois = novaQuantidade,

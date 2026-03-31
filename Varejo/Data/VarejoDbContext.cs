@@ -242,6 +242,25 @@ namespace Varejo.Data
     .IsUnique();
 
 
+            // Configuração para evitar o ciclo de cascata no Histórico
+            modelBuilder.Entity<HistoricoProduto>()
+                .HasOne(h => h.Movimento)
+                .WithMany() // ou .WithMany(m => m.Historicos) se você criou a coleção na Model
+                .HasForeignKey(h => h.MovimentoId)
+                .OnDelete(DeleteBehavior.Restrict); // O Ponto Chave: Restrict ou NoAction
+
+            modelBuilder.Entity<HistoricoProduto>()
+                .HasOne(h => h.TipoMovimento)
+                .WithMany()
+                .HasForeignKey(h => h.TipoMovimentoId)
+                .OnDelete(DeleteBehavior.Restrict); // Evita o segundo caminho de cascata
+
+            modelBuilder.Entity<HistoricoProduto>()
+                .HasOne(h => h.EspecieMovimento)
+                .WithMany()
+                .HasForeignKey(h => h.EspecieMovimentoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
 
             //PROPRIEDADES OCULTAS PARA AUDITORIA

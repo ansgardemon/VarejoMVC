@@ -72,26 +72,21 @@
 
                                 <td>@(inv.Itens?.Count ?? 0)</td>
 
-                                <td class="d-flex gap-1">
+                                <td class="d-flex gap-2">
+                                    @* Usei gap-2 para um espaçamento melhor *@
 
-                                    <!-- ABRIR -->
-                                    <a asp-action="Details" asp-route-id="@inv.Id"
-                                           class="btn btn-sm btn-info">
-                                        🔍 Abrir
+                                    <a asp-action="Details" asp-route-id="@inv.Id" class="btn btn-sm btn-info text-white">
+                                        <i class="fa-solid fa-magnifying-glass"></i> Abrir
                                     </a>
 
                                     @if (!inv.Finalizado)
                                     {
-                                        <!-- EDITAR -->
-                                        <a asp-action="Edit" asp-route-id="@inv.Id"
-                                               class="btn btn-sm btn-warning">
-                                            ✏️ Editar
+                                        <a asp-action="Edit" asp-route-id="@inv.Id" class="btn btn-sm btn-warning">
+                                            <i class="fa-solid fa-pen-to-square"></i> Editar
                                         </a>
 
-                                        <!-- EXCLUIR -->
-                                        <a asp-action="Delete" asp-route-id="@inv.Id"
-                                               class="btn btn-sm btn-danger">
-                                            🗑️ Excluir
+                                        <a asp-action="Delete" asp-route-id="@inv.Id" class="btn btn-sm btn-danger">
+                                            <i class="fa-solid fa-trash"></i> Excluir
                                         </a>
                                     }
 

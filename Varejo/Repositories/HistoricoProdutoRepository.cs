@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
 using Varejo.Interfaces;
+using Varejo.Models;
 
 namespace Varejo.Repositories
 {

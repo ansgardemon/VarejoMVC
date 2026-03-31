@@ -1,0 +1,73 @@
+﻿<div class="card border-0 shadow-sm p-3 mb-3" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));">
+    <label class="form-label small fw-bold text-uppercase opacity-75">
+        <i class="fa-solid fa-calendar-days me-2"></i> Período
+    </label>
+    
+    <div class="row g-2 mb-2">
+        <div class="col-6">
+            <input type="date" class="form-control form-control-sm" 
+                   value="@DataInicio?.ToString("dd-MM-yyyy")" 
+                   @onchange="OnDataInicioChanged" />
+        </div>
+        <div class="col-6">
+            <input type="date" class="form-control form-control-sm" 
+                   value="@DataFim?.ToString("dd-MM-yyyy")" 
+                   @onchange="OnDataFimChanged" />
+        </div>
+    </div>
+    
+    <div class="d-flex flex-wrap gap-1 mt-2">
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" @onclick="SetHoje">Hoje</button>
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" @onclick="SetOntem">Ontem</button>
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" @onclick="SetMesAtual">Mês Atual</button>
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" @onclick="SetMesAnterior">Mês Anterior</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public DateTime? DataInicio { get; set; }
+    [Parameter] public EventCallback<DateTime?> DataInicioChanged { get; set; }
+
+    [Parameter] public DateTime? DataFim { get; set; }
+    [Parameter] public EventCallback<DateTime?> DataFimChanged { get; set; }
+
+    private async Task OnDataInicioChanged(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out DateTime d))
+            await DataInicioChanged.InvokeAsync(d);
+        else
+            await DataInicioChanged.InvokeAsync(null);
+    }
+
+    private async Task OnDataFimChanged(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out DateTime d))
+            await DataFimChanged.InvokeAsync(d);
+        else
+            await DataFimChanged.InvokeAsync(null);
+    }
+
+    private async Task SetHoje() => await AtualizarPeriodo(DateTime.Today, DateTime.Today);
+    
+    private async Task SetOntem() => await AtualizarPeriodo(DateTime.Today.AddDays(-1), DateTime.Today.AddDays(-1));
+    
+    private async Task SetMesAtual()
+    {
+        var hoje = DateTime.Today;
+        await AtualizarPeriodo(new DateTime(hoje.Year, hoje.Month, 1), 
+                               new DateTime(hoje.Year, hoje.Month, DateTime.DaysInMonth(hoje.Year, hoje.Month)));
+    }
+    
+    private async Task SetMesAnterior()
+    {
+        var mesAnterior = DateTime.Today.AddMonths(-1);
+        await AtualizarPeriodo(new DateTime(mesAnterior.Year, mesAnterior.Month, 1), 
+                               new DateTime(mesAnterior.Year, mesAnterior.Month, DateTime.DaysInMonth(mesAnterior.Year, mesAnterior.Month)));
+    }
+
+    private async Task AtualizarPeriodo(DateTime inicio, DateTime fim)
+    {
+        await DataInicioChanged.InvokeAsync(inicio);
+        await DataFimChanged.InvokeAsync(fim);
+    }
+}

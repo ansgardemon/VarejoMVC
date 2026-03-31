@@ -41,7 +41,7 @@ namespace VarejoCLIENT.Services
         // Relatório 101 (Produtos)
         public async Task<List<ProdutoDTO>> GetProdutosFiltradosAsync(RelatorioFiltroProdutosDTO filtro)
         {
-            var response = await _http.PostAsJsonAsync("api/relatorio/produtos", filtro);
+            var response = await _http.PostAsJsonAsync("api/relatorio/101/dados", filtro);
             return await response.Content.ReadFromJsonAsync<List<ProdutoDTO>>() ?? new();
         }
 
@@ -62,20 +62,42 @@ namespace VarejoCLIENT.Services
         // --- EXPORTAÇÃO ---
         public async Task DownloadPdfAsync(int codigo, string nomeRelatorio, object filtro)
         {
-            var url = codigo == 101 ? "api/relatorio/exportar/pdf" : $"api/relatorio/exportar/pdf/{codigo}";
-            var response = await _http.PostAsJsonAsync(url, filtro);
+            // Descobre a rota certa baseada no Código do Relatório
+            string rotaApi = codigo switch
+            {
+                101 => "api/relatorio/101/exportar/pdf",
+                // Quando criarmos o de movimentações será: 301 => "api/relatorio/301/exportar/pdf"
+                _ => $"api/relatorio/exportar/pdf" // fallback provisório
+            };
+
+            var response = await _http.PostAsJsonAsync(rotaApi, filtro);
 
             if (response.IsSuccessStatusCode)
             {
-                // Limpa o nome para não ter espaços ou caracteres estranhos no arquivo
-                string nomeArquivo = $"Relatorio_{codigo}_{nomeRelatorio.Replace(" ", "_")}.pdf";
+                var fileBytes = await response.Content.ReadAsByteArrayAsync();
+                var fileName = $"{nomeRelatorio.Replace(" ", "_")}_{DateTime.Now:yy_MM_dd_HH-mm}.pdf";
 
-                var fileStream = await response.Content.ReadAsStreamAsync();
-                using var streamRef = new DotNetStreamReference(stream: fileStream);
-
-                // Passa o nome dinâmico para o JS
-                await _js.InvokeVoidAsync("downloadFileFromStream", nomeArquivo, streamRef);
+                // Chama a função JS para baixar o arquivo
+                await _js.InvokeVoidAsync("downloadFileFromBytes", fileName, fileBytes);
             }
+            else
+            {
+                Console.WriteLine($"Erro ao gerar PDF: {response.StatusCode}");
+            }
+        }
+
+        //#101
+        public async Task<List<Relatorio101DTO>> GetDadosRelatorio101Async(RelatorioFiltro101DTO filtro)
+        {
+            // Fazemos um POST enviando o filtro no corpo da requisição
+            var response = await _http.PostAsJsonAsync("api/relatorio/101/dados", filtro);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<Relatorio101DTO>>() ?? new List<Relatorio101DTO>();
+            }
+
+            return new List<Relatorio101DTO>(); // Retorna vazio em caso de erro para não quebrar a tela
         }
     }
 }

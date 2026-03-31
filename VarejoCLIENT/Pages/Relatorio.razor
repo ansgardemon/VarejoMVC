@@ -2,6 +2,7 @@
 @using VarejoAPI.DTO
 @using VarejoSHARED.DTO
 @using VarejoCLIENT.Services
+@using VarejoCLIENT.Components
 @using VarejoCLIENT.Components.Relatorios
 @inject RelatorioService RelService
 @inject NavigationManager Nav
@@ -23,33 +24,61 @@
 
         @* COMPONENTE DE FILTRO *@
         <RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
-            @if (Codigo >= 100 && Codigo < 200)
+            @if (Codigo == 101)
             {
-                <div class="col-md-8">
-                    <label class="form-label fw-bold small" style="color: var(--sys-primary);">Termo de Busca</label>
-                    <input type="text" class="form-control shadow-sm" @bind="filtroProdutos.TermoBusca" placeholder="Nome, ID ou Marca..." />
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold small" style="color: var(--sys-primary);">Situação</label>
-                    <select class="form-select shadow-sm" @bind="filtroProdutos.Ativo">
-                        <option value="true">Ativos</option>
-                        <option value="false">Inativos</option>
-                    </select>
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold small" style="color: var(--sys-primary);">Termo de Busca</label>
+                        <input type="text" class="form-control shadow-sm" @bind="filtroProdutos.TermoBusca" placeholder="Nome, ID ou Marca..." />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small" style="color: var(--sys-primary);">Situação</label>
+                        <select class="form-select shadow-sm" @bind="filtroProdutos.Ativo">
+                            <option value="">Todos</option>
+                            <option value="true">Ativos</option>
+                            <option value="false">Inativos</option>
+                        </select>
+                    </div>
+
+                    @* COMPONENTES MULTI-SELECT COM AS SUAS DTOS *@
+                    <div class="col-md-6">
+                        <FiltroMultiSelect TItem="CategoriaOutputDTO"
+                                           Titulo="Categorias"
+                                           IconeClass="fa-solid fa-tags"
+                                           Itens="listaCategorias"
+                                           GetId="c => c.IdCategoria.ToString()"
+                                           GetNome="c => c.DescricaoCategoria"
+                                           Selecionados="selecionadosCategorias"
+                                           SelecionadosChanged="v => selecionadosCategorias = v" />
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <FiltroMultiSelect TItem="MarcaOutputDTO"
+                                           Titulo="Marcas"
+                                           IconeClass="fa-solid fa-copyright"
+                                           Itens="listaMarcas"
+                                           GetId="m => m.IdMarca.ToString()"
+                                           GetNome="m => m.NomeMarca"
+                                           Selecionados="selecionadosMarcas"
+                                           SelecionadosChanged="v => selecionadosMarcas = v" />
+                    </div>
                 </div>
             }
             else if (Codigo >= 300 && Codigo < 400)
             {
-                <div class="col-md-4">
-                    <label class="form-label fw-bold small" style="color: var(--sys-primary);">Início</label>
-                    <input type="date" class="form-control shadow-sm" @bind="filtroMov.DataInicio" />
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold small" style="color: var(--sys-primary);">Fim</label>
-                    <input type="date" class="form-control shadow-sm" @bind="filtroMov.DataFim" />
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold small" style="color: var(--sys-primary);">ID Pessoa</label>
-                    <input type="number" class="form-control shadow-sm" @bind="filtroMov.IdPessoa" placeholder="Filtrar por ID..." />
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small" style="color: var(--sys-primary);">Início</label>
+                        <input type="date" class="form-control shadow-sm" @bind="filtroMov.DataInicio" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small" style="color: var(--sys-primary);">Fim</label>
+                        <input type="date" class="form-control shadow-sm" @bind="filtroMov.DataFim" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small" style="color: var(--sys-primary);">ID Pessoa</label>
+                        <input type="number" class="form-control shadow-sm" @bind="filtroMov.IdPessoa" placeholder="Filtrar por ID..." />
+                    </div>
                 </div>
             }
         </RelatorioFiltro>
@@ -67,17 +96,20 @@
             {
                 <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
                     <div class="table-responsive">
-                        @if (Codigo == 101 && listaProdutos != null)
+                        @if (Codigo == 101 && listaProdutos != null && listaProdutos.Any())
                         {
                             <RelatorioTabelaDinamica TItem="ProdutoDTO" Dados="listaProdutos" Colunas="colunasProdutos" />
                         }
-                        else if (Codigo == 301 && listaMovimentos != null)
+                        else if (Codigo == 301 && listaMovimentos != null && listaMovimentos.Any())
                         {
                             <RelatorioTabelaDinamica TItem="MovimentoOutputDTO" Dados="listaMovimentos" Colunas="colunasMovimentos" />
                         }
                         else if (dadosVazios)
                         {
-                            <div class="p-5 text-center text-muted">Nenhum registro encontrado para os filtros aplicados.</div>
+                            <div class="p-5 text-center text-muted">
+                                <i class="fa-solid fa-folder-open fa-2x mb-3 opacity-50"></i>
+                                <p class="mb-0">Nenhum registro encontrado para os filtros aplicados.</p>
+                            </div>
                         }
                     </div>
                 </div>
@@ -92,22 +124,32 @@
     private bool loading = false;
     private bool dadosVazios = false;
 
+    // --- VARIÁVEIS RELATÓRIO 101 (PRODUTOS) ---
+    private RelatorioFiltroProdutosDTO filtroProdutos = new();
     private List<ProdutoDTO>? listaProdutos;
+    
+    // Listas para os filtros (Preenchidas no OnInitialized)
+    private List<CategoriaOutputDTO> listaCategorias = new();
+    private List<MarcaOutputDTO> listaMarcas = new();
+    
+    // Controle do que o usuário selecionou nos checkboxes
+    private List<string> selecionadosCategorias = new();
+    private List<string> selecionadosMarcas = new();
+
+    // --- VARIÁVEIS RELATÓRIO 301 (MOVIMENTOS) ---
+    private RelatorioFiltroMovimentacaoDTO filtroMov = new();
     private List<MovimentoOutputDTO>? listaMovimentos;
 
-    private RelatorioFiltroProdutosDTO filtroProdutos = new();
-    private RelatorioFiltroMovimentacaoDTO filtroMov = new();
-
-    // Configuração de Colunas para Produtos (#101)
+    // --- CONFIGURAÇÃO DE COLUNAS ---
     private List<RelatorioTabelaDinamica<ProdutoDTO>.ConfigColuna> colunasProdutos = new() {
         new() { Titulo = "ID", Propriedade = "IdProduto" },
         new() { Titulo = "Produto", Propriedade = "NomeProduto" },
         new() { Titulo = "Categoria", Propriedade = "DescricaoCategoria" },
+        new() { Titulo = "Marca", Propriedade = "NomeMarca" },
         new() { Titulo = "Estoque", Propriedade = "EstoqueAtual", Formato = "N2" },
         new() { Titulo = "Custo", Propriedade = "CustoMedio", Formato = "C2" }
     };
 
-    // Configuração de Colunas para Movimentações (#301)
     private List<RelatorioTabelaDinamica<MovimentoOutputDTO>.ConfigColuna> colunasMovimentos = new() {
         new() { Titulo = "ID", Propriedade = "IdMovimento" },
         new() { Titulo = "Data", Propriedade = "DataMovimento", Formato = "dd/MM/yyyy" },
@@ -115,9 +157,18 @@
         new() { Titulo = "Tipo", Propriedade = "TipoMovimento" }
     };
 
+    protected override async Task OnInitializedAsync()
+    {
+        // NOTA: Certifique-se de ter esses métodos no seu RelService para popular os filtros!
+        // Se ainda não tiver, deixe comentado por enquanto só para testar a tabela.
+        /*
+        listaCategorias = await RelService.GetCategoriasAsync() ?? new();
+        listaMarcas = await RelService.GetMarcasAsync() ?? new();
+        */
+    }
+
     protected override async Task OnParametersSetAsync()
     {
-        // Reset de estado ao trocar de relatório
         definicao = await RelService.GetDefinicaoAsync(Codigo);
         Limpar();
     }
@@ -132,6 +183,11 @@
         {
             if (Codigo == 101)
             {
+                // Converte as seleções de string para INT antes de enviar para a API
+                filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+                filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+
+                // Lembre-se de confirmar se este é o nome exato do seu método no Service!
                 listaProdutos = await RelService.GetProdutosFiltradosAsync(filtroProdutos);
                 dadosVazios = listaProdutos == null || !listaProdutos.Any();
             }
@@ -155,7 +211,11 @@
     {
         listaProdutos = null;
         listaMovimentos = null;
+        
         filtroProdutos = new();
+        selecionadosCategorias.Clear();
+        selecionadosMarcas.Clear();
+        
         filtroMov = new();
         dadosVazios = false;
     }
@@ -169,9 +229,12 @@
 
         try
         {
-            // CORREÇÃO: Passando os 3 argumentos (Codigo, Nome, Filtro)
             if (Codigo == 101)
             {
+                // Converte as strings para INT também na exportação
+                filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+                filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+                
                 await RelService.DownloadPdfAsync(Codigo, definicao.Nome, filtroProdutos);
             }
             else if (Codigo == 301)

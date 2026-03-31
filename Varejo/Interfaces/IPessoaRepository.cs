@@ -11,5 +11,7 @@ namespace Varejo.Interfaces
         Task UpdateAsync(Pessoa pessoa);
 
         Task<List<Pessoa>> SearchByNameAsync(string nome);
+
+        Task<List<Pessoa>> GetClientesAtivosAsync();
     }
 }

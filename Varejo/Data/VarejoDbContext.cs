@@ -43,6 +43,8 @@ namespace Varejo.Data
         public DbSet<InventarioItem> InventariosItem { get; set; }
 
         public DbSet<UsuarioRelatorioFavorito> UsuarioRelatoriosFavoritos { get; set; }
+        public DbSet<Venda> Vendas { get; set; }
+        public DbSet<VendaItem> VendasItem { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo

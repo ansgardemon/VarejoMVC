@@ -46,15 +46,61 @@ namespace Varejo.Controllers
 
             if (produto == null) return NotFound();
 
-            // Busca o histórico ordenado do mais novo para o mais antigo
-            var historico = await _context.HistoricosProduto
+            // Query unindo Histórico com Movimento e TipoMovimento
+            var historicoVm = await _context.HistoricosProduto
                 .Where(h => h.ProdutoId == id)
-                .OrderByDescending(h => h.Data)
-                .ThenByDescending(h => h.Id) // Desempate pelo ID
+                .Join(_context.Movimentos,
+                    h => h.MovimentoId,
+                    m => m.IdMovimento,
+                    (h, m) => new { h, m })
+                .Select(join => new HistoricoProdutoViewModel
+                {
+                    Id = join.h.Id,
+                    Data = join.h.Data,
+                    // Buscamos a descrição lá do TipoMovimento vinculado ao cabeçalho
+                    TipoMovimento = join.m.TipoMovimento.DescricaoTipoMovimento,
+                    EstoqueAntes = join.h.EstoqueAntes,
+                    QuantidadeMovimento = join.h.QuantidadeMovimento,
+                    EstoqueDepois = join.h.EstoqueDepois,
+                    Observacao = join.h.Observacao
+                })
+                .OrderByDescending(x => x.Data)
+                .ThenByDescending(x => x.Id)
                 .ToListAsync();
 
             ViewBag.Produto = produto;
-            return View(historico);
+            return View(historicoVm);
+        }
+
+        public async Task<IActionResult> PrintDetails(int id)
+        {
+            var produto = await _context.Produtos
+                .Include(p => p.Familia)
+                .FirstOrDefaultAsync(p => p.IdProduto == id);
+
+            if (produto == null) return NotFound();
+
+            var historicoVm = await _context.HistoricosProduto
+                .Where(h => h.ProdutoId == id)
+                .Join(_context.Movimentos,
+                    h => h.MovimentoId,
+                    m => m.IdMovimento,
+                    (h, m) => new { h, m })
+                .Select(join => new HistoricoProdutoViewModel
+                {
+                    Data = join.h.Data,
+                    TipoMovimento = join.m.TipoMovimento.DescricaoTipoMovimento,
+                    EstoqueAntes = join.h.EstoqueAntes,
+                    QuantidadeMovimento = join.h.QuantidadeMovimento,
+                    EstoqueDepois = join.h.EstoqueDepois,
+                    Observacao = join.h.Observacao
+                })
+                .OrderByDescending(x => x.Data)
+                .ToListAsync();
+
+            ViewBag.Produto = produto;
+            // Retorna a View de impressão que vamos criar abaixo
+            return View("PrintDetails", historicoVm);
         }
 
     }

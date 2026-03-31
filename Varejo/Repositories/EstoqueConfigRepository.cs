@@ -38,35 +38,70 @@ namespace Varejo.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> RegistrarMovimentacaoAsync(int produtoId, int movimentoId, int especieId, decimal quantidade, string? observacao)
+        public async Task<bool> RegistrarMovimentacaoAsync(int produtoId, int movimentoId, int produtoEmbalagemId, decimal quantidadeInformada, string? observacao)
         {
             var produto = await _context.Produtos.FindAsync(produtoId);
             if (produto == null) return false;
 
+            // 1. Busca o movimento para saber a Espécie (Entrada/Saída/Ajuste)
+            var movimento = await _context.Movimentos
+                .Include(m => m.TipoMovimento)
+                .ThenInclude(t => t.EspecieMovimento)
+                .FirstOrDefaultAsync(m => m.IdMovimento == movimentoId);
+
+            if (movimento == null) return false;
+
+            // 2. Busca o multiplicador da embalagem (Ex: Caixa com 12)
+            var produtoEmbalagem = await _context.ProdutosEmbalagem
+                .Include(pe => pe.TipoEmbalagem)
+                .FirstOrDefaultAsync(pe => pe.IdProdutoEmbalagem == produtoEmbalagemId);
+
+            decimal multiplicador = produtoEmbalagem?.TipoEmbalagem?.Multiplicador ?? 1;
+            decimal quantidadeReal = quantidadeInformada * multiplicador;
+
+            // 3. Define o impacto no estoque baseado na Espécie
             decimal estoqueAnterior = produto.EstoqueAtual;
+            decimal estoquePosterior = estoqueAnterior;
+            decimal quantidadeParaHistorico = 0;
 
-            // IMPORTANTE: Aqui a 'quantidade' já deve vir negativa se for Saída 
-            // ou você pode tratar o sinal baseado no especieId (ex: se for 1, soma; se for 2, subtrai)
-            decimal estoquePosterior = estoqueAnterior + quantidade;
+            var especieId = movimento.TipoMovimento.EspecieMovimento.IdEspecieMovimento;
 
+            switch (especieId)
+            {
+                case 1: // Entrada
+                    quantidadeParaHistorico = quantidadeReal;
+                    estoquePosterior = estoqueAnterior + quantidadeReal;
+                    break;
+                case 2: // Saída
+                    quantidadeParaHistorico = -quantidadeReal; // Fica negativo no Kardex
+                    estoquePosterior = estoqueAnterior - quantidadeReal;
+                    break;
+                case 3: // Ajuste (Inventário)
+                    quantidadeParaHistorico = quantidadeReal - estoqueAnterior;
+                    estoquePosterior = quantidadeReal; // O valor informado vira o novo saldo
+                    break;
+            }
+
+            // 4. Cria o registro de Histórico (Kardex)
             var historico = new HistoricoProduto
             {
                 ProdutoId = produtoId,
                 MovimentoId = movimentoId,
                 Data = DateTime.Now,
                 EspecieMovimentoId = especieId,
-                QuantidadeMovimento = quantidade,
+                QuantidadeMovimento = quantidadeParaHistorico,
                 EstoqueAntes = estoqueAnterior,
                 EstoqueDepois = estoquePosterior,
                 Observacao = observacao
             };
 
-            // Atualiza o saldo do produto
+            // 5. Atualiza o saldo real no cadastro do Produto
             produto.EstoqueAtual = estoquePosterior;
 
             _context.HistoricosProduto.Add(historico);
             _context.Produtos.Update(produto);
 
+            // Nota: O SaveChangesAsync será chamado no Controller para garantir a transação única
             return true;
         }
 

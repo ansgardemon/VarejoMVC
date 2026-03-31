@@ -37,6 +37,10 @@ builder.Services.AddScoped<IEspecieTituloRepository, EspecieTituloRepository>();
 builder.Services.AddScoped<ITituloFinanceiroRepository, TituloFinanceiroRepository>();
 builder.Services.AddScoped<IPrazoPagamentoRepository, PrazoPagamentoRepository>();
 builder.Services.AddScoped<IPagamentoTituloRepository, PagamentoTituloRepository>();
+builder.Services.AddScoped<IInventarioRepository, InventarioRepository>();
+builder.Services.AddScoped<IEstoqueRepository, EstoqueRepository>();
+builder.Services.AddScoped<IHistoricoProdutoRepository, HistoricoProdutoRepository>();
+
 
 
 

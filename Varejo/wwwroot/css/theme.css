@@ -38,7 +38,7 @@
 
 /* ================== DARK MODE ================== */
 
-[data-theme="dark"] {
+:root.dark {
     --ui-bg-gradient-start: #0f172a;
     --ui-bg-gradient-end: #1e293b;
     --ui-text-primary: #a4daf5;

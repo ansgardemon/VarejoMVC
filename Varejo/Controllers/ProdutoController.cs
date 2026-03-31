@@ -263,6 +263,17 @@ namespace Varejo.Controllers
 
 
 
+        [HttpGet]
+        public async Task<IActionResult> SearchProduto(string query)
+        {
+            // O Repositório já faz a validação e o mapeamento para ViewModel
+            var produtos = await _produtoRepository.GetByNameAsync(query);
+
+            // Retornamos exatamente o que veio, mas em JSON
+            // O ASP.NET vai converter as propriedades para camelCase (ex: idProduto) por padrão
+            return Json(produtos);
+        }
+
 
         // EDIT GET
         [Authorize(Roles = "Administrador, Gerente")]

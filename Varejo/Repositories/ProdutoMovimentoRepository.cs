@@ -73,7 +73,7 @@ namespace Varejo.Repositories
 
             var especieId = movimento.TipoMovimento.EspecieMovimento.IdEspecieMovimento;
 
-            // 🔹 1 = Entrada | 2 = Saída
+            // 🔹 1 = Entrada | 2 = Saída | 3 = Ajuste
             switch (especieId)
             {
                 case 1:
@@ -82,6 +82,10 @@ namespace Varejo.Repositories
 
                 case 2:
                     produto.EstoqueAtual -= quantidadeReal;
+                    break;
+
+                case 3:
+                    produto.EstoqueAtual = quantidadeReal; // Ajuste direto
                     break;
             }
 

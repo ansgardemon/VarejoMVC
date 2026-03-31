@@ -1,0 +1,69 @@
+﻿@model Varejo.ViewModels.InventarioViewModel
+@{ Layout = null; }
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Impressão Inventário #@Model.Id</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; color: #333; }
+        .header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background-color: #f2f2f2; border: 1px solid #000; padding: 12px; text-align: left; }
+        td { border: 1px solid #000; padding: 10px; }
+        .footer { margin-top: 50px; text-align: center; font-size: 12px; }
+        .linha-assinatura { margin-top: 60px; border-top: 1px solid #000; width: 300px; display: inline-block; }
+        
+        @@media print {
+            .btn-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="btn-print" style="margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 10px 20px; cursor: pointer;">🖨️ Confirmar Impressão</button>
+        <button onclick="window.close()" style="padding: 10px 20px; cursor: pointer;">❌ Fechar</button>
+    </div>
+
+    <div class="header">
+        <h2>LISTA DE CONFERÊNCIA DE ESTOQUE</h2>
+        <strong>Inventário Nº: @Model.Id</strong><br>
+        <span>Data de Abertura: @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50%;">Produto</th>
+                <th style="width: 25%;">Embalagem</th>
+                <th style="width: 25%;">Contagem Real</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Itens)
+            {
+                <tr>
+                    <td><strong>@item.NomeProduto</strong></td>
+                    <td>@item.DescricaoEmbalagem</td>
+                    <td style="text-align: center;">___________________________</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!string.IsNullOrEmpty(Model.Observacao))
+    {
+        <p><strong>Obs:</strong> @Model.Observacao</p>
+    }
+
+    <div style="text-align: center; margin-top: 80px;">
+        <div class="linha-assinatura"></div>
+        <br>
+        <span>Assinatura do Conferente</span>
+    </div>
+
+    <div class="footer">
+        Relatório gerado em @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+    </div>
+</body>
+</html>

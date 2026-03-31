@@ -46,26 +46,24 @@ namespace Varejo.Controllers
 
             if (produto == null) return NotFound();
 
-            // Query unindo Histórico com Movimento e TipoMovimento
+            // Agora buscamos direto do HistoricosProduto carregando as relações
             var historicoVm = await _context.HistoricosProduto
+                .Include(h => h.TipoMovimento)
+                .Include(h => h.EspecieMovimento)
                 .Where(h => h.ProdutoId == id)
-                .Join(_context.Movimentos,
-                    h => h.MovimentoId,
-                    m => m.IdMovimento,
-                    (h, m) => new { h, m })
-                .Select(join => new HistoricoProdutoViewModel
+                .OrderByDescending(h => h.Data)
+                .ThenByDescending(h => h.Id)
+                .Select(h => new HistoricoProdutoViewModel
                 {
-                    Id = join.h.Id,
-                    Data = join.h.Data,
-                    // Buscamos a descrição lá do TipoMovimento vinculado ao cabeçalho
-                    TipoMovimento = join.m.TipoMovimento.DescricaoTipoMovimento,
-                    EstoqueAntes = join.h.EstoqueAntes,
-                    QuantidadeMovimento = join.h.QuantidadeMovimento,
-                    EstoqueDepois = join.h.EstoqueDepois,
-                    Observacao = join.h.Observacao
+                    Id = h.Id,
+                    Data = h.Data,
+                    TipoMovimento = h.TipoMovimento.DescricaoTipoMovimento,
+                    EspecieMovimento = h.EspecieMovimento.DescricaoEspecieMovimento,
+                    EstoqueAntes = h.EstoqueAntes,
+                    QuantidadeMovimento = h.QuantidadeMovimento,
+                    EstoqueDepois = h.EstoqueDepois,
+                    Observacao = h.Observacao
                 })
-                .OrderByDescending(x => x.Data)
-                .ThenByDescending(x => x.Id)
                 .ToListAsync();
 
             ViewBag.Produto = produto;

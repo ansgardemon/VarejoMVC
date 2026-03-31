@@ -12,7 +12,7 @@ namespace Varejo.Interfaces
         Task UpdateAsync(EstoqueConfig config);
 
         // O "Coração" do sistema: Registra qualquer entrada/saída e gera o histórico
-        Task<bool> RegistrarMovimentacaoAsync(int produtoId, int movimentoId, int especieId, decimal quantidade, string? observacao);
+        Task<bool> RegistrarMovimentacaoAsync(int produtoId, int movimentoId, int tipoId, int produtoEmbalagemId, decimal quantidadeInformada, string? observacao);
 
         // Para o Inventário: Força o estoque a um valor específico e calcula a diferença para o histórico
         Task<bool> AjustarEstoqueInventarioAsync(int produtoId, int movimentoId, int inventarioId, decimal novaQuantidade, string? observacao);

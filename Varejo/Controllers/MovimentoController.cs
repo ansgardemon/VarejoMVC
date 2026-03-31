@@ -133,11 +133,12 @@ namespace Varejo.Controllers
                 // Se não, podemos passar (movimento.TipoMovimentoId == 2 ? -item.Quantidade : item.Quantidade)
 
                 await _estoqueRepo.RegistrarMovimentacaoAsync(
-                        item.ProdutoId,
-                        movimento.IdMovimento,
-                        item.ProdutoEmbalagemId, // Agora o repositório vai achar o multiplicador (12, 6, etc)
-                        item.Quantidade,
-                        movimento.Observacao
+             item.ProdutoId,            // 1: produtoId
+        movimento.IdMovimento,     // 2: movimentoId
+        movimento.TipoMovimentoId, // 3: tipoId
+        item.ProdutoEmbalagemId,   // 4: produtoEmbalagemId
+        item.Quantidade,           // 5: quantidadeInformada
+        movimento.Observacao       // 6: observacao (O argumento que ele diz qu
                                 );
             }
 

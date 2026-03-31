@@ -106,5 +106,29 @@ namespace VarejoCLIENT.Services
                 Console.WriteLine($"Erro ao gerar PDF: {response.StatusCode}");
             }
         }
+
+        // --- MÉTODOS PARA POPULAR OS FILTROS ---
+
+        public async Task<List<CategoriaOutputDTO>> GetCategoriasAsync()
+        {
+            // Verifique se a rota na sua API é esta mesma (ex: api/categorias ou api/relatorio/categorias)
+            var response = await _http.GetAsync("api/categoria");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<CategoriaOutputDTO>>() ?? new();
+            }
+            return new List<CategoriaOutputDTO>();
+        }
+
+        public async Task<List<MarcaOutputDTO>> GetMarcasAsync()
+        {
+            // Verifique se a rota na sua API é esta mesma
+            var response = await _http.GetAsync("api/marca");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<MarcaOutputDTO>>() ?? new();
+            }
+            return new List<MarcaOutputDTO>();
+        }
     }
 }

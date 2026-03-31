@@ -126,10 +126,38 @@
                             <RelatorioTabelaDinamica TItem="ProdutoDTO" Dados="listaProdutos" Colunas="colunasProdutos" />
                         }
                         @* ======= AQUI A TABELA DO 103 É RENDERIZADA ======= *@
-                        else if (Codigo == 103 && lista103 != null && lista103.Any())
+else if (Codigo == 103)
+            {
+                <div class="row g-3">
+                    @* COMPONENTE DE DATA *@
+                    <div class="col-md-6">
+                        <FiltroData DataInicio="filtro103.DataInicio" 
+                                    DataInicioChanged="v => filtro103.DataInicio = v"
+                                    DataFim="filtro103.DataFim"
+                                    DataFimChanged="v => filtro103.DataFim = v" />
+                    </div>
+
+                    @* COMPONENTE MULTI-SELECT - Adicionada proteção de nulo *@
+                    <div class="col-md-6">
+                        @if (listaTodosProdutos != null)
                         {
-                            <RelatorioTabelaDinamica TItem="Relatorio103DTO" Dados="lista103" Colunas="colunas103" />
+                            <FiltroMultiSelect TItem="ProdutoDTO" 
+                                               Titulo="Produtos" 
+                                               IconeClass="fa-solid fa-box"
+                                               Itens="listaTodosProdutos" 
+                                               GetId="p => p.IdProduto.ToString()" 
+                                               GetNome="p => p.NomeProduto" 
+                                               Selecionados="selecionadosProdutos103" 
+                                               SelecionadosChanged="v => selecionadosProdutos103 = v" />
                         }
+                        else
+                        {
+                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                            <span class="ms-2 small text-muted">Carregando produtos...</span>
+                        }
+                    </div>
+                </div>
+            }
                         @* ==================================================== *@
                         else if (Codigo == 301 && listaMovimentos != null && listaMovimentos.Any())
                         {
@@ -207,15 +235,21 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // NOTA: Certifique-se de ter esses métodos no seu RelService ou outro Service para popular os filtros!
-        /*
-        listaCategorias = await RelService.GetCategoriasAsync() ?? new();
-        listaMarcas = await RelService.GetMarcasAsync() ?? new();
-        
-        // Chamada para preencher a lista de produtos no filtro do 103
-        var filtroVazio = new RelatorioFiltroProdutosDTO();
-        listaTodosProdutos = await RelService.GetProdutosFiltradosAsync(filtroVazio) ?? new();
-        */
+        try
+        {
+            // Precisamos carregar as listas para que os filtros funcionem!
+            // Certifique-se que esses nomes de métodos batem com seu RelatorioService
+            listaCategorias = await RelService.GetCategoriasAsync() ?? new();
+            listaMarcas = await RelService.GetMarcasAsync() ?? new();
+            
+            // Para o 103, carregamos a lista global de produtos
+            var filtroVazio = new RelatorioFiltroProdutosDTO();
+            listaTodosProdutos = await RelService.GetProdutosFiltradosAsync(filtroVazio) ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar filtros: {ex.Message}");
+        }
     }
 
     protected override async Task OnParametersSetAsync()

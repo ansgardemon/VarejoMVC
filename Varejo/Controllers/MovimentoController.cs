@@ -13,12 +13,17 @@ namespace Varejo.Controllers
         private readonly VarejoDbContext _context;
         private readonly IProdutoMovimentoRepository _produtoMovimentoRepository;
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IEstoqueRepository _estoqueRepo; // Adicionado para buscar dados do produto
 
-        public MovimentoController(VarejoDbContext context, IProdutoMovimentoRepository produtoMovimentoRepository, IProdutoRepository produtoRepository)
+        public MovimentoController(VarejoDbContext context,
+            IProdutoMovimentoRepository produtoMovimentoRepository,
+            IProdutoRepository produtoRepository,
+            IEstoqueRepository estoqueRepo)
         {
             _context = context;
             _produtoMovimentoRepository = produtoMovimentoRepository;
             _produtoRepository = produtoRepository;
+            _estoqueRepo = estoqueRepo;
         }
 
         // LISTAR TODOS
@@ -92,25 +97,27 @@ namespace Varejo.Controllers
                 ViewBag.Pessoas = _context.Pessoas.ToList();
                 ViewBag.TiposMovimento = _context.TiposMovimento.ToList();
                 ViewBag.Produtos = _context.Produtos.ToList();
+                ViewBag.ProdutoEmbalagens = _context.ProdutosEmbalagem.Include(pe => pe.TipoEmbalagem).ToList();
                 return View(vm);
             }
 
-            // Criar Movimento
+            // 1. Criar e Salvar o Cabeçalho do Movimento
             var movimento = new Movimento
             {
                 Documento = vm.Documento,
-                Observacao = vm.Observacao,
+                Observacao = vm.Observacao ?? "Movimentação Manual",
                 DataMovimento = DateTime.Now,
                 TipoMovimentoId = vm.TipoMovimentoId,
                 PessoaId = vm.PessoaId
             };
 
             _context.Movimentos.Add(movimento);
-            await _context.SaveChangesAsync(); // salva para gerar IdMovimento
+            await _context.SaveChangesAsync(); // Gera o IdMovimento necessário para o Histórico
 
-            // Criar ProdutoMovimento e atualizar estoque
+            // 2. Processar os Itens
             foreach (var item in vm.Produtos)
             {
+                // Criar o registro na tabela de detalhe (ProdutoMovimento)
                 var produtoMovimento = new ProdutoMovimento
                 {
                     MovimentoId = movimento.IdMovimento,
@@ -118,14 +125,29 @@ namespace Varejo.Controllers
                     ProdutoEmbalagemId = item.ProdutoEmbalagemId,
                     Quantidade = item.Quantidade
                 };
-
                 _context.ProdutosMovimento.Add(produtoMovimento);
-                await _produtoMovimentoRepository.AtualizarEstoqueAsync(produtoMovimento);
+
+                // 3. O PONTO CHAVE: Registrar no Histórico e Atualizar Saldo do Produto
+                // Passamos a quantidade exatamente como ela é. 
+                // Se o seu Repository já trata o sinal (+ ou -) baseado no TipoMovimentoId, ótimo.
+                // Se não, podemos passar (movimento.TipoMovimentoId == 2 ? -item.Quantidade : item.Quantidade)
+
+                await _estoqueRepo.RegistrarMovimentacaoAsync(
+             item.ProdutoId,            // 1: produtoId
+        movimento.IdMovimento,     // 2: movimentoId
+        movimento.TipoMovimentoId, // 3: tipoId
+        item.ProdutoEmbalagemId,   // 4: produtoEmbalagemId
+        item.Quantidade,           // 5: quantidadeInformada
+        movimento.Observacao       // 6: observacao (O argumento que ele diz qu
+                                );
             }
 
+            // 4. Salva todas as alterações de uma vez
             await _context.SaveChangesAsync();
 
+            TempData["Success"] = "Movimentação realizada e histórico atualizado!";
             return RedirectToAction(nameof(Index));
         }
     }
+
 }

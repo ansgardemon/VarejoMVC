@@ -1,4 +1,6 @@
-﻿namespace Varejo.Interfaces
+﻿using Varejo.Models;
+
+namespace Varejo.Interfaces
 {
     public interface IHistoricoProdutoRepository
     {

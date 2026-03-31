@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Varejo.ViewModels.HistoricoProdutoViewModel>
+@{
+    Layout = null; // Remove menus e rodapés do sistema
+    var produto = ViewBag.Produto as Varejo.Models.Produto;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Impressão - Extrato @produto.NomeProduto</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { font-size: 12px; background-color: white; }
+        .header-print { border-bottom: 2px solid #333; margin-bottom: 20px; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; }
+        @@media print {
+            .no-print { display: none; }
+            body { margin: 1cm; }
+        }
+    </style>
+</head>
+<body onload="window.print();"> <div class="container-fluid">
+        <div class="header-print d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0">EXTRATO DE MOVIMENTAÇÃO</h4>
+                <p class="mb-0"><strong>Produto:</strong> @produto.IdProduto - @produto.NomeProduto</p>
+                <p class="mb-0"><strong>Família:</strong> @produto.Familia?.NomeFamilia</p>
+            </div>
+            <div class="text-end">
+                <p class="mb-0">Data de Impressão: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+                <h5 class="mb-0">Saldo Atual: @produto.EstoqueAtual.ToString("N2")</h5>
+            </div>
+        </div>
+
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Operação</th>
+                    <th class="text-end">Anterior</th>
+                    <th class="text-center">Movimento</th>
+                    <th class="text-end">Posterior</th>
+                    <th>Obs.</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@item.TipoMovimento</td>
+                        <td class="text-end">@item.EstoqueAntes.ToString("N2")</td>
+                        <td class="text-center fw-bold">
+                            @if (item.QuantidadeMovimento > 0) { <span>+@item.QuantidadeMovimento.ToString("N2")</span> }
+                            else { <span>@item.QuantidadeMovimento.ToString("N2")</span> }
+                        </td>
+                        <td class="text-end">@item.EstoqueDepois.ToString("N2")</td>
+                        <td>@item.Observacao</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

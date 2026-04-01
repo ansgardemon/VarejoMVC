@@ -47,7 +47,7 @@ namespace Varejo.Models
         //RELACIONAMENTO COM OUTRA TABELA
 
         [Display(Name = "Família")]
-        public int FamiliaId { get; set; }
+        public int FamiliaId    { get; set; }
         public virtual Familia? Familia { get; set; }
 
         //RELACIONAMENTO UM PARA MUITOS

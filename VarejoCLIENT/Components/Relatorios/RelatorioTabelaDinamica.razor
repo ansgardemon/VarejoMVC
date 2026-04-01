@@ -6,13 +6,20 @@
         <tr style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
             @foreach (var coluna in Colunas)
             {
-                <th style="border-bottom: 1px solid var(--glass-border); cursor: pointer;"
-                    @onclick="() => OrdenarPor(coluna.Propriedade)">
-                    <div class="d-flex align-items-center">
-                        @coluna.Titulo
+                <th style="border-bottom: 1px solid var(--glass-border); cursor: pointer; user-select: none;"
+                    @onclick="() => OrdenarPor(coluna.Propriedade)"
+                    title="Clique para ordenar por @coluna.Titulo">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span>@coluna.Titulo</span>
+                        
+                        @* Troca para FontAwesome (que seu projeto já usa) *@
                         @if (colunaOrdenacaoAtual == coluna.Propriedade)
                         {
-                            <i class="bi @(ordemCrescente ? "bi-caret-up-fill" : "bi-caret-down-fill") ms-2"></i>
+                            <i class="@(ordemCrescente ? "fa-solid fa-arrow-up" : "fa-solid fa-arrow-down") ms-2 text-primary"></i>
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-sort ms-2 opacity-25"></i>
                         }
                     </div>
                 </th>

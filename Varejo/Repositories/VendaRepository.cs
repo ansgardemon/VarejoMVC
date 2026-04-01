@@ -8,11 +8,16 @@ namespace Varejo.Repositories
     public class VendaRepository : IVendaRepository
     {
         private readonly VarejoDbContext _context;
+        private readonly ITituloFinanceiroRepository _financeiroRepo;
         private readonly IEstoqueRepository _estoqueRepo;
 
-        public VendaRepository(VarejoDbContext context, IEstoqueRepository estoqueRepo)
+        public VendaRepository(
+            VarejoDbContext context,
+            ITituloFinanceiroRepository financeiroRepo,
+            IEstoqueRepository estoqueRepo)
         {
             _context = context;
+            _financeiroRepo = financeiroRepo;
             _estoqueRepo = estoqueRepo;
         }
 
@@ -47,85 +52,78 @@ namespace Varejo.Repositories
 
         public async Task<bool> FaturarVendaAsync(int vendaId)
         {
-            var venda = await GetByIdAsync(vendaId);
+            var venda = await _context.Vendas
+                .Include(v => v.Itens)
+                .FirstOrDefaultAsync(v => v.IdVenda == vendaId);
+
             if (venda == null || venda.Finalizada) return false;
 
-            // Iniciamos uma transação para garantir que ou grava TUDO ou NADA
+            // Iniciamos a transação para garantir que se o Financeiro falhar, 
+            // o Estoque não seja baixado.
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                // 1. Obter Parâmetros de Movimentação para Venda
+                // 1. Buscar o Tipo de Movimento de Venda nos Parâmetros
                 var parametros = await _context.Parametros.FirstOrDefaultAsync();
-                if (parametros == null) throw new Exception("Parâmetros de venda não configurados.");
+                if (parametros == null) throw new Exception("Parâmetros do sistema não configurados.");
 
-                // 2. Criar o Movimento de Estoque (Cabeçalho)
+                // 2. Criar o Cabeçalho do Movimento de Estoque
                 var movimento = new Movimento
                 {
-                    Documento = venda.IdVenda, // Usamos o ID da venda como número do doc
+                    Documento = venda.IdVenda,
                     DataMovimento = DateTime.Now,
                     TipoMovimentoId = parametros.TipoMovimentoVendaId,
                     PessoaId = venda.PessoaId,
                     Observacao = $"Faturamento Venda #{venda.IdVenda}"
                 };
                 _context.Movimentos.Add(movimento);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // Gera o Id do Movimento
 
-                // 3. Processar Itens: Estoque, Kardex e MovimentoProduto
+                // 3. Processar Itens e Registrar no Estoque (com Kardex/Histórico)
                 foreach (var item in venda.Itens)
                 {
-                    // Grava o item no movimento (Para relatórios fiscais/gerenciais)
-                    var movProd = new ProdutoMovimento
-                    {
-                        MovimentoId = movimento.IdMovimento,
-                        ProdutoId = item.ProdutoId,
-                        ProdutoEmbalagemId = item.ProdutoEmbalagemId,
-                        Quantidade = item.Quantidade
-                    };
-                    _context.ProdutosMovimento.Add(movProd);
+                    // 🔥 USANDO SEU MÉTODO COMPLETO: RegistrarMovimentacaoAsync
+                    // Ele já cuida de: Multiplicador, Espécie (Saída), Histórico e Saldo do Produto.
+                    var ok = await _estoqueRepo.RegistrarMovimentacaoAsync(
+                        produtoId: item.ProdutoId,
+                        movimentoId: movimento.IdMovimento,
+                        tipoId: movimento.TipoMovimentoId,
+                        produtoEmbalagemId: item.ProdutoEmbalagemId,
+                        quantidadeInformada: item.Quantidade,
+                        observacao: $"Item da Venda #{venda.IdVenda}"
+                    );
 
-                    // BAIXA NO ESTOQUE REAL (Reutilizando seu método core)
-                    // Ele já vai tratar o multiplicador da embalagem e gerar o HistoricoProduto
-                    await _estoqueRepo.RegistrarMovimentacaoAsync(
-                        item.ProdutoId,
-                        movimento.IdMovimento,
-                        movimento.TipoMovimentoId,
-                        item.ProdutoEmbalagemId,
-                        item.Quantidade,
-                        movimento.Observacao
+                    if (!ok) throw new Exception($"Erro ao baixar estoque do produto ID {item.ProdutoId}");
+                }
+
+                // 4. Gerar o Financeiro Parcelado (Seu método que faz a mágica do 30/60/90)
+                if (venda.PrazoPagamentoId.HasValue)
+                {
+                    await _financeiroRepo.GerarTitulosAsync(
+                        documento: venda.IdVenda,
+                        valorTotal: venda.ValorFinal,
+                        prazoPagamentoId: venda.PrazoPagamentoId.Value,
+                        especieTituloId: 1, // ID da Espécie de Título (ex: Venda/Duplicata)
+                        formaPagamentoId: venda.FormaPagamentoId,
+                        pessoaId: venda.PessoaId,
+                        dataEmissao: DateTime.Now
                     );
                 }
 
-                // 4. Gerar Título Financeiro
-                // Aqui usamos o ValorFinal (Subtotal - DescontoTotal) da sua Model Venda
-                var titulo = new TituloFinanceiro
-                {
-                    Documento = venda.IdVenda,
-                    Parcela = 1,
-                    PessoaId = venda.PessoaId,
-                    Valor = venda.ValorFinal,
-                    DataEmissao = DateTime.Now,
-                    DataVencimento = DateTime.Now.AddDays(30), // Simplificado, pode vir do PrazoPagamento
-                    EspecieTituloId = 1, // Ex: "Venda"
-                    FormaPagamentoId = venda.FormaPagamentoId,
-                    PrazoPagamentoId = venda.PrazoPagamentoId,
-                    Observacao = $"Venda #{venda.IdVenda}"
-                };
-                titulo.AtualizarValores();
-                _context.TitulosFinanceiro.Add(titulo);
-
-                // 5. Marcar Venda como Finalizada
+                // 5. Finalizar a Venda
                 venda.Finalizada = true;
                 _context.Vendas.Update(venda);
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                throw;
+                throw new Exception("Falha no faturamento: " + ex.Message);
             }
         }
 

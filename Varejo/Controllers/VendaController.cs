@@ -15,6 +15,7 @@ namespace Varejo.Controllers
         private readonly IFormaPagamentoRepository _formaRepo;
         private readonly IPrazoPagamentoRepository _prazoRepo;
         private readonly IProdutoRepository _produtoRepo; // Adicionado para usar seu GetByNameAsync
+        private readonly IEstoqueRepository _estoqueRepo; // Adicionado para buscar dados do produto
         private readonly VarejoDbContext _context;
 
         public VendaController(
@@ -23,6 +24,7 @@ namespace Varejo.Controllers
             IFormaPagamentoRepository formaRepo,
             IPrazoPagamentoRepository prazoRepo,
             IProdutoRepository produtoRepo,
+            IEstoqueRepository estoqueRepo,
             VarejoDbContext context
             )
         {
@@ -32,6 +34,7 @@ namespace Varejo.Controllers
             _prazoRepo = prazoRepo;
             _produtoRepo = produtoRepo;
             _context = context;
+            _estoqueRepo = estoqueRepo;
         }
 
         public async Task<IActionResult> Index(DateTime? dataInicio, DateTime? dataFim, string cliente, string status)
@@ -126,25 +129,77 @@ namespace Varejo.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var venda = await _vendaRepo.GetByIdAsync(id);
+            // O segredo está nestes .ThenInclude para carregar os nomes
+            var venda = await _context.Vendas
+                .Include(v => v.Pessoa)
+                .Include(v => v.FormaPagamento)
+                .Include(v => v.PrazoPagamento)
+                .Include(v => v.Itens)
+                    .ThenInclude(i => i.Produto) // Carrega o objeto Produto para pegar o Nome
+                .Include(v => v.Itens)
+                    .ThenInclude(i => i.ProdutoEmbalagem)
+                        .ThenInclude(e => e.TipoEmbalagem) // Carrega a descrição da embalagem
+                .FirstOrDefaultAsync(m => m.IdVenda == id);
+
             if (venda == null) return NotFound();
-            return View(venda);
+
+            var model = new VendaViewModelDetails
+            {
+                IdVenda = venda.IdVenda,
+                PessoaId = venda.PessoaId,
+                FormaPagamentoId = venda.FormaPagamentoId,
+                PrazoPagamentoId = venda.PrazoPagamentoId,
+                Observacao = venda.Observacao,
+                ValorSubtotal = venda.ValorSubtotal,
+                DescontoTotal = venda.DescontoTotal,
+                Finalizada = venda.Finalizada,
+
+                // Aqui resolvemos o "vermelho":
+                Itens = venda.Itens.Select(i => new VendaItemViewModelDetails
+                {
+                    ProdutoId = i.ProdutoId,
+                    // Buscamos o nome direto da navegação do objeto de banco
+                    NomeProduto = i.Produto?.NomeProduto ?? "Produto não encontrado",
+
+                    ProdutoEmbalagemId = i.ProdutoEmbalagemId,
+                    // Buscamos a descrição da embalagem da mesma forma
+                    NomeEmbalagem = i.ProdutoEmbalagem?.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "Unidade",
+
+                    Quantidade = i.Quantidade,
+                    ValorUnitario = i.ValorUnitario,
+                    DescontoUnitario = i.DescontoUnitario
+                }).ToList()
+            };
+
+            ViewBag.NomeCliente = venda.Pessoa?.NomeRazao ?? "Consumidor";
+            ViewBag.DescricaoPagamento = venda.FormaPagamento?.DescricaoFormaPagamento;
+            ViewBag.DescricaoPrazo = venda.PrazoPagamento?.Descricao ?? "À Vista";
+
+            return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Faturar(int id)
         {
             try
             {
-                // Este método no VendaRepository agora orquestra o EstoqueRepository e TituloFinanceiroRepository
+                // Chama o repositório que agora orquestra TUDO corretamente
                 var sucesso = await _vendaRepo.FaturarVendaAsync(id);
-                if (sucesso) TempData["Sucesso"] = "Venda faturada, estoque baixado e financeiro gerado!";
-                else TempData["Erro"] = "Venda não encontrada ou já finalizada.";
+
+                if (sucesso)
+                {
+                    TempData["Sucesso"] = "Venda faturada com sucesso! Estoque e Financeiro atualizados.";
+                    return RedirectToAction(nameof(Index)); // Volta pro Index após sucesso
+                }
+
+                TempData["Erro"] = "Venda não encontrada ou já finalizada.";
             }
             catch (Exception ex)
             {
                 TempData["Erro"] = "Erro no faturamento: " + ex.Message;
             }
+
             return RedirectToAction(nameof(Details), new { id });
         }
 

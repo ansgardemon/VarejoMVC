@@ -26,7 +26,7 @@
             
             <ChildContent>
                 @* GAVETA SUPERIOR: Apenas o que NÃO é barra de pesquisa pesada *@
-                @if (Codigo == 101)
+                @if (Codigo == 101 || Codigo == 102)
                 {
                     <div class="col-md-12">
                         <label class="form-label fw-bold small" style="color: var(--sys-primary);">Situação</label>
@@ -50,7 +50,7 @@
 
             <BarraPesquisa>
                 @* GAVETA DE BARRA: Aqui o componente aparece sozinho e ocupa a largura total *@
-                @if (Codigo == 101)
+                @if (Codigo == 101 || Codigo == 102)
                 {
                     <div class="row g-3">
                         <div class="col-md-6 col-lg-3">
@@ -129,6 +129,10 @@
                         {
                             <RelatorioTabelaDinamica TItem="ProdutoDTO" Dados="listaProdutos" Colunas="colunasProdutos" />
                         }
+                        else if (Codigo == 102 && lista102 != null && lista102.Any())
+                        {
+                            <RelatorioTabelaDinamica TItem="Relatorio102DTO" Dados="lista102" Colunas="colunas102" />
+                        }
                         else if (Codigo == 103 && lista103 != null && lista103.Any())
                         {
                             <RelatorioTabelaDinamica TItem="Relatorio103DTO" Dados="lista103" Colunas="colunas103" />
@@ -165,6 +169,18 @@
     private List<string> selecionadosMarcas = new();
     private List<string> selecionadosFamilias = new(); // Nova seleção de Famílias
     private List<string> selecionadosProdutos101 = new(); // Nova seleção de Produtos para o 101
+    private List<Relatorio102DTO>? lista102;
+
+    // Lista para filtros do relatorio 102
+    private List<RelatorioTabelaDinamica<Relatorio102DTO>.ConfigColuna> colunas102 = new() {
+    new() { Titulo = "ID", Propriedade = "IdProduto" },
+    new() { Titulo = "Produto", Propriedade = "NomeProduto" },
+    new() { Titulo = "Emb.", Propriedade = "Embalagem" },
+    new() { Titulo = "Custo Médio", Propriedade = "CustoMedio", Formato = "C2" },
+    new() { Titulo = "Preço Venda", Propriedade = "PrecoVenda", Formato = "C2" },
+    new() { Titulo = "Margem", Propriedade = "MargemBruta", Formato = "N2" }, // Ex: 30,00
+    new() { Titulo = "Markup", Propriedade = "Markup", Formato = "N2" }
+};
 
     // --- VARIÁVEIS RELATÓRIO 103 (MOVIMENTO DE ESTOQUE POR PRODUTO) ---
     private RelatorioFiltro103DTO filtro103 = new();
@@ -215,7 +231,7 @@
             
             // Agora a lista global de produtos atende tanto o 101 quanto o 103
             var filtroVazio = new RelatorioFiltroProdutosDTO();
-            listaTodosProdutos = await RelService.GetProdutosFiltradosAsync(filtroVazio) ?? new();
+            listaTodosProdutos = await RelService.GetDadosRelatorio101Async(filtroVazio) ?? new();
         }
         catch (Exception ex)
         {
@@ -244,8 +260,17 @@
                 filtroProdutos.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList(); // Adicionado
                 filtroProdutos.ProdutosIds = selecionadosProdutos101.Select(int.Parse).ToList(); // Adicionado
 
-                listaProdutos = await RelService.GetProdutosFiltradosAsync(filtroProdutos);
+                listaProdutos = await RelService.GetDadosRelatorio101Async(filtroProdutos);
                 dadosVazios = listaProdutos == null || !listaProdutos.Any();
+            }
+            else if (Codigo == 102)
+            {
+                filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+                filtroProdutos.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+                filtroProdutos.ProdutosIds = selecionadosProdutos101.Select(int.Parse).ToList();
+
+                lista102 = await RelService.GetDadosRelatorio102Async(filtroProdutos);
+                dadosVazios = lista102 == null || !lista102.Any();
             }
             else if (Codigo == 103)
             {
@@ -273,9 +298,10 @@
 
     private void Limpar()
     {
-        // Limpa 101
+        // Limpa 101 e 102
         listaProdutos = null;
         filtroProdutos = new();
+        lista102 = null;
         selecionadosCategorias.Clear();
         selecionadosMarcas.Clear();
         selecionadosFamilias.Clear(); // Adicionado
@@ -310,6 +336,15 @@
                 filtroProdutos.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList(); // Adicionado
                 filtroProdutos.ProdutosIds = selecionadosProdutos101.Select(int.Parse).ToList(); // Adicionado
                 
+                await RelService.DownloadPdfAsync(Codigo, definicao.Nome, filtroProdutos);
+            }
+            else if (Codigo == 102)
+            {
+                filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+                filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+                filtroProdutos.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+                filtroProdutos.ProdutosIds = selecionadosProdutos101.Select(int.Parse).ToList();
+    
                 await RelService.DownloadPdfAsync(Codigo, definicao.Nome, filtroProdutos);
             }
             else if (Codigo == 103)

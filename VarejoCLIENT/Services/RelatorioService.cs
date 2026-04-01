@@ -48,10 +48,31 @@ namespace VarejoCLIENT.Services
         // --- BUSCAS ---
 
         // Relatório 101 (Produtos)
-        public async Task<List<ProdutoDTO>> GetProdutosFiltradosAsync(RelatorioFiltroProdutosDTO filtro)
+        public async Task<List<ProdutoDTO>> GetDadosRelatorio101Async(RelatorioFiltroProdutosDTO filtro)
         {
             var response = await _http.PostAsJsonAsync("api/relatorio/101/dados", filtro);
             return await response.Content.ReadFromJsonAsync<List<ProdutoDTO>>() ?? new();
+        }
+
+        // Relatorio 102 (Produto por valor)
+        public async Task<List<Relatorio102DTO>?> GetDadosRelatorio102Async(RelatorioFiltroProdutosDTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/102/dados", filtro);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio102DTO>>();
+                }
+
+                return new List<Relatorio102DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 102: {ex.Message}");
+                return new List<Relatorio102DTO>();
+            }
         }
 
         // Relatório 103 (Movimento por Produto)
@@ -86,6 +107,7 @@ namespace VarejoCLIENT.Services
             string rotaApi = codigo switch
             {
                 101 => "api/relatorio/101/exportar/pdf",
+                102 => "api/relatorio/102/exportar/pdf",
                 103 => "api/relatorio/103/exportar/pdf",
                 _ => $"api/relatorio/exportar/pdf"
             };

@@ -2,9 +2,6 @@
 using Varejo.Interfaces;
 using Varejo.Models;
 using VarejoSHARED.DTO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace VarejoAPI.Controllers
 {

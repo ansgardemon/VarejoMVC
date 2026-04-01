@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Varejo.Data;
 using VarejoSHARED.DTO;
 using VarejoSHARED.Services;

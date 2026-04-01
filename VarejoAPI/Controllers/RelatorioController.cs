@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
 using VarejoSHARED.DTO;
-using VarejoSHARED.Services;
+using VarejoAPI.Services;
 
 namespace VarejoAPI.Controllers
 {

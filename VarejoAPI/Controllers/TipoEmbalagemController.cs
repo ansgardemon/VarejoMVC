@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace VarejoSHARED.Controllers
+namespace VarejoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

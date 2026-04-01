@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
 using VarejoSHARED.DTO;
 
-namespace VarejoSHARED.Controllers
+namespace VarejoAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

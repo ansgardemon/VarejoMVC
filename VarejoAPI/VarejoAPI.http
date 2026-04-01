@@ -1,6 +1,6 @@
-@VarejoSHARED_HostAddress = http://localhost:5018
+@VarejoAPI_HostAddress = http://localhost:5018
 
-GET {{VarejoSHARED_HostAddress}}/weatherforecast/
+GET {{VarejoAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

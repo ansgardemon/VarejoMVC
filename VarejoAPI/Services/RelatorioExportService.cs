@@ -1,122 +1,244 @@
 ﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using System;
-using System.Collections.Generic;
 using VarejoSHARED.DTO;
 
 namespace VarejoAPI.Services
 {
     public class RelatorioExportService
     {
-        // --- RELATÓRIO 101 (PRODUTOS) ---
+        #region RELATÓRIO 101 - PRODUTOS
         public byte[] GerarPdfProdutos(List<ProdutoDTO> produtos)
         {
-            return Document.Create(container =>
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
             {
                 container.Page(page =>
                 {
-                    ConfigurarLayoutBase(page, "RELAÇÃO GERAL DE PRODUTOS");
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "RELATÓRIO DE ESTOQUE", "#101"));
 
                     page.Content().PaddingVertical(10).Table(table =>
                     {
                         table.ColumnsDefinition(columns =>
                         {
-                            columns.ConstantColumn(40);  // ID
-                            columns.RelativeColumn(3);   // Nome
-                            columns.RelativeColumn(2);   // Categoria
-                            columns.ConstantColumn(60);  // Estoque
-                            columns.ConstantColumn(80);  // Custo
+                            columns.ConstantColumn(40);
+                            columns.RelativeColumn(3);
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(2);
+                            columns.ConstantColumn(60);
                         });
 
                         table.Header(header =>
                         {
-                            header.Cell().Element(EstiloHeader).Text("ID");
-                            header.Cell().Element(EstiloHeader).Text("Produto");
-                            header.Cell().Element(EstiloHeader).Text("Categoria");
-                            header.Cell().Element(EstiloHeader).Text("Estoque");
-                            header.Cell().Element(EstiloHeader).Text("Custo");
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("CATEGORIA");
+                            header.Cell().Element(HeaderStyle).Text("MARCA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("ESTOQUE");
                         });
 
-                        foreach (var p in produtos)
+                        foreach (var item in produtos)
                         {
-                            table.Cell().Element(EstiloLinha).Text(p.IdProduto.ToString());
-                            table.Cell().Element(EstiloLinha).Text(p.NomeProduto);
-                            table.Cell().Element(EstiloLinha).Text(p.DescricaoCategoria);
-                            table.Cell().Element(EstiloLinha).AlignRight().Text(p.EstoqueAtual.ToString("N2"));
-                            table.Cell().Element(EstiloLinha).AlignRight().Text(p.CustoMedio.ToString("C2"));
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.DescricaoCategoria ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.NomeMarca ?? "-");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2"));
                         }
                     });
-                });
-            }).GeneratePdf();
-        }
 
-        // --- RELATÓRIO 103 (MOVIMENTAÇÃO POR PRODUTO) ---
-        public byte[] GerarPdfMovimentacaoPorProduto(List<Relatorio103DTO> dados)
+                    page.Footer().Element(c => GerarRodape(c, produtos.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+
+        #region RELATÓRIO 102 - PRODUTOS POR VALORES
+        public byte[] GerarPdfProdutosValores(List<Relatorio102DTO> produtos)
         {
-            return Document.Create(container =>
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
             {
                 container.Page(page =>
                 {
-                    ConfigurarLayoutBase(page, "MOVIMENTAÇÃO DE ESTOQUE POR PRODUTO");
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "PRODUTOS POR VALORES", "#102"));
 
                     page.Content().PaddingVertical(10).Table(table =>
                     {
                         table.ColumnsDefinition(columns =>
                         {
-                            columns.ConstantColumn(75);  // Data
-                            columns.RelativeColumn(3);   // Produto
-                            columns.ConstantColumn(55);  // Qtd
-                            columns.RelativeColumn(2);   // Tipo
-                            columns.RelativeColumn(2);   // Pessoa
+                            columns.ConstantColumn(40);
+                            columns.RelativeColumn(3);
+                            columns.RelativeColumn(1);
+                            columns.RelativeColumn(1);
+                            columns.RelativeColumn(1);
+                            columns.ConstantColumn(50);
+                            columns.ConstantColumn(50);
                         });
 
                         table.Header(header =>
                         {
-                            header.Cell().Element(EstiloHeader).Text("Data");
-                            header.Cell().Element(EstiloHeader).Text("Produto");
-                            header.Cell().Element(EstiloHeader).Text("Qtd");
-                            header.Cell().Element(EstiloHeader).Text("Tipo");
-                            header.Cell().Element(EstiloHeader).Text("Pessoa");
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("EMB.");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("CUSTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("PREÇO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("MARGEM");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("MARKUP");
                         });
 
-                        foreach (var m in dados)
+                        foreach (var item in produtos)
                         {
-                            table.Cell().Element(EstiloLinha).Text(m.DataMovimento.ToString("dd/MM/yyyy"));
-                            table.Cell().Element(EstiloLinha).Text(m.ProdutoNome);
-                            table.Cell().Element(EstiloLinha).AlignRight().Text(m.Quantidade.ToString("N2"));
-                            table.Cell().Element(EstiloLinha).Text(m.TipoMovimento);
-                            table.Cell().Element(EstiloLinha).Text(m.Pessoa);
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.Embalagem ?? "-");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.CustoMedio.ToString("C2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.PrecoVenda.ToString("C2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.MargemBruta.ToString("N2") + "%");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.Markup.ToString("N2") + "%");
                         }
                     });
-                });
-            }).GeneratePdf();
-        }
 
-        // --- AUXILIARES DE ESTILO ---
-        private void ConfigurarLayoutBase(PageDescriptor page, string titulo)
+                    page.Footer().Element(c => GerarRodape(c, produtos.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+
+        #region RELATÓRIO 103 - MOVIMENTO DE ESTOQUE
+        public byte[] GerarPdfRelatorio103(List<Relatorio103DTO> movimentos)
         {
-            page.Margin(30);
-            page.Header().Row(row =>
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4.Landscape());
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "MOVIMENTO DE ESTOQUE POR PRODUTO", "#103"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(70);
+                            columns.ConstantColumn(50);
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(3);
+                            columns.RelativeColumn(3);
+                            columns.ConstantColumn(40);
+                            columns.ConstantColumn(60);
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("DATA");
+                            header.Cell().Element(HeaderStyle).Text("Nº MOV");
+                            header.Cell().Element(HeaderStyle).Text("TIPO MOVIMENTO");
+                            header.Cell().Element(HeaderStyle).Text("PESSOA");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("UNID");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("QTD");
+                        });
+
+                        foreach (var item in movimentos)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.DataMovimento.ToString("dd/MM/yyyy"));
+                            table.Cell().Element(RowStyle).Text(item.IdMovimento.ToString());
+                            table.Cell().Element(RowStyle).Text(item.TipoMovimento ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.Pessoa ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.ProdutoNome ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.Embalagem ?? "-");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.Quantidade.ToString("N2"));
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, movimentos.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+
+        #region MÉTODOS AUXILIARES
+
+        private void GerarCabecalho(IContainer container, string titulo, string codigoRelatorio)
+        {
+            container.Row(row =>
             {
                 row.RelativeItem().Column(col =>
                 {
-                    col.Item().Text(titulo).FontSize(16).SemiBold().FontColor("#1a237e");
-                    col.Item().Text($"Emissão: {DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(9).Italic();
+                    col.Item().Text(titulo).FontSize(22).ExtraBold().FontColor("#163889");
+                    col.Item().Text(text =>
+                    {
+                        text.Span("Data de emissão: ").SemiBold();
+                        text.Span($"{DateTime.Now:dd/MM/yyyy HH:mm}");
+                    });
                 });
-            });
 
-            page.Footer().AlignCenter().Text(x =>
-            {
-                x.Span("Página ");
-                x.CurrentPageNumber();
+                row.ConstantItem(100).AlignRight().Column(col =>
+                {
+                    col.Item().Text(codigoRelatorio).FontSize(14).Bold().FontColor(Colors.Grey.Medium);
+                });
             });
         }
 
-        static IContainer EstiloHeader(IContainer container) =>
-            container.BorderBottom(1).PaddingVertical(5).DefaultTextStyle(x => x.SemiBold().FontSize(10));
+        private void GerarRodape(IContainer container, int totalRegistros)
+        {
+            container.PaddingTop(10).Row(row =>
+            {
+                row.RelativeItem().Text(x =>
+                {
+                    x.Span("Total de registros: ").SemiBold();
+                    x.Span(totalRegistros.ToString());
+                });
 
-        static IContainer EstiloLinha(IContainer container) =>
-            container.BorderBottom(1).BorderColor(Colors.Grey.Lighten3).PaddingVertical(5).DefaultTextStyle(x => x.FontSize(9));
+                row.RelativeItem().AlignRight().Text(x =>
+                {
+                    x.Span("Página ");
+                    x.CurrentPageNumber();
+                    x.Span(" de ");
+                    x.TotalPages();
+                });
+            });
+        }
+
+        private static IContainer HeaderStyle(IContainer container) =>
+            container.DefaultTextStyle(x => x.SemiBold().FontColor(Colors.White))
+                     .PaddingVertical(5)
+                     .PaddingHorizontal(5)
+                     .Background("#163889");
+
+        private static IContainer RowStyle(IContainer container) =>
+            container.PaddingVertical(5)
+                     .PaddingHorizontal(5)
+                     .BorderBottom(1)
+                     .BorderColor(Colors.Grey.Lighten3);
+
+        #endregion
     }
 }

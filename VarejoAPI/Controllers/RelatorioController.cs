@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Varejo.Data;
-using VarejoAPI.DTO;
-using VarejoAPI.Services;
 using VarejoSHARED.DTO;
+using VarejoAPI.Services;
+using Varejo.Models;
 
 namespace VarejoAPI.Controllers
 {
@@ -32,25 +29,24 @@ namespace VarejoAPI.Controllers
                 .AsNoTracking()
                 .AsQueryable();
 
-            // 1. Filtro de Texto (Herdado de RelatorioFiltroBaseDTO)
             if (!string.IsNullOrWhiteSpace(filtro.TermoBusca))
                 query = query.Where(p => p.NomeProduto.Contains(filtro.TermoBusca));
 
-            // 2. Filtros Multi-Select
             if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
                 query = query.Where(p => p.Familia != null && filtro.CategoriasIds.Contains(p.Familia.CategoriaId));
 
             if (filtro.MarcasIds != null && filtro.MarcasIds.Any())
-                query = query.Where(p => p.Familia != null && p.Familia.MarcaId.HasValue && filtro.MarcasIds.Contains(p.Familia.MarcaId.Value));
+                query = query.Where(p => p.Familia != null && p.Familia.MarcaId != null && filtro.MarcasIds.Contains(p.Familia.MarcaId.Value));
 
             if (filtro.FamiliasIds != null && filtro.FamiliasIds.Any())
-                query = query.Where(p => p.FamiliaId > 0 && filtro.FamiliasIds.Contains(p.FamiliaId));
+                query = query.Where(p => filtro.FamiliasIds.Contains(p.FamiliaId));
 
-            // 3. Filtro de Status
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(p => filtro.ProdutosIds.Contains(p.IdProduto));
+
             if (filtro.Ativo.HasValue)
                 query = query.Where(p => p.Ativo == filtro.Ativo.Value);
 
-            // 4. Projeção usando a sua ProdutoDTO original
             var lista = await query
                 .Select(p => new ProdutoDTO
                 {
@@ -73,23 +69,75 @@ namespace VarejoAPI.Controllers
         [HttpPost("101/exportar/pdf")]
         public async Task<IActionResult> ExportarPdfRelatorio101([FromBody] RelatorioFiltroProdutosDTO filtro)
         {
-            // 1. Busca os dados usando a mesma lógica da tela
             var actionResult = await GetProdutos101(filtro);
             var okResult = actionResult.Result as OkObjectResult;
             var listaProdutos = okResult?.Value as List<ProdutoDTO>;
 
-            // 2. Valida se tem dados
             if (listaProdutos == null || !listaProdutos.Any())
                 return BadRequest("Nenhum produto encontrado com os filtros informados para gerar o PDF.");
 
-            // 3. Chama o SEU serviço original de PDF
             var service = new RelatorioExportService();
             var pdfBytes = service.GerarPdfProdutos(listaProdutos);
 
-            // 4. Devolve o arquivo para o navegador baixar
             return File(pdfBytes, "application/pdf", "RelatorioProdutos.pdf");
         }
 
+        #endregion
+
+        #region RELATÓRIO 102 - PRODUTOS POR VALORES
+
+        [HttpPost("102/dados")]
+        public async Task<ActionResult<List<Relatorio102DTO>>> GetProdutos102([FromBody] RelatorioFiltroProdutosDTO filtro)
+        {
+            var query = _context.ProdutosEmbalagem
+                .Include(pe => pe.Produto)
+                .Include(pe => pe.TipoEmbalagem)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
+                query = query.Where(pe => pe.Produto.Familia != null && filtro.CategoriasIds.Contains(pe.Produto.Familia.CategoriaId));
+
+            if (filtro.FamiliasIds != null && filtro.FamiliasIds.Any())
+                query = query.Where(pe => filtro.FamiliasIds.Contains(pe.Produto.FamiliaId));
+
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(pe => filtro.ProdutosIds.Contains(pe.ProdutoId));
+
+            if (filtro.Ativo.HasValue)
+                query = query.Where(pe => pe.Produto.Ativo == filtro.Ativo.Value);
+
+            var lista = await query
+                .Select(pe => new Relatorio102DTO
+                {
+                    IdProduto = pe.ProdutoId,
+                    NomeProduto = pe.Produto.NomeProduto,
+                    Embalagem = pe.TipoEmbalagem.DescricaoTipoEmbalagem,
+                    CustoMedio = pe.Produto.CustoMedio,
+                    PrecoVenda = pe.Preco
+                })
+                .OrderBy(p => p.NomeProduto)
+                .ThenBy(p => p.PrecoVenda)
+                .ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("102/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio102([FromBody] RelatorioFiltroProdutosDTO filtro)
+        {
+            var actionResult = await GetProdutos102(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var lista102 = okResult?.Value as List<Relatorio102DTO>;
+
+            if (lista102 == null || !lista102.Any())
+                return BadRequest("Nenhum registro encontrado para gerar o PDF.");
+
+            var service = new RelatorioExportService();
+            var pdfBytes = service.GerarPdfProdutosValores(lista102);
+
+            return File(pdfBytes, "application/pdf", "RelatorioProdutosValores.pdf");
+        }
         #endregion
 
         #region RELATÓRIO 103 - MOVIMENTO DE ESTOQUE POR PRODUTO
@@ -97,7 +145,6 @@ namespace VarejoAPI.Controllers
         [HttpPost("103/dados")]
         public async Task<ActionResult<List<Relatorio103DTO>>> GetDadosRelatorio103([FromBody] RelatorioFiltro103DTO filtro)
         {
-            // Começamos pela tabela de itens do movimento
             var query = _context.ProdutosMovimento
                 .Include(pm => pm.Movimento).ThenInclude(m => m.TipoMovimento)
                 .Include(pm => pm.Movimento).ThenInclude(m => m.Pessoa)
@@ -106,71 +153,62 @@ namespace VarejoAPI.Controllers
                 .AsNoTracking()
                 .AsQueryable();
 
-            // 1. Filtro de Data
             if (filtro.DataInicio.HasValue)
                 query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio.Value);
 
             if (filtro.DataFim.HasValue)
                 query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim.Value);
 
-            // 2. Filtro Multi-Select de Produtos
             if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
                 query = query.Where(pm => filtro.ProdutosIds.Contains(pm.ProdutoId));
 
-            // 3. Projeção
             var lista = await query
                 .Select(pm => new Relatorio103DTO
                 {
                     IdMovimento = pm.MovimentoId,
-                    DataMovimento = pm.Movimento != null ? pm.Movimento.DataMovimento : DateTime.MinValue,
-
+                    DataMovimento = pm.Movimento != null ? pm.Movimento.DataMovimento : System.DateTime.MinValue,
                     TipoMovimento = pm.Movimento != null && pm.Movimento.TipoMovimento != null
                                     ? pm.Movimento.TipoMovimento.DescricaoTipoMovimento
                                     : "Geral",
-
                     Pessoa = pm.Movimento != null && pm.Movimento.Pessoa != null
                              ? pm.Movimento.Pessoa.NomeRazao
                              : "Não Informado",
-
                     ProdutoId = pm.ProdutoId,
                     ProdutoNome = pm.Produto != null ? pm.Produto.NomeProduto : "Desconhecido",
-
                     Quantidade = pm.Quantidade,
                     Embalagem = pm.ProdutoEmbalagem != null && pm.ProdutoEmbalagem.TipoEmbalagem != null
                                 ? pm.ProdutoEmbalagem.TipoEmbalagem.DescricaoTipoEmbalagem
                                 : "Un."
                 })
-                .OrderByDescending(x => x.DataMovimento) // Regra: movimentos mais recentes primeiro
+                .OrderByDescending(x => x.DataMovimento)
                 .ToListAsync();
 
             return Ok(lista);
         }
 
+
+        // ADICIONADO: Exportação do Relatório 103
         [HttpPost("103/exportar/pdf")]
         public async Task<IActionResult> ExportarPdfRelatorio103([FromBody] RelatorioFiltro103DTO filtro)
         {
-            // 1. Busca os dados exatos que estão aparecendo na sua tabela agora
             var actionResult = await GetDadosRelatorio103(filtro);
             var okResult = actionResult.Result as OkObjectResult;
-            var listaMovimentos = okResult?.Value as List<Relatorio103DTO>;
+            var lista103 = okResult?.Value as List<Relatorio103DTO>;
 
-            // 2. Se a lista vier vazia, avisa o usuário
-            if (listaMovimentos == null || !listaMovimentos.Any())
-                return BadRequest("Nenhum movimento encontrado para gerar o PDF.");
+            if (lista103 == null || !lista103.Any())
+                return BadRequest("Nenhum registro encontrado para gerar o PDF.");
 
-            // 3. Chama o serviço de exportação (QuestPDF, iText, etc)
-            // Verifique se você já criou o método 'GerarPdfMovimentacaoPorProduto' no seu ExportService
             var service = new RelatorioExportService();
-            var pdfBytes = service.GerarPdfMovimentacaoPorProduto(listaMovimentos);
+            // NECESSITA IMPLEMENTAÇÃO no RelatorioExportService
+            var pdfBytes = service.GerarPdfRelatorio103(lista103);
 
-            // 4. Retorna o arquivo para o navegador disparar o download via JavaScript
-            return File(pdfBytes, "application/pdf", "Movimento_Estoque_Produto.pdf");
+            return File(pdfBytes, "application/pdf", "RelatorioMovimentoEstoque.pdf");
         }
 
         #endregion
 
         #region MÓDULO 300 - MOVIMENTAÇÕES (Legado/Em Adaptação)
-        // Mantive intacto para não quebrar outras partes do seu sistema
+
         [HttpPost("movimentacoes")]
         public async Task<ActionResult<List<MovimentoOutputDTO>>> GetMovimentacoes(RelatorioFiltroMovimentacaoDTO filtro)
         {
@@ -206,6 +244,26 @@ namespace VarejoAPI.Controllers
 
             return Ok(movimentos);
         }
+
+        // ADICIONADO: Exportação de Movimentações (Módulo 300)
+        /*
+        [HttpPost("movimentacoes/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfMovimentacoes([FromBody] RelatorioFiltroMovimentacaoDTO filtro)
+        {
+            var actionResult = await GetMovimentacoes(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var listaMovimentos = okResult?.Value as List<MovimentoOutputDTO>;
+
+            if (listaMovimentos == null || !listaMovimentos.Any())
+                return BadRequest("Nenhum registro encontrado para gerar o PDF.");
+
+            var service = new RelatorioExportService();
+            // NECESSITA IMPLEMENTAÇÃO no RelatorioExportService
+            var pdfBytes = service.GerarPdfMovimentacoes(listaMovimentos);
+
+            return File(pdfBytes, "application/pdf", "RelatorioMovimentacoes.pdf");
+        }
+        */
         #endregion
 
         #region FAVORITOS

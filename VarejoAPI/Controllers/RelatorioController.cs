@@ -146,6 +146,27 @@ namespace VarejoAPI.Controllers
             return Ok(lista);
         }
 
+        [HttpPost("103/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio103([FromBody] RelatorioFiltro103DTO filtro)
+        {
+            // 1. Busca os dados exatos que estão aparecendo na sua tabela agora
+            var actionResult = await GetDadosRelatorio103(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var listaMovimentos = okResult?.Value as List<Relatorio103DTO>;
+
+            // 2. Se a lista vier vazia, avisa o usuário
+            if (listaMovimentos == null || !listaMovimentos.Any())
+                return BadRequest("Nenhum movimento encontrado para gerar o PDF.");
+
+            // 3. Chama o serviço de exportação (QuestPDF, iText, etc)
+            // Verifique se você já criou o método 'GerarPdfMovimentacaoPorProduto' no seu ExportService
+            var service = new RelatorioExportService();
+            var pdfBytes = service.GerarPdfMovimentacaoPorProduto(listaMovimentos);
+
+            // 4. Retorna o arquivo para o navegador disparar o download via JavaScript
+            return File(pdfBytes, "application/pdf", "Movimento_Estoque_Produto.pdf");
+        }
+
         #endregion
 
         #region MÓDULO 300 - MOVIMENTAÇÕES (Legado/Em Adaptação)

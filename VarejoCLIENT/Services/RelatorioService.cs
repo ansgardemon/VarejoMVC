@@ -96,7 +96,7 @@ namespace VarejoCLIENT.Services
             if (response.IsSuccessStatusCode)
             {
                 var fileBytes = await response.Content.ReadAsByteArrayAsync();
-                var fileName = $"{nomeRelatorio.Replace(" ", "_")}_{DateTime.Now:yy_MM_dd_HH-mm}.pdf";
+                var fileName = $"{nomeRelatorio.Replace(" ", "_")}_{DateTime.Now:yyMMdd_HH-mm}.pdf";
 
                 // Chama a função JS para baixar o arquivo
                 await _js.InvokeVoidAsync("downloadFileFromBytes", fileName, fileBytes);

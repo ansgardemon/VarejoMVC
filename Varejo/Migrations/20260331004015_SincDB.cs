@@ -10,6 +10,7 @@ namespace Varejo.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            
             migrationBuilder.CreateTable(
                 name: "UsuarioRelatoriosFavoritos",
                 columns: table => new
@@ -35,6 +36,7 @@ namespace Varejo.Migrations
                 table: "UsuarioRelatoriosFavoritos",
                 columns: new[] { "UsuarioId", "CodigoRelatorio" },
                 unique: true);
+            
         }
 
         /// <inheritdoc />

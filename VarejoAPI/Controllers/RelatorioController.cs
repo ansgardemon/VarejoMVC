@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
 using VarejoSHARED.DTO;
 using VarejoAPI.Services;
+using Varejo.Models;
 
 namespace VarejoAPI.Controllers
 {

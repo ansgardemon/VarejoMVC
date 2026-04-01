@@ -1,0 +1,80 @@
+﻿@typeparam TItem
+
+<div class="card border-0 shadow-sm p-3 mb-3" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));">
+    <label class="form-label small fw-bold text-uppercase opacity-75">
+        <i class="@IconeClass me-2"></i> @Titulo
+    </label>
+    
+    <div class="input-group input-group-sm mb-2">
+        <span class="input-group-text bg-transparent border-end-0 text-muted">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+        <input type="text" class="form-control border-start-0 ps-0 bg-transparent"
+               placeholder="@Placeholder" @bind="TermoBusca" @bind:event="oninput" />
+    </div>
+    
+    <div class="list-group list-group-flush border rounded" style="max-height: 200px; overflow-y: auto; background: rgba(255,255,255,0.3);">
+        @foreach (var item in ItensFiltrados)
+        {
+            var id = GetId(item);
+            var isSelected = Selecionados.Contains(id);
+            
+            <label class="list-group-item list-group-item-action d-flex align-items-center bg-transparent border-bottom border-light" style="cursor: pointer; font-size: 0.85rem;">
+                <input class="form-check-input me-3 mt-0" type="checkbox"
+                       checked="@isSelected"
+                       @onchange="@(e => ToggleSelection(id, e.Value))" />
+                @GetNome(item)
+            </label>
+        }
+        @if (!ItensFiltrados.Any())
+        {
+            <div class="p-3 text-center text-muted small">Nenhum item encontrado.</div>
+        }
+    </div>
+    
+    @if (Selecionados.Any())
+    {
+        <div class="mt-2 text-end">
+            <button class="btn btn-link text-danger p-0 small text-decoration-none" style="font-size: 0.75rem;" @onclick="LimparSelecao">
+                <i class="fa-solid fa-xmark me-1"></i> Limpar Seleção (@Selecionados.Count)
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Titulo { get; set; } = "Selecionar Itens";
+    [Parameter] public string Placeholder { get; set; } = "Pesquisar...";
+    [Parameter] public string IconeClass { get; set; } = "fa-solid fa-list-check";
+    
+    [Parameter] public IEnumerable<TItem> Itens { get; set; } = new List<TItem>();
+    [Parameter] public Func<TItem, string> GetId { get; set; } = default!;
+    [Parameter] public Func<TItem, string> GetNome { get; set; } = default!;
+    
+    [Parameter] public List<string> Selecionados { get; set; } = new();
+    [Parameter] public EventCallback<List<string>> SelecionadosChanged { get; set; }
+
+    private string TermoBusca { get; set; } = string.Empty;
+
+    private IEnumerable<TItem> ItensFiltrados => Itens
+        .Where(i => string.IsNullOrWhiteSpace(TermoBusca) || GetNome(i).Contains(TermoBusca, StringComparison.OrdinalIgnoreCase))
+        .OrderBy(i => GetNome(i)); // Ordenação alfabética obrigatória conforme regra
+
+    private async Task ToggleSelection(string id, object? isCheckedObj)
+    {
+        bool isChecked = (bool)(isCheckedObj ?? false);
+        
+        if (isChecked && !Selecionados.Contains(id))
+            Selecionados.Add(id);
+        else if (!isChecked && Selecionados.Contains(id))
+            Selecionados.Remove(id);
+
+        await SelecionadosChanged.InvokeAsync(Selecionados);
+    }
+
+    private async Task LimparSelecao()
+    {
+        Selecionados.Clear();
+        await SelecionadosChanged.InvokeAsync(Selecionados);
+    }
+}

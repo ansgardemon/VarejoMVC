@@ -2,8 +2,11 @@
 {
     public class RelatorioFiltroProdutosDTO : RelatorioFiltroBaseDTO
     {
-        public int? IdCategoria { get; set; }
-        public int? IdMarca { get; set; }
-        public bool? Ativo { get; set; } = true;
+        // Atualizado para suportar a regra de Multi-Select (Checkbox)
+        public List<int> CategoriasIds { get; set; } = new();
+        public List<int> MarcasIds { get; set; } = new();
+        public List<int> FamiliasIds { get; set; } = new();
+
+        public bool? Ativo { get; set; } // Mantemos true/false/null
     }
 }

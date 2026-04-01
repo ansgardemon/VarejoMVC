@@ -1,6 +1,5 @@
 ﻿using Microsoft.JSInterop;
 using System.Net.Http.Json;
-using VarejoAPI.DTO;
 using VarejoSHARED.DTO;
 
 namespace VarejoCLIENT.Services
@@ -129,6 +128,21 @@ namespace VarejoCLIENT.Services
                 return await response.Content.ReadFromJsonAsync<List<MarcaOutputDTO>>() ?? new();
             }
             return new List<MarcaOutputDTO>();
+        }
+
+        // Adicione este método dentro do seu RelatorioService
+        public async Task<List<FamiliaOutputDTO>?> GetFamiliasAsync()
+        {
+            try
+            {
+                // Ajuste a rota "api/familias" para a rota correta da sua API Varejo
+                return await _http.GetFromJsonAsync<List<FamiliaOutputDTO>>("api/familias");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar famílias: {ex.Message}");
+                return new List<FamiliaOutputDTO>();
+            }
         }
     }
 }

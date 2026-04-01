@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Varejo.Data;
-using VarejoAPI.DTO;
-using VarejoAPI.Services;
+using VarejoSHARED.DTO;
+using VarejoSHARED.Services;
 using VarejoSHARED.DTO;
 
-namespace VarejoAPI.Controllers
+namespace VarejoSHARED.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -3,7 +3,7 @@ using Varejo.Interfaces;
 using Varejo.Models;
 using VarejoSHARED.DTO;
 
-namespace VarejoAPI.Controllers
+namespace VarejoSHARED.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

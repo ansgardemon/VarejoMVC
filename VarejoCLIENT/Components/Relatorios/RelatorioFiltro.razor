@@ -4,36 +4,40 @@
             @ChildContent
         </div>
         
-        <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top" style="border-color: var(--glass-border) !important;">
+        @* === VOCÊ ESQUECEU ESTE BLOCO AQUI! É ELE QUE MOSTRA AS BARRAS === *@
+        @if (BarraPesquisa != null)
+        {
+            <div class="row mt-3">
+                @BarraPesquisa
+            </div>
+        }
+        @* ================================================================= *@
 
+        <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top" style="border-color: var(--glass-border) !important;">
             <button class="btn px-4" style="background: rgba(255, 255, 255, 0.2); border: 1px solid var(--glass-border); color: var(--sys-primary); font-weight: 600;" @onclick="OnClear">
                 Limpar
             </button>
-            
             <button class="btn px-4 shadow-sm" style="background: var(--sys-primary); color: white; font-weight: 600;" @onclick="OnSearch">
                 <i class="fa-solid fa-magnifying-glass me-2"></i> Pesquisar
             </button>
-            
             <div class="btn-group">
-                @* Ajuste na sintaxe do lambda para o VS não se perder *@
                 <button class="btn shadow-sm" style="background: rgba(22, 56, 137, 0.85); color: white; font-weight: 600;" @onclick="@(() => BotaoExportarClicado("pdf"))">
                     <i class="fa-solid fa-file-pdf me-2"></i> Exportar PDF
                 </button>
             </div>
-
         </div>
     </div>
 </div>
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? BarraPesquisa { get; set; }
     [Parameter] public EventCallback OnSearch { get; set; }
     [Parameter] public EventCallback OnClear { get; set; }
     [Parameter] public EventCallback<string> OnExport { get; set; }
 
     private async Task BotaoExportarClicado(string formato)
     {
-        Console.WriteLine($"Filtro: Clique de exportação detectado para {formato}");
         await OnExport.InvokeAsync(formato);
     }
 }

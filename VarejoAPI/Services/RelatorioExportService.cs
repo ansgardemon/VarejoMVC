@@ -3,7 +3,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using VarejoSHARED.DTO;
 
-namespace VarejoAPI.Services
+namespace VarejoSHARED.Services
 {
     public class RelatorioExportService
     {

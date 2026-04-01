@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Varejo.Data; // Ajuste para o namespace do seu DbContext
 using VarejoSHARED.DTO; // Onde moram as nossas novas DTOs
 
-namespace VarejoAPI.Controllers
+namespace VarejoSHARED.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

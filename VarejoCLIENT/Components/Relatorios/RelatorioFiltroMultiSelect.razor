@@ -1,80 +1,95 @@
 ﻿@typeparam TItem
 
-<div class="card border-0 shadow-sm p-3 mb-3" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));">
-    <label class="form-label small fw-bold text-uppercase opacity-75">
-        <i class="@IconeClass me-2"></i> @Titulo
-    </label>
+@* 1. ISSO É A ÚNICA COISA QUE FICA NA TELA (O GATILHO) *@
+<div class="input-group input-group-lg shadow-sm border rounded-pill overflow-hidden"
+     @onclick="AbrirModal" @onclick:stopPropagation
+     style="cursor: pointer; transition: all 0.2s; border-color: var(--sys-primary) !important; background: white;">
     
-    <div class="input-group input-group-sm mb-2">
-        <span class="input-group-text bg-transparent border-end-0 text-muted">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
-        <input type="text" class="form-control border-start-0 ps-0 bg-transparent"
-               placeholder="@Placeholder" @bind="TermoBusca" @bind:event="oninput" />
-    </div>
+    <span class="input-group-text bg-white border-0 ps-4">
+        <i class="@IconeClass text-primary"></i>
+    </span>
     
-    <div class="list-group list-group-flush border rounded" style="max-height: 200px; overflow-y: auto; background: rgba(255,255,255,0.3);">
-        @foreach (var item in ItensFiltrados)
+    <div class="form-control border-0 bg-white d-flex align-items-center py-3" style="min-height: 54px; pointer-events: none;">
+        @if (Selecionados != null && Selecionados.Any())
         {
-            var id = GetId(item);
-            var isSelected = Selecionados.Contains(id);
-            
-            <label class="list-group-item list-group-item-action d-flex align-items-center bg-transparent border-bottom border-light" style="cursor: pointer; font-size: 0.85rem;">
-                <input class="form-check-input me-3 mt-0" type="checkbox"
-                       checked="@isSelected"
-                       @onchange="@(e => ToggleSelection(id, e.Value))" />
-                @GetNome(item)
-            </label>
+            <span class="badge rounded-pill bg-primary px-3 py-2">
+                @Selecionados.Count item(s) selecionado(s)
+            </span>
         }
-        @if (!ItensFiltrados.Any())
+        else
         {
-            <div class="p-3 text-center text-muted small">Nenhum item encontrado.</div>
+            <span class="text-muted">@Titulo...</span>
         }
     </div>
-    
-    @if (Selecionados.Any())
-    {
-        <div class="mt-2 text-end">
-            <button class="btn btn-link text-danger p-0 small text-decoration-none" style="font-size: 0.75rem;" @onclick="LimparSelecao">
-                <i class="fa-solid fa-xmark me-1"></i> Limpar Seleção (@Selecionados.Count)
-            </button>
-        </div>
-    }
+
+    <span class="input-group-text bg-white border-0 pe-4">
+        <i class="fa-solid fa-chevron-down small text-muted"></i>
+    </span>
 </div>
 
+@* 2. ISSO AQUI FICA INVISÍVEL ATÉ O CLIQUE (O MODAL) *@
+@if (ExibirModal)
+{
+    <div class="modal fade show d-block" style="background: rgba(0,0,0,0.6); z-index: 2000;" tabindex="-1" @onclick:stopPropagation>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold text-primary"><i class="@IconeClass me-2"></i> @Titulo</h5>
+                    <button type="button" class="btn-close" @onclick="FecharModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fa-solid fa-filter"></i></span>
+                        <input type="text" class="form-control" placeholder="Digite para pesquisar na lista..." @bind="termo" @bind:event="oninput" />
+                    </div>
+                    <div class="list-group overflow-auto" style="max-height: 350px;">
+                        @if (ItensFiltrados != null)
+                        {
+                            @foreach (var item in ItensFiltrados)
+                            {
+                                var id = GetId(item);
+                                var isChecked = Selecionados != null && Selecionados.Contains(id);
+                                <label class="list-group-item list-group-item-action d-flex align-items-center" style="cursor: pointer;">
+                                    <input class="form-check-input me-3" type="checkbox"
+                                           checked="@isChecked"
+                                           @onchange="@((e) => Toggle(id, (bool)(e.Value ?? false)))" />
+                                    <span class="@(isChecked ? "fw-bold text-primary" : "")">@GetNome(item)</span>
+                                </label>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button class="btn btn-primary px-5 shadow-sm" @onclick="FecharModal">Confirmar Seleção</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
-    [Parameter] public string Titulo { get; set; } = "Selecionar Itens";
-    [Parameter] public string Placeholder { get; set; } = "Pesquisar...";
-    [Parameter] public string IconeClass { get; set; } = "fa-solid fa-list-check";
-    
-    [Parameter] public IEnumerable<TItem> Itens { get; set; } = new List<TItem>();
-    [Parameter] public Func<TItem, string> GetId { get; set; } = default!;
-    [Parameter] public Func<TItem, string> GetNome { get; set; } = default!;
-    
+    [Parameter] public string Titulo { get; set; } = "Pesquisar...";
+    [Parameter] public string IconeClass { get; set; } = "fa-solid fa-magnifying-glass";
+    [Parameter] public List<TItem> Itens { get; set; } = new();
     [Parameter] public List<string> Selecionados { get; set; } = new();
     [Parameter] public EventCallback<List<string>> SelecionadosChanged { get; set; }
+    [Parameter] public Func<TItem, string> GetId { get; set; } = default!;
+    [Parameter] public Func<TItem, string> GetNome { get; set; } = default!;
 
-    private string TermoBusca { get; set; } = string.Empty;
+    private bool ExibirModal = false;
+    private string termo = "";
 
-    private IEnumerable<TItem> ItensFiltrados => Itens
-        .Where(i => string.IsNullOrWhiteSpace(TermoBusca) || GetNome(i).Contains(TermoBusca, StringComparison.OrdinalIgnoreCase))
-        .OrderBy(i => GetNome(i)); // Ordenação alfabética obrigatória conforme regra
+    private void AbrirModal() { ExibirModal = true; StateHasChanged(); }
+    private void FecharModal() { ExibirModal = false; termo = ""; StateHasChanged(); }
 
-    private async Task ToggleSelection(string id, object? isCheckedObj)
+    private IEnumerable<TItem> ItensFiltrados =>
+        (Itens ?? new()).Where(i => GetNome(i)?.Contains(termo, StringComparison.OrdinalIgnoreCase) == true);
+
+    private async Task Toggle(string id, bool check)
     {
-        bool isChecked = (bool)(isCheckedObj ?? false);
-        
-        if (isChecked && !Selecionados.Contains(id))
-            Selecionados.Add(id);
-        else if (!isChecked && Selecionados.Contains(id))
-            Selecionados.Remove(id);
-
-        await SelecionadosChanged.InvokeAsync(Selecionados);
-    }
-
-    private async Task LimparSelecao()
-    {
-        Selecionados.Clear();
+        Selecionados ??= new();
+        if (check) { if (!Selecionados.Contains(id)) Selecionados.Add(id); }
+        else { Selecionados.Remove(id); }
         await SelecionadosChanged.InvokeAsync(Selecionados);
     }
 }

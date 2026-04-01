@@ -111,12 +111,6 @@
                                 <a asp-action="Print" asp-route-id="@item.IdVenda" target="_blank" class="btn btn-sm btn-outline-dark" title="Imprimir Cupom">
                                     <i class="fas fa-print"></i>
                                 </a>
-                                @if (!item.Finalizada)
-                                {
-                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Cancelar Pedido">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                }
                             </div>
                         </td>
                     </tr>

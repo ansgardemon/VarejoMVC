@@ -13,5 +13,7 @@ namespace Varejo.Interfaces
         Task<List<Pessoa>> SearchByNameAsync(string nome);
 
         Task<List<Pessoa>> GetClientesAtivosAsync();
+
+        Task<List<Pessoa>> SearchClientesAsync(string termo);
     }
 }

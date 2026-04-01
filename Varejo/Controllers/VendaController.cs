@@ -162,6 +162,26 @@ namespace Varejo.Controllers
             return Ok(produtos);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> BuscarClientes(string termo)
+        {
+            if (string.IsNullOrWhiteSpace(termo))
+                return Ok(new List<object>());
+
+            // Usa o método que você acabou de adicionar ao repositório
+            var clientes = await _pessoaRepo.SearchClientesAsync(termo);
+
+            // Retornamos um objeto anônimo simples para o JS processar
+            var resultado = clientes.Select(c => new
+            {
+                idPessoa = c.IdPessoa,
+                nomeRazao = c.NomeRazao,
+                cpfCnpj = c.CpfCnpj
+            });
+
+            return Ok(resultado);
+        }
+
         private async Task CarregarViewBags()
         {
             // Busca Clientes usando o método que adicionamos ao PessoaRepository

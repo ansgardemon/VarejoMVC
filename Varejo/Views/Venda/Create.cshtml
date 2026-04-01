@@ -1,256 +1,301 @@
 ﻿@model Varejo.ViewModels.VendaViewModel
 
-@{
-    ViewData["Title"] = "Nova Venda Balcão";
-}
-
 <div class="container-fluid">
-    <form asp-action="Create" id="formVenda">
+    <form asp-action="Create" id="formVenda" method="post">
         <div class="row">
             <div class="col-md-9">
                 <div class="card shadow-sm mb-3">
-                    <div class="card-header bg-dark text-white">
-                        <i class="bi bi-cart-plus"></i> Dados do Pedido
-                    </div>
-                    <div class="card-body">
+                    <div class="card-header bg-dark text-white fw-bold">Identificação da Venda</div>
+                    <div class="card-body bg-light">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="PessoaId" class="form-label">Cliente</label>
-                                <select asp-for="PessoaId" class="form-select select2" asp-items="ViewBag.Clientes">
-                                    <option value="">-- Selecione o Cliente --</option>
-                                </select>
+                            <div class="col-md-6 mb-3 position-relative">
+                                <label class="form-label fw-bold small">CLIENTE</label>
+                                <input type="text" id="buscaCliente" class="form-control" placeholder="Pesquisar cliente...">
+                                <input type="hidden" asp-for="PessoaId" id="PessoaId">
+                                    <div id="containerCardsCliente" class="row mt-2 d-none"></div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label asp-for="FormaPagamentoId" class="form-label small fw-bold">PAGAMENTO</label>
+                                    <select asp-for="FormaPagamentoId" class="form-select" asp-items="ViewBag.FormasPagamento"></select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label asp-for="PrazoPagamentoId" class="form-label small fw-bold">PRAZO</label>
+                                    <select asp-for="PrazoPagamentoId" class="form-select" asp-items="ViewBag.PrazosPagamento"></select>
+                                </div>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <label asp-for="FormaPagamentoId" class="form-label">Forma de Pagamento</label>
-                                <select asp-for="FormaPagamentoId" class="form-select" asp-items="ViewBag.FormasPagamento"></select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label asp-for="PrazoPagamentoId" class="form-label">Prazo</label>
-                                <select asp-for="PrazoPagamentoId" class="form-select" asp-items="ViewBag.PrazosPagamento"></select>
-                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm mb-3 border-primary">
+                        <div class="card-body">
+                            <label class="form-label fw-bold text-primary">PESQUISAR PRODUTOS</label>
+                            <input type="text" id="produtoSearch" class="form-control form-control-lg" placeholder="Digite o nome do produto..." />
+                        
+                            <div class="row mt-3" id="produtoCards"></div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm">
+                        <div class="card-header fw-bold">Itens da Venda</div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" id="tabelaItens">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Embalagem</th>
+                                        <th class="text-center">Qtd</th>
+                                        <th class="text-end">Unitário</th>
+                                        <th class="text-end">Desc. Tot.</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="produtosSelecionadosBody"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <div class="card shadow-sm mb-3 border-primary">
-                    <div class="card-body">
-                        <div class="row align-items-end">
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold">Buscar Produto (Nome ou EAN)</label>
-                                <input type="text" id="buscaProduto" class="form-control form-control-lg" placeholder="Digite para buscar..." autocomplete="off">
-                                <div id="resultadosBusca" class="list-group position-absolute w-100 shadow-lg" style="z-index: 1050;"></div>
+                <div class="col-md-3">
+                    <div class="card shadow-sm bg-light text-white sticky-top" style="top: 20px;">
+                        <div class="card-body text-center">
+                            <h5 class="text-uppercase opacity-75">Total a Pagar</h5>
+                            <h1 class="display-6 fw-bold text-success" id="resumoTotal">R$ 0,00</h1>
+                        
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>Bruto:</span> <span id="resumoSubtotal">R$ 0,00</span>
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Embalagem</label>
-                                <select id="selectEmbalagem" class="form-select form-control-lg"></select>
+                            <div class="d-flex justify-content-between small text-danger mb-3">
+                                <span>Descontos:</span> <span id="resumoDesconto">R$ 0,00</span>
                             </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Qtd</label>
-                                <input type="number" id="inputQtd" class="form-control form-control-lg" value="1" min="1">
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" id="btnAdicionarItem" class="btn btn-primary btn-lg w-100">
-                                    <i class="bi bi-plus-lg"></i> Add
+                            <input type="hidden" asp-for="DescontoTotal" id="inputDescontoTotalFinal">
+
+                                <button type="submit" class="btn btn-success btn-lg w-100 py-3 fw-bold">
+                                    <i class="fas fa-check me-2"></i>FINALIZAR
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
+            </form>
+        </div>
 
-                <div class="card shadow-sm">
-                    <div class="table-responsive" style="max-height: 400px;">
-                        <table class="table table-hover mb-0" id="tabelaItens">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Produto</th>
-                                    <th>Embalagem</th>
-                                    <th width="100">Qtd</th>
-                                    <th width="150">Unitário</th>
-                                    <th width="150">Subtotal</th>
-                                    <th width="50"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        @section Scripts {
+            <script>
+                const containerProdutosBody = document.getElementById('produtosSelecionadosBody');
+                const containerProdutoCards = document.getElementById('produtoCards');
+                const produtoSearch = document.getElementById('produtoSearch');
+                let itensVenda = [];
+                let debounceTimer;
 
-            <div class="col-md-3">
-                <div class="card shadow-sm bg-light border-0">
-                    <div class="card-body">
-                        <h4 class="text-center mb-4">Resumo</h4>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Subtotal:</span>
-                            <span id="resumoSubtotal">R$ 0,00</span>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Desconto Total (R$)</label>
-                            <input type="number" asp-for="DescontoTotal" class="form-control form-control-lg text-end" value="0.00" step="0.01">
-                            </div>
-                            <hr>
-                            <div class="text-center">
-                                <h2 class="text-primary fw-bold" id="resumoTotal">R$ 0,00</h2>
-                            </div>
-                            <button type="submit" class="btn btn-success btn-xl w-100 py-3 mt-4 fw-bold">
-                                <i class="bi bi-check2-all"></i> SALVAR PEDIDO
-                            </button>
-                            <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">Cancelar</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+                // --- BUSCA DE PRODUTOS (ESTILO MOVIMENTO) ---
+                produtoSearch.addEventListener('input', function () {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(async () => {
+                        const termo = produtoSearch.value.trim();
+                        if (termo.length < 2) {
+                            containerProdutoCards.innerHTML = '';
+                            return;
+                        }
 
-    @section Scripts {
-        <script>
-            let itensVenda = [];
-            let produtoSelecionado = null;
-            let listaProdutosCache = [];
+                        try {
+                            const response = await fetch('@Url.Action("BuscarProdutos", "Venda")?termo=' + encodeURIComponent(termo));
+                            const produtos = await response.json();
+                            containerProdutoCards.innerHTML = '';
 
-            // 1. Busca Dinâmica de Produtos
-            document.getElementById('buscaProduto').addEventListener('input', function(e) {
-                let termo = e.target.value;
-                if (termo.length < 2) {
-                    document.getElementById('resultadosBusca').innerHTML = '';
-                    return;
+                            produtos.forEach(produto => {
+                                const imagem = produto.UrlImagem || '/imagens/default.png';
+                                const col = document.createElement('div');
+                                col.className = 'col-md-4 mb-3';
+                                col.innerHTML = `
+                                    <div class="card h-100 shadow-sm border-0">
+                                        <img src="${imagem}" class="card-img-top p-2" style="height:120px; object-fit:contain;">
+                                        <div class="card-body p-2">
+                                            <h6 class="fw-bold mb-1 text-truncate">${produto.NomeProduto}</h6>
+                                            <div class="mb-2">
+                                                <label class="small fw-bold">Embalagem</label>
+                                                <select class="form-select form-select-sm sel-emb">
+                                                    ${produto.Embalagens.map(e => `
+                                                        <option value="${e.IdProdutoEmbalagem}" data-preco="${e.Preco}">
+                                                            ${e.TipoEmbalagemDescricao ?? 'Unid'} - R$ ${Number(e.Preco).toFixed(2)}
+                                                        </option>
+                                                    `).join('')}
+                                                </select>
+                                            </div>
+                                            <div class="row g-1 mb-2">
+                                                <div class="col-6">
+                                                    <label class="small fw-bold">Qtd</label>
+                                                    <input type="number" class="form-control form-control-sm inp-qtd" value="1" min="0.001">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="small fw-bold text-danger">Desc.R$</label>
+                                                    <input type="number" class="form-control form-control-sm inp-desc" value="0.00">
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-primary btn-sm w-100 btn-add">Adicionar</button>
+                                        </div>
+                                    </div>`;
+                        
+                                containerProdutoCards.appendChild(col);
+
+                                // Evento Adicionar
+                                col.querySelector('.btn-add').addEventListener('click', function() {
+                                    const selEmb = col.querySelector('.sel-emb');
+                                    const optEmb = selEmb.options[selEmb.selectedIndex];
+                                    const qtd = parseFloat(col.querySelector('.inp-qtd').value);
+                                    const descUnit = parseFloat(col.querySelector('.inp-desc').value) || 0;
+                                    const preco = parseFloat(optEmb.dataset.preco);
+
+                                    const item = {
+                                        ProdutoId: produto.IdProduto,
+                                        NomeProduto: produto.NomeProduto,
+                                        ProdutoEmbalagemId: parseInt(selEmb.value),
+                                        NomeEmbalagem: optEmb.text.split('-')[0].trim(),
+                                        Quantidade: qtd,
+                                        ValorUnitario: preco,
+                                        DescontoUnitario: descUnit,
+                                        Subtotal: (preco - descUnit) * qtd
+                                    };
+
+                                    itensVenda.push(item);
+                                    atualizarTabela();
+                                    produtoSearch.value = '';
+                                    containerProdutoCards.innerHTML = '';
+                                    produtoSearch.focus();
+                                });
+                            });
+                        } catch (err) { console.error(err); }
+                    }, 300);
+                });
+
+                       function atualizarTabela() {
+                    containerProdutosBody.innerHTML = '';
+                    let tBruto = 0; let tDesc = 0;
+
+                    itensVenda.forEach((item, i) => {
+                        const totalDesc = item.DescontoUnitario * item.Quantidade;
+                        const subtotalItem = item.Subtotal;
+        
+                        tBruto += (item.ValorUnitario * item.Quantidade);
+                        tDesc += totalDesc;
+
+                        containerProdutosBody.innerHTML += `
+                            <tr>
+                                <td class="small fw-bold">
+                                    ${item.NomeProduto}
+                                    <input type="hidden" name="Itens[${i}].ProdutoId" value="${item.ProdutoId}">
+                                    <input type="hidden" name="Itens[${i}].NomeProduto" value="${item.NomeProduto}">
+                                </td>
+                                <td class="small">
+                                    ${item.NomeEmbalagem}
+                                    <input type="hidden" name="Itens[${i}].ProdutoEmbalagemId" value="${item.ProdutoEmbalagemId}">
+                                    <input type="hidden" name="Itens[${i}].NomeEmbalagem" value="${item.NomeEmbalagem}">
+                                </td>
+                                <td class="text-center">
+                                    <input type="hidden" name="Itens[${i}].Quantidade" value="${item.Quantidade.toString().replace('.',',')}">
+                                    ${item.Quantidade}
+                                </td>
+                                <td class="text-end">
+                                    <input type="hidden" name="Itens[${i}].ValorUnitario" value="${item.ValorUnitario.toFixed(2).replace('.',',')}">
+                                    R$ ${item.ValorUnitario.toFixed(2)}
+                                </td>
+                                <td class="text-end text-danger">
+                                    <input type="hidden" name="Itens[${i}].DescontoUnitario" value="${item.DescontoUnitario.toFixed(2).replace('.',',')}">
+                                    R$ ${totalDesc.toFixed(2)}
+                                </td>
+                                <td class="text-end fw-bold">
+                                    <input type="hidden" name="Itens[${i}].Subtotal" value="${subtotalItem.toFixed(2).replace('.',',')}">
+                                    R$ ${subtotalItem.toFixed(2)}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-link text-danger p-0" onclick="removerItem(${i})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                    });
+
+                    // Atualiza os totais do rodapé/lateral
+                    const totalFinal = tBruto - tDesc;
+                    document.getElementById('resumoSubtotal').innerText = 'R$ ' + tBruto.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                    document.getElementById('resumoDesconto').innerText = 'R$ ' + tDesc.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                    document.getElementById('resumoTotal').innerText = 'R$ ' + totalFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+    
+                    // Hidden do Total de Desconto da Venda (se sua ViewModel principal pedir)
+                    const inputDescTotal = document.getElementById('inputDescontoTotalFinal');
+                    if(inputDescTotal) inputDescTotal.value = tDesc.toFixed(2).replace('.',',');
                 }
 
-                fetch('@Url.Action("BuscarProdutos", "Venda")' + '?termo=' + encodeURIComponent(termo))
-                    .then(res => res.json())
-                    .then(data => {
-                        listaProdutosCache = data;
-                        let html = '';
-                        data.forEach((p, index) => {
-                            html += `<button type="button" class="list-group-item list-group-item-action" onclick="selecionarProduto(${index})">
-                                        ${p.NomeProduto}
-                                     </button>`;
+                function removerItem(i) {
+                    itensVenda.splice(i, 1);
+                    atualizarTabela();
+                }
+
+                               // --- BUSCA DE CLIENTES (CARD EXPANDIDO) ---
+                document.getElementById('buscaCliente').addEventListener('input', function(e) {
+                    const termo = e.target.value;
+                    const container = document.getElementById('containerCardsCliente');
+    
+                    if (termo.length < 2) {
+                        container.classList.add('d-none');
+                        container.innerHTML = '';
+                        return;
+                    }
+
+                    fetch('/Venda/BuscarClientes?termo=' + encodeURIComponent(termo))
+                        .then(res => res.json())
+                        .then(data => {
+                            container.innerHTML = '';
+                            if (!data || data.length === 0) {
+                                container.classList.add('d-none');
+                                return;
+                            }
+
+                            data.forEach(c => {
+                                const id = c.IdPessoa || c.idPessoa;
+                                const nome = c.NomeRazao || c.nomeRazao;
+                                const doc = c.CpfCnpj || c.cpfCnpj || 'Sem Documento';
+
+                                const col = document.createElement('div');
+                                // Mudamos para col-12 para ocupar toda a largura da div pai
+                                col.className = 'col-12 mb-2';
+                
+                                col.innerHTML = `
+                                    <div class="card shadow-sm border-primary-hover" style="cursor:pointer; border: 1px solid #dee2e6; transition: 0.2s;">
+                                        <div class="card-body p-3">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                                        <i class="fas fa-user text-primary fa-lg"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <h5 class="mb-1 fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">${nome}</h5>
+                                                    <div class="d-flex gap-3">
+                                                        <span class="badge bg-light text-secondary border">
+                                                            <i class="fas fa-id-card me-1"></i> ${doc}
+                                                        </span>
+                                                        <span class="badge bg-light text-secondary border">
+                                                            <i class="fas fa-tag me-1"></i> ID: ${id}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                    
+                                            </div>
+                                        </div>
+                                    </div>`;
+                
+                                col.onclick = () => {
+                                    document.getElementById('PessoaId').value = id;
+                                    document.getElementById('buscaCliente').value = nome;
+                                    container.classList.add('d-none');
+                                    container.innerHTML = '';
+                                    document.getElementById('produtoSearch').focus();
+                                };
+                                container.appendChild(col);
+                            });
+                            container.classList.remove('d-none');
                         });
-                        document.getElementById('resultadosBusca').innerHTML = html;
-                    });
-            });
-
-            // 2. Selecionar Produto do Dropdown
-            function selecionarProduto(index) {
-                const produto = listaProdutosCache[index];
-                produtoSelecionado = produto;
-
-                document.getElementById('buscaProduto').value = produto.NomeProduto;
-                document.getElementById('resultadosBusca').innerHTML = '';
-
-                let select = document.getElementById('selectEmbalagem');
-                select.innerHTML = '';
-
-                if (produto.Embalagens && produto.Embalagens.length > 0) {
-                    produto.Embalagens.forEach(emb => {
-                        let precoFormatado = Number(emb.Preco).toFixed(2).replace('.', ',');
-                        select.innerHTML += `<option value="${emb.IdProdutoEmbalagem}" data-preco="${emb.Preco}">
-                                                ${emb.TipoEmbalagemDescricao ?? 'Unidade'} (R$ ${precoFormatado})
-                                             </option>`;
-                    });
-                } else {
-                    select.innerHTML = '<option value="">Sem embalagem cadastrada</option>';
-                }
-            }
-
-            // 3. Adicionar na Grade
-            document.getElementById('btnAdicionarItem').addEventListener('click', function() {
-                if (!produtoSelecionado) {
-                    alert("Busque e selecione um produto primeiro.");
-                    return;
-                }
-
-                let selectEmb = document.getElementById('selectEmbalagem');
-                let option = selectEmb.options[selectEmb.selectedIndex];
-            
-                if (!option || !option.value) return;
-
-                let embId = option.value;
-                let embDesc = option.text;
-                let preco = parseFloat(option.getAttribute('data-preco'));
-                let qtd = parseFloat(document.getElementById('inputQtd').value);
-
-                let item = {
-                    produtoId: produtoSelecionado.IdProduto,
-                    nome: produtoSelecionado.NomeProduto,
-                    produtoEmbalagemId: parseInt(embId),
-                    embalagemDesc: embDesc,
-                    quantidade: qtd,
-                    valorUnitario: preco,
-                    subtotal: qtd * preco
-                };
-
-                itensVenda.push(item);
-                atualizarTabela();
-
-                // Reset campos de busca
-                document.getElementById('buscaProduto').value = '';
-                document.getElementById('selectEmbalagem').innerHTML = '';
-                document.getElementById('inputQtd').value = 1;
-                produtoSelecionado = null;
-            });
-
-            // 4. Atualizar Grade e Totais
-            function atualizarTabela() {
-                let tbody = document.querySelector('#tabelaItens tbody');
-                tbody.innerHTML = '';
-                let totalGeral = 0;
-
-                            itensVenda.forEach((item, index) => {
-                totalGeral += item.subtotal;
-                tbody.innerHTML += `
-                    <tr>
-                        <td>
-                            <input type="hidden" name="Itens[${index}].ProdutoId" value="${item.produtoId}">
-                            <input type="hidden" name="Itens[${index}].NomeProduto" value="${item.nome}">
-                            ${item.nome}
-                        </td>
-                        <td>
-                            <input type="hidden" name="Itens[${index}].ProdutoEmbalagemId" value="${item.produtoEmbalagemId}">
-                            <input type="hidden" name="Itens[${index}].NomeEmbalagem" value="${item.embalagemDesc}">
-                            ${item.embalagemDesc}
-                        </td>
-                        <td>
-                            <input type="hidden" name="Itens[${index}].Quantidade" value="${item.quantidade.toString().replace('.', ',')}">
-                            ${item.quantidade}
-                        </td>
-                        <td>
-                            <input type="hidden" name="Itens[${index}].ValorUnitario" value="${item.valorUnitario.toFixed(2).replace('.', ',')}">
-                            R$ ${item.valorUnitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </td>
-                        <td>R$ ${item.subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="removerItem(${index})">
-                                <i class="bi bi-x"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-                let descInput = document.getElementById('DescontoTotal');
-                let desconto = parseFloat(descInput.value) || 0;
-
-                document.getElementById('resumoSubtotal').innerText = totalGeral.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                document.getElementById('resumoTotal').innerText = (totalGeral - desconto).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            }
-
-            // 5. Remover Item
-            function removerItem(index) {
-                itensVenda.splice(index, 1);
-                atualizarTabela();
-            }
-
-            // Escuta alteração no desconto
-            document.getElementById('DescontoTotal').addEventListener('input', atualizarTabela);
-
-            // Fecha dropdown se clicar fora
-            document.addEventListener('click', function(e) {
-                if (e.target.id !== 'buscaProduto') {
-                    document.getElementById('resultadosBusca').innerHTML = '';
-                }
-            });
-        </script>
-    }
+                });
+            </script>
+        }

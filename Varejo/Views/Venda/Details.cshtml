@@ -19,9 +19,9 @@
     }
 
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
             <div>
-                <h4 class="mb-0 text-uppercase" style="letter-spacing: 1px;">Pedido #@Model.IdVenda</h4>
+                <h4 class="mb-0 text-uppercase text-white" style="letter-spacing: 1px;">Pedido #@Model.IdVenda</h4>
                 <small class="opacity-75">Visualizando detalhes do movimento</small>
             </div>
             <div class="d-print-none d-flex gap-2">
@@ -32,10 +32,19 @@
                     </button>
                 </form>
 
-                @* Botão Cancelar (Ajuste a Action se tiver uma específica) *@
-                <button type="button" class="btn btn-outline-danger fw-bold px-3" onclick="confirmarCancelamento()">
-                    <i class="fas fa-ban me-1"></i> CANCELAR
-                </button>
+                @* Botão Cancelar  *@
+                @if (!Model.Finalizada)
+                {
+                    <a asp-action="Cancelar" asp-route-id="@Model.IdVenda" class="btn btn-outline-danger fw-bold px-3">
+                        <i class="fas fa-ban me-1"></i> CANCELAR
+                    </a>
+                }
+
+                @* Botão Imprimir  *@
+                    <a asp-action="Imprimir" asp-route-id="@Model.IdVenda" target="_blank" class="btn btn-secondary px-3" title="Imprimir Cupom">
+                        <i class="fas fa-print"></i> Imprimir
+                    </a>
+           
 
                 <a asp-action="Index" class="btn btn-secondary px-3">
                     <i class="fas fa-arrow-left me-1"></i> VOLTAR
@@ -113,9 +122,9 @@
                                 <span class="small">Total Descontos:</span>
                                 <span class="fw-bold">- @Model.DescontoTotal.ToString("C")</span>
                             </div>
-                            <div class="d-flex justify-content-between p-3 bg-dark text-white rounded-bottom">
+                            <div class="d-flex justify-content-between p-3 bg-success text-white rounded-bottom">
                                 <span class="h5 mb-0">TOTAL LÍQUIDO:</span>
-                                <span class="h4 mb-0 text-success fw-bold">@Model.ValorFinal.ToString("C")</span>
+                                <span class="h4 mb-0 text-white fw-bold">@Model.ValorFinal.ToString("C")</span>
                             </div>
                         </div>
                     </div>
@@ -131,11 +140,7 @@
             }
         </div>
         
-        <div class="card-footer bg-white py-3 d-print-none">
-            <button onclick="window.print()" class="btn btn-outline-secondary">
-                <i class="fas fa-print me-1"></i> Imprimir Comprovante
-            </button>
-        </div>
+      
     </div>
 </div>
 

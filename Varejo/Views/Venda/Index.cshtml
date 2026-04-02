@@ -5,11 +5,11 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-secondary">
-        <i class="fas fa-cash-register me-2"></i>Movimentação de Vendas
+    <h2>
+        Pedidos de Venda
     </h2>
     <a asp-action="Create" class="btn btn-success btn-lg shadow-sm">
-        <i class="fas fa-plus-circle me-1"></i> Nova Venda (Balcão)
+        <i class="fas fa-plus-circle me-1"></i> Nova Pedido
     </a>
 </div>
 
@@ -108,7 +108,7 @@
                                 <a asp-action="Details" asp-route-id="@item.IdVenda" class="btn btn-sm btn-outline-info" title="Visualizar">
                                     <i class="fas fa-search"></i>
                                 </a>
-                                <a asp-action="Print" asp-route-id="@item.IdVenda" target="_blank" class="btn btn-sm btn-outline-dark" title="Imprimir Cupom">
+                                <a asp-action="Imprimir" asp-route-id="@item.IdVenda" target="_blank" class="btn btn-sm btn-outline-dark" title="Imprimir Cupom">
                                     <i class="fas fa-print"></i>
                                 </a>
                             </div>

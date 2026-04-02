@@ -203,6 +203,98 @@ namespace Varejo.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
+        public async Task<IActionResult> Imprimir(int id)
+        {
+            var venda = await _context.Vendas
+                .Include(v => v.Pessoa)
+                .Include(v => v.FormaPagamento)
+                .Include(v => v.PrazoPagamento)
+                .Include(v => v.Itens).ThenInclude(i => i.Produto)
+                .Include(v => v.Itens).ThenInclude(i => i.ProdutoEmbalagem).ThenInclude(e => e.TipoEmbalagem)
+                .FirstOrDefaultAsync(m => m.IdVenda == id);
+
+            if (venda == null) return NotFound();
+
+            var model = new VendaViewModelDetails
+            {
+                IdVenda = venda.IdVenda,
+                PessoaId = venda.PessoaId,
+                FormaPagamentoId = venda.FormaPagamentoId,
+                PrazoPagamentoId = venda.PrazoPagamentoId,
+                Observacao = venda.Observacao,
+                ValorSubtotal = venda.ValorSubtotal,
+                DescontoTotal = venda.DescontoTotal,
+                Finalizada = venda.Finalizada,
+                Itens = venda.Itens.Select(i => new VendaItemViewModelDetails
+                {
+                    ProdutoId = i.ProdutoId,
+                    NomeProduto = i.Produto?.NomeProduto ?? "Produto não encontrado",
+                    NomeEmbalagem = i.ProdutoEmbalagem?.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "UN",
+                    Quantidade = i.Quantidade,
+                    ValorUnitario = i.ValorUnitario,
+                    DescontoUnitario = i.DescontoUnitario
+                }).ToList()
+            };
+
+            ViewBag.NomeCliente = venda.Pessoa?.NomeRazao ?? "CONSUMIDOR FINAL";
+            ViewBag.DocCliente = venda.Pessoa?.CpfCnpj ?? "000.000.000-00";
+            ViewBag.DataVenda = venda.DataVenda.ToString("dd/MM/yyyy HH:mm");
+            ViewBag.FormaPagto = venda.FormaPagamento?.DescricaoFormaPagamento ?? "N/A";
+            ViewBag.Prazo = venda.PrazoPagamento?.Descricao ?? "À VISTA";
+
+            return View(model);
+        }
+
+
+
+        // GET: Venda/Cancelar/5
+        [HttpGet]
+        public async Task<IActionResult> Cancelar(int id)
+        {
+            // Buscamos a venda para mostrar os dados na tela de confirmação
+            var venda = await _context.Vendas
+                .Include(v => v.Pessoa)
+                .FirstOrDefaultAsync(m => m.IdVenda == id);
+
+            if (venda == null) return NotFound();
+
+            // Regra de segurança: Se já estiver faturada, não pode cancelar por aqui
+            if (venda.Finalizada)
+            {
+                TempData["Erro"] = "Esta venda já foi finalizada e não pode ser removida.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            return View(venda);
+        }
+
+        // POST: Venda/Cancelar/5
+        [HttpPost, ActionName("Cancelar")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelarConfirmado(int id)
+        {
+            try
+            {
+                // Usando o seu método do repositório
+                var sucesso = await _vendaRepo.CancelarVendaAsync(id);
+
+                if (sucesso)
+                {
+                    TempData["Sucesso"] = "Venda cancelada e removida com sucesso.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                TempData["Erro"] = "Não foi possível cancelar a venda. Verifique se ela já foi finalizada.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Erro"] = "Erro técnico ao cancelar: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+
         // --- ENDPOINTS PARA AJAX (TELA DE VENDA) ---
 
         [HttpGet]

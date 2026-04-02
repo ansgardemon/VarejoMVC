@@ -126,9 +126,11 @@
                                                                 <a asp-action="Details" asp-route-id="@item.ProdutoId" class="btn btn-sm btn-outline-primary" title="Histórico Movimentação">
                                                                     <i class="fa-solid fa-clock-rotate-left"></i>
                                                                 </a>
-                                                                <a asp-controller="Produto" asp-action="Edit" asp-route-id="@item.ProdutoId" class="btn btn-sm btn-outline-secondary" title="Editar Produto">
-                                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                                </a>
+                                                               <a asp-action="EditConfig" 
+   asp-route-id="@item.ProdutoId" 
+   class="btn btn-sm btn-outline-primary" 
+   title="Configurar Estoque">
+    <i class="fa-solid fa-gears"></i> </a>
                                                             </div>
                                                         </td>
                                                     </tr>

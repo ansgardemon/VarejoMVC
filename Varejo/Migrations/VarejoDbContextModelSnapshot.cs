@@ -1047,6 +1047,87 @@ namespace Varejo.Migrations
                     b.ToTable("Validades");
                 });
 
+            modelBuilder.Entity("Varejo.Models.Venda", b =>
+                {
+                    b.Property<int>("IdVenda")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdVenda"));
+
+                    b.Property<DateTime>("DataVenda")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DescontoTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("Finalizada")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("FormaPagamentoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("PessoaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PrazoPagamentoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorSubtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("IdVenda");
+
+                    b.HasIndex("FormaPagamentoId");
+
+                    b.HasIndex("PessoaId");
+
+                    b.HasIndex("PrazoPagamentoId");
+
+                    b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("Varejo.Models.VendaItem", b =>
+                {
+                    b.Property<int>("IdVendaItem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdVendaItem"));
+
+                    b.Property<decimal>("DescontoUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProdutoEmbalagemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("VendaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdVendaItem");
+
+                    b.HasIndex("ProdutoEmbalagemId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("VendaId");
+
+                    b.ToTable("VendasItem");
+                });
+
             modelBuilder.Entity("Parametro", b =>
                 {
                     b.HasOne("Varejo.Models.TipoMovimento", "TipoMovimentoAvaria")
@@ -1363,6 +1444,58 @@ namespace Varejo.Migrations
                     b.Navigation("Produto");
                 });
 
+            modelBuilder.Entity("Varejo.Models.Venda", b =>
+                {
+                    b.HasOne("Varejo.Models.FormaPagamento", "FormaPagamento")
+                        .WithMany()
+                        .HasForeignKey("FormaPagamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Pessoa", "Pessoa")
+                        .WithMany()
+                        .HasForeignKey("PessoaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.PrazoPagamento", "PrazoPagamento")
+                        .WithMany()
+                        .HasForeignKey("PrazoPagamentoId");
+
+                    b.Navigation("FormaPagamento");
+
+                    b.Navigation("Pessoa");
+
+                    b.Navigation("PrazoPagamento");
+                });
+
+            modelBuilder.Entity("Varejo.Models.VendaItem", b =>
+                {
+                    b.HasOne("Varejo.Models.ProdutoEmbalagem", "ProdutoEmbalagem")
+                        .WithMany()
+                        .HasForeignKey("ProdutoEmbalagemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Venda", "Venda")
+                        .WithMany("Itens")
+                        .HasForeignKey("VendaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("ProdutoEmbalagem");
+
+                    b.Navigation("Venda");
+                });
+
             modelBuilder.Entity("Varejo.Models.Categoria", b =>
                 {
                     b.Navigation("Familias");
@@ -1438,6 +1571,11 @@ namespace Varejo.Migrations
             modelBuilder.Entity("Varejo.Models.TituloFinanceiro", b =>
                 {
                     b.Navigation("Pagamentos");
+                });
+
+            modelBuilder.Entity("Varejo.Models.Venda", b =>
+                {
+                    b.Navigation("Itens");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,41 @@
+﻿@model Varejo.Models.Venda
+@{
+    ViewData["Title"] = "Confirmar Cancelamento";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white py-3">
+                    <h5 class="mb-0 text-uppercase"><i class="fas fa-exclamation-triangle me-2"></i> Atenção!</h5>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <p class="lead">Deseja realmente excluir o <strong>Pedido #@Model.IdVenda</strong>?</p>
+                    <p class="text-muted small">Esta ação é irreversível e removerá todos os itens e o rascunho da venda do sistema.</p>
+                    
+                    <div class="alert alert-light border text-start my-4">
+                        <div class="row">
+                            <div class="col-12"><strong>Cliente:</strong> @(Model.Pessoa?.NomeRazao ?? "N/A")</div>
+                            <div class="col-12"><strong>Valor total:</strong> @Model.ValorSubtotal.ToString("C")</div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Cancelar" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.IdVenda" />
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg fw-bold">
+                                <i class="fas fa-trash-alt me-2"></i> CONFIRMAR EXCLUSÃO
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.IdVenda" class="btn btn-link text-secondary text-decoration-none">
+                                Voltar para os detalhes
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

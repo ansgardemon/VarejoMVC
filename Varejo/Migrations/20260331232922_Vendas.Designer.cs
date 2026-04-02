@@ -12,8 +12,8 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    [Migration("20260331004015_SincDB")]
-    partial class SincDB
+    [Migration("20260331232922_Vendas")]
+    partial class Vendas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,50 +24,6 @@ namespace Varejo.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("HistoricoProduto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EspecieMovimentoId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("EstoqueAntes")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<decimal>("EstoqueDepois")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.Property<int>("MovimentoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Observacao")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProdutoId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("QuantidadeMovimento")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("decimal(18,4)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Data");
-
-                    b.HasIndex("ProdutoId");
-
-                    b.ToTable("HistoricosProduto");
-                });
 
             modelBuilder.Entity("Parametro", b =>
                 {
@@ -400,6 +356,59 @@ namespace Varejo.Migrations
                     b.HasIndex("PessoaId");
 
                     b.ToTable("FornecedoresFamilia");
+                });
+
+            modelBuilder.Entity("Varejo.Models.HistoricoProduto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EspecieMovimentoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("EstoqueAntes")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("EstoqueDepois")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int>("MovimentoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observacao")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("QuantidadeMovimento")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int>("TipoMovimentoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Data");
+
+                    b.HasIndex("EspecieMovimentoId");
+
+                    b.HasIndex("MovimentoId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("TipoMovimentoId");
+
+                    b.ToTable("HistoricosProduto");
                 });
 
             modelBuilder.Entity("Varejo.Models.Inventario", b =>
@@ -1041,15 +1050,85 @@ namespace Varejo.Migrations
                     b.ToTable("Validades");
                 });
 
-            modelBuilder.Entity("HistoricoProduto", b =>
+            modelBuilder.Entity("Varejo.Models.Venda", b =>
                 {
-                    b.HasOne("Varejo.Models.Produto", "Produto")
-                        .WithMany("Historicos")
-                        .HasForeignKey("ProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("IdVenda")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Navigation("Produto");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdVenda"));
+
+                    b.Property<DateTime>("DataVenda")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DescontoTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("Finalizada")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("FormaPagamentoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observacao")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("PessoaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PrazoPagamentoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorSubtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("IdVenda");
+
+                    b.HasIndex("FormaPagamentoId");
+
+                    b.HasIndex("PessoaId");
+
+                    b.HasIndex("PrazoPagamentoId");
+
+                    b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("Varejo.Models.VendaItem", b =>
+                {
+                    b.Property<int>("IdVendaItem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdVendaItem"));
+
+                    b.Property<decimal>("DescontoUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProdutoEmbalagemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("VendaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdVendaItem");
+
+                    b.HasIndex("ProdutoEmbalagemId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("VendaId");
+
+                    b.ToTable("VendasItem");
                 });
 
             modelBuilder.Entity("Parametro", b =>
@@ -1147,6 +1226,41 @@ namespace Varejo.Migrations
                     b.Navigation("Familia");
 
                     b.Navigation("Pessoa");
+                });
+
+            modelBuilder.Entity("Varejo.Models.HistoricoProduto", b =>
+                {
+                    b.HasOne("Varejo.Models.EspecieMovimento", "EspecieMovimento")
+                        .WithMany()
+                        .HasForeignKey("EspecieMovimentoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Movimento", "Movimento")
+                        .WithMany()
+                        .HasForeignKey("MovimentoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Produto", "Produto")
+                        .WithMany("Historicos")
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.TipoMovimento", "TipoMovimento")
+                        .WithMany()
+                        .HasForeignKey("TipoMovimentoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EspecieMovimento");
+
+                    b.Navigation("Movimento");
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("TipoMovimento");
                 });
 
             modelBuilder.Entity("Varejo.Models.InventarioItem", b =>
@@ -1333,6 +1447,58 @@ namespace Varejo.Migrations
                     b.Navigation("Produto");
                 });
 
+            modelBuilder.Entity("Varejo.Models.Venda", b =>
+                {
+                    b.HasOne("Varejo.Models.FormaPagamento", "FormaPagamento")
+                        .WithMany()
+                        .HasForeignKey("FormaPagamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Pessoa", "Pessoa")
+                        .WithMany()
+                        .HasForeignKey("PessoaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.PrazoPagamento", "PrazoPagamento")
+                        .WithMany()
+                        .HasForeignKey("PrazoPagamentoId");
+
+                    b.Navigation("FormaPagamento");
+
+                    b.Navigation("Pessoa");
+
+                    b.Navigation("PrazoPagamento");
+                });
+
+            modelBuilder.Entity("Varejo.Models.VendaItem", b =>
+                {
+                    b.HasOne("Varejo.Models.ProdutoEmbalagem", "ProdutoEmbalagem")
+                        .WithMany()
+                        .HasForeignKey("ProdutoEmbalagemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Venda", "Venda")
+                        .WithMany("Itens")
+                        .HasForeignKey("VendaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("ProdutoEmbalagem");
+
+                    b.Navigation("Venda");
+                });
+
             modelBuilder.Entity("Varejo.Models.Categoria", b =>
                 {
                     b.Navigation("Familias");
@@ -1408,6 +1574,11 @@ namespace Varejo.Migrations
             modelBuilder.Entity("Varejo.Models.TituloFinanceiro", b =>
                 {
                     b.Navigation("Pagamentos");
+                });
+
+            modelBuilder.Entity("Varejo.Models.Venda", b =>
+                {
+                    b.Navigation("Itens");
                 });
 #pragma warning restore 612, 618
         }

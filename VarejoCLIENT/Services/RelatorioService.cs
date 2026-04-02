@@ -1,11 +1,13 @@
 ﻿using Microsoft.JSInterop;
 using System.Net.Http.Json;
 using VarejoSHARED.DTO;
+using VarejoSHARED.DTO.Relatorios;
 
 namespace VarejoCLIENT.Services
 {
     public class RelatorioService
     {
+        #region DEPENDÊNCIAS E CONSTRUTOR
         private readonly HttpClient _http;
         private readonly IJSRuntime _js;
 
@@ -14,8 +16,9 @@ namespace VarejoCLIENT.Services
             _http = http;
             _js = js;
         }
+        #endregion
 
-        // --- MENU E DEFINIÇÕES ---
+        #region MENU E DEFINIÇÕES
         public async Task<List<RelatorioDefinicaoDTO>> GetMenuRelatoriosAsync()
         {
             // É daqui que a sua tela de menu puxa os "Cards". 
@@ -24,10 +27,12 @@ namespace VarejoCLIENT.Services
             {
                 // MÓDULO 100 - PRODUTOS
                 new RelatorioDefinicaoDTO { Codigo = 101, Nome = "Produtos Categorizados", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 102, Nome = "Produtos por Valores", Categoria = "#100 - Produtos" },
-                new RelatorioDefinicaoDTO { Codigo = 103, Nome = "Movimento de Estoque por Produto", Categoria = "#100 - Produtos" }, // <-- NOSSO NOVO RELATÓRIO AQUI!
-                new RelatorioDefinicaoDTO { Codigo = 104, Nome = "Curva ABC de Produtos", Categoria = "#100 - Produtos" },
-                new RelatorioDefinicaoDTO { Codigo = 105, Nome = "Produtos Sem Giro", Categoria = "#100 - Produtos" },
+                new RelatorioDefinicaoDTO { Codigo = 102, Nome = "PRECIFICAÇÃO E MARGENS DE LUCRO", Categoria = "#100 - Produtos", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 103, Nome = "Movimento de Estoque por Produto", Categoria = "#100 - Produtos", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 104, Nome = "Curva ABC de Produtos", Categoria = "#100 - Produtos", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 105, Nome = "Produtos Sem Giro", Categoria = "#100 - Produtos", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 106, Nome = "Ranking de Vendas (Mais/Menos)", Categoria = "#100 - Produtos", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 107, Nome = "Histórico de Alteração de Preços", Categoria = "#100 - Produtos" },
                 
                 // MÓDULO 200 - ESTOQUE
                 new RelatorioDefinicaoDTO { Codigo = 201, Nome = "Posição Atual de Estoque", Categoria = "#200 - Estoque" },
@@ -44,9 +49,9 @@ namespace VarejoCLIENT.Services
             var menu = await GetMenuRelatoriosAsync();
             return menu.FirstOrDefault(x => x.Codigo == codigo);
         }
+        #endregion
 
-        // --- BUSCAS ---
-
+        #region BUSCAS E DADOS DOS RELATÓRIOS
         // Relatório 101 (Produtos)
         public async Task<List<ProdutoDTO>> GetDadosRelatorio101Async(RelatorioFiltroProdutosDTO filtro)
         {
@@ -86,21 +91,90 @@ namespace VarejoCLIENT.Services
             return new List<Relatorio103DTO>();
         }
 
+        // Relatório 104 (Curva ABC)
+        public async Task<List<Relatorio104DTO>?> GetDadosRelatorio104Async(RelatorioFiltroProdutosDTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/104/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio104DTO>>();
+
+                return new List<Relatorio104DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 104: {ex.Message}");
+                return new List<Relatorio104DTO>();
+            }
+        }
+
+        // Relatório 105 (Produtos sem giro)
+        public async Task<List<Relatorio105DTO>?> GetDadosRelatorio105Async(RelatorioFiltro105DTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/105/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio105DTO>>();
+
+                return new List<Relatorio105DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 105: {ex.Message}");
+                return new List<Relatorio105DTO>();
+            }
+        }
+
+        // Relatório 106 (Ranking de vendas)
+        public async Task<List<Relatorio106DTO>?> GetDadosRelatorio106Async(RelatorioFiltro106DTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/106/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio106DTO>>();
+
+                return new List<Relatorio106DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 106: {ex.Message}");
+                return new List<Relatorio106DTO>();
+            }
+        }
+
+        // Relatório 107 (Histórico de Alteração de Preços)
+        public async Task<List<Relatorio107DTO>?> GetDadosRelatorio107Async(RelatorioFiltroProdutosDTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/107/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio107DTO>>();
+                return new List<Relatorio107DTO>();
+            }
+            catch { return new List<Relatorio107DTO>(); }
+        }
+
         // Relatório 301 (Movimentações)
         public async Task<List<MovimentoOutputDTO>> GetMovimentacoesFiltradasAsync(RelatorioFiltroMovimentacaoDTO filtro)
         {
             var response = await _http.PostAsJsonAsync("api/relatorio/movimentacoes", filtro);
             return await response.Content.ReadFromJsonAsync<List<MovimentoOutputDTO>>() ?? new();
         }
+        #endregion
 
-        // --- FAVORITOS ---
+        #region FAVORITOS
         public async Task<bool> ToggleFavoritoAsync(RelatorioFavoritoDTO dto)
         {
             var response = await _http.PostAsJsonAsync("api/relatorio/favoritar", dto);
             return await response.Content.ReadFromJsonAsync<bool>();
         }
+        #endregion
 
-        // --- EXPORTAÇÃO ---
+        #region EXPORTAÇÃO (PDF)
         public async Task DownloadPdfAsync(int codigo, string nomeRelatorio, object filtro)
         {
             // Descobre a rota certa baseada no Código do Relatório
@@ -109,6 +183,10 @@ namespace VarejoCLIENT.Services
                 101 => "api/relatorio/101/exportar/pdf",
                 102 => "api/relatorio/102/exportar/pdf",
                 103 => "api/relatorio/103/exportar/pdf",
+                104 => "api/relatorio/104/exportar/pdf",
+                105 => "api/relatorio/105/exportar/pdf",
+                106 => "api/relatorio/106/exportar/pdf",
+                107 => "api/relatorio/107/exportar/pdf",
                 _ => $"api/relatorio/exportar/pdf"
             };
 
@@ -117,7 +195,6 @@ namespace VarejoCLIENT.Services
             if (response.IsSuccessStatusCode)
             {
                 var fileBytes = await response.Content.ReadAsByteArrayAsync();
-
                 var fileName = $"{nomeRelatorio.Replace(" ", "_")}_{DateTime.Now:yyyy-MM-dd_HH-mm}.pdf";
 
                 // Chama a função JS para baixar o arquivo
@@ -128,12 +205,11 @@ namespace VarejoCLIENT.Services
                 Console.WriteLine($"Erro ao gerar PDF: {response.StatusCode}");
             }
         }
+        #endregion
 
-        // --- MÉTODOS PARA POPULAR OS FILTROS ---
-
+        #region MÉTODOS PARA POPULAR OS FILTROS
         public async Task<List<CategoriaOutputDTO>> GetCategoriasAsync()
         {
-            // Verifique se a rota na sua API é esta mesma (ex: api/categorias ou api/relatorio/categorias)
             var response = await _http.GetAsync("api/categoria");
             if (response.IsSuccessStatusCode)
             {
@@ -144,7 +220,6 @@ namespace VarejoCLIENT.Services
 
         public async Task<List<MarcaOutputDTO>> GetMarcasAsync()
         {
-            // Verifique se a rota na sua API é esta mesma
             var response = await _http.GetAsync("api/marca");
             if (response.IsSuccessStatusCode)
             {
@@ -153,13 +228,11 @@ namespace VarejoCLIENT.Services
             return new List<MarcaOutputDTO>();
         }
 
-        // Adicione este método dentro do seu RelatorioService
         public async Task<List<FamiliaOutputDTO>?> GetFamiliasAsync()
         {
             try
             {
-                // Ajuste a rota "api/familias" para a rota correta da sua API Varejo
-                return await _http.GetFromJsonAsync<List<FamiliaOutputDTO>>("api/familias");
+                return await _http.GetFromJsonAsync<List<FamiliaOutputDTO>>("api/Familia");
             }
             catch (Exception ex)
             {
@@ -167,5 +240,6 @@ namespace VarejoCLIENT.Services
                 return new List<FamiliaOutputDTO>();
             }
         }
+        #endregion
     }
 }

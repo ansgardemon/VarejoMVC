@@ -2,13 +2,14 @@
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using VarejoSHARED.DTO;
+using VarejoSHARED.DTO.Relatorios;
 
 namespace VarejoAPI.Services
 {
     public class RelatorioExportService
     {
         #region RELATÓRIO 101 - PRODUTOS
-        public byte[] GerarPdfProdutos(List<ProdutoDTO> produtos)
+        public byte[] GerarPdfRelatorio101(List<ProdutoDTO> produtos)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -61,9 +62,8 @@ namespace VarejoAPI.Services
         }
         #endregion
 
-
-        #region RELATÓRIO 102 - PRODUTOS POR VALORES
-        public byte[] GerarPdfProdutosValores(List<Relatorio102DTO> produtos)
+        #region RELATÓRIO 102 - PRECIFICAÇÃO E MARGENS DE LUCRO
+        public byte[] GerarPdfRelatorio102(List<Relatorio102DTO> produtos)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -76,7 +76,7 @@ namespace VarejoAPI.Services
                     page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
 
-                    page.Header().Element(c => GerarCabecalho(c, "PRODUTOS POR VALORES", "#102"));
+                    page.Header().Element(c => GerarCabecalho(c, "PRECIFICAÇÃO E MARGENS DE LUCRO", "#102"));
 
                     page.Content().PaddingVertical(10).Table(table =>
                     {
@@ -121,7 +121,6 @@ namespace VarejoAPI.Services
             return documento.GeneratePdf();
         }
         #endregion
-
 
         #region RELATÓRIO 103 - MOVIMENTO DE ESTOQUE
         public byte[] GerarPdfRelatorio103(List<Relatorio103DTO> movimentos)
@@ -183,6 +182,248 @@ namespace VarejoAPI.Services
         }
         #endregion
 
+        #region RELATÓRIO 104 - CURVA ABC DE PRODUTOS
+        public byte[] GerarPdfRelatorio104(List<Relatorio104DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "CURVA ABC DE PRODUTOS", "#104"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(2);   // Categoria
+                            columns.RelativeColumn(1);   // Qtd
+                            columns.RelativeColumn(2);   // Faturamento
+                            columns.RelativeColumn(1);   // % Acumulado
+                            columns.ConstantColumn(40);  // Curva
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("CATEGORIA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("QTD");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("FATURAMENTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("% ACUM.");
+                            header.Cell().Element(HeaderStyle).AlignCenter().Text("CURVA");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.Categoria ?? "-");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.QuantidadeVendida.ToString("N2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.Faturamento.ToString("C2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.PercentualAcumulado.ToString("N2") + "%");
+
+                            // Coluna da Letra A, B ou C (Centralizada e em Negrito)
+                            table.Cell().Element(RowStyle).AlignCenter().Text(item.ClasseABC).SemiBold();
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 105 - PRODUTOS SEM GIRO
+        public byte[] GerarPdfRelatorio105(List<Relatorio105DTO> dados, int diasCorte)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, $"PRODUTOS SEM GIRO (HÁ {diasCorte}+ DIAS)", "#105"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(2);   // Categoria
+                            columns.ConstantColumn(60);  // Estoque
+                            columns.ConstantColumn(80);  // Última Venda
+                            columns.ConstantColumn(70);  // Dias Parado
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("CATEGORIA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("ESTOQUE");
+                            header.Cell().Element(HeaderStyle).AlignCenter().Text("ÚLT. VENDA");
+                            header.Cell().Element(HeaderStyle).AlignCenter().Text("DIAS");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.Categoria ?? "-");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2"));
+                            table.Cell().Element(RowStyle).AlignCenter().Text(item.UltimaVenda.HasValue ? item.UltimaVenda.Value.ToString("dd/MM/yyyy") : "Nunca");
+
+                            // Destaca em vermelho se estiver parado há mais de 90 dias
+                            var styleDias = item.DiasParado > 90 ? Colors.Red.Medium : Colors.Black;
+                            table.Cell().Element(RowStyle).AlignCenter().Text(item.DiasParado == 999 ? "S/ Reg." : $"{item.DiasParado} d").FontColor(styleDias).Bold();
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 106 - RANKING DE VENDAS
+        public byte[] GerarPdfRelatorio106(List<Relatorio106DTO> dados, string titulo)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, titulo, "#106"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // POS
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(2);   // Categoria
+                            columns.RelativeColumn(1);   // Qtd
+                            columns.RelativeColumn(1);   // Faturamento
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).AlignCenter().Text("POS");
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("CATEGORIA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("QTD");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("FATURAMENTO");
+                        });
+
+                        int posicao = 1;
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).AlignCenter().Text(posicao.ToString() + "º").SemiBold();
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto ?? "-");
+                            table.Cell().Element(RowStyle).Text(item.Categoria ?? "-");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.QuantidadeVendida.ToString("N2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.Faturamento.ToString("C2"));
+                            posicao++;
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 107 - HISTÓRICO DE ALTERAÇÃO DE PREÇOS
+        public byte[] GerarPdfRelatorio107(List<Relatorio107DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "HISTÓRICO DE ALTERAÇÃO DE PREÇOS", "#107"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(60);  // Data
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(1);   // Antigo
+                            columns.RelativeColumn(1);   // Novo
+                            columns.ConstantColumn(50);  // % Variação
+                            columns.RelativeColumn(1);   // Usuario
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("DATA");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("PREÇO ANT.");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("PREÇO NOVO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("VAR. %");
+                            header.Cell().Element(HeaderStyle).AlignCenter().Text("USUÁRIO");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.DataAlteracao.ToString("dd/MM/yy HH:mm"));
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto ?? "-");
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.PrecoAnterior.ToString("C2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.PrecoNovo.ToString("C2")).SemiBold();
+
+                            // Lógica de Cor (Verde para queda, Vermelho para aumento)
+                            var corVariacao = item.VariacaoPercentual > 0 ? Colors.Red.Medium : (item.VariacaoPercentual < 0 ? Colors.Green.Medium : Colors.Black);
+                            var sinal = item.VariacaoPercentual > 0 ? "+" : "";
+
+                            table.Cell().Element(RowStyle).AlignRight().Text($"{sinal}{item.VariacaoPercentual:N2}%").FontColor(corVariacao).Bold();
+                            table.Cell().Element(RowStyle).AlignCenter().Text(item.Usuario);
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
 
         #region MÉTODOS AUXILIARES
 

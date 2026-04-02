@@ -1,7 +1,7 @@
 ﻿// Caminho: VarejoSHARED/DTO/Relatorio103DTO.cs
 using System;
 
-namespace VarejoSHARED.DTO
+namespace VarejoSHARED.DTO.Relatorios
 {
     public class Relatorio103DTO
     {

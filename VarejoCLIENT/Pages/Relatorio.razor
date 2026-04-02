@@ -1,7 +1,7 @@
 ﻿@page "/relatorio/{Codigo:int}"
 @using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
 @using VarejoCLIENT.Services
-@using VarejoCLIENT.Components
 @using VarejoCLIENT.Components.Relatorios
 @inject RelatorioService RelService
 @inject NavigationManager Nav
@@ -9,7 +9,7 @@
 <main class="container-fluid py-4">
     @if (definicao != null)
     {
-        @* HEADER *@
+        @* HEADER (Fica na página pai, pois é igual para todos) *@
         <div class="card p-3 mb-4 border-0 shadow-sm" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
             <div class="d-flex align-items-center">
                 <button class="btn btn-sm me-3" style="background: rgba(255,255,255,0.2); border: 1px solid var(--glass-border);" @onclick='() => Nav.NavigateTo("/relatorios")'>
@@ -21,326 +21,48 @@
             </div>
         </div>
 
-        @* COMPONENTE DE FILTRO GERAL *@
-        <RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
-            <ChildContent>
-                @* GAVETA SUPERIOR: Apenas o que NÃO é barra de pesquisa pesada *@
-                @if (Codigo == 101 || Codigo == 102)
-                {
-                    <div class="col-md-12">
-                        <label class="form-label fw-bold small" style="color: var(--sys-primary);">Situação</label>
-
-                        <select class="form-select shadow-sm" @bind="filtroProdutos.Ativo">
-                            <option value="">Todos</option>
-                            <option value="true">Ativos</option>
-                            <option value="false">Inativos</option>
-                        </select>
-                    </div>
-                }
-                else if (Codigo == 103)
-                {
-                    <div class="col-md-12">
-                        <RelatorioFiltroData DataInicio="filtro103.DataInicio"
-                                             DataInicioChanged="v => filtro103.DataInicio = v"
-                                             DataFim="filtro103.DataFim"
-                                             DataFimChanged="v => filtro103.DataFim = v" />
-                    </div>
-                }
-            </ChildContent>
-
-
-            <BarraPesquisa>
-                @* GAVETA DE BARRA: Aqui o componente aparece sozinho e ocupa a largura total *@
-                @if (Codigo == 101 || Codigo == 102)
-                {
-                    <div class="row g-3">
-                        <div class="col-md-6 col-lg-3">
-                            <RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO"
-                                                        Titulo="Categorias"
-                                                        IconeClass="fa-solid fa-tags"
-                                                        Itens="listaCategorias"
-                                                        GetId="c => c.IdCategoria.ToString()"
-                                                        GetNome="c => c.DescricaoCategoria"
-                                                        Selecionados="selecionadosCategorias"
-                                                        SelecionadosChanged="v => selecionadosCategorias = v" />
-                        </div>
-
-                        <div class="col-md-6 col-lg-3">
-                            <RelatorioFiltroMultiSelect TItem="MarcaOutputDTO"
-                                                        Titulo="Marcas"
-                                                        IconeClass="fa-solid fa-copyright"
-                                                        Itens="listaMarcas"
-                                                        GetId="m => m.IdMarca.ToString()"
-                                                        GetNome="m => m.NomeMarca"
-                                                        Selecionados="selecionadosMarcas"
-                                                        SelecionadosChanged="v => selecionadosMarcas = v" />
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO"
-                                                        Titulo="Famílias"
-                                                        IconeClass="fa-solid fa-users"
-                                                        Itens="listaFamilias"
-                                                        GetId="f => f.IdFamilia.ToString()"
-                                                        GetNome="f => f.NomeFamilia"
-                                                        Selecionados="selecionadosFamilias"
-                                                        SelecionadosChanged="v => selecionadosFamilias = v" />
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <RelatorioFiltroMultiSelect TItem="ProdutoDTO"
-                                                        Titulo="Produtos"
-                                                        IconeClass="fa-solid fa-box"
-                                                        Itens="listaTodosProdutos"
-                                                        GetId="p => p.IdProduto.ToString()"
-                                                        GetNome="p => p.NomeProduto"
-                                                        Selecionados="selecionadosProdutos101"
-                                                        SelecionadosChanged="v => selecionadosProdutos101 = v" />
-                        </div>
-
-                    </div>
-                }
-                else if (Codigo == 103)
-                {
-
-                    @if (listaTodosProdutos != null)
-                    {
-                        <RelatorioFiltroMultiSelect TItem="ProdutoDTO"
-                                                    Titulo="Clique para selecionar os produtos..."
-                                                    IconeClass="fa-solid fa-box"
-                                                    Itens="listaTodosProdutos"
-                                                    GetId="p => p.IdProduto.ToString()"
-                                                    GetNome="p => p.NomeProduto"
-                                                    Selecionados="selecionadosProdutos103"
-                                                    SelecionadosChanged="v => selecionadosProdutos103 = v" />
-                    }
-                }
-            </BarraPesquisa>
-        </RelatorioFiltro>
-
-        @* ÁREA DE RESULTADOS (TABELAS) *@
-        <div class="mt-4">
-            @if (loading)
-            {
-                <div class="text-center p-5">
-                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-                    <p class="mt-3 fw-bold text-primary">Processando dados...</p>
-                </div>
-            }
-            else
-            {
-                <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
-                    <div class="table-responsive">
-                        @if (Codigo == 101 && listaProdutos != null && listaProdutos.Any())
-                        {
-                            <RelatorioTabelaDinamica TItem="ProdutoDTO" Dados="listaProdutos" Colunas="colunasProdutos" />
-                        }
-                        else if (Codigo == 102 && lista102 != null && lista102.Any())
-                        {
-                            <RelatorioTabelaDinamica TItem="Relatorio102DTO" Dados="lista102" Colunas="colunas102" />
-                        }
-                        else if (Codigo == 103 && lista103 != null && lista103.Any())
-                        {
-                            <RelatorioTabelaDinamica TItem="Relatorio103DTO" Dados="lista103" Colunas="colunas103" />
-                        }
-                        else if (dadosVazios)
-                        {
-                            <div class="p-5 text-center text-muted">
-                                <i class="fa-solid fa-folder-open fa-2x mb-3 opacity-50"></i>
-                                <p class="mb-0">Nenhum registro encontrado para os filtros informados.</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-        </div>
+        @* ROTEADOR DINÂMICO (Chama o componente certo baseado no código) *@
+        @if (ObterComponenteDoRelatorio() != null)
+        {
+            <DynamicComponent Type="@ObterComponenteDoRelatorio()" Parameters="@componentParameters" />
+        }
+        else
+        {
+            <div class="alert alert-warning">Relatório não implementado ou em desenvolvimento.</div>
+        }
     }
 </main>
 
 @code {
     [Parameter] public int Codigo { get; set; }
     private RelatorioDefinicaoDTO? definicao;
-    private bool loading = false;
-    private bool dadosVazios = false;
-
-    // --- VARIÁVEIS RELATÓRIO 101 ---
-    private RelatorioFiltroProdutosDTO filtroProdutos = new();
-    private List<ProdutoDTO>? listaProdutos;
-    private List<CategoriaOutputDTO> listaCategorias = new();
-    private List<MarcaOutputDTO> listaMarcas = new();
-    private List<FamiliaOutputDTO> listaFamilias = new();
-    private List<string> selecionadosCategorias = new();
-    private List<string> selecionadosMarcas = new();
-    private List<string> selecionadosFamilias = new();
-    private List<string> selecionadosProdutos101 = new();
-    private List<Relatorio102DTO>? lista102;
-
-    // Lista para filtros do relatorio 102
-    private List<RelatorioTabelaDinamica<Relatorio102DTO>.ConfigColuna> colunas102 = new() {
-        new() { Titulo = "ID", Propriedade = "IdProduto" },
-        new() { Titulo = "Produto", Propriedade = "NomeProduto" },
-        new() { Titulo = "Emb.", Propriedade = "Embalagem" },
-        new() { Titulo = "Custo Médio", Propriedade = "CustoMedio", Formato = "C2" },
-        new() { Titulo = "Preço Venda", Propriedade = "PrecoVenda", Formato = "C2" },
-        new() { Titulo = "Margem", Propriedade = "MargemBruta", Formato = "N2" },
-        new() { Titulo = "Markup", Propriedade = "Markup", Formato = "N2" }
-    };
-
-    // --- VARIÁVEIS RELATÓRIO 103 ---
-    private RelatorioFiltro103DTO filtro103 = new();
-    private List<Relatorio103DTO>? lista103;
-
-    
-    // Lista global de produtos (agora usada no 101 e 103)
-    private List<ProdutoDTO> listaTodosProdutos = new();
-    private List<string> selecionadosProdutos103 = new();
-
-    // --- DEFINIÇÃO DE COLUNAS ---
-    private List<RelatorioTabelaDinamica<ProdutoDTO>.ConfigColuna> colunasProdutos = new() {
-        new() { Titulo = "ID", Propriedade = "IdProduto" },
-        new() { Titulo = "Produto", Propriedade = "NomeProduto" },
-        new() { Titulo = "Categoria", Propriedade = "DescricaoCategoria" },
-        new() { Titulo = "Marca", Propriedade = "NomeMarca" },
-        new() { Titulo = "Estoque", Propriedade = "EstoqueAtual", Formato = "N2" },
-        new() { Titulo = "Custo", Propriedade = "CustoMedio", Formato = "C2" }
-    };
-
-    private List<RelatorioTabelaDinamica<Relatorio103DTO>.ConfigColuna> colunas103 = new() {
-        new() { Titulo = "Data", Propriedade = "DataMovimento", Formato = "dd/MM/yyyy" },
-        new() { Titulo = "Produto", Propriedade = "ProdutoNome" },
-        new() { Titulo = "Qtd", Propriedade = "Quantidade", Formato = "N2" },
-        new() { Titulo = "Tipo", Propriedade = "TipoMovimento" },
-        new() { Titulo = "Pessoa", Propriedade = "Pessoa" }
-    };
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            listaCategorias = await RelService.GetCategoriasAsync() ?? new();
-            listaMarcas = await RelService.GetMarcasAsync() ?? new();
-            listaFamilias = await RelService.GetFamiliasAsync() ?? new();
-            
-            var filtroVazio = new RelatorioFiltroProdutosDTO();
-            listaTodosProdutos = await RelService.GetDadosRelatorio101Async(filtroVazio) ?? new();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erro ao carregar filtros: {ex.Message}");
-        }
-    }
+    private Dictionary<string, object> componentParameters = new();
 
     protected override async Task OnParametersSetAsync()
     {
         definicao = await RelService.GetDefinicaoAsync(Codigo);
-        Limpar();
-    }
-
-    private async Task ExecutarBusca()
-    {
-        loading = true; dadosVazios = false;
-        StateHasChanged();
-
-        try
-        {
-            if (Codigo == 101)
-            {
-                filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
-                filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
-                filtroProdutos.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
-                filtroProdutos.ProdutosIds = selecionadosProdutos101.Select(int.Parse).ToList();
-
-                listaProdutos = await RelService.GetDadosRelatorio101Async(filtroProdutos);
-                dadosVazios = listaProdutos == null || !listaProdutos.Any();
-            }
-            else if (Codigo == 102)
-            {
-                filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
-                filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
-                filtroProdutos.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
-                filtroProdutos.ProdutosIds = selecionadosProdutos101.Select(int.Parse).ToList();
-
-                lista102 = await RelService.GetDadosRelatorio102Async(filtroProdutos);
-                dadosVazios = lista102 == null || !lista102.Any();
-            }
-            else if (Codigo == 103)
-            {
-                filtro103.ProdutosIds = selecionadosProdutos103.Select(int.Parse).ToList();
-                lista103 = await RelService.GetDadosRelatorio103Async(filtro103);
-                dadosVazios = lista103 == null || !lista103.Any();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erro na busca: {ex.Message}");
-        }
-        finally
-        {
-            loading = false;
-            StateHasChanged();
-        }
-    }
-
-    private void Limpar()
-    {
-        // Limpa 101 e 102
-        listaProdutos = null;
-        lista102 = null;
-        filtroProdutos = new();
-        selecionadosCategorias.Clear();
-        selecionadosMarcas.Clear();
-        selecionadosFamilias.Clear();
-        selecionadosProdutos101.Clear();
         
-        // Limpa 103
-        lista103 = null;
-        filtro103 = new();
-        selecionadosProdutos103.Clear();
-
-        // Limpa Estado Geral
-        dadosVazios = false;
+        // Passa os dados para o componente filho que for renderizado
+        componentParameters = new Dictionary<string, object>
+        {
+            { "Codigo", Codigo },
+            { "Definicao", definicao }
+        };
     }
 
-    private async Task Exportar(string formato)
+    // A MÁGICA ACONTECE AQUI: Devolve o componente correto para renderizar
+    private Type? ObterComponenteDoRelatorio()
     {
-        if (definicao == null) return;
-
-        loading = true;
-        StateHasChanged();
-
-        try
+        return Codigo switch
         {
-            if (Codigo == 101)
-            {
-                filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
-                filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
-                filtroProdutos.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
-                filtroProdutos.ProdutosIds = selecionadosProdutos101.Select(int.Parse).ToList();
-                
-                await RelService.DownloadPdfAsync(Codigo, definicao.Nome, filtroProdutos);
-            }
-            else if (Codigo == 102)
-            {
-                filtroProdutos.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
-                filtroProdutos.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
-                filtroProdutos.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
-                filtroProdutos.ProdutosIds = selecionadosProdutos101.Select(int.Parse).ToList();
-    
-                await RelService.DownloadPdfAsync(Codigo, definicao.Nome, filtroProdutos);
-            }
-            else if (Codigo == 103)
-            {
-                filtro103.ProdutosIds = selecionadosProdutos103.Select(int.Parse).ToList();
-                
-                await RelService.DownloadPdfAsync(Codigo, definicao.Nome, filtro103);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erro na exportação: {ex.Message}");
-        }
-        finally
-        {
-            loading = false;
-            StateHasChanged();
-        }
+            101 or 102 => typeof(Relatorio101_102),
+            103 => typeof(Relatorio103),
+            104 => typeof(Relatorio104),
+            105 => typeof(Relatorio105),
+            106 => typeof(Relatorio106),
+            107 => typeof(Relatorio107),
+            // 301 => typeof(Relatorio301),  <-- Descomente isso quando você criar o Relatorio301.razor
+            _ => null
+        };
     }
 }

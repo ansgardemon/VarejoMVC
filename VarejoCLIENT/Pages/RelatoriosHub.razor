@@ -1,6 +1,7 @@
 ﻿@page "/relatorios"
 @using Microsoft.AspNetCore.Authorization
 @using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
 @using VarejoCLIENT.Services
 @attribute [Authorize]
 @inject RelatorioService RelService
@@ -12,6 +13,7 @@
         <h2 class="fw-bold mb-0" style="color: var(--sys-primary);">Central de Relatórios</h2>
     </div>
 
+    @* BARRA DE PESQUISA E FAVORITOS *@
     <div class="row g-3 mb-5">
         <div class="col-md-6">
             <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);">
@@ -36,38 +38,73 @@
         </div>
     </div>
 
-    @foreach (var grupo in RelatoriosFiltrados.GroupBy(x => x.Categoria))
-    {
-        <h5 class="fw-bold mt-4 mb-3" style="color: var(--sys-primary); letter-spacing: 1px; border-bottom: 2px solid rgba(22, 56, 137, 0.1); padding-bottom: 5px;">@grupo.Key.ToUpper()</h5>
-        <div class="row g-4 mb-4">
-            @foreach (var rel in grupo)
-            {
-                <div class="col-md-4 col-lg-3">
-                    <div class="card h-100 border-0 shadow-sm" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important; cursor: pointer; transition: transform 0.2s;"
-                         @onclick='() => Navegar(rel.Codigo)'
-                         onmouseover="this.style.transform='translateY(-5px)'"
-                         onmouseout="this.style.transform='translateY(0)'">
-                        
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge" style="background: rgba(22, 56, 137, 0.1); color: var(--sys-primary); font-size: 0.9rem; border: 1px solid rgba(22, 56, 137, 0.2);">
-                                    <i class="fa-solid fa-file-lines me-1"></i> @rel.Codigo
-                                </span>
-                                
-                                <button class="btn btn-link p-0 border-0 text-decoration-none"
-                                        style="color: @(rel.IsFavorito ? "var(--state-warning)" : "rgba(22, 56, 137, 0.3)"); transition: 0.2s;"
-                                        @onclick:stopPropagation
-                                        @onclick="() => rel.IsFavorito = !rel.IsFavorito">
-                                    <i class="bi @(rel.IsFavorito ? "fa-solid fa-star" : "fa-regular fa-star") fs-5"></i>
-                                </button>
-                            </div>
-                            
-                            <h6 class="fw-bold mb-1" style="color: var(--sys-primary); font-size: 1.1rem;">@rel.Nome</h6>
-                            <small style="color: var(--subtext); opacity: 0.8;">Módulo Gerencial</small>
+    @* GAVETAS DOS RELATÓRIOS (CONTROLE NATIVO BLAZOR) *@
+    <div class="accordion shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);">
+        @foreach (var grupo in RelatoriosFiltrados.GroupBy(x => x.Categoria))
+        {
+            // Lógica inteligente: Abre se estiver pesquisando ou se o usuário clicou na gaveta
+            var isSearching = !string.IsNullOrWhiteSpace(termoBusca);
+            var isOpen = isSearching || gavetasAbertas.Contains(grupo.Key);
+
+            var btnClass = isOpen ? "accordion-button fw-bold" : "accordion-button collapsed fw-bold";
+            var collapseClass = isOpen ? "accordion-collapse collapse show" : "accordion-collapse collapse";
+
+            <div class="accordion-item border-0" style="background: transparent;">
+                
+                @* CABEÇALHO DA GAVETA (Aciona o ToggleGaveta do C#) *@
+                <h2 class="accordion-header">
+                    <button class="@btnClass" type="button" @onclick="() => ToggleGaveta(grupo.Key)"
+                            style="background: rgba(255, 255, 255, 0.6); color: var(--sys-primary); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
+                        <i class="fa-solid fa-folder-open me-2 opacity-75"></i> @grupo.Key.ToUpper()
+                        <span class="badge rounded-pill ms-3" style="background: var(--sys-primary); font-size: 0.75rem;">@grupo.Count()</span>
+                    </button>
+                </h2>
+                
+                @* CORPO DA GAVETA *@
+                <div class="@collapseClass">
+                    <div class="accordion-body" style="background: var(--glass-bg); padding: 1.5rem;">
+                        <div class="row g-4">
+                            @foreach (var rel in grupo)
+                            {
+                                <div class="col-md-4 col-lg-3">
+                                    <div class="card h-100 border-0 shadow-sm" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important; cursor: pointer; transition: transform 0.2s;"
+                                         @onclick='() => Navegar(rel.Codigo)'
+                                         onmouseover="this.style.transform='translateY(-5px)'"
+                                         onmouseout="this.style.transform='translateY(0)'">
+                                        
+                                        <div class="card-body p-4">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <span class="badge" style="background: rgba(22, 56, 137, 0.1); color: var(--sys-primary); font-size: 0.9rem; border: 1px solid rgba(22, 56, 137, 0.2);">
+                                                    <i class="fa-solid fa-file-lines me-1"></i> @rel.Codigo
+                                                </span>
+                                                
+                                                <button class="btn btn-link p-0 border-0 text-decoration-none"
+                                                        style="color: @(rel.IsFavorito ? "var(--state-warning)" : "rgba(22, 56, 137, 0.3)"); transition: 0.2s;"
+                                                        @onclick:stopPropagation
+                                                        @onclick="() => rel.IsFavorito = !rel.IsFavorito">
+                                                    <i class="bi @(rel.IsFavorito ? "fa-solid fa-star" : "fa-regular fa-star") fs-5"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <h6 class="fw-bold mb-1" style="color: var(--sys-primary); font-size: 1.1rem;">@rel.Nome</h6>
+                                            <small style="color: var(--subtext); opacity: 0.8;">Módulo Gerencial</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
-            }
+            </div>
+        }
+    </div>
+    
+    @if (!RelatoriosFiltrados.Any())
+    {
+        <div class="text-center p-5 mt-4" style="background: var(--glass-bg); border-radius: 12px; border: 1px solid var(--glass-border);">
+            <i class="fa-solid fa-magnifying-glass fa-2x mb-3 text-muted opacity-50"></i>
+            <h5 class="fw-bold text-muted">Nenhum relatório encontrado</h5>
+            <p class="text-muted mb-0">Tente buscar por outro nome, código ou remova o filtro de favoritos.</p>
         </div>
     }
 </main>
@@ -76,10 +113,33 @@
     private string termoBusca = "";
     private bool mostrarApenasFavoritos = false;
     private List<RelatorioDefinicaoDTO> todosRelatorios = new();
+    
+    // Lista que guarda qual gaveta está aberta
+    private HashSet<string> gavetasAbertas = new();
 
     protected override async Task OnInitializedAsync()
     {
         todosRelatorios = await RelService.GetMenuRelatoriosAsync();
+        
+        // UX: Abre a gaveta de Produtos por padrão quando a tela carrega
+        if (todosRelatorios.Any())
+        {
+            gavetasAbertas.Add("#100 - Produtos");
+        }
+    }
+
+    // Método 100% C# para abrir/fechar as gavetas
+    private void ToggleGaveta(string categoria)
+    {
+        if (gavetasAbertas.Contains(categoria))
+        {
+            gavetasAbertas.Remove(categoria); // Fecha se clicar na que já tá aberta
+        }
+        else
+        {
+            gavetasAbertas.Clear(); // Fecha as outras
+            gavetasAbertas.Add(categoria); // Abre a nova
+        }
     }
 
     private IEnumerable<RelatorioDefinicaoDTO> RelatoriosFiltrados =>

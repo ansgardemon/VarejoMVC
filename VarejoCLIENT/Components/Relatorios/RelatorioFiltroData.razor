@@ -5,22 +5,41 @@
     
     <div class="row g-2 mb-2">
         <div class="col-6">
-            <input type="date" class="form-control form-control-sm" 
-                   value="@DataInicio?.ToString("dd-MM-yyyy")" 
+            <input type="date" class="form-control form-control-sm shadow-sm"
+                   style="border: 1px solid var(--glass-border); color: var(--sys-primary);"
+                   value="@DataInicio?.ToString("yyyy-MM-dd")"
                    @onchange="OnDataInicioChanged" />
         </div>
         <div class="col-6">
-            <input type="date" class="form-control form-control-sm" 
-                   value="@DataFim?.ToString("dd-MM-yyyy")" 
+            <input type="date" class="form-control form-control-sm shadow-sm"
+                   style="border: 1px solid var(--glass-border); color: var(--sys-primary);"
+                   value="@DataFim?.ToString("yyyy-MM-dd")"
                    @onchange="OnDataFimChanged" />
         </div>
     </div>
     
-    <div class="d-flex flex-wrap gap-1 mt-2">
-        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" @onclick="SetHoje">Hoje</button>
-        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" @onclick="SetOntem">Ontem</button>
-        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" @onclick="SetMesAtual">Mês Atual</button>
-        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" @onclick="SetMesAnterior">Mês Anterior</button>
+    @* ATALHOS DE DATA COM NOVO VISUAL *@
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <button class="btn btn-sm fw-bold py-1 px-3 shadow-sm"
+                style="font-size: 0.75rem; border: 1px solid var(--sys-primary); color: var(--sys-primary); background: rgba(255, 255, 255, 0.6); border-radius: 6px;"
+                @onclick="SetHoje">
+            Hoje
+        </button>
+        <button class="btn btn-sm fw-bold py-1 px-3 shadow-sm"
+                style="font-size: 0.75rem; border: 1px solid var(--sys-primary); color: var(--sys-primary); background: rgba(255, 255, 255, 0.6); border-radius: 6px;"
+                @onclick="SetOntem">
+            Ontem
+        </button>
+        <button class="btn btn-sm fw-bold py-1 px-3 shadow-sm"
+                style="font-size: 0.75rem; border: 1px solid var(--sys-primary); color: var(--sys-primary); background: rgba(255, 255, 255, 0.6); border-radius: 6px;"
+                @onclick="SetMesAtual">
+            Mês Atual
+        </button>
+        <button class="btn btn-sm fw-bold py-1 px-3 shadow-sm"
+                style="font-size: 0.75rem; border: 1px solid var(--sys-primary); color: var(--sys-primary); background: rgba(255, 255, 255, 0.6); border-radius: 6px;"
+                @onclick="SetMesAnterior">
+            Mês Anterior
+        </button>
     </div>
 </div>
 
@@ -48,20 +67,19 @@
     }
 
     private async Task SetHoje() => await AtualizarPeriodo(DateTime.Today, DateTime.Today);
-    
     private async Task SetOntem() => await AtualizarPeriodo(DateTime.Today.AddDays(-1), DateTime.Today.AddDays(-1));
     
     private async Task SetMesAtual()
     {
         var hoje = DateTime.Today;
-        await AtualizarPeriodo(new DateTime(hoje.Year, hoje.Month, 1), 
+        await AtualizarPeriodo(new DateTime(hoje.Year, hoje.Month, 1),
                                new DateTime(hoje.Year, hoje.Month, DateTime.DaysInMonth(hoje.Year, hoje.Month)));
     }
     
     private async Task SetMesAnterior()
     {
         var mesAnterior = DateTime.Today.AddMonths(-1);
-        await AtualizarPeriodo(new DateTime(mesAnterior.Year, mesAnterior.Month, 1), 
+        await AtualizarPeriodo(new DateTime(mesAnterior.Year, mesAnterior.Month, 1),
                                new DateTime(mesAnterior.Year, mesAnterior.Month, DateTime.DaysInMonth(mesAnterior.Year, mesAnterior.Month)));
     }
 

@@ -1,0 +1,156 @@
+﻿@model Varejo.ViewModels.VendaViewModelDetails
+
+<div class="container py-4">
+    
+    @* Exibição de Alertas do Controller (Faturamento/Erro) *@
+    @if (TempData["Sucesso"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Sucesso"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Erro"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Erro"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+            <div>
+                <h4 class="mb-0 text-uppercase text-white" style="letter-spacing: 1px;">Pedido #@Model.IdVenda</h4>
+                <small class="opacity-75">Visualizando detalhes do movimento</small>
+            </div>
+            <div class="d-print-none d-flex gap-2">
+                @* Botão Faturar *@
+                <form asp-action="Faturar" asp-route-id="@Model.IdVenda" method="post">
+                    <button type="submit" class="btn btn-success fw-bold px-3">
+                        <i class="fas fa-file-invoice-dollar me-1"></i> FATURAR
+                    </button>
+                </form>
+
+                @* Botão Cancelar  *@
+                @if (!Model.Finalizada)
+                {
+                    <a asp-action="Cancelar" asp-route-id="@Model.IdVenda" class="btn btn-outline-danger fw-bold px-3">
+                        <i class="fas fa-ban me-1"></i> CANCELAR
+                    </a>
+                }
+
+                @* Botão Imprimir  *@
+                    <a asp-action="Imprimir" asp-route-id="@Model.IdVenda" target="_blank" class="btn btn-secondary px-3" title="Imprimir Cupom">
+                        <i class="fas fa-print"></i> Imprimir
+                    </a>
+           
+
+                <a asp-action="Index" class="btn btn-secondary px-3">
+                    <i class="fas fa-arrow-left me-1"></i> VOLTAR
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-4 bg-light p-3 rounded border">
+                <div class="col-md-5">
+                    <label class="text-muted small fw-bold d-block text-uppercase">Cliente</label>
+                    <span class="h5 fw-bold text-primary">@ViewBag.NomeCliente</span>
+                </div>
+                <div class="col-md-3 border-start">
+                    <label class="text-muted small fw-bold d-block text-uppercase">Pagamento</label>
+                    <span class="fw-bold">@ViewBag.DescricaoPagamento</span>
+                </div>
+                <div class="col-md-2 border-start">
+                    <label class="text-muted small fw-bold d-block text-uppercase">Prazo</label>
+                    <span>@ViewBag.DescricaoPrazo</span>
+                </div>
+                <div class="col-md-2 border-start text-end">
+                    <label class="text-muted small fw-bold d-block text-uppercase">Status</label>
+                    @if (Model.Finalizada)
+                    {
+                        <span class="badge bg-success">FINALIZADA</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">AGUARDANDO</span>
+                    }
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle border">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 40%">Produto</th>
+                            <th>Embalagem</th>
+                            <th class="text-center">Qtd</th>
+                            <th class="text-end">Vlr. Unit.</th>
+                            <th class="text-end">Desc.</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Itens)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-dark">@item.NomeProduto</div>
+                                    <small class="text-muted">Cód: @item.ProdutoId</small>
+                                </td>
+                                <td><span class="badge bg-outline-secondary text-dark border">@item.NomeEmbalagem</span></td>
+                                <td class="text-center fw-bold">@item.Quantidade.ToString("N2")</td>
+                                <td class="text-end">@item.ValorUnitario.ToString("C")</td>
+                                <td class="text-end text-danger">- @item.DescontoUnitario.ToString("C")</td>
+                                <td class="text-end fw-bold text-primary">@item.Subtotal.ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row justify-content-end mt-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="d-flex justify-content-between p-2 border-bottom">
+                                <span class="text-muted">Subtotal Bruto:</span>
+                                <span class="fw-bold">@Model.ValorSubtotal.ToString("C")</span>
+                            </div>
+                            <div class="d-flex justify-content-between p-2 border-bottom text-danger">
+                                <span class="small">Total Descontos:</span>
+                                <span class="fw-bold">- @Model.DescontoTotal.ToString("C")</span>
+                            </div>
+                            <div class="d-flex justify-content-between p-3 bg-success text-white rounded-bottom">
+                                <span class="h5 mb-0">TOTAL LÍQUIDO:</span>
+                                <span class="h4 mb-0 text-white fw-bold">@Model.ValorFinal.ToString("C")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Observacao))
+            {
+                <div class="mt-4 p-3 bg-light border-start border-4 border-primary rounded shadow-sm">
+                    <h6 class="fw-bold mb-1"><i class="fas fa-info-circle me-1"></i> Observações Internas</h6>
+                    <p class="mb-0 text-muted italic">@Model.Observacao</p>
+                </div>
+            }
+        </div>
+        
+      
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarCancelamento() {
+            if (confirm("Deseja realmente cancelar este pedido? Esta ação não pode ser desfeita.")) {
+                // Aqui você pode disparar um formulário oculto ou redirecionar
+                alert("Lógica de cancelamento pendente no controller.");
+            }
+        }
+    </script>
+}

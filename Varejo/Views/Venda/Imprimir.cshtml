@@ -1,0 +1,128 @@
+﻿@model Varejo.ViewModels.VendaViewModelDetails
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <title>Imprimir Venda #@Model.IdVenda</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; color: #000; background-color: #fff; padding: 30px; }
+        .ticket-header { border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 10px; }
+        .sep { border-top: 1px dashed #000; margin: 10px 0; }
+        table td, table th { font-size: 0.9rem; border: none !important; }
+        .total-box { background-color: #f8f9fa !important; border: 1px solid #000 !important; padding: 10px; }
+        @@media print {
+            .no-print { display: none; }
+            body { padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+    <div class="container no-print mb-4">
+        <div class="alert alert-info d-flex justify-content-between align-items-center">
+            <span>Pressione <b>Ctrl + P</b> se a impressão não abrir automaticamente.</span>
+            <div>
+                <button onclick="window.print()" class="btn btn-dark btn-sm">Imprimir</button>
+                <button onclick="window.close()" class="btn btn-outline-secondary btn-sm">Fechar Aba</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="max-width: 800px;">
+        <div class="ticket-header text-center">
+            <h2 class="mb-0 fw-bold">SISTEMA VITRIN.O VAREJO</h2>
+            <p class="mb-0">Comprovante de Pedido de Venda</p>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <strong>PEDIDO:</strong> #@Model.IdVenda<br />
+                <strong>DATA:</strong> @ViewBag.DataVenda
+            </div>
+            <div class="col-6 text-end">
+                <strong>STATUS:</strong> @(Model.Finalizada ? "FINALIZADA/FATURADA" : "ORÇAMENTO/ABERTO")
+            </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="mb-3">
+            <strong>CLIENTE:</strong> @ViewBag.NomeCliente.ToUpper()<br />
+            <strong>CPF/CNPJ:</strong> @ViewBag.DocCliente
+        </div>
+
+        <div class="sep"></div>
+
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th style="width: 50%">PRODUTO</th>
+                    <th class="text-center">QTD</th>
+                    <th class="text-end">UNIT.</th>
+                    <th class="text-end">DESC.</th>
+                    <th class="text-end">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Itens)
+                {
+                    <tr>
+                        <td>@item.NomeProduto.ToUpper() (@item.NomeEmbalagem)</td>
+                        <td class="text-center">@item.Quantidade.ToString("N2")</td>
+                        <td class="text-end">@item.ValorUnitario.ToString("N2")</td>
+                        <td class="text-end text-muted">@item.DescontoUnitario.ToString("N2")</td>
+                        <td class="text-end fw-bold">@item.Subtotal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="sep"></div>
+
+        <div class="row justify-content-end">
+            <div class="col-5">
+                <div class="d-flex justify-content-between">
+                    <span>Subtotal Bruto:</span>
+                    <span>@Model.ValorSubtotal.ToString("C")</span>
+                </div>
+                <div class="d-flex justify-content-between text-danger">
+                    <span>Total Descontos:</span>
+                    <span>- @Model.DescontoTotal.ToString("C")</span>
+                </div>
+                <div class="d-flex justify-content-between h5 fw-bold mt-2 pt-2 border-top border-dark">
+                    <span>TOTAL LÍQUIDO:</span>
+                    <span>@Model.ValorFinal.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <strong>FORMA DE PAGAMENTO:</strong> @ViewBag.FormaPagto.ToUpper() <br />
+            <strong>CONDIÇÃO:</strong> @ViewBag.Prazo.ToUpper()
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Observacao))
+        {
+            <div class="mt-3 p-2 border">
+                <strong>OBSERVAÇÕES:</strong><br />
+                <small>@Model.Observacao</small>
+            </div>
+        }
+
+        <div class="text-center mt-5">
+            <p class="mb-0">___________________________________________________</p>
+            <p class="small">ASSINATURA / CANHOTO DE RECEBIMENTO</p>
+        </div>
+        
+        <div class="text-center mt-4 small text-muted">
+            <p>Gerado em @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") - Software Vitrin.O Varejo</p>
+        </div>
+    </div>
+
+</body>
+</html>

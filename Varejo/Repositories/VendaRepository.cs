@@ -112,7 +112,7 @@ namespace Varejo.Repositories
                         documento: venda.IdVenda,
                         valorTotal: venda.ValorFinal,
                         prazoPagamentoId: venda.PrazoPagamentoId.Value,
-                        especieTituloId: 1,
+                        especieTituloId: 2,
                         formaPagamentoId: venda.FormaPagamentoId,
                         pessoaId: venda.PessoaId,
                         dataEmissao: DateTime.Now

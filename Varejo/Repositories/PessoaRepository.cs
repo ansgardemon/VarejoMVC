@@ -62,5 +62,24 @@ namespace Varejo.Repositories
                 .Take(10)
                 .ToListAsync();
         }
+
+        public async Task<List<Pessoa>> GetClientesAtivosAsync()
+        {
+            return await _context.Pessoas
+                .Where(p => p.EhCliente && p.Ativo)
+                .OrderBy(p => p.NomeRazao)
+                .AsNoTracking() // Melhora a performance em consultas apenas de leitura
+                .ToListAsync();
+        }
+
+        public async Task<List<Pessoa>> SearchClientesAsync(string termo)
+        {
+            return await _context.Pessoas
+                .Where(p => p.EhCliente && p.Ativo &&
+                           (p.NomeRazao.Contains(termo) || p.CpfCnpj.Contains(termo)))
+                .AsNoTracking()
+                .Take(10)
+                .ToListAsync();
+        }
     }
 }

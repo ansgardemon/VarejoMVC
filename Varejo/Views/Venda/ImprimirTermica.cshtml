@@ -1,0 +1,185 @@
+﻿@model Varejo.ViewModels.VendaViewModelDetails
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <title>Cupom Termico #@Model.IdVenda</title>
+    <style>
+        /* Configurações específicas para impressora térmica */
+        @@page {
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            color: #000;
+            background-color: #fff;
+            width: 72mm; /* Área de impressão segura para bobinas de 80mm */
+            margin: 0;
+            padding: 2mm;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 5px;
+        }
+
+        .fw-bold { font-weight: bold; }
+        .text-center { text-align: center; }
+        .text-end { text-align: right; }
+        
+        .sep {
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+        }
+
+        table th {
+            border-bottom: 1px solid #000;
+            text-align: left;
+        }
+
+        .item-nome {
+            display: block;
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .item-detalhe {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            padding-left: 5px;
+        }
+
+        .totais {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .linha-total {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .valor-final {
+            font-size: 14px;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px double #000;
+        }
+
+        @@media print {
+            .no-print { display: none; }
+           body { 
+            width: 72mm; /* Deixe uma folga de 8mm para a borda física */
+            margin: 0; 
+            padding: 0;
+        }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+    <div class="no-print" style="background: #eee; padding: 10px; text-align: center; border-bottom: 1px solid #ccc;">
+        <button onclick="window.print()">Imprimir Cupom</button>
+        <button onclick="window.close()">Fechar</button>
+    </div>
+
+    <div class="ticket-header">
+        <div class="fw-bold" style="font-size: 15px;">VITRIN.O VAREJO</div>
+        <div>Comprovante de Venda</div>
+    </div>
+
+    <div>
+        <strong>PEDIDO:</strong> #@Model.IdVenda.ToString("D5")<br />
+        <strong>DATA:</strong> @ViewBag.DataVenda<br />
+        <strong>STATUS:</strong> @(Model.Finalizada ? "FATURADA" : "ABERTO")
+    </div>
+
+    <div class="sep"></div>
+
+    <div>
+        <strong>CLIENTE:</strong> @ViewBag.NomeCliente.ToUpper()<br />
+        <strong>DOC:</strong> @ViewBag.DocCliente
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="fw-bold">ITENS DO PEDIDO</div>
+    <div class="sep"></div>
+
+    @foreach (var item in Model.Itens)
+    {
+        <span class="item-nome">@item.NomeProduto.ToUpper()</span>
+        <div class="item-detalhe">
+            <span>@item.Quantidade.ToString("N2") @item.NomeEmbalagem x @item.ValorUnitario.ToString("N2")</span>
+            <span class="fw-bold">@item.Subtotal.ToString("N2")</span>
+        </div>
+        @if (item.DescontoUnitario > 0)
+        {
+            <div class="item-detalhe" style="font-size: 10px; font-style: italic;">
+                <span>(Desc. Unit: -@item.DescontoUnitario.ToString("N2"))</span>
+            </div>
+        }
+    }
+
+    <div class="sep"></div>
+
+    <div class="totais">
+        <div class="linha-total">
+            <span>Subtotal Bruto:</span>
+            <span>@Model.ValorSubtotal.ToString("C")</span>
+        </div>
+        <div class="linha-total">
+            <span>Total Descontos:</span>
+            <span>- @Model.DescontoTotal.ToString("C")</span>
+        </div>
+        <div class="linha-total fw-bold valor-final">
+            <span>TOTAL LÍQUIDO:</span>
+            <span>@Model.ValorFinal.ToString("C")</span>
+        </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div style="font-size: 11px;">
+        <strong>PAGTO:</strong> @ViewBag.FormaPagto.ToUpper() <br />
+        <strong>PRAZO:</strong> @ViewBag.Prazo.ToUpper()
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Observacao))
+    {
+        <div style="margin-top: 5px; font-size: 10px; border: 1px solid #000; padding: 2px;">
+            <strong>OBS:</strong> @Model.Observacao
+        </div>
+    }
+
+    <div class="text-center" style="margin-top: 20px;">
+        <p>__________________________</p>
+        <p style="font-size: 10px;">ASSINATURA CLIENTE</p>
+    </div>
+    
+    <div class="text-center" style="margin-top: 15px; font-size: 9px;">
+        <p>@DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
+        <p>Obrigado pela preferência!</p>
+    </div>
+
+</body>
+</html>

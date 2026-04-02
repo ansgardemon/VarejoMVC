@@ -73,19 +73,6 @@ namespace Varejo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VendaViewModel vm)
         {
-            if (!ModelState.IsValid)
-            {
-                // Isso aqui vai te mostrar no console do Visual Studio EXATAMENTE qual campo está falhando
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                foreach (var error in errors)
-                {
-                    Console.WriteLine("ERRO MODELSTATE: " + error.ErrorMessage);
-                }
-
-       
-            }
-
-
             if (ModelState.IsValid)
             {
                 try
@@ -97,7 +84,11 @@ namespace Varejo.Controllers
                         PrazoPagamentoId = vm.PrazoPagamentoId,
                         DataVenda = DateTime.Now,
                         Observacao = vm.Observacao,
-                        ValorSubtotal = vm.Itens.Sum(i => i.Subtotal),
+
+                        // CORREÇÃO AQUI: Somar o BRUTO (Qtd * Unitario) 
+                        // e NÃO o i.Subtotal (que já tem desconto)
+                        ValorSubtotal = vm.Itens.Sum(i => i.Quantidade * i.ValorUnitario),
+
                         DescontoTotal = vm.DescontoTotal,
                         Finalizada = false
                     };
@@ -122,23 +113,18 @@ namespace Varejo.Controllers
                     ModelState.AddModelError("", "Erro ao salvar: " + ex.Message);
                 }
             }
-
             await CarregarViewBags();
             return View(vm);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            // O segredo está nestes .ThenInclude para carregar os nomes
             var venda = await _context.Vendas
                 .Include(v => v.Pessoa)
                 .Include(v => v.FormaPagamento)
                 .Include(v => v.PrazoPagamento)
-                .Include(v => v.Itens)
-                    .ThenInclude(i => i.Produto) // Carrega o objeto Produto para pegar o Nome
-                .Include(v => v.Itens)
-                    .ThenInclude(i => i.ProdutoEmbalagem)
-                        .ThenInclude(e => e.TipoEmbalagem) // Carrega a descrição da embalagem
+                .Include(v => v.Itens).ThenInclude(i => i.Produto)
+                .Include(v => v.Itens).ThenInclude(i => i.ProdutoEmbalagem).ThenInclude(e => e.TipoEmbalagem)
                 .FirstOrDefaultAsync(m => m.IdVenda == id);
 
             if (venda == null) return NotFound();
@@ -150,21 +136,19 @@ namespace Varejo.Controllers
                 FormaPagamentoId = venda.FormaPagamentoId,
                 PrazoPagamentoId = venda.PrazoPagamentoId,
                 Observacao = venda.Observacao,
-                ValorSubtotal = venda.ValorSubtotal,
-                DescontoTotal = venda.DescontoTotal,
                 Finalizada = venda.Finalizada,
 
-                // Aqui resolvemos o "vermelho":
+                // SOMA OS BRUTOS (Preço de tabela * Qtd)
+                ValorSubtotal = venda.Itens.Sum(i => i.Quantidade * i.ValorUnitario),
+
+                // SOMA OS DESCONTOS TOTAIS
+                DescontoTotal = venda.Itens.Sum(i => i.Quantidade * i.DescontoUnitario),
+
                 Itens = venda.Itens.Select(i => new VendaItemViewModelDetails
                 {
                     ProdutoId = i.ProdutoId,
-                    // Buscamos o nome direto da navegação do objeto de banco
-                    NomeProduto = i.Produto?.NomeProduto ?? "Produto não encontrado",
-
-                    ProdutoEmbalagemId = i.ProdutoEmbalagemId,
-                    // Buscamos a descrição da embalagem da mesma forma
-                    NomeEmbalagem = i.ProdutoEmbalagem?.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "Unidade",
-
+                    NomeProduto = i.Produto?.NomeProduto ?? "N/A",
+                    NomeEmbalagem = i.ProdutoEmbalagem?.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "UN",
                     Quantidade = i.Quantidade,
                     ValorUnitario = i.ValorUnitario,
                     DescontoUnitario = i.DescontoUnitario

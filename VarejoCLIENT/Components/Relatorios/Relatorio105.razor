@@ -161,6 +161,24 @@
 
     private async Task Exportar(string formato)
     {
-        // Mesma lógica de exportação futuramente implementada no serviço QuestPDF
+        loading = true; StateHasChanged();
+        try
+        {
+            // Garante que os filtros selecionados vão no PDF
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+
+            // É ESTA LINHA QUE CHAMA A API! Se ela não existir, o botão não faz nada.
+            await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro na exportação: {ex.Message}");
+        }
+        finally
+        {
+            loading = false; StateHasChanged();
+        }
     }
 }

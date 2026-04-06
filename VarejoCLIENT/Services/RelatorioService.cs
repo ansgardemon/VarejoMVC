@@ -38,6 +38,9 @@ namespace VarejoCLIENT.Services
                 new RelatorioDefinicaoDTO { Codigo = 201, Nome = "Posição Atual de Estoque", Categoria = "#200 - Estoque" },
                 new RelatorioDefinicaoDTO { Codigo = 202, Nome = "Lotes e Validades", Categoria = "#200 - Estoque" },
                 new RelatorioDefinicaoDTO { Codigo = 203, Nome = "Movimentação de Estoque Geral", Categoria = "#200 - Estoque" },
+                new RelatorioDefinicaoDTO { Codigo = 204, Nome = "Sugestão de Compras e Cobertura", Categoria = "#200 - Estoque" },
+                new RelatorioDefinicaoDTO { Codigo = 205, Nome = "Ficha de Inventário (Contagem)", Categoria = "#200 - Estoque" },
+                new RelatorioDefinicaoDTO { Codigo = 206, Nome = "Valorização de Estoque (Projeção)", Categoria = "#200 - Estoque" },
                 
                 // MÓDULO 300 - MOVIMENTAÇÕES
                 new RelatorioDefinicaoDTO { Codigo = 301, Nome = "Histórico de Movimentações", Categoria = "#300 - Movimentações" }
@@ -52,14 +55,16 @@ namespace VarejoCLIENT.Services
         #endregion
 
         #region BUSCAS E DADOS DOS RELATÓRIOS
-        // Relatório 101 (Produtos)
+
+        #region Relatório 101 (Produtos)
         public async Task<List<ProdutoDTO>> GetDadosRelatorio101Async(RelatorioFiltroProdutosDTO filtro)
         {
             var response = await _http.PostAsJsonAsync("api/relatorio/101/dados", filtro);
             return await response.Content.ReadFromJsonAsync<List<ProdutoDTO>>() ?? new();
         }
+        #endregion
 
-        // Relatorio 102 (Produto por valor)
+        #region Relatorio 102 (Produto por valor)
         public async Task<List<Relatorio102DTO>?> GetDadosRelatorio102Async(RelatorioFiltroProdutosDTO filtro)
         {
             try
@@ -79,8 +84,9 @@ namespace VarejoCLIENT.Services
                 return new List<Relatorio102DTO>();
             }
         }
+        #endregion
 
-        // Relatório 103 (Movimento por Produto)
+        #region Relatório 103 (Movimento por Produto)
         public async Task<List<Relatorio103DTO>> GetDadosRelatorio103Async(RelatorioFiltro103DTO filtro)
         {
             var response = await _http.PostAsJsonAsync("api/relatorio/103/dados", filtro);
@@ -90,8 +96,9 @@ namespace VarejoCLIENT.Services
             }
             return new List<Relatorio103DTO>();
         }
+        #endregion
 
-        // Relatório 104 (Curva ABC)
+        #region Relatório 104 (Curva ABC)
         public async Task<List<Relatorio104DTO>?> GetDadosRelatorio104Async(RelatorioFiltroProdutosDTO filtro)
         {
             try
@@ -108,8 +115,9 @@ namespace VarejoCLIENT.Services
                 return new List<Relatorio104DTO>();
             }
         }
+        #endregion
 
-        // Relatório 105 (Produtos sem giro)
+        #region Relatório 105 (Produtos sem giro)
         public async Task<List<Relatorio105DTO>?> GetDadosRelatorio105Async(RelatorioFiltro105DTO filtro)
         {
             try
@@ -126,8 +134,9 @@ namespace VarejoCLIENT.Services
                 return new List<Relatorio105DTO>();
             }
         }
+        #endregion
 
-        // Relatório 106 (Ranking de vendas)
+        #region Relatório 106 (Ranking de vendas)
         public async Task<List<Relatorio106DTO>?> GetDadosRelatorio106Async(RelatorioFiltro106DTO filtro)
         {
             try
@@ -144,8 +153,9 @@ namespace VarejoCLIENT.Services
                 return new List<Relatorio106DTO>();
             }
         }
+        #endregion
 
-        // Relatório 107 (Histórico de Alteração de Preços)
+        #region Relatório 107 (Histórico de Alteração de Preços)
         public async Task<List<Relatorio107DTO>?> GetDadosRelatorio107Async(RelatorioFiltroProdutosDTO filtro)
         {
             try
@@ -157,8 +167,9 @@ namespace VarejoCLIENT.Services
             }
             catch { return new List<Relatorio107DTO>(); }
         }
+        #endregion
 
-        // Relatório 201 (Posição atual de estoque)
+        #region Relatório 201 (Posição atual de estoque)
         public async Task<List<Relatorio201DTO>?> GetDadosRelatorio201Async(RelatorioFiltro201DTO filtro)
         {
             try
@@ -175,8 +186,9 @@ namespace VarejoCLIENT.Services
                 return new List<Relatorio201DTO>();
             }
         }
+        #endregion
 
-        // Relatório 202 (Lotes e validades)
+        #region Relatório 202 (Lotes e validades)
         public async Task<List<Relatorio202DTO>?> GetDadosRelatorio202Async(RelatorioFiltro202DTO filtro)
         {
             try
@@ -193,8 +205,9 @@ namespace VarejoCLIENT.Services
                 return new List<Relatorio202DTO>();
             }
         }
+        #endregion
 
-        // Relatório 203 (Auditoria de movimentação de estoque)
+        #region Relatório 203 (Auditoria de movimentação de estoque)
         public async Task<List<Relatorio203DTO>?> GetDadosRelatorio203Async(RelatorioFiltro203DTO filtro)
         {
             try
@@ -211,24 +224,75 @@ namespace VarejoCLIENT.Services
                 return new List<Relatorio203DTO>();
             }
         }
+        #endregion
+
+        #region Relatório 204 (Cobertura e Sugestão de compras)
+        public async Task<List<Relatorio204DTO>?> GetDadosRelatorio204Async(RelatorioFiltro204DTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/204/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio204DTO>>();
+
+                return new List<Relatorio204DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 204: {ex.Message}");
+                return new List<Relatorio204DTO>();
+            }
+        }
+        #endregion
+
+        #region Relatório 205 (Produtos abaixo do estoque mínimo)
+        public async Task<List<Relatorio205DTO>?> GetDadosRelatorio205Async(RelatorioFiltro205DTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/205/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio205DTO>>();
+                return new List<Relatorio205DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 205: {ex.Message}");
+                return new List<Relatorio205DTO>();
+            }
+        }
+        #endregion
+
+        #region RELATÓRIO 206 - VALORIZAÇÃO DE ESTOQUE
+        public async Task<List<Relatorio206DTO>?> GetDadosRelatorio206Async(RelatorioFiltro206DTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/206/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio206DTO>>();
+                return new List<Relatorio206DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 206: {ex.Message}");
+                return new List<Relatorio206DTO>();
+            }
+        }
+        #endregion
 
 
 
 
 
-
-
-
-
-
-
-
-        // Relatório 301 (Movimentações)
+        #region Relatório 301 (Movimentações)
         public async Task<List<MovimentoOutputDTO>> GetMovimentacoesFiltradasAsync(RelatorioFiltroMovimentacaoDTO filtro)
         {
             var response = await _http.PostAsJsonAsync("api/relatorio/movimentacoes", filtro);
             return await response.Content.ReadFromJsonAsync<List<MovimentoOutputDTO>>() ?? new();
         }
+        #endregion
+
         #endregion
 
         #region FAVORITOS
@@ -255,6 +319,9 @@ namespace VarejoCLIENT.Services
                 201 => "api/relatorio/201/exportar/pdf",
                 202 => "api/relatorio/202/exportar/pdf",
                 203 => "api/relatorio/203/exportar/pdf",
+                204 => "api/relatorio/204/exportar/pdf",
+                205 => "api/relatorio/205/exportar/pdf",
+                206 => "api/relatorio/206/exportar/pdf",
                 _ => $"api/relatorio/exportar/pdf"
             };
 

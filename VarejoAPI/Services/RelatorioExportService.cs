@@ -637,6 +637,204 @@ namespace VarejoAPI.Services
         }
         #endregion
 
+        #region RELATÓRIO 204 - SUGESTÃO DE COMPRAS
+        public byte[] ExportarPdfRelatorio204(List<Relatorio204DTO> dados, int diasDesejados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, $"SUGESTÃO DE COMPRAS (COBERTURA: {diasDesejados} DIAS)", "#204"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(1);   // Estoque
+                            columns.RelativeColumn(1);   // Média/Dia
+                            columns.RelativeColumn(1);   // Cobertura Atual
+                            columns.RelativeColumn(1);   // Comprar (Sugestão)
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("ESTOQUE");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("MÉDIA/DIA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("COB. (DIAS)");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("COMPRAR");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto);
+
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.VendaMediaDiaria.ToString("N2")).FontColor(Colors.Grey.Darken2);
+
+                            var corCobertura = item.DiasCoberturaAtual < 5 ? Colors.Red.Medium : Colors.Black;
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.DiasCoberturaAtual >= 999 ? "+999" : item.DiasCoberturaAtual.ToString("N0")).FontColor(corCobertura);
+
+                            // Coluna de Comprar em Destaque
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.SugestaoCompra.ToString("N2")).FontColor("#163889").SemiBold();
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 205 - PRODUTOS COM ESTOQUE MÍNIMO
+        public byte[] ExportarPdfRelatorio205(List<Relatorio205DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "ALERTAS DE ESTOQUE MÍNIMO", "#205"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);
+                            columns.RelativeColumn(3);
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(1);
+                            columns.RelativeColumn(1);
+                            columns.RelativeColumn(1);
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("CATEGORIA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("MÍNIMO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("ATUAL");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("FALTA");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).Text(item.Categoria);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueMinimo.ToString("N2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2")).FontColor(Colors.Red.Medium).Bold();
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.NecessidadeCompra.ToString("N2")).SemiBold();
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 206 - VALORIZAÇÃO DE ESTOQUE
+        public byte[] ExportarPdfRelatorio206(List<Relatorio206DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4.Landscape());
+                    page.Margin(1, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "VALORIZAÇÃO DE ESTOQUE E PROJEÇÃO DE LUCRO", "#206"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(1);   // Qtd
+                            columns.RelativeColumn(1);   // Custo Un.
+                            columns.RelativeColumn(1);   // Preço Un.
+                            columns.RelativeColumn(1.5f);// Custo Total
+                            columns.RelativeColumn(1.5f);// Venda Total
+                            columns.RelativeColumn(1.5f);// Lucro Proj.
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("QTD");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("CUSTO UN");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("PREÇO UN");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("CUSTO TOTAL");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("VENDA TOTAL");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("LUCRO PROJ.");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2")).SemiBold();
+
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.CustoMedio.ToString("C2")).FontColor(Colors.Grey.Darken2);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.PrecoVenda.ToString("C2")).FontColor(Colors.Grey.Darken2);
+
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ValorTotalCusto.ToString("C2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ValorTotalVenda.ToString("C2")).FontColor("#163889").SemiBold();
+
+                            var corLucro = item.LucroProjetado >= 0 ? Colors.Green.Darken2 : Colors.Red.Medium;
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.LucroProjetado.ToString("C2")).FontColor(corLucro).SemiBold();
+                        }
+
+                        // Totalizador Final do Relatório
+                        table.Cell().ColumnSpan(5).PaddingVertical(5).AlignRight().Text("TOTAIS GERAIS:").SemiBold().FontSize(10);
+                        table.Cell().PaddingVertical(5).AlignRight().Text(dados.Sum(x => x.ValorTotalCusto).ToString("C2")).SemiBold().FontSize(10);
+                        table.Cell().PaddingVertical(5).AlignRight().Text(dados.Sum(x => x.ValorTotalVenda).ToString("C2")).SemiBold().FontSize(10).FontColor("#163889");
+
+                        var totalLucro = dados.Sum(x => x.LucroProjetado);
+                        var corTotalLucro = totalLucro >= 0 ? Colors.Green.Darken2 : Colors.Red.Medium;
+                        table.Cell().PaddingVertical(5).AlignRight().Text(totalLucro.ToString("C2")).SemiBold().FontSize(10).FontColor(corTotalLucro);
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
+        #endregion
+
+
+
+
+
+
+
+
+
+
 
 
 

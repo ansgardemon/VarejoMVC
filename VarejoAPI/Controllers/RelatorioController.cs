@@ -749,6 +749,214 @@ namespace VarejoAPI.Controllers
 
         #endregion
 
+        #region RELATÓRIO 204 - COBERTURA E SUGESTÃO DE COMPRAS
+
+        [HttpPost("204/dados")]
+        public async Task<ActionResult<List<Relatorio204DTO>>> GetDadosRelatorio204([FromBody] RelatorioFiltro204DTO filtro)
+        {
+            var dataCorte = DateTime.Now.Date.AddDays(-filtro.DiasAnaliseGiro);
+
+            var query = _context.Produtos
+                .Include(p => p.Familia).ThenInclude(f => f.Categoria)
+                .Include(p => p.Familia).ThenInclude(f => f.Marca)
+                .AsNoTracking()
+                .AsQueryable();
+
+            // Filtros Padrão de Produto
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
+                query = query.Where(p => p.Familia != null && filtro.CategoriasIds.Contains(p.Familia.CategoriaId));
+
+            if (filtro.FamiliasIds != null && filtro.FamiliasIds.Any())
+                query = query.Where(p => filtro.FamiliasIds.Contains(p.FamiliaId));
+
+            if (filtro.MarcasIds != null && filtro.MarcasIds.Any())
+                query = query.Where(p => p.Familia != null && p.Familia.MarcaId != null && filtro.MarcasIds.Contains(p.Familia.MarcaId.Value));
+
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(p => filtro.ProdutosIds.Contains(p.IdProduto));
+
+            // Apenas produtos ativos precisam de reposição
+            query = query.Where(p => p.Ativo == true);
+
+            // Seleciona o produto e soma as saídas dele no período
+            var listaCrua = await query.Select(p => new
+            {
+                Produto = p,
+                // Pega as quantidades < 0 (Saídas/Vendas) que aconteceram após a Data de Corte
+                SaidasPeriodo = _context.ProdutosMovimento
+                    .Where(pm => pm.ProdutoId == p.IdProduto && pm.Quantidade < 0 && pm.Movimento != null && pm.Movimento.DataMovimento >= dataCorte)
+                    .Sum(pm => (decimal?)Math.Abs(pm.Quantidade)) ?? 0
+            }).ToListAsync();
+
+            var listaProcessada = listaCrua.Select(x => new Relatorio204DTO
+            {
+                IdProduto = x.Produto.IdProduto,
+                NomeProduto = x.Produto.NomeProduto ?? "Sem Nome",
+                Categoria = x.Produto.Familia != null && x.Produto.Familia.Categoria != null ? x.Produto.Familia.Categoria.DescricaoCategoria : "Sem Categoria",
+                EstoqueAtual = x.Produto.EstoqueAtual,
+                VendaTotalPeriodo = x.SaidasPeriodo,
+                DiasAnalise = filtro.DiasAnaliseGiro,
+                DiasDesejados = filtro.DiasCoberturaDesejada
+            })
+            // Mostra apenas itens que têm sugestão de compra OU que o estoque está abaixo de zero
+            .Where(x => x.SugestaoCompra > 0 || x.EstoqueAtual <= 0)
+            .OrderByDescending(x => x.SugestaoCompra) // Os itens mais urgentes aparecem primeiro
+            .ToList();
+
+            return Ok(listaProcessada);
+        }
+
+        [HttpPost("204/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio204([FromBody] RelatorioFiltro204DTO filtro)
+        {
+            var actionResult = await GetDadosRelatorio204(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var lista204 = okResult?.Value as List<Relatorio204DTO>;
+
+            if (lista204 == null || !lista204.Any())
+                return BadRequest("Seu estoque está saudável! Nenhuma necessidade de compra detectada.");
+
+            var service = new RelatorioExportService();
+            var pdfBytes = service.ExportarPdfRelatorio204(lista204, filtro.DiasCoberturaDesejada);
+
+            return File(pdfBytes, "application/pdf", $"SugestaoCompras_{DateTime.Now:ddMMyyyy}.pdf");
+        }
+
+        #endregion
+
+        #region RELATÓRIO 205 - PRODUTOS COM ESTOQUE MÍNIMO
+
+        [HttpPost("205/dados")]
+        public async Task<ActionResult<List<Relatorio205DTO>>> GetDadosRelatorio205([FromBody] RelatorioFiltro205DTO filtro)
+        {
+            // Usamos _context.Set<EstoqueConfig>() para garantir que vai compilar 
+            // independente do nome do seu DbSet lá no VarejoDbContext
+            var query = _context.Set<EstoqueConfig>()
+                .Include(e => e.Produto).ThenInclude(p => p.Familia).ThenInclude(f => f.Categoria)
+                .AsNoTracking()
+                .AsQueryable();
+
+            // Filtros Padrão (Agora navegando através da entidade EstoqueConfig 'e')
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
+                query = query.Where(e => e.Produto.Familia != null && filtro.CategoriasIds.Contains(e.Produto.Familia.CategoriaId));
+
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(e => filtro.ProdutosIds.Contains(e.ProdutoId));
+
+            // Lógica do Estoque Mínimo
+            // Filtramos apenas configurações válidas (maior que zero)
+            query = query.Where(e => e.EstoqueMinimo > 0);
+
+            // Se o switch da tela estiver ativo, traz só os que estão com o Estoque Atual ABAIXO do mínimo
+            if (filtro.ApenasAbaixoDoMinimo)
+                query = query.Where(e => e.Produto.EstoqueAtual < e.EstoqueMinimo);
+
+            var lista = await query
+                .OrderBy(e => e.Produto.NomeProduto)
+                .Select(e => new Relatorio205DTO
+                {
+                    IdProduto = e.ProdutoId,
+                    NomeProduto = e.Produto.NomeProduto ?? "Sem Nome",
+                    Categoria = e.Produto.Familia != null && e.Produto.Familia.Categoria != null ? e.Produto.Familia.Categoria.DescricaoCategoria : "Sem Categoria",
+                    EstoqueAtual = e.Produto.EstoqueAtual,
+                    EstoqueMinimo = e.EstoqueMinimo
+                })
+                .ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("205/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio205([FromBody] RelatorioFiltro205DTO filtro)
+        {
+            var actionResult = await GetDadosRelatorio205(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var lista205 = okResult?.Value as List<Relatorio205DTO>;
+
+            if (lista205 == null || !lista205.Any())
+                return BadRequest("Nenhum produto abaixo do estoque mínimo encontrado.");
+
+            var service = new RelatorioExportService();
+            var pdfBytes = service.ExportarPdfRelatorio205(lista205);
+
+            return File(pdfBytes, "application/pdf", $"EstoqueMinimo_{DateTime.Now:ddMMyyyy}.pdf");
+        }
+
+        #endregion
+
+        #region RELATÓRIO 206 - VALORIZAÇÃO DE ESTOQUE E PROJEÇÃO
+
+        [HttpPost("206/dados")]
+        public async Task<ActionResult<List<Relatorio206DTO>>> GetDadosRelatorio206([FromBody] RelatorioFiltro206DTO filtro)
+        {
+            var query = _context.Produtos
+                .Include(p => p.Familia).ThenInclude(f => f.Categoria)
+                .AsNoTracking()
+                .AsQueryable();
+
+            // Filtros Padrão
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
+                query = query.Where(p => p.Familia != null && filtro.CategoriasIds.Contains(p.Familia.CategoriaId));
+
+            if (filtro.FamiliasIds != null && filtro.FamiliasIds.Any())
+                query = query.Where(p => filtro.FamiliasIds.Contains(p.FamiliaId));
+
+            if (filtro.MarcasIds != null && filtro.MarcasIds.Any())
+                query = query.Where(p => p.Familia != null && p.Familia.MarcaId != null && filtro.MarcasIds.Contains(p.Familia.MarcaId.Value));
+
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(p => filtro.ProdutosIds.Contains(p.IdProduto));
+
+            // Apenas produtos ativos
+            var ativo = filtro.Ativo ?? true;
+            query = query.Where(p => p.Ativo == ativo);
+
+            if (filtro.ApenasComEstoque)
+                query = query.Where(p => p.EstoqueAtual > 0);
+
+            var lista = await query
+                .OrderBy(p => p.NomeProduto)
+                .Select(p => new Relatorio206DTO
+                {
+                    IdProduto = p.IdProduto,
+                    NomeProduto = p.NomeProduto ?? "Sem Nome",
+                    Categoria = p.Familia != null && p.Familia.Categoria != null ? p.Familia.Categoria.DescricaoCategoria : "Sem Categoria",
+                    EstoqueAtual = p.EstoqueAtual,
+                    CustoMedio = p.CustoMedio,
+                    // Puxa o preço de venda da primeira embalagem vinculada ao produto
+                    PrecoVenda = _context.ProdutosEmbalagem.Where(pe => pe.ProdutoId == p.IdProduto).Select(pe => pe.Preco).FirstOrDefault()
+                })
+                .ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("206/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio206([FromBody] RelatorioFiltro206DTO filtro)
+        {
+            var actionResult = await GetDadosRelatorio206(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var lista206 = okResult?.Value as List<Relatorio206DTO>;
+
+            if (lista206 == null || !lista206.Any())
+                return BadRequest("Nenhum produto com estoque encontrado para valorização.");
+
+            var service = new RelatorioExportService();
+            var pdfBytes = service.ExportarPdfRelatorio206(lista206);
+
+            return File(pdfBytes, "application/pdf", $"ValorizacaoEstoque_{DateTime.Now:ddMMyyyy}.pdf");
+        }
+
+        #endregion
+
+
+
+
+
+
+
+
+
 
 
 

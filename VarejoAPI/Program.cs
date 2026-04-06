@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Repositories;
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Varejo.Data;
 using Varejo.Models;
-using VarejoAPI.DTO;
+using VarejoSHARED.DTO;
 
 namespace VarejoAPI.Controllers
 {
@@ -23,7 +22,7 @@ namespace VarejoAPI.Controllers
         public async Task<ActionResult<List<MovimentoOutputDTO>>> GetAll()
         {
             var movimentos = await _context.Movimentos
-               
+
                 .Select(m => new MovimentoOutputDTO
                 {
                     IdMovimento = m.IdMovimento,
@@ -52,7 +51,7 @@ namespace VarejoAPI.Controllers
         public async Task<ActionResult<MovimentoOutputDTO>> GetById(int id)
         {
             var movimento = await _context.Movimentos
- 
+
                 .Where(m => m.IdMovimento == id)
                 .Select(m => new MovimentoOutputDTO
                 {
@@ -87,7 +86,7 @@ namespace VarejoAPI.Controllers
 
             var movimento = new Movimento
             {
-               
+
                 Documento = dto.Documento,
                 Observacao = dto.Observacao,
                 DataMovimento = dto.DataMovimento ?? DateTime.Now,
@@ -108,7 +107,7 @@ namespace VarejoAPI.Controllers
             var result = await _context.Movimentos
                 .Where(m => m.IdMovimento == movimento.IdMovimento)
                 .Select(m => new MovimentoOutputDTO
-                {  
+                {
                     IdMovimento = m.IdMovimento,
                     Documento = m.Documento,
                     Observacao = m.Observacao,

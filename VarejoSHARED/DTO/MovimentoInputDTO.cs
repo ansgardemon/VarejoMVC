@@ -1,4 +1,4 @@
-﻿namespace VarejoAPI.DTO
+﻿namespace VarejoSHARED.DTO
 {
     public class MovimentoInputDTO
     {

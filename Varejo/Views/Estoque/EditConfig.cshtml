@@ -1,0 +1,33 @@
+﻿@model Varejo.ViewModels.EstoqueConfigViewModel
+
+<form asp-action="EditConfig">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ProdutoId" />
+    <input type="hidden" asp-for="NomeProduto" />
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5>Configurar: @Model.NomeProduto</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Estoque Mínimo</label>
+                    <input asp-for="EstoqueMinimo" class="form-control" type="number" step="0.01" placeholder="Ex: 10,00" />
+                    <span class="text-muted small">Abaixo disso, o produto aparecerá em vermelho no painel.</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Estoque Máximo</label>
+                    <input asp-for="EstoqueMaximo" class="form-control" type="number" step="0.01" placeholder="Ex: 100,00" />
+                    <span class="text-muted small">Sugestão de teto para evitar excesso de capital imobilizado.</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light text-end">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-success">
+                <i class="fa-solid fa-save me-1"></i> Salvar Configurações
+            </button>
+        </div>
+    </div>
+</form>

@@ -41,6 +41,7 @@ namespace Varejo.Data
         public DbSet<HistoricoProduto> HistoricosProduto { get; set; }
         public DbSet<Inventario> Inventarios { get; set; }
         public DbSet<InventarioItem> InventariosItem { get; set; }
+        public DbSet<HistoricoPreco> HistoricosPreco { get; set; }
 
         public DbSet<UsuarioRelatorioFavorito> UsuarioRelatoriosFavoritos { get; set; }
         public DbSet<Venda> Vendas { get; set; }

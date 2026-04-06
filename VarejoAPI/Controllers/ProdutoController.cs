@@ -2,7 +2,6 @@
 using Varejo.Interfaces;
 using Varejo.Models;
 using VarejoSHARED.DTO;
-using static VarejoSHARED.DTO.ProdutoOutputDTO;
 
 namespace VarejoAPI.Controllers
 {

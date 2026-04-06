@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 using Varejo.Data;
 using Varejo.Interfaces;
 using Varejo.Repositories;
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +29,13 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
 builder.Services.AddScoped<IValidadeRepository, ValidadeRepository>();
 builder.Services.AddScoped<ITipoMovimentoRepository, TipoMovimentoRepository>();
+builder.Services.AddScoped<IFormaPagamentoRepository, FormaPagamentoRepository>();
+builder.Services.AddScoped<IPrazoPagamentoRepository, PrazoPagamentoRepository>();
+builder.Services.AddScoped<IEspecieTituloRepository, EspecieTituloRepository>();
+builder.Services.AddScoped<ITituloFinanceiroRepository, TituloFinanceiroRepository>();
+builder.Services.AddScoped<IPagamentoTituloRepository, PagamentoTituloRepository>();
+
+
 
 // ==========================
 // 3. Configurar CORS (Permissivo para facilitar o TCC)

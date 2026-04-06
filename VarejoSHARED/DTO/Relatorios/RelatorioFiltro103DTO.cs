@@ -1,7 +1,7 @@
 ﻿// Caminho: VarejoSHARED/DTO/RelatorioFiltro103DTO.cs
 using System.Collections.Generic;
 
-namespace VarejoSHARED.DTO
+namespace VarejoSHARED.DTO.Relatorios
 {
     public class RelatorioFiltro103DTO : RelatorioFiltroBaseDTO
     {

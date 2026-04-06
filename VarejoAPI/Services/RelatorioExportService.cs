@@ -826,7 +826,79 @@ namespace VarejoAPI.Services
         }
         #endregion
 
+        public byte[] ExportarPdfRelatorio207(List<Relatorio207DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            return Document.Create(container => {
+                container.Page(page => {
+                    page.Size(PageSizes.A4); page.Margin(1, Unit.Centimetre); page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+                    page.Header().Element(c => GerarCabecalho(c, "GIRO E VELOCIDADE DE ESTOQUE", "#207"));
+                    page.Content().PaddingVertical(10).Table(table => {
+                        table.ColumnsDefinition(c => { c.ConstantColumn(40); c.RelativeColumn(3); c.RelativeColumn(1); c.RelativeColumn(1); c.RelativeColumn(1); });
+                        table.Header(h => { h.Cell().Element(HeaderStyle).Text("ID"); h.Cell().Element(HeaderStyle).Text("PRODUTO"); h.Cell().Element(HeaderStyle).AlignRight().Text("ESTOQUE"); h.Cell().Element(HeaderStyle).AlignRight().Text("TOTAL SAÍDAS"); h.Cell().Element(HeaderStyle).AlignRight().Text("MÉDIA/DIA"); });
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString()); table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2")); table.Cell().Element(RowStyle).AlignRight().Text(item.TotalSaidas.ToString("N2")).SemiBold(); table.Cell().Element(RowStyle).AlignRight().Text(item.SaidaMediaDiaria.ToString("N2")).FontColor("#163889");
+                        }
+                    });
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
 
+        public byte[] ExportarPdfRelatorio208(List<Relatorio208DTO> dados, bool cega)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            return Document.Create(container => {
+                container.Page(page => {
+                    page.Size(PageSizes.A4); page.Margin(1, Unit.Centimetre); page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+                    page.Header().Element(c => GerarCabecalho(c, cega ? "FICHA DE CONTAGEM CEGA" : "FICHA DE CONTAGEM", "#208"));
+                    page.Content().PaddingVertical(10).Table(table => {
+                        table.ColumnsDefinition(c => { c.ConstantColumn(40); c.RelativeColumn(3); if (!cega) c.ConstantColumn(60); c.ConstantColumn(80); c.ConstantColumn(80); });
+                        table.Header(h => { h.Cell().Element(HeaderStyle).Text("ID"); h.Cell().Element(HeaderStyle).Text("PRODUTO"); if (!cega) h.Cell().Element(HeaderStyle).AlignRight().Text("SISTEMA"); h.Cell().Element(HeaderStyle).AlignCenter().Text("1ª CONTAGEM"); h.Cell().Element(HeaderStyle).AlignCenter().Text("2ª CONTAGEM"); });
+                        foreach (var item in dados)
+                        {
+                            // A MÁGICA DA CORREÇÃO ESTÁ AQUI: Mudamos Action para Func
+                            Func<IContainer, IContainer> rs = c => c.PaddingVertical(10).PaddingHorizontal(5).BorderBottom(1).BorderColor(Colors.Grey.Lighten3);
+
+                            table.Cell().Element(rs).Text(item.IdProduto.ToString());
+                            table.Cell().Element(rs).Text(item.NomeProduto);
+
+                            if (!cega)
+                                table.Cell().Element(rs).AlignRight().Text(item.EstoqueAtual.ToString("N2"));
+
+                            table.Cell().Element(rs).AlignCenter().Text("_________");
+                            table.Cell().Element(rs).AlignCenter().Text("_________");
+                        }
+                    });
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
+
+        public byte[] ExportarPdfRelatorio209(List<Relatorio209DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            return Document.Create(container => {
+                container.Page(page => {
+                    page.Size(PageSizes.A4.Landscape()); page.Margin(1, Unit.Centimetre); page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+                    page.Header().Element(c => GerarCabecalho(c, "DIVERGÊNCIAS E AJUSTES DE INVENTÁRIO", "#209"));
+                    page.Content().PaddingVertical(10).Table(table => {
+                        table.ColumnsDefinition(c => { c.ConstantColumn(70); c.ConstantColumn(40); c.RelativeColumn(3); c.RelativeColumn(1); c.RelativeColumn(1); c.RelativeColumn(2); });
+                        table.Header(h => { h.Cell().Element(HeaderStyle).Text("DATA"); h.Cell().Element(HeaderStyle).Text("ID"); h.Cell().Element(HeaderStyle).Text("PRODUTO"); h.Cell().Element(HeaderStyle).AlignRight().Text("QTD AJUSTE"); h.Cell().Element(HeaderStyle).AlignRight().Text("R$ IMPACTO"); h.Cell().Element(HeaderStyle).Text("OBS"); });
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.DataAjuste.ToString("dd/MM/yy")); table.Cell().Element(RowStyle).Text(item.IdProduto.ToString()); table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.QuantidadeAjustada.ToString("N2")).FontColor(item.QuantidadeAjustada < 0 ? Colors.Red.Medium : Colors.Green.Medium).SemiBold();
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ImpactoFinanceiro.ToString("C2")).FontColor(item.ImpactoFinanceiro < 0 ? Colors.Red.Medium : Colors.Green.Medium);
+                            table.Cell().Element(RowStyle).Text(item.Observacao);
+                        }
+                    });
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
 
 
 

@@ -1,0 +1,53 @@
+﻿@using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
+@using VarejoCLIENT.Services
+@inject RelatorioService RelService
+
+<RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+    <ChildContent>
+        <div class="row g-3">
+            <div class="col-md-6"><RelatorioFiltroData DataInicio="filtro.DataInicio" DataInicioChanged="v => filtro.DataInicio = v" DataFim="filtro.DataFim" DataFimChanged="v => filtro.DataFim = v" /></div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold small text-primary">Qual operação foi usada para o ajuste?</label>
+                <select class="form-select" @bind="filtro.IdTipoMovimentoAjuste">
+                    <option value="">-- Selecione o Tipo de Movimento --</option>
+                    @foreach (var t in listaTipos)
+                    {
+                        <option value="@t.IdTipoMovimento">@t.DescricaoTipoMovimento</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </ChildContent>
+</RelatorioFiltro>
+
+<div class="mt-4">
+    @if (loading)
+    {
+        <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+    }
+    else if (listaDados != null && listaDados.Any())
+    {
+        <table class="table table-hover align-middle bg-white shadow-sm rounded">
+            <thead class="bg-light"><tr><th>Data / Produto</th><th class="text-end">Qtd Ajuste</th><th class="text-end">R$ Impacto</th><th>Obs</th></tr></thead>
+            <tbody>
+                @foreach (var item in listaDados)
+                {
+                    <tr><td><div class="fw-bold">@item.NomeProduto</div><small class="text-muted">@item.DataAjuste.ToString("dd/MM/yyyy HH:mm")</small></td><td class="text-end fw-bold @(item.QuantidadeAjustada < 0 ? "text-danger" : "text-success")">@item.QuantidadeAjustada.ToString("N2")</td><td class="text-end fw-bold @(item.ImpactoFinanceiro < 0 ? "text-danger" : "text-success")">@item.ImpactoFinanceiro.ToString("C2")</td><td>@item.Observacao</td></tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
+    private RelatorioFiltro209DTO filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now };
+    private List<Relatorio209DTO>? listaDados; private bool loading = false;
+    private List<TipoMovimentoOutputDTO> listaTipos = new();
+    protected override async Task OnInitializedAsync() { listaTipos = await RelService.GetTiposMovimentoAsync(); }
+    private async Task ExecutarBusca() { loading = true; StateHasChanged(); listaDados = await RelService.GetDadosRelatorio209Async(filtro); loading = false; StateHasChanged(); }
+    private void Limpar() { listaDados = null; filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now }; StateHasChanged(); }
+    private async Task Exportar(string f) { await ExecutarBusca(); await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro); }
+}

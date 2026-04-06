@@ -949,7 +949,112 @@ namespace VarejoAPI.Controllers
 
         #endregion
 
+        #region 207 - GIRO DE ESTOQUE (VELOCIDADE)
+        [HttpPost("207/dados")]
+        public async Task<ActionResult<List<Relatorio207DTO>>> GetDadosRelatorio207([FromBody] RelatorioFiltro207DTO filtro)
+        {
+            var dataInicio = filtro.DataInicio ?? DateTime.Now.AddDays(-30);
+            var dataFim = filtro.DataFim ?? DateTime.Now;
+            var dias = (dataFim.Date - dataInicio.Date).Days;
+            if (dias <= 0) dias = 1;
 
+            var query = _context.Produtos.Include(p => p.Familia).ThenInclude(f => f.Categoria).AsNoTracking().AsQueryable();
+
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any()) query = query.Where(p => p.Familia != null && filtro.CategoriasIds.Contains(p.Familia.CategoriaId));
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any()) query = query.Where(p => filtro.ProdutosIds.Contains(p.IdProduto));
+
+            var listaCrua = await query.Select(p => new {
+                Produto = p,
+                Saidas = _context.ProdutosMovimento.Where(pm => pm.ProdutoId == p.IdProduto && pm.Quantidade < 0 && pm.Movimento != null && pm.Movimento.DataMovimento >= dataInicio && pm.Movimento.DataMovimento <= dataFim).Sum(pm => (decimal?)Math.Abs(pm.Quantidade)) ?? 0
+            }).ToListAsync();
+
+            var lista = listaCrua.Select(x => new Relatorio207DTO
+            {
+                IdProduto = x.Produto.IdProduto,
+                NomeProduto = x.Produto.NomeProduto ?? "",
+                Categoria = x.Produto.Familia?.Categoria?.DescricaoCategoria ?? "",
+                EstoqueAtual = x.Produto.EstoqueAtual,
+                TotalSaidas = x.Saidas,
+                DiasAnalisados = dias
+            }).Where(x => x.TotalSaidas > 0).OrderByDescending(x => x.TotalSaidas).ToList();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("207/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio207([FromBody] RelatorioFiltro207DTO filtro)
+        {
+            var dados = (await GetDadosRelatorio207(filtro)).Result as OkObjectResult;
+            var lista = dados?.Value as List<Relatorio207DTO>;
+            if (lista == null || !lista.Any()) return BadRequest("Sem dados de giro.");
+            return File(new RelatorioExportService().ExportarPdfRelatorio207(lista), "application/pdf", "GiroEstoque.pdf");
+        }
+        #endregion
+
+        #region 208 - INVENTÁRIO (FICHA DE CONTAGEM)
+        [HttpPost("208/dados")]
+        public async Task<ActionResult<List<Relatorio208DTO>>> GetDadosRelatorio208([FromBody] RelatorioFiltro208DTO filtro)
+        {
+            var query = _context.Produtos.Include(p => p.Familia).ThenInclude(f => f.Categoria).Where(p => p.Ativo).AsNoTracking().AsQueryable();
+
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any()) query = query.Where(p => p.Familia != null && filtro.CategoriasIds.Contains(p.Familia.CategoriaId));
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any()) query = query.Where(p => filtro.ProdutosIds.Contains(p.IdProduto));
+
+            var lista = await query.OrderBy(p => p.Familia != null && p.Familia.Categoria != null ? p.Familia.Categoria.DescricaoCategoria : "").ThenBy(p => p.NomeProduto)
+                .Select(p => new Relatorio208DTO
+                {
+                    IdProduto = p.IdProduto,
+                    NomeProduto = p.NomeProduto ?? "",
+                    Categoria = p.Familia != null && p.Familia.Categoria != null ? p.Familia.Categoria.DescricaoCategoria : "",
+                    EstoqueAtual = p.EstoqueAtual
+                }).ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("208/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio208([FromBody] RelatorioFiltro208DTO filtro)
+        {
+            var dados = (await GetDadosRelatorio208(filtro)).Result as OkObjectResult;
+            var lista = dados?.Value as List<Relatorio208DTO>;
+            if (lista == null || !lista.Any()) return BadRequest("Nenhum produto para contagem.");
+            return File(new RelatorioExportService().ExportarPdfRelatorio208(lista, filtro.OcultarEstoqueSistema), "application/pdf", "FichaInventario.pdf");
+        }
+        #endregion
+
+        #region 209 - DIVERGÊNCIA DE INVENTÁRIO
+        [HttpPost("209/dados")]
+        public async Task<ActionResult<List<Relatorio209DTO>>> GetDadosRelatorio209([FromBody] RelatorioFiltro209DTO filtro)
+        {
+            var query = _context.ProdutosMovimento.Include(pm => pm.Produto).Include(pm => pm.Movimento).AsNoTracking().AsQueryable();
+
+            if (filtro.DataInicio.HasValue) query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio);
+            if (filtro.DataFim.HasValue) query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim);
+            if (filtro.IdTipoMovimentoAjuste.HasValue) query = query.Where(pm => pm.Movimento != null && pm.Movimento.TipoMovimentoId == filtro.IdTipoMovimentoAjuste);
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any()) query = query.Where(pm => filtro.ProdutosIds.Contains(pm.ProdutoId));
+
+            var lista = await query.Select(pm => new Relatorio209DTO
+            {
+                IdProduto = pm.ProdutoId,
+                NomeProduto = pm.Produto.NomeProduto ?? "",
+                DataAjuste = pm.Movimento != null ? pm.Movimento.DataMovimento : DateTime.MinValue,
+                QuantidadeAjustada = pm.Quantidade,
+                CustoUnitario = pm.Produto.CustoMedio,
+                Observacao = pm.Movimento != null && pm.Movimento.Observacao != null ? pm.Movimento.Observacao : ""
+            }).OrderByDescending(x => x.DataAjuste).ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("209/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio209([FromBody] RelatorioFiltro209DTO filtro)
+        {
+            var dados = (await GetDadosRelatorio209(filtro)).Result as OkObjectResult;
+            var lista = dados?.Value as List<Relatorio209DTO>;
+            if (lista == null || !lista.Any()) return BadRequest("Nenhuma divergência no período.");
+            return File(new RelatorioExportService().ExportarPdfRelatorio209(lista), "application/pdf", "Divergencias.pdf");
+        }
+        #endregion
 
 
 

@@ -1,0 +1,42 @@
+﻿@using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
+@using VarejoCLIENT.Services
+@inject RelatorioService RelService
+
+<RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+    <ChildContent>
+        <div class="row g-3"><div class="col-md-8"><RelatorioFiltroData DataInicio="filtro.DataInicio" DataInicioChanged="v => filtro.DataInicio = v" DataFim="filtro.DataFim" DataFimChanged="v => filtro.DataFim = v" /></div></div>
+    </ChildContent>
+    <BarraPesquisa><div class="row g-3"><div class="col-md-6"><RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" /></div></div></BarraPesquisa>
+</RelatorioFiltro>
+
+<div class="mt-4">
+    @if (loading)
+    {
+        <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+    }
+    else if (listaDados != null && listaDados.Any())
+    {
+        <table class="table table-hover align-middle bg-white shadow-sm rounded">
+            <thead class="bg-light"><tr><th>Produto</th><th class="text-end">Estoque</th><th class="text-end">Total Saídas</th><th class="text-end">Média/Dia</th></tr></thead>
+            <tbody>
+                @foreach (var item in listaDados)
+                {
+                    <tr><td>@item.NomeProduto <br><small class="text-muted">@item.Categoria</small></td><td class="text-end">@item.EstoqueAtual.ToString("N2")</td><td class="text-end fw-bold">@item.TotalSaidas.ToString("N2")</td><td class="text-end text-primary fw-bold">@item.SaidaMediaDiaria.ToString("N2")</td></tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
+    private RelatorioFiltro207DTO filtro = new() { DataInicio = DateTime.Now.AddDays(-30), DataFim = DateTime.Now };
+    private List<Relatorio207DTO>? listaDados; private bool loading = false;
+    private List<CategoriaOutputDTO> listaCategorias = new(); private List<string> selecionadosCategorias = new();
+    protected override async Task OnInitializedAsync() { listaCategorias = await RelService.GetCategoriasAsync(); }
+    private async Task ExecutarBusca() { loading = true; StateHasChanged(); filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList(); listaDados = await RelService.GetDadosRelatorio207Async(filtro); loading = false; StateHasChanged(); }
+    private void Limpar() { listaDados = null; filtro = new() { DataInicio = DateTime.Now.AddDays(-30), DataFim = DateTime.Now }; selecionadosCategorias.Clear(); StateHasChanged(); }
+    private async Task Exportar(string formato) { await ExecutarBusca(); await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro); }
+}

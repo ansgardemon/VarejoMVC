@@ -1,0 +1,47 @@
+﻿@using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
+@using VarejoCLIENT.Services
+@inject RelatorioService RelService
+
+<RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+    <ChildContent>
+        <div class="row"><div class="col-md-6"><div class="form-check form-switch mt-2"><input class="form-check-input" type="checkbox" id="sc" @bind="filtro.OcultarEstoqueSistema"><label class="form-check-label fw-bold ms-2" for="sc">Contagem Cega (Ocultar Sistema)</label></div></div></div>
+    </ChildContent>
+    <BarraPesquisa><div class="row g-3"><div class="col-md-6"><RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" /></div></div></BarraPesquisa>
+</RelatorioFiltro>
+
+<div class="mt-4">
+    @if (loading)
+    {
+        <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+    }
+    else if (listaDados != null && listaDados.Any())
+    {
+        <table class="table table-hover align-middle bg-white shadow-sm rounded">
+            <thead class="bg-light"><tr><th>Produto</th> @if(!filtro.OcultarEstoqueSistema){
+                <th class="text-end">Sistema</th>
+            }
+            <th class="text-center">Físico</th></tr></thead>
+            <tbody>
+                @foreach (var item in listaDados)
+                {
+                    <tr><td>@item.NomeProduto</td> @if(!filtro.OcultarEstoqueSistema){
+                        <td class="text-end text-muted">@item.EstoqueAtual.ToString("N2")</td>
+                    }
+                    <td class="text-center"><span class="text-muted opacity-25">. . . . . . . .</span></td></tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
+    private RelatorioFiltro208DTO filtro = new(); private List<Relatorio208DTO>? listaDados; private bool loading = false;
+    private List<CategoriaOutputDTO> listaCategorias = new(); private List<string> selecionadosCategorias = new();
+    protected override async Task OnInitializedAsync() { listaCategorias = await RelService.GetCategoriasAsync(); }
+    private async Task ExecutarBusca() { loading = true; StateHasChanged(); filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList(); listaDados = await RelService.GetDadosRelatorio208Async(filtro); loading = false; StateHasChanged(); }
+    private void Limpar() { listaDados = null; filtro = new(); selecionadosCategorias.Clear(); StateHasChanged(); }
+    private async Task Exportar(string f) { await ExecutarBusca(); await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro); }
+}

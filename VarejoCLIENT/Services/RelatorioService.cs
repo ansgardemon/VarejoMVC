@@ -41,6 +41,9 @@ namespace VarejoCLIENT.Services
                 new RelatorioDefinicaoDTO { Codigo = 204, Nome = "Sugestão de Compras e Cobertura", Categoria = "#200 - Estoque" },
                 new RelatorioDefinicaoDTO { Codigo = 205, Nome = "Ficha de Inventário (Contagem)", Categoria = "#200 - Estoque" },
                 new RelatorioDefinicaoDTO { Codigo = 206, Nome = "Valorização de Estoque (Projeção)", Categoria = "#200 - Estoque" },
+                new RelatorioDefinicaoDTO { Codigo = 207, Nome = "Giro e Velocidade de Estoque", Categoria = "#200 - Estoque" },
+new RelatorioDefinicaoDTO { Codigo = 208, Nome = "Inventário (Ficha de Contagem)", Categoria = "#200 - Estoque" },
+new RelatorioDefinicaoDTO { Codigo = 209, Nome = "Divergência de Inventário", Categoria = "#200 - Estoque" },
                 
                 // MÓDULO 300 - MOVIMENTAÇÕES
                 new RelatorioDefinicaoDTO { Codigo = 301, Nome = "Histórico de Movimentações", Categoria = "#300 - Movimentações" }
@@ -281,7 +284,10 @@ namespace VarejoCLIENT.Services
         }
         #endregion
 
-
+        public async Task<List<Relatorio207DTO>?> GetDadosRelatorio207Async(RelatorioFiltro207DTO filtro) { var r = await _http.PostAsJsonAsync("api/relatorio/207/dados", filtro); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<List<Relatorio207DTO>>() : new(); }
+        public async Task<List<Relatorio208DTO>?> GetDadosRelatorio208Async(RelatorioFiltro208DTO filtro) { var r = await _http.PostAsJsonAsync("api/relatorio/208/dados", filtro); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<List<Relatorio208DTO>>() : new(); }
+        public async Task<List<Relatorio209DTO>?> GetDadosRelatorio209Async(RelatorioFiltro209DTO filtro) { var r = await _http.PostAsJsonAsync("api/relatorio/209/dados", filtro); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<List<Relatorio209DTO>>() : new(); }
+        public async Task<List<TipoMovimentoOutputDTO>> GetTiposMovimentoAsync() { var r = await _http.GetAsync("api/TipoMovimento"); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<List<TipoMovimentoOutputDTO>>() ?? new() : new(); }
 
 
 
@@ -322,6 +328,9 @@ namespace VarejoCLIENT.Services
                 204 => "api/relatorio/204/exportar/pdf",
                 205 => "api/relatorio/205/exportar/pdf",
                 206 => "api/relatorio/206/exportar/pdf",
+                207 => "api/relatorio/207/exportar/pdf",
+                208 => "api/relatorio/208/exportar/pdf",
+                209 => "api/relatorio/209/exportar/pdf",
                 _ => $"api/relatorio/exportar/pdf"
             };
 

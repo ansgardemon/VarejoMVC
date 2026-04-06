@@ -25,16 +25,20 @@
                 <small class="opacity-75">Visualizando detalhes do movimento</small>
             </div>
             <div class="d-print-none d-flex gap-2">
-                @* Botão Faturar *@
-                <form asp-action="Faturar" asp-route-id="@Model.IdVenda" method="post">
-                    <button type="submit" class="btn btn-success fw-bold px-3">
-                        <i class="fas fa-file-invoice-dollar me-1"></i> FATURAR
-                    </button>
-                </form>
+           
 
                 @* Botão Cancelar  *@
                 @if (!Model.Finalizada)
                 {
+
+                    @* Botão Faturar *@
+                    <form asp-action="Faturar" asp-route-id="@Model.IdVenda" method="post">
+                        <button type="submit" class="btn btn-success fw-bold px-3">
+                            <i class="fas fa-file-invoice-dollar me-1"></i> FATURAR
+                        </button>
+                    </form>
+
+
                     <a asp-action="Cancelar" asp-route-id="@Model.IdVenda" class="btn btn-outline-danger fw-bold px-3">
                         <i class="fas fa-ban me-1"></i> CANCELAR
                     </a>
@@ -44,7 +48,12 @@
                     <a asp-action="Imprimir" asp-route-id="@Model.IdVenda" target="_blank" class="btn btn-secondary px-3" title="Imprimir Cupom">
                         <i class="fas fa-print"></i> Imprimir
                     </a>
-           
+
+                @if(Model.Finalizada){
+                    <a asp-action="ImprimirTermica" asp-route-id="@Model.IdVenda" target="_blank" class="btn btn-secondary px-3" title="Imprimir Cupom">
+                        <i class="fas fa-print"></i> Imprimir Comprovante
+                    </a>
+                }
 
                 <a asp-action="Index" class="btn btn-secondary px-3">
                     <i class="fas fa-arrow-left me-1"></i> VOLTAR

@@ -540,11 +540,214 @@ namespace VarejoAPI.Controllers
 
         #endregion
 
+        #region RELATÓRIO 201 - POSIÇÃO ATUAL DE ESTOQUE
 
+        [HttpPost("201/dados")]
+        public async Task<ActionResult<List<Relatorio201DTO>>> GetDadosRelatorio201([FromBody] RelatorioFiltro201DTO filtro)
+        {
+            var query = _context.Produtos
+                .Include(p => p.Familia).ThenInclude(f => f.Categoria)
+                .Include(p => p.Familia).ThenInclude(f => f.Marca)
+                .AsNoTracking()
+                .AsQueryable();
 
+            // Filtros Padrão (Herdados)
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
+                query = query.Where(p => p.Familia != null && filtro.CategoriasIds.Contains(p.Familia.CategoriaId));
 
+            if (filtro.FamiliasIds != null && filtro.FamiliasIds.Any())
+                query = query.Where(p => filtro.FamiliasIds.Contains(p.FamiliaId));
 
+            if (filtro.MarcasIds != null && filtro.MarcasIds.Any())
+                query = query.Where(p => p.Familia != null && p.Familia.MarcaId != null && filtro.MarcasIds.Contains(p.Familia.MarcaId.Value));
 
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(p => filtro.ProdutosIds.Contains(p.IdProduto));
+
+            if (filtro.Ativo.HasValue)
+                query = query.Where(p => p.Ativo == filtro.Ativo.Value);
+
+            // Filtro Específico de Saldo de Estoque
+            if (filtro.FiltroSaldo == "COM_ESTOQUE")
+                query = query.Where(p => p.EstoqueAtual > 0);
+            else if (filtro.FiltroSaldo == "SEM_ESTOQUE")
+                query = query.Where(p => p.EstoqueAtual == 0);
+            else if (filtro.FiltroSaldo == "NEGATIVO")
+                query = query.Where(p => p.EstoqueAtual < 0);
+
+            var lista = await query
+                .OrderBy(p => p.NomeProduto)
+                .Select(p => new Relatorio201DTO
+                {
+                    IdProduto = p.IdProduto,
+                    NomeProduto = p.NomeProduto ?? "Sem Nome",
+                    Categoria = p.Familia != null && p.Familia.Categoria != null ? p.Familia.Categoria.DescricaoCategoria : "Sem Categoria",
+                    Marca = p.Familia != null && p.Familia.Marca != null ? p.Familia.Marca.NomeMarca : "Sem Marca",
+                    EstoqueAtual = p.EstoqueAtual,
+                    CustoMedio = p.CustoMedio
+                })
+                .ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("201/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio201([FromBody] RelatorioFiltro201DTO filtro)
+        {
+            var actionResult = await GetDadosRelatorio201(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var lista201 = okResult?.Value as List<Relatorio201DTO>;
+
+            if (lista201 == null || !lista201.Any())
+                return BadRequest("Nenhum produto encontrado para a posição de estoque informada.");
+
+            var service = new RelatorioExportService();
+            var pdfBytes = service.GerarPdfRelatorio201(lista201);
+
+            return File(pdfBytes, "application/pdf", $"PosicaoEstoque_{DateTime.Now:ddMMyyyy}.pdf");
+        }
+
+        #endregion
+
+        #region RELATÓRIO 202 - LOTES E VALIDADES
+
+        [HttpPost("202/dados")]
+        public async Task<ActionResult<List<Relatorio202DTO>>> GetDadosRelatorio202([FromBody] RelatorioFiltro202DTO filtro)
+        {
+            var hoje = DateTime.Now.Date;
+
+            // Busca nas validades que ainda estão marcadas como EmEstoque
+            var query = _context.Validades
+                .Include(v => v.Produto).ThenInclude(p => p.Familia).ThenInclude(f => f.Categoria)
+                .Where(v => v.EmEstoque == true)
+                .AsNoTracking()
+                .AsQueryable();
+
+            // Filtros Padrão de Produto (Herdados)
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
+                query = query.Where(v => v.Produto.Familia != null && filtro.CategoriasIds.Contains(v.Produto.Familia.CategoriaId));
+
+            if (filtro.FamiliasIds != null && filtro.FamiliasIds.Any())
+                query = query.Where(v => filtro.FamiliasIds.Contains(v.Produto.FamiliaId));
+
+            if (filtro.MarcasIds != null && filtro.MarcasIds.Any())
+                query = query.Where(v => v.Produto.Familia != null && v.Produto.Familia.MarcaId != null && filtro.MarcasIds.Contains(v.Produto.Familia.MarcaId.Value));
+
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(v => filtro.ProdutosIds.Contains(v.ProdutoId));
+
+            // Filtro Específico de Risco de Vencimento
+            if (filtro.StatusValidade == "VENCIDOS")
+                query = query.Where(v => v.DataValidade.Date < hoje);
+            else if (filtro.StatusValidade == "VENCENDO_30")
+                query = query.Where(v => v.DataValidade.Date >= hoje && v.DataValidade.Date <= hoje.AddDays(30));
+            else if (filtro.StatusValidade == "NO_PRAZO")
+                query = query.Where(v => v.DataValidade.Date > hoje.AddDays(30));
+
+            var lista = await query
+                .OrderBy(v => v.DataValidade) // Ordena do risco mais alto (vencido) para o mais baixo
+                .Select(v => new Relatorio202DTO
+                {
+                    IdProduto = v.ProdutoId,
+                    NomeProduto = v.Produto.NomeProduto ?? "Sem Nome",
+                    Categoria = v.Produto.Familia != null && v.Produto.Familia.Categoria != null ? v.Produto.Familia.Categoria.DescricaoCategoria : "Sem Categoria",
+                    DataValidade = v.DataValidade
+                })
+                .ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("202/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio202([FromBody] RelatorioFiltro202DTO filtro)
+        {
+            var actionResult = await GetDadosRelatorio202(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var lista202 = okResult?.Value as List<Relatorio202DTO>;
+
+            if (lista202 == null || !lista202.Any())
+                return BadRequest("Nenhuma validade encontrada para os filtros aplicados.");
+
+            var service = new RelatorioExportService();
+            var pdfBytes = service.GerarPdfRelatorio202(lista202);
+
+            return File(pdfBytes, "application/pdf", $"LotesValidades_{DateTime.Now:ddMMyyyy}.pdf");
+        }
+
+        #endregion
+
+        #region RELATÓRIO 203 - MOVIMENTAÇÃO DE ESTOQUE GERAL
+
+        [HttpPost("203/dados")]
+        public async Task<ActionResult<List<Relatorio203DTO>>> GetDadosRelatorio203([FromBody] RelatorioFiltro203DTO filtro)
+        {
+            var query = _context.ProdutosMovimento
+                .Include(pm => pm.Movimento).ThenInclude(m => m.TipoMovimento)
+                .Include(pm => pm.Movimento).ThenInclude(m => m.Pessoa)
+                .Include(pm => pm.Produto).ThenInclude(p => p.Familia).ThenInclude(f => f.Categoria)
+                .Include(pm => pm.ProdutoEmbalagem)
+                .AsNoTracking()
+                .AsQueryable();
+
+            // Filtros de Data
+            if (filtro.DataInicio.HasValue)
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio.Value);
+
+            if (filtro.DataFim.HasValue)
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim.Value);
+
+            // Filtros Padrão de Produto
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
+                query = query.Where(pm => pm.Produto.Familia != null && filtro.CategoriasIds.Contains(pm.Produto.Familia.CategoriaId));
+
+            if (filtro.FamiliasIds != null && filtro.FamiliasIds.Any())
+                query = query.Where(pm => filtro.FamiliasIds.Contains(pm.Produto.FamiliaId));
+
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(pm => filtro.ProdutosIds.Contains(pm.ProdutoId));
+
+            // Filtro Específico (Entradas x Saídas)
+            if (filtro.TipoOperacao == "ENTRADAS")
+                query = query.Where(pm => pm.Quantidade > 0);
+            else if (filtro.TipoOperacao == "SAIDAS")
+                query = query.Where(pm => pm.Quantidade < 0);
+
+            var lista = await query
+                .OrderByDescending(pm => pm.Movimento.DataMovimento)
+                .Select(pm => new Relatorio203DTO
+                {
+                    IdMovimento = pm.MovimentoId,
+                    DataMovimento = pm.Movimento != null ? pm.Movimento.DataMovimento : DateTime.MinValue,
+                    TipoMovimento = pm.Movimento != null && pm.Movimento.TipoMovimento != null ? pm.Movimento.TipoMovimento.DescricaoTipoMovimento : "Geral",
+                    Pessoa = pm.Movimento != null && pm.Movimento.Pessoa != null ? pm.Movimento.Pessoa.NomeRazao : "Consumidor Final / Não Informado",
+                    IdProduto = pm.ProdutoId,
+                    NomeProduto = pm.Produto.NomeProduto ?? "Sem Nome",
+                    Quantidade = pm.Quantidade,
+                    // Assume o preço da embalagem ou o custo médio como referência de valor
+                    ValorUnitario = pm.ProdutoEmbalagem != null ? pm.ProdutoEmbalagem.Preco : pm.Produto.CustoMedio
+                })
+                .ToListAsync();
+
+            return Ok(lista);
+        }
+
+        [HttpPost("203/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio203([FromBody] RelatorioFiltro203DTO filtro)
+        {
+            var actionResult = await GetDadosRelatorio203(filtro);
+            var okResult = actionResult.Result as OkObjectResult;
+            var lista203 = okResult?.Value as List<Relatorio203DTO>;
+
+            if (lista203 == null || !lista203.Any())
+                return BadRequest("Nenhuma movimentação encontrada para o período e filtros aplicados.");
+
+            var service = new RelatorioExportService();
+            var pdfBytes = service.ExportarPdfRelatorio203(lista203);
+
+            return File(pdfBytes, "application/pdf", $"MovimentacaoEstoque_{DateTime.Now:ddMMyyyy}.pdf");
+        }
+
+        #endregion
 
 
 

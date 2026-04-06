@@ -1,0 +1,187 @@
+﻿@using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
+@using VarejoCLIENT.Services
+@inject RelatorioService RelService
+
+<RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+    <ChildContent>
+        <div class="row g-3">
+            <div class="col-md-12 col-lg-6">
+                <label class="form-label fw-bold small" style="color: var(--sys-primary);">Alerta de Vencimento</label>
+                <select class="form-select shadow-sm" @bind="filtro.StatusValidade">
+                    <option value="TODOS">📅 Mostrar Todos (Em Estoque)</option>
+                    <option value="VENCIDOS">🚨 Produtos Vencidos</option>
+                    <option value="VENCENDO_30">⚠️ Vencem nos próximos 30 dias</option>
+                    <option value="NO_PRAZO">✅ Tudo no Prazo (> 30 dias)</option>
+                </select>
+            </div>
+        </div>
+    </ChildContent>
+
+    <BarraPesquisa>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="MarcaOutputDTO" Titulo="Marcas" IconeClass="fa-solid fa-copyright" Itens="listaMarcas" GetId="m => m.IdMarca.ToString()" GetNome="m => m.NomeMarca" Selecionados="selecionadosMarcas" SelecionadosChanged="v => selecionadosMarcas = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO" Titulo="Famílias" IconeClass="fa-solid fa-users" Itens="listaFamilias" GetId="f => f.IdFamilia.ToString()" GetNome="f => f.NomeFamilia" Selecionados="selecionadosFamilias" SelecionadosChanged="v => selecionadosFamilias = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos" IconeClass="fa-solid fa-box" Itens="listaTodosProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" />
+            </div>
+        </div>
+    </BarraPesquisa>
+</RelatorioFiltro>
+
+<div class="mt-4">
+    @if (loading)
+    {
+        <div class="text-center p-5">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 fw-bold text-primary">Analisando lotes e validades...</p>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+            <div class="table-responsive">
+                @if (listaDados != null && listaDados.Any())
+                {
+                    <table class="table mb-0 align-middle" style="color: var(--sys-primary);">
+                        <thead style="background: linear-gradient(145deg, rgba(150,150,150,0.15), rgba(150,150,150,0.05));">
+                            <tr style="font-size: 0.85rem; text-transform: uppercase;">
+                                <th>ID</th>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th class="text-center">Validade</th>
+                                <th class="text-center">Situação</th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size: 0.95rem;">
+                            @foreach (var item in listaDados)
+                            {
+                                <tr>
+                                    <td style="border-color: var(--glass-border);">@item.IdProduto</td>
+                                    <td style="border-color: var(--glass-border); font-weight: 500;">@item.NomeProduto</td>
+                                    <td style="border-color: var(--glass-border);" class="text-muted">@item.Categoria</td>
+                                    
+                                    <td style="border-color: var(--glass-border);" class="text-center fw-bold">
+                                        @item.DataValidade.ToString("dd/MM/yyyy")
+                                    </td>
+                                    
+                                    <td style="border-color: var(--glass-border);" class="text-center">
+                                        @if (item.DiasParaVencer < 0)
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">
+                                                <i class="fa-solid fa-circle-exclamation me-1"></i> Vencido há @Math.Abs(item.DiasParaVencer) dias
+                                            </span>
+                                        }
+                                        else if (item.DiasParaVencer == 0)
+                                        {
+                                            <span class="badge bg-danger">Vence Hoje!</span>
+                                        }
+                                        else if (item.DiasParaVencer <= 30)
+                                        {
+                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning" style="color: #d39e00 !important;">
+                                                <i class="fa-solid fa-triangle-exclamation me-1"></i> Vence em @item.DiasParaVencer dias
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                                <i class="fa-solid fa-check me-1"></i> No prazo
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (dadosVazios)
+                {
+                    <div class="p-5 text-center text-muted">
+                        <i class="fa-solid fa-calendar-check fa-2x mb-3 opacity-50"></i>
+                        <p class="mb-0">Nenhuma validade encontrada para os filtros selecionados. (O estoque está seguro!)</p>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
+
+    private bool loading = false;
+    private bool dadosVazios = false;
+
+    private RelatorioFiltro202DTO filtro = new();
+    private List<Relatorio202DTO>? listaDados;
+    
+    private List<CategoriaOutputDTO> listaCategorias = new();
+    private List<MarcaOutputDTO> listaMarcas = new();
+    private List<FamiliaOutputDTO> listaFamilias = new();
+    private List<ProdutoDTO> listaTodosProdutos = new();
+
+    private List<string> selecionadosCategorias = new();
+    private List<string> selecionadosMarcas = new();
+    private List<string> selecionadosFamilias = new();
+    private List<string> selecionadosProdutos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            listaCategorias = await RelService.GetCategoriasAsync() ?? new();
+            listaMarcas = await RelService.GetMarcasAsync() ?? new();
+            listaFamilias = await RelService.GetFamiliasAsync() ?? new();
+            listaTodosProdutos = await RelService.GetDadosRelatorio101Async(new RelatorioFiltroProdutosDTO()) ?? new();
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+    }
+
+    private async Task ExecutarBusca()
+    {
+        loading = true; dadosVazios = false; StateHasChanged();
+        try
+        {
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            listaDados = await RelService.GetDadosRelatorio202Async(filtro);
+            dadosVazios = listaDados == null || !listaDados.Any();
+        }
+        finally { loading = false; StateHasChanged(); }
+    }
+
+    private void Limpar()
+    {
+        listaDados = null;
+        filtro = new();
+        selecionadosCategorias.Clear(); selecionadosMarcas.Clear();
+        selecionadosFamilias.Clear(); selecionadosProdutos.Clear();
+        dadosVazios = false; StateHasChanged();
+    }
+
+    private async Task Exportar(string formato)
+    {
+        loading = true; StateHasChanged();
+        try
+        {
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+        }
+        finally { loading = false; StateHasChanged(); }
+    }
+}

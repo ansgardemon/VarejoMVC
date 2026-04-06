@@ -1,0 +1,194 @@
+﻿@using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
+@using VarejoCLIENT.Services
+@inject RelatorioService RelService
+
+<RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+    <ChildContent>
+        <div class="row g-3">
+            <div class="col-md-12 col-lg-8">
+                <RelatorioFiltroData DataInicio="filtro.DataInicio"
+                                     DataInicioChanged="v => filtro.DataInicio = v"
+                                     DataFim="filtro.DataFim"
+                                     DataFimChanged="v => filtro.DataFim = v" />
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label fw-bold small" style="color: var(--sys-primary);">Tipo de Operação</label>
+                <select class="form-select shadow-sm" @bind="filtro.TipoOperacao">
+                    <option value="TODOS">🔄 Entradas e Saídas</option>
+                    <option value="ENTRADAS">📥 Apenas Entradas (+)</option>
+                    <option value="SAIDAS">📤 Apenas Saídas (-)</option>
+                </select>
+            </div>
+        </div>
+    </ChildContent>
+
+    <BarraPesquisa>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="MarcaOutputDTO" Titulo="Marcas" IconeClass="fa-solid fa-copyright" Itens="listaMarcas" GetId="m => m.IdMarca.ToString()" GetNome="m => m.NomeMarca" Selecionados="selecionadosMarcas" SelecionadosChanged="v => selecionadosMarcas = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO" Titulo="Famílias" IconeClass="fa-solid fa-users" Itens="listaFamilias" GetId="f => f.IdFamilia.ToString()" GetNome="f => f.NomeFamilia" Selecionados="selecionadosFamilias" SelecionadosChanged="v => selecionadosFamilias = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos" IconeClass="fa-solid fa-box" Itens="listaTodosProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" />
+            </div>
+        </div>
+    </BarraPesquisa>
+</RelatorioFiltro>
+
+<div class="mt-4">
+    @if (loading)
+    {
+        <div class="text-center p-5">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 fw-bold text-primary">Buscando histórico de movimentações...</p>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+            <div class="table-responsive">
+                @if (listaDados != null && listaDados.Any())
+                {
+                    <table class="table mb-0 align-middle" style="color: var(--sys-primary);">
+                        <thead style="background: linear-gradient(145deg, rgba(150,150,150,0.15), rgba(150,150,150,0.05));">
+                            <tr style="font-size: 0.85rem; text-transform: uppercase;">
+                                <th>Data / Nº</th>
+                                <th>Operação / Pessoa</th>
+                                <th>Produto</th>
+                                <th class="text-end">Quantidade</th>
+                                <th class="text-end">V. Unitário</th>
+                                <th class="text-end">Valor Total</th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size: 0.95rem;">
+                            @foreach (var item in listaDados)
+                            {
+                                <tr>
+                                    <td style="border-color: var(--glass-border);">
+                                        <div class="fw-bold">@item.DataMovimento.ToString("dd/MM/yyyy")</div>
+                                        <small class="text-muted">Mov: #@item.IdMovimento</small>
+                                    </td>
+                                    <td style="border-color: var(--glass-border);">
+                                        <div class="fw-bold" style="font-size: 0.85rem;">@item.TipoMovimento</div>
+                                        <small class="text-muted"><i class="fa-regular fa-user me-1"></i> @item.Pessoa</small>
+                                    </td>
+                                    <td style="border-color: var(--glass-border); font-weight: 500;">
+                                        @item.NomeProduto
+                                        <div class="text-muted small">Cód: @item.IdProduto</div>
+                                    </td>
+                                    <td style="border-color: var(--glass-border);" class="text-end">
+                                        @if (item.IsEntrada)
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1">
+                                                <i class="fa-solid fa-arrow-down me-1"></i> +@item.Quantidade.ToString("N2")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1">
+                                                <i class="fa-solid fa-arrow-up me-1"></i> @item.Quantidade.ToString("N2")
+                                            </span>
+                                        }
+                                    </td>
+                                    <td style="border-color: var(--glass-border);" class="text-end text-muted">@item.ValorUnitario.ToString("C2")</td>
+                                    <td style="border-color: var(--glass-border);" class="text-end fw-bold">@item.ValorTotal.ToString("C2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (dadosVazios)
+                {
+                    <div class="p-5 text-center text-muted">
+                        <i class="fa-solid fa-truck-ramp-box fa-2x mb-3 opacity-50"></i>
+                        <p class="mb-0">Nenhuma movimentação de estoque registrada no período.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
+
+    private bool loading = false;
+    private bool dadosVazios = false;
+
+    private RelatorioFiltro203DTO filtro = new()
+    {
+        DataInicio = DateTime.Now.AddDays(-7),
+        DataFim = DateTime.Now
+    };
+
+    private List<Relatorio203DTO>? listaDados;
+    
+    private List<CategoriaOutputDTO> listaCategorias = new();
+    private List<MarcaOutputDTO> listaMarcas = new();
+    private List<FamiliaOutputDTO> listaFamilias = new();
+    private List<ProdutoDTO> listaTodosProdutos = new();
+
+    private List<string> selecionadosCategorias = new();
+    private List<string> selecionadosMarcas = new();
+    private List<string> selecionadosFamilias = new();
+    private List<string> selecionadosProdutos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            listaCategorias = await RelService.GetCategoriasAsync() ?? new();
+            listaMarcas = await RelService.GetMarcasAsync() ?? new();
+            listaFamilias = await RelService.GetFamiliasAsync() ?? new();
+            listaTodosProdutos = await RelService.GetDadosRelatorio101Async(new RelatorioFiltroProdutosDTO()) ?? new();
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+    }
+
+    private async Task ExecutarBusca()
+    {
+        loading = true; dadosVazios = false; StateHasChanged();
+        try
+        {
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            listaDados = await RelService.GetDadosRelatorio203Async(filtro);
+            dadosVazios = listaDados == null || !listaDados.Any();
+        }
+        finally { loading = false; StateHasChanged(); }
+    }
+
+    private void Limpar()
+    {
+        listaDados = null;
+        filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now };
+        selecionadosCategorias.Clear(); selecionadosMarcas.Clear();
+        selecionadosFamilias.Clear(); selecionadosProdutos.Clear();
+        dadosVazios = false; StateHasChanged();
+    }
+
+    private async Task Exportar(string formato)
+    {
+        loading = true; StateHasChanged();
+        try
+        {
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+        }
+        finally { loading = false; StateHasChanged(); }
+    }
+}

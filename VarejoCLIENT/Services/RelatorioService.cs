@@ -158,6 +158,71 @@ namespace VarejoCLIENT.Services
             catch { return new List<Relatorio107DTO>(); }
         }
 
+        // Relatório 201 (Posição atual de estoque)
+        public async Task<List<Relatorio201DTO>?> GetDadosRelatorio201Async(RelatorioFiltro201DTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/201/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio201DTO>>();
+
+                return new List<Relatorio201DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 201: {ex.Message}");
+                return new List<Relatorio201DTO>();
+            }
+        }
+
+        // Relatório 202 (Lotes e validades)
+        public async Task<List<Relatorio202DTO>?> GetDadosRelatorio202Async(RelatorioFiltro202DTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/202/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio202DTO>>();
+
+                return new List<Relatorio202DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 202: {ex.Message}");
+                return new List<Relatorio202DTO>();
+            }
+        }
+
+        // Relatório 203 (Auditoria de movimentação de estoque)
+        public async Task<List<Relatorio203DTO>?> GetDadosRelatorio203Async(RelatorioFiltro203DTO filtro)
+        {
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/203/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio203DTO>>();
+
+                return new List<Relatorio203DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 203: {ex.Message}");
+                return new List<Relatorio203DTO>();
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         // Relatório 301 (Movimentações)
         public async Task<List<MovimentoOutputDTO>> GetMovimentacoesFiltradasAsync(RelatorioFiltroMovimentacaoDTO filtro)
         {
@@ -187,6 +252,9 @@ namespace VarejoCLIENT.Services
                 105 => "api/relatorio/105/exportar/pdf",
                 106 => "api/relatorio/106/exportar/pdf",
                 107 => "api/relatorio/107/exportar/pdf",
+                201 => "api/relatorio/201/exportar/pdf",
+                202 => "api/relatorio/202/exportar/pdf",
+                203 => "api/relatorio/203/exportar/pdf",
                 _ => $"api/relatorio/exportar/pdf"
             };
 

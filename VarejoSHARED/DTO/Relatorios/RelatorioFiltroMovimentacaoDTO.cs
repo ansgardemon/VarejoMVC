@@ -1,4 +1,4 @@
-﻿namespace VarejoSHARED.DTO
+﻿namespace VarejoSHARED.DTO.Relatorios
 {
     public class RelatorioFiltroMovimentacaoDTO : RelatorioFiltroBaseDTO
     {

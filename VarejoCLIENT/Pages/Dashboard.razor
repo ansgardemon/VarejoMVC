@@ -29,10 +29,10 @@
     else
     {
         <div class="row g-4">
-            <DashboardCard Title="Clientes Ativos" Value="@dados.TotalClientes.ToString()" Color="var(--sys-primary)" Icon="bi-people" />
-            <DashboardCard Title="Produtos Catálogo" Value="@dados.TotalProdutos.ToString()" Color="var(--sys-primary-light)" Icon="bi-box-seam" />
-            <DashboardCard Title="Sem Estoque (Ruptura)" Value="@dados.ProdutosSemEstoque.ToString()" Color="#dc3545" Icon="bi-exclamation-octagon" />
-            <DashboardCard Title="Vencendo (< 30 dias)" Value="@dados.ProdutosVencendo.ToString()" Color="#ffc107" Icon="bi-calendar-x" />
+            <DashboardCard Title="Clientes Ativos" Value="@dados.TotalClientes.ToString()" Color="var(--sys-primary)" Icon="fa-solid fa-users" />
+            <DashboardCard Title="Produtos Catálogo" Value="@dados.TotalProdutos.ToString()" Color="var(--sys-primary-light)" Icon="fa-solid fa-box" />
+            <DashboardCard Title="Sem Estoque (Ruptura)" Value="@dados.ProdutosSemEstoque.ToString()" Color="#dc3545" Icon="fa-solid fa-circle-exclamation" />
+            <DashboardCard Title="Vencendo (< 30 dias)" Value="@dados.ProdutosVencendo.ToString()" Color="#ffc107" Icon="fa-solid fa-calendar-xmark" />
         </div>
 
         <div class="row mt-4 g-4">

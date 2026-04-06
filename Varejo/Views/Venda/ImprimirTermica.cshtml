@@ -2,184 +2,124 @@
 @{
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="utf-8" />
-    <title>Cupom Termico #@Model.IdVenda</title>
+    <title>Imprimir Cupom #@Model.IdVenda</title>
+    <script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js"></script>
+    
     <style>
-        /* Configurações específicas para impressora térmica */
-        @@page {
-            margin: 0;
-        }
-
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            color: #000;
-            background-color: #fff;
-            width: 72mm; /* Área de impressão segura para bobinas de 80mm */
-            margin: 0;
-            padding: 2mm;
-            font-size: 12px;
-            line-height: 1.2;
-        }
-
-        .ticket-header {
-            text-align: center;
-            margin-bottom: 10px;
-            border-bottom: 1px dashed #000;
-            padding-bottom: 5px;
-        }
-
-        .fw-bold { font-weight: bold; }
-        .text-center { text-align: center; }
-        .text-end { text-align: right; }
-        
-        .sep {
-            border-top: 1px dashed #000;
-            margin: 5px 0;
-            width: 100%;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 5px 0;
-        }
-
-        table th {
-            border-bottom: 1px solid #000;
-            text-align: left;
-        }
-
-        .item-nome {
-            display: block;
-            width: 100%;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .item-detalhe {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            padding-left: 5px;
-        }
-
-        .totais {
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .linha-total {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .valor-final {
-            font-size: 14px;
-            margin-top: 5px;
-            padding-top: 5px;
-            border-top: 1px double #000;
-        }
-
-        @@media print {
-            .no-print { display: none; }
-           body { 
-            width: 72mm; /* Deixe uma folga de 8mm para a borda física */
-            margin: 0; 
-            padding: 0;
-        }
-        }
+        body { font-family: sans-serif; text-align: center; padding: 50px; background-color: #f4f4f4; }
+        .status-card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: inline-block; }
+        .btn-print { background: #28a745; color: white; border: none; padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 5px; }
+        .btn-print:hover { background: #218838; }
     </style>
 </head>
-<body onload="window.print()">
+<body>
 
-    <div class="no-print" style="background: #eee; padding: 10px; text-align: center; border-bottom: 1px solid #ccc;">
-        <button onclick="window.print()">Imprimir Cupom</button>
-        <button onclick="window.close()">Fechar</button>
-    </div>
-
-    <div class="ticket-header">
-        <div class="fw-bold" style="font-size: 15px;">VITRIN.O VAREJO</div>
-        <div>Comprovante de Venda</div>
-    </div>
-
-    <div>
-        <strong>PEDIDO:</strong> #@Model.IdVenda.ToString("D5")<br />
-        <strong>DATA:</strong> @ViewBag.DataVenda<br />
-        <strong>STATUS:</strong> @(Model.Finalizada ? "FATURADA" : "ABERTO")
-    </div>
-
-    <div class="sep"></div>
-
-    <div>
-        <strong>CLIENTE:</strong> @ViewBag.NomeCliente.ToUpper()<br />
-        <strong>DOC:</strong> @ViewBag.DocCliente
-    </div>
-
-    <div class="sep"></div>
-
-    <div class="fw-bold">ITENS DO PEDIDO</div>
-    <div class="sep"></div>
-
-    @foreach (var item in Model.Itens)
-    {
-        <span class="item-nome">@item.NomeProduto.ToUpper()</span>
-        <div class="item-detalhe">
-            <span>@item.Quantidade.ToString("N2") @item.NomeEmbalagem x @item.ValorUnitario.ToString("N2")</span>
-            <span class="fw-bold">@item.Subtotal.ToString("N2")</span>
+    <div class="status-card">
+        <h2>Processando Venda #@Model.IdVenda.ToString("D5")</h2>
+        <p>Clique no botão abaixo para emitir o cupom na impressora térmica.</p>
+        
+        <button onclick="imprimirQZ()" class="btn-print">
+            🖨️ IMPRIMIR CUPOM AGORA
+        </button>
+        
+        <div style="margin-top: 20px;">
+            <a href="javascript:window.close()" style="color: #666; text-decoration: none;">Fechar Janela</a>
         </div>
-        @if (item.DescontoUnitario > 0)
-        {
-            <div class="item-detalhe" style="font-size: 10px; font-style: italic;">
-                <span>(Desc. Unit: -@item.DescontoUnitario.ToString("N2"))</span>
-            </div>
+    </div>
+
+    <script>
+        // Função para formatar colunas (Nome Produto + Espaços + Valor)
+        function formatarLinha(col1, col2, totalChars = 42) {
+            let espacos = totalChars - (col1.length + col2.length);
+            if (espacos < 1) espacos = 1;
+            return col1 + " ".repeat(espacos) + col2 + "\n";
         }
-    }
 
-    <div class="sep"></div>
+        async function imprimirQZ() {
+            try {
+                if (!qz.websocket.isActive()) {
+                    await qz.websocket.connect();
+                }
 
-    <div class="totais">
-        <div class="linha-total">
-            <span>Subtotal Bruto:</span>
-            <span>@Model.ValorSubtotal.ToString("C")</span>
-        </div>
-        <div class="linha-total">
-            <span>Total Descontos:</span>
-            <span>- @Model.DescontoTotal.ToString("C")</span>
-        </div>
-        <div class="linha-total fw-bold valor-final">
-            <span>TOTAL LÍQUIDO:</span>
-            <span>@Model.ValorFinal.ToString("C")</span>
-        </div>
-    </div>
+                // Detecta a impressora padrão do Windows (Epson)
+                const printerName = await qz.printers.getDefault();
+                const config = qz.configs.create(printerName, { encoding: 'CP1252' });
 
-    <div class="sep"></div>
+                // Comandos ESC/POS
+                const esc = {
+                    center: '\x1Ba\x01',
+                    left: '\x1Ba\x00',
+                    boldOn: '\x1BE\x01',
+                    boldOff: '\x1BE\x00',
+                    sizeDouble: '\x1D\x21\x11',
+                    sizeNormal: '\x1D\x21\x00',
+                    setCharsetPT: '\x1Bt\x03', // Ativa a Tabela de Caracteres PC860 ou similar
+                     cut: '\x1Bi'
+                };
 
-    <div style="font-size: 11px;">
-        <strong>PAGTO:</strong> @ViewBag.FormaPagto.ToUpper() <br />
-        <strong>PRAZO:</strong> @ViewBag.Prazo.ToUpper()
-    </div>
+                let cupom = [
+                    esc.setCharsetPT, // Primeiro comando enviado
+                    esc.center,
+                    esc.boldOn + esc.sizeDouble + "VITRIN.O VAREJO\n" + esc.sizeNormal,
+                    "Comprovante de Venda\n",
+                    "------------------------------------------\n",
+                    esc.left,
+                    "PEDIDO: #@Model.IdVenda.ToString("D5")\n",
+                    "DATA:   @ViewBag.DataVenda\n",
+                    "CLIENTE:@ViewBag.NomeCliente.ToUpper()\n",
+                    "DOC:    @ViewBag.DocCliente\n",
+                    "------------------------------------------\n",
+                    esc.boldOn + "ITENS DO PEDIDO\n" + esc.boldOff,
+                    "------------------------------------------\n"
+                ];
 
-    @if (!string.IsNullOrEmpty(Model.Observacao))
-    {
-        <div style="margin-top: 5px; font-size: 10px; border: 1px solid #000; padding: 2px;">
-            <strong>OBS:</strong> @Model.Observacao
-        </div>
-    }
+                // Loop dos Itens com alinhamento de colunas
+                @foreach (var item in Model.Itens)
+                {
+                    <text>
+                    cupom.push(esc.boldOn + "@item.NomeProduto.ToUpper()".substring(0, 42) + "\n" + esc.boldOff);
+                    cupom.push(formatarLinha(
+                        "  @item.Quantidade.ToString("N2") @item.NomeEmbalagem x @item.ValorUnitario.ToString("N2")", 
+                        "@item.Subtotal.ToString("N2")"
+                    ));
+                    </text>
+                }
 
-    <div class="text-center" style="margin-top: 20px;">
-        <p>__________________________</p>
-        <p style="font-size: 10px;">ASSINATURA CLIENTE</p>
-    </div>
-    
-    <div class="text-center" style="margin-top: 15px; font-size: 9px;">
-        <p>@DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
-        <p>Obrigado pela preferência!</p>
-    </div>
+                cupom.push("------------------------------------------\n");
+                cupom.push(formatarLinha("SUBTOTAL BRUTO:", "@Model.ValorSubtotal.ToString("N2")"));
+                cupom.push(formatarLinha("DESCONTOS:", "-@Model.DescontoTotal.ToString("N2")"));
+                cupom.push(esc.boldOn + formatarLinha("TOTAL LIQUIDO:", "R$ @Model.ValorFinal.ToString("N2")") + esc.boldOff);
+                cupom.push("------------------------------------------\n");
+                
+                cupom.push("PAGTO: @ViewBag.FormaPagto.ToUpper()\n");
+                cupom.push("PRAZO: @ViewBag.Prazo.ToUpper()\n");
 
+                @if (!string.IsNullOrEmpty(Model.Observacao))
+                {
+                    <text>
+                    cupom.push("\nOBS: @Model.Observacao\n");
+                    </text>
+                }
+
+                cupom.push(esc.center + "\n\n__________________________\n");
+                cupom.push("ASSINATURA CLIENTE\n\n");
+                cupom.push("@DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")\n");
+                cupom.push("Obrigado pela preferencia!\n");
+                cupom.push("\n\n\n\n");
+                cupom.push(esc.cut); // Comando de corte
+
+                await qz.print(config, cupom);
+                alert("Cupom enviado com sucesso!");
+
+            } catch (e) {
+                console.error(e);
+                alert("Erro: " + e.message);
+            }
+        }
+    </script>
 </body>
 </html>

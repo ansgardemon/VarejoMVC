@@ -1,126 +1,78 @@
-/* Layout Base */
+/* --- BASE & LOGIN --- */
 .page {
-    background: linear-gradient(135deg, var(--ui-bg-gradient-start), var(--ui-bg-gradient-end));
-    min-height: 100vh;
     display: flex;
-    transition: background 0.5s ease;
-    overflow-x: hidden;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--ui-bg-gradient-start), var(--ui-bg-gradient-end));
 }
 
-/* Centralização do Login (Estilo Clean) */
 .login-centered-container {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    min-height: 100vh;
-    background: linear-gradient(135deg, var(--ui-bg-gradient-start), var(--ui-bg-gradient-end));
-}
-
-.login-card-wrapper {
-    width: 100%;
-    max-width: 400px; /* Largura ideal para Mobile e Web */
     padding: 20px;
 }
 
-/* Sidebar Drawer (DIREITA) */
-.sidebar-drawer-right {
+/* --- MOBILE (Default) --- */
+.sidebar-varejo {
     position: fixed;
-    right: 20px;
-    top: 20px;
-    bottom: 20px;
+    right: 15px; /* Lado Direito */
+    top: 15px;
+    bottom: 90px;
     width: 280px;
-    background: var(--ui-glass-bg);
-    backdrop-filter: blur(var(--ui-glass-blur));
-    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
-    border: 1px solid var(--ui-glass-border);
+    background: rgba(255, 255, 255, 0.85); /* Vidro Branco Opaco */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 28px;
     z-index: 1050;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: -10px 0 30px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
 }
 
-    .sidebar-drawer-right.collapsed {
-        transform: translateX(340px);
+    .sidebar-varejo.collapsed {
+        transform: translateX(350px);
     }
 
-/* Header da Sidebar */
-.sidebar-header {
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.menu-fab-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px; /* Canto Inferior Direito */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--sys-primary);
+    color: white;
+    border: none;
+    z-index: 1100;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
-.brand-text {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--sys-primary);
-    letter-spacing: -0.5px;
-}
-
-/* Conteúdo Principal */
-.main-content {
-    flex: 1;
-    transition: margin-right 0.4s ease;
-    width: 100%;
-}
-
+/* --- DESKTOP (PC) --- */
 @media (min-width: 1200px) {
-    .main-content:not(.full-width) {
-        margin-right: 320px;
+    .sidebar-varejo {
+        position: relative; /* Não sobrepõe */
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: auto;
+        height: 100vh;
+        width: 280px;
+        border-radius: 0;
+        border: none;
+        border-right: 1px solid var(--ui-glass-border);
+        transform: none !important;
+        background: rgba(255, 255, 255, 0.6);
     }
 
-    .sidebar-drawer-right.collapsed {
-        transform: translateX(0); /* Sempre visível no Desktop */
+    .main-content {
+        flex: 1; /* Ocupa o resto da tela */
+        padding: 30px;
+        overflow-y: auto;
     }
 
-    .menu-toggle-btn {
+    .menu-fab-btn, .sidebar-overlay {
         display: none;
     }
-}
-
-/* Botão Toggle Mobile */
-.menu-toggle-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 15px;
-    background: var(--ui-glass-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--ui-glass-border);
-    color: var(--sys-primary);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-/* Overlay */
-.sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.2);
-    display: none;
-    z-index: 1040;
-}
-
-    .sidebar-overlay.show {
-        display: block;
-    }
-
-/* Dark Mode Switcher */
-.theme-switch {
-    background: var(--brand-accent);
-    color: var(--brand-dark);
-    border: none;
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    cursor: pointer;
 }

@@ -1,97 +1,137 @@
-﻿<nav class="nav flex-column px-3 nav-container">
-    <div class="nav-label">MENU PRINCIPAL</div>
+﻿<div class="nav-header-varejo">
+    <div class="brand-container">
+        <span class="brand-main">VAREJO</span>
+        <span class="brand-sub">GESTOR</span>
+    </div>
+    @* Botão de Tema Integrado ao Menu *@
+    <button class="theme-toggle-glass" @onclick="HandleThemeToggle">
+        <i class="fa-solid fa-circle-half-stroke"></i>
+    </button>
+</div>
 
-    <NavLink class="nav-link-glass" href="dashboard" Match="NavLinkMatch.All" @onclick="HandleClick">
-        <div class="icon-wrapper">
-            <i class="fa-solid fa-chart-pie"></i>
-        </div>
+<nav class="nav flex-column px-3 mt-3 nav-varejo">
+    <div class="nav-section-label">SISTEMA VAREJO</div>
+
+    <NavLink class="nav-link-varejo" href="dashboard" Match="NavLinkMatch.All" @onclick="HandleClick">
+        <div class="icon-box"><i class="fa-solid fa-house-chimney"></i></div>
         <span class="nav-text">Dashboard</span>
     </NavLink>
 
-    <NavLink class="nav-link-glass" href="relatorios" @onclick="HandleClick">
-        <div class="icon-wrapper">
-            <i class="fa-solid fa-file-lines"></i>
-        </div>
+    <NavLink class="nav-link-varejo" href="relatorios" @onclick="HandleClick">
+        <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
         <span class="nav-text">Relatórios</span>
     </NavLink>
 
     <div class="nav-spacer"></div>
 
-    <NavLink class="nav-link-glass logout-btn" href="logout" @onclick="HandleClick">
-        <div class="icon-wrapper">
-            <i class="fa-solid fa-power-off"></i>
-        </div>
-        <span class="nav-text">Sair do Sistema</span>
+    <NavLink class="nav-link-varejo logout-item" href="logout" @onclick="HandleClick">
+        <div class="icon-box"><i class="fa-solid fa-power-off"></i></div>
+        <span class="nav-text">Sair</span>
     </NavLink>
 </nav>
 
 @code {
     [Parameter] public EventCallback OnMenuItemClicked { get; set; }
+    [Parameter] public EventCallback OnThemeToggle { get; set; }
 
-    private async Task HandleClick()
-    {
-        if (OnMenuItemClicked.HasDelegate)
-        {
-            await OnMenuItemClicked.InvokeAsync();
-        }
+    private async Task HandleClick() {
+        if (OnMenuItemClicked.HasDelegate) await OnMenuItemClicked.InvokeAsync();
+    }
+
+    private async Task HandleThemeToggle() {
+        if (OnThemeToggle.HasDelegate) await OnThemeToggle.InvokeAsync();
     }
 }
 
 <style>
-    .nav-container { gap: 10px; margin-top: 10px; }
+    /* Tipografia Estilo Apple/Inter */
+    .nav-varejo {
+        font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    }
 
-    .nav-label {
+    .nav-header-varejo {
+        padding: 20px 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--ui-glass-border);
+    }
+
+    .brand-container {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+    }
+
+    .brand-main { font-weight: 900; font-size: 1.1rem; color: var(--sys-primary); letter-spacing: -0.5px; }
+    .brand-sub { font-weight: 300; font-size: 0.75rem; color: var(--ui-text-secondary); opacity: 0.7; }
+
+    .nav-section-label {
         font-size: 0.65rem;
         font-weight: 800;
         color: var(--sys-primary);
-        opacity: 0.5;
-        padding-left: 12px;
-        margin-bottom: 5px;
-        letter-spacing: 1.2px;
+        letter-spacing: 1.5px;
+        margin: 15px 0 10px 12px;
+        opacity: 0.6;
+        text-transform: uppercase;
     }
 
-    .nav-link-glass {
+    .nav-link-varejo {
         display: flex;
         align-items: center;
-        padding: 14px 16px;
-        border-radius: 18px;
-        text-decoration: none;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 16px;
         color: var(--ui-text-secondary);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none !important;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 6px;
         border: 1px solid transparent;
     }
 
-    .nav-text {
-        font-size: 0.95rem;
-        font-weight: 500;
-        letter-spacing: -0.2px;
-    }
-
-    .icon-wrapper {
-        width: 32px;
+    .icon-box {
+        width: 28px;
+        display: flex;
+        justify-content: center;
         font-size: 1.1rem;
         color: var(--sys-primary);
-        transition: transform 0.3s ease;
     }
 
-    /* Active State (iPhone style) */
-    .nav-link-glass.active {
-        background: rgba(255, 255, 255, 0.4);
+    /* ESTADO ATIVO: Inversão Inteligente para Dark/Light */
+    .nav-link-varejo.active {
+        background: var(--ui-text-primary);
+        color: var(--ui-bg-gradient-start); /* Inverte para a cor de fundo do app */
+        font-weight: 700;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .nav-link-varejo.active .icon-box i {
+        color: inherit;
+    }
+
+    /* BOTÃO DARK MODE GLASS */
+    .theme-toggle-glass {
+        background: rgba(255, 255, 255, 0.1);
         border: 1px solid var(--ui-glass-border);
-        color: var(--sys-primary);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        color: var(--ui-text-primary);
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        transition: 0.3s;
     }
 
-    .nav-link-glass.active .nav-text { font-weight: 700; }
-    .nav-link-glass.active .icon-wrapper { transform: scale(1.1); }
-
-    .nav-link-glass:hover:not(.active) {
-        background: rgba(255, 255, 255, 0.15);
-        transform: translateX(-5px); /* Slide para a esquerda (direção do menu) */
+    .theme-toggle-glass:hover {
+        background: var(--ui-text-primary);
+        color: var(--ui-bg-gradient-start);
     }
 
-    .nav-spacer { flex: 1; min-height: 20px; }
-
-    .logout-btn { color: var(--state-danger) !important; margin-top: auto; margin-bottom: 20px; }
-    .logout-btn .icon-wrapper { color: var(--state-danger); }
+    .nav-spacer { flex: 1; min-height: 40px; }
+    
+    .logout-item { color: var(--state-danger) !important; margin-top: auto; opacity: 0.8; }
+    .logout-item .icon-box i { color: var(--state-danger); }
 </style>

@@ -6,42 +6,33 @@
 <div class="page @(isDarkMode ? "dark-theme" : "")" data-theme="@(isDarkMode ? "dark" : "light")">
     @if (Nav.Uri.ToLower().EndsWith("/login") || !AuthService.IsAutenticado)
     {
-        @* TELA DE LOGIN: Centralização Total *@
+        @* LOGIN: Centralizado, sem colunas ou imagens extras *@
         <div class="login-centered-container">
-            <div class="login-card-wrapper animate__animated animate__fadeInUp">
-                @Body
-            </div>
+            @Body
         </div>
     }
     else
     {
-        @* BOTÃO MENU (Fica na esquerda pois o menu vem da direita) *@
-        <button class="menu-toggle-btn" @onclick="ToggleMenu">
-            <i class="fa-solid fa-bars-staggered"></i>
+        @* BOTÃO FLUTUANTE: Inferior Direito (Mobile) *@
+        <button class="menu-fab-btn" @onclick="ToggleMenu">
+            <i class="fa-solid @(collapseNavMenu ? "fa-bars-staggered" : "fa-xmark")"></i>
         </button>
 
-        @* OVERLAY *@
         <div class="sidebar-overlay @(collapseNavMenu ? "" : "show")" @onclick="ToggleMenu"></div>
 
-        @* SIDEBAR DRAWER (DIREITA) *@
-        <aside class="sidebar-drawer-right @(collapseNavMenu ? "collapsed" : "")">
+        @* SIDEBAR: Esquerda (PC) / Direita (Mobile) *@
+        <aside class="sidebar-varejo @(collapseNavMenu ? "collapsed" : "")">
             <div class="sidebar-header">
+                <div class="brand-text">VAREJO <span>GESTOR</span></div>
                 <button class="theme-switch" @onclick="ToggleDarkMode">
                     <i class="fa-solid @(isDarkMode ? "fa-sun" : "fa-moon")"></i>
                 </button>
-                <div class="brand-text">
-                    VAREJO <span class="fw-light">GESTOR</span>
-                </div>
             </div>
-            
             <NavMenu OnMenuItemClicked="ToggleMenu" />
         </aside>
 
-        @* CONTEÚDO PRINCIPAL *@
-        <main class="main-content @(collapseNavMenu ? "full-width" : "")">
-            <div class="content-body px-4 py-4">
-                @Body
-            </div>
+        <main class="main-content">
+            @Body
         </main>
     }
 </div>
@@ -49,16 +40,12 @@
 @code {
     private bool collapseNavMenu = true;
     private bool isDarkMode = false;
-
     private void ToggleMenu() => collapseNavMenu = !collapseNavMenu;
     private void ToggleDarkMode() => isDarkMode = !isDarkMode;
 
     protected override void OnInitialized()
     {
-        // Garante que se não estiver autenticado, vai para o login
         if (!AuthService.IsAutenticado && !Nav.Uri.ToLower().Contains("/login"))
-        {
             Nav.NavigateTo("login");
-        }
     }
 }

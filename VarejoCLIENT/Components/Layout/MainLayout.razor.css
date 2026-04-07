@@ -3,7 +3,14 @@
     display: flex;
     min-height: 100vh;
     background: linear-gradient(135deg, var(--ui-bg-gradient-start), var(--ui-bg-gradient-end));
+    overflow: hidden;
 }
+
+    .page.login-mode {
+        height: 100vh;
+        height: 100dvh; /* Truque para o mobile ignorar a barra de navegação do Chrome/Safari */
+        overflow: hidden; /* Trava o scroll SÓ no login */
+    }
 
 .login-centered-container {
     flex: 1;

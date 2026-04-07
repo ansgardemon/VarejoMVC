@@ -3,8 +3,11 @@
 @using VarejoCLIENT.Services
 @inject AuthService AuthService
 
-<div class="page @(isDarkMode ? "dark-theme" : "")" data-theme="@(isDarkMode ? "dark" : "light")">
-    @if (Nav.Uri.ToLower().EndsWith("/login") || !AuthService.IsAutenticado)
+@* AQUI ESTÁ A MÁGICA: Adicionamos o @(IsLoginScreen ? "login-mode" : "") *@
+<div class="page @(isDarkMode ? "dark-theme" : "") @(IsLoginScreen ? "login-mode" : "")" data-theme="@(isDarkMode ? "dark" : "light")">
+    
+    @* Usamos a mesma variável para limpar o If *@
+    @if (IsLoginScreen)
     {
         <div class="login-centered-container">
             @Body
@@ -33,6 +36,9 @@
 @code {
     private bool collapseNavMenu = true;
     private bool isDarkMode = false;
+
+    // --- ADICIONADO: Propriedade que verifica se é a tela de login ---
+    private bool IsLoginScreen => Nav.Uri.ToLower().EndsWith("/login") || !AuthService.IsAutenticado;
 
     private void ToggleMenu() => collapseNavMenu = !collapseNavMenu;
     private void ToggleDarkMode() => isDarkMode = !isDarkMode;

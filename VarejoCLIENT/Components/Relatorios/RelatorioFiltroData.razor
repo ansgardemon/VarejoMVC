@@ -1,43 +1,33 @@
-﻿<div class="card border-0 shadow-sm p-3 mb-3" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));">
-    <label class="form-label small fw-bold text-uppercase opacity-75">
+﻿<div class="glass-card p-3 mb-3">
+    <label class="form-label">
         <i class="fa-solid fa-calendar-days me-2"></i> Período
     </label>
     
-    <div class="row g-2 mb-2">
+    <div class="row g-2 mb-3">
         <div class="col-6">
-            <input type="date" class="form-control form-control-sm shadow-sm"
-                   style="border: 1px solid var(--glass-border); color: var(--sys-primary);"
+            <input type="date" class="form-control"
                    value="@DataInicio?.ToString("yyyy-MM-dd")"
                    @onchange="OnDataInicioChanged" />
         </div>
         <div class="col-6">
-            <input type="date" class="form-control form-control-sm shadow-sm"
-                   style="border: 1px solid var(--glass-border); color: var(--sys-primary);"
+            <input type="date" class="form-control"
                    value="@DataFim?.ToString("yyyy-MM-dd")"
                    @onchange="OnDataFimChanged" />
         </div>
     </div>
     
-    @* ATALHOS DE DATA COM NOVO VISUAL *@
-    <div class="d-flex flex-wrap gap-2 mt-3">
-        <button class="btn btn-sm fw-bold py-1 px-3 shadow-sm"
-                style="font-size: 0.75rem; border: 1px solid var(--sys-primary); color: var(--sys-primary); background: rgba(255, 255, 255, 0.6); border-radius: 6px;"
-                @onclick="SetHoje">
+    @* ATALHOS DE DATA (Usando btn-glass com ajuste de altura para ficarem compactos) *@
+    <div class="d-flex flex-wrap gap-2">
+        <button class="btn-glass" style="height: 34px; font-size: 0.75rem; padding: 0 12px;" @onclick="SetHoje">
             Hoje
         </button>
-        <button class="btn btn-sm fw-bold py-1 px-3 shadow-sm"
-                style="font-size: 0.75rem; border: 1px solid var(--sys-primary); color: var(--sys-primary); background: rgba(255, 255, 255, 0.6); border-radius: 6px;"
-                @onclick="SetOntem">
+        <button class="btn-glass" style="height: 34px; font-size: 0.75rem; padding: 0 12px;" @onclick="SetOntem">
             Ontem
         </button>
-        <button class="btn btn-sm fw-bold py-1 px-3 shadow-sm"
-                style="font-size: 0.75rem; border: 1px solid var(--sys-primary); color: var(--sys-primary); background: rgba(255, 255, 255, 0.6); border-radius: 6px;"
-                @onclick="SetMesAtual">
+        <button class="btn-glass" style="height: 34px; font-size: 0.75rem; padding: 0 12px;" @onclick="SetMesAtual">
             Mês Atual
         </button>
-        <button class="btn btn-sm fw-bold py-1 px-3 shadow-sm"
-                style="font-size: 0.75rem; border: 1px solid var(--sys-primary); color: var(--sys-primary); background: rgba(255, 255, 255, 0.6); border-radius: 6px;"
-                @onclick="SetMesAnterior">
+        <button class="btn-glass" style="height: 34px; font-size: 0.75rem; padding: 0 12px;" @onclick="SetMesAnterior">
             Mês Anterior
         </button>
     </div>

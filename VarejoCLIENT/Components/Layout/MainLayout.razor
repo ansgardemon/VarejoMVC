@@ -6,29 +6,22 @@
 <div class="page @(isDarkMode ? "dark-theme" : "")" data-theme="@(isDarkMode ? "dark" : "light")">
     @if (Nav.Uri.ToLower().EndsWith("/login") || !AuthService.IsAutenticado)
     {
-        @* LOGIN: Centralizado, sem colunas ou imagens extras *@
         <div class="login-centered-container">
             @Body
         </div>
     }
     else
     {
-        @* BOTÃO FLUTUANTE: Inferior Direito (Mobile) *@
+        @* BOTÃO FAB: Mobile *@
         <button class="menu-fab-btn" @onclick="ToggleMenu">
             <i class="fa-solid @(collapseNavMenu ? "fa-bars-staggered" : "fa-xmark")"></i>
         </button>
 
         <div class="sidebar-overlay @(collapseNavMenu ? "" : "show")" @onclick="ToggleMenu"></div>
 
-        @* SIDEBAR: Esquerda (PC) / Direita (Mobile) *@
         <aside class="sidebar-varejo @(collapseNavMenu ? "collapsed" : "")">
-            <div class="sidebar-header">
-                <div class="brand-text">VAREJO <span>GESTOR</span></div>
-                <button class="theme-switch" @onclick="ToggleDarkMode">
-                    <i class="fa-solid @(isDarkMode ? "fa-sun" : "fa-moon")"></i>
-                </button>
-            </div>
-            <NavMenu OnMenuItemClicked="ToggleMenu" />
+            @* Passamos o método ToggleDarkMode e o estado isDarkMode para o NavMenu *@
+            <NavMenu OnMenuItemClicked="ToggleMenu" OnThemeToggle="ToggleDarkMode" IsDarkMode="isDarkMode" />
         </aside>
 
         <main class="main-content">
@@ -40,6 +33,7 @@
 @code {
     private bool collapseNavMenu = true;
     private bool isDarkMode = false;
+
     private void ToggleMenu() => collapseNavMenu = !collapseNavMenu;
     private void ToggleDarkMode() => isDarkMode = !isDarkMode;
 

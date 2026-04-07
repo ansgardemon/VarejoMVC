@@ -1,70 +1,150 @@
-@page
+/* Wrapper principal */
+.nav-wrapper {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
 
-"/relatorios"
+/* Header do Menu */
+.nav-header-varejo {
+    padding: 30px 24px 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-<div class="reports-container" >
-<h3 class="mb-4 fw-bold" > Relatórios Gerenciais</h3 >
+.brand-group {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
 
-<details class="glass-accordion mb-3" >
-<summary >
-<i class="fa-solid fa-cart-shopping me-2" > </i >
-Vendas por Período
-<i class="fa-solid fa-chevron-down float-end arrow" > </i >
-</summary >
-<div class="accordion-content" >
-<p > Filtros de data e gráficos de faturamento...</p >
-</div >
-</details >
+.brand-main {
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: var(--sys-primary);
+    letter-spacing: -1px;
+}
 
-<details class="glass-accordion mb-3" >
-<summary >
-<i class="fa-solid fa-boxes-stacked me-2" > </i >
-Posição de Estoque
-<i class="fa-solid fa-chevron-down float-end arrow" > </i >
-</summary >
-<div class="accordion-content" >
-<p > Lista de produtos com baixo giro...</p >
-</div >
-</details >
-</div >
+.brand-sub {
+    font-weight: 300;
+    font-size: 0.75rem;
+    color: var(--ui-text-secondary);
+    opacity: 0.7;
+    margin-top: 2px;
+    letter-spacing: 2px;
+}
 
-<style >
-.glass-accordion {
+/* Botão de Tema */
+.theme-minimal-btn {
     background: var(--ui-glass-bg);
     border: 1px solid var(--ui-glass-border);
-    border-radius: 15px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.glass-accordion summary {
-    padding: 20px;
-    list-style: none;
+    color: var(--ui-text-primary);
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 600;
-    outline: none;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-.glass-accordion[open] {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.accordion-content {
-    padding: 20px;
-    border-top: 1px solid var(--ui-glass-border);
-    animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+    .theme-minimal-btn:hover {
+        transform: scale(1.1);
+        background: var(--sys-primary);
+        color: white;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Lista do Menu */
+.nav-menu-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-</style >
+.nav-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--sys-primary);
+    letter-spacing: 1.5px;
+    margin: 20px 0 10px 15px;
+    opacity: 0.5;
+}
+
+/* --- O SEGREDO DO LAYOUT DOS LINKS --- */
+/* Forçamos a tag <a> gerada pelo NavLink a obedecer nosso Flexbox */
+::deep a.nav-item-glass,
+a.nav-item-glass {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    color: var(--ui-text-secondary) !important;
+    text-decoration: none !important;
+    font-weight: 500;
+    margin-bottom: 6px;
+    transition: all 0.25s ease;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.icon-box {
+    width: 24px;
+    font-size: 1.1rem;
+    color: var(--sys-primary);
+    display: flex;
+    justify-content: center;
+}
+
+/* ESTADO ATIVO: Light Mode */
+::deep a.nav-item-glass.active,
+a.nav-item-glass.active {
+    background: var(--ui-text-primary) !important;
+    color: var(--ui-bg-gradient-start) !important;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+    a.nav-item-glass.active .icon-box {
+        color: inherit !important;
+    }
+
+/* ESTADO ATIVO: Dark Mode */
+.dark-menu ::deep a.nav-item-glass.active,
+.dark-menu a.nav-item-glass.active {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    box-shadow: none;
+}
+
+.nav-spacer {
+    flex: 1;
+    min-height: 50px;
+}
+
+::deep a.logout-btn,
+a.logout-btn {
+    color: var(--state-danger) !important;
+    margin-bottom: 20px;
+}
+
+    a.logout-btn .icon-box {
+        color: var(--state-danger) !important;
+    }
+
+/* Logout Dark Mode */
+.dark-menu ::deep a.logout-btn,
+.dark-menu a.logout-btn {
+    color: #ff6b6b !important;
+}
+
+    .dark-menu a.logout-btn .icon-box {
+        color: #ff6b6b !important;
+    }

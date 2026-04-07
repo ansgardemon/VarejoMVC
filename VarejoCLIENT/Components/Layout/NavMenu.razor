@@ -1,137 +1,49 @@
-﻿<div class="nav-header-varejo">
-    <div class="brand-container">
-        <span class="brand-main">VAREJO</span>
-        <span class="brand-sub">GESTOR</span>
+﻿<div class="nav-wrapper @(IsDarkMode ? "dark-menu" : "")">
+    <div class="nav-header-varejo">
+        <div class="brand-group">
+            <span class="brand-main">VAREJO</span>
+            <span class="brand-sub">GESTOR</span>
+        </div>
+        
+        <button class="theme-minimal-btn" @onclick="HandleThemeToggle" title="Alternar Modo">
+            <i class="fa-solid @(IsDarkMode ? "fa-sun" : "fa-moon")"></i>
+        </button>
     </div>
-    @* Botão de Tema Integrado ao Menu *@
-    <button class="theme-toggle-glass" @onclick="HandleThemeToggle">
-        <i class="fa-solid fa-circle-half-stroke"></i>
-    </button>
+
+    <nav class="nav flex-column px-3 nav-menu-list">
+        <div class="nav-label">SISTEMA</div>
+
+        <NavLink class="nav-item-glass" href="dashboard" Match="NavLinkMatch.All" @onclick="HandleClick">
+            <div class="icon-box"><i class="fa-solid fa-house-chimney"></i></div>
+            <span class="nav-text">Dashboard</span>
+        </NavLink>
+
+        <NavLink class="nav-item-glass" href="relatorios" @onclick="HandleClick">
+            <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
+            <span class="nav-text">Relatórios</span>
+        </NavLink>
+
+        <div class="nav-spacer"></div>
+
+        <NavLink class="nav-item-glass logout-btn" href="logout" @onclick="HandleClick">
+            <div class="icon-box"><i class="fa-solid fa-power-off"></i></div>
+            <span class="nav-text">Sair</span>
+        </NavLink>
+    </nav>
 </div>
-
-<nav class="nav flex-column px-3 mt-3 nav-varejo">
-    <div class="nav-section-label">SISTEMA VAREJO</div>
-
-    <NavLink class="nav-link-varejo" href="dashboard" Match="NavLinkMatch.All" @onclick="HandleClick">
-        <div class="icon-box"><i class="fa-solid fa-house-chimney"></i></div>
-        <span class="nav-text">Dashboard</span>
-    </NavLink>
-
-    <NavLink class="nav-link-varejo" href="relatorios" @onclick="HandleClick">
-        <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
-        <span class="nav-text">Relatórios</span>
-    </NavLink>
-
-    <div class="nav-spacer"></div>
-
-    <NavLink class="nav-link-varejo logout-item" href="logout" @onclick="HandleClick">
-        <div class="icon-box"><i class="fa-solid fa-power-off"></i></div>
-        <span class="nav-text">Sair</span>
-    </NavLink>
-</nav>
 
 @code {
     [Parameter] public EventCallback OnMenuItemClicked { get; set; }
     [Parameter] public EventCallback OnThemeToggle { get; set; }
+    [Parameter] public bool IsDarkMode { get; set; }
 
-    private async Task HandleClick() {
+    private async Task HandleClick()
+    {
         if (OnMenuItemClicked.HasDelegate) await OnMenuItemClicked.InvokeAsync();
     }
 
-    private async Task HandleThemeToggle() {
+    private async Task HandleThemeToggle()
+    {
         if (OnThemeToggle.HasDelegate) await OnThemeToggle.InvokeAsync();
     }
 }
-
-<style>
-    /* Tipografia Estilo Apple/Inter */
-    .nav-varejo {
-        font-family: 'Inter', -apple-system, system-ui, sans-serif;
-    }
-
-    .nav-header-varejo {
-        padding: 20px 25px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid var(--ui-glass-border);
-    }
-
-    .brand-container {
-        display: flex;
-        flex-direction: column;
-        line-height: 1;
-    }
-
-    .brand-main { font-weight: 900; font-size: 1.1rem; color: var(--sys-primary); letter-spacing: -0.5px; }
-    .brand-sub { font-weight: 300; font-size: 0.75rem; color: var(--ui-text-secondary); opacity: 0.7; }
-
-    .nav-section-label {
-        font-size: 0.65rem;
-        font-weight: 800;
-        color: var(--sys-primary);
-        letter-spacing: 1.5px;
-        margin: 15px 0 10px 12px;
-        opacity: 0.6;
-        text-transform: uppercase;
-    }
-
-    .nav-link-varejo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
-        border-radius: 16px;
-        color: var(--ui-text-secondary);
-        text-decoration: none !important;
-        font-weight: 500;
-        font-size: 0.95rem;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        margin-bottom: 6px;
-        border: 1px solid transparent;
-    }
-
-    .icon-box {
-        width: 28px;
-        display: flex;
-        justify-content: center;
-        font-size: 1.1rem;
-        color: var(--sys-primary);
-    }
-
-    /* ESTADO ATIVO: Inversão Inteligente para Dark/Light */
-    .nav-link-varejo.active {
-        background: var(--ui-text-primary);
-        color: var(--ui-bg-gradient-start); /* Inverte para a cor de fundo do app */
-        font-weight: 700;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-
-    .nav-link-varejo.active .icon-box i {
-        color: inherit;
-    }
-
-    /* BOTÃO DARK MODE GLASS */
-    .theme-toggle-glass {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid var(--ui-glass-border);
-        color: var(--ui-text-primary);
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        cursor: pointer;
-        display: grid;
-        place-items: center;
-        transition: 0.3s;
-    }
-
-    .theme-toggle-glass:hover {
-        background: var(--ui-text-primary);
-        color: var(--ui-bg-gradient-start);
-    }
-
-    .nav-spacer { flex: 1; min-height: 40px; }
-    
-    .logout-item { color: var(--state-danger) !important; margin-top: auto; opacity: 0.8; }
-    .logout-item .icon-box i { color: var(--state-danger); }
-</style>

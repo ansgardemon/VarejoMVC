@@ -143,16 +143,33 @@ a {
 }
 
 /* =========================================
-   3. UI GLASSMORPHISM (Cards)
+   3. UI GLASSMORPHISM (Cards) - BUG FIX
 ========================================= */
 .glass-card {
+    position: relative;
+    isolation: isolate; /* Impede que o fundo vaze para trás da tela */
     background: var(--ui-glass-bg);
-    backdrop-filter: blur(var(--ui-glass-blur));
-    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
     border: 1px solid var(--ui-glass-border);
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
+}
+
+    /* O TRUQUE: O desfoque agora mora neste fantasma. 
+   Isso impede que o card aprisione a Modal de tela cheia! */
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit; /* Herda os mesmos 20px do card */
+        backdrop-filter: blur(var(--ui-glass-blur));
+        -webkit-backdrop-filter: blur(var(--ui-glass-blur));
+        z-index: -1;
+        pointer-events: none;
+    }
+
+[data-theme="dark"] .glass-card {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 /* =========================================

@@ -41,6 +41,7 @@ builder.Services.AddScoped<IInventarioRepository, InventarioRepository>();
 builder.Services.AddScoped<IEstoqueRepository, EstoqueRepository>();
 builder.Services.AddScoped<IHistoricoProdutoRepository, HistoricoProdutoRepository>();
 builder.Services.AddScoped<IVendaRepository, VendaRepository>();
+builder.Services.AddScoped<IConfiguracaoEmpresaRepository, ConfiguracaoEmpresaRepository>();
 
 
 

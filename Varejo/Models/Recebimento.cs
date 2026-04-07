@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Varejo.Models.Varejo.Models;
 
 namespace Varejo.Models
 {

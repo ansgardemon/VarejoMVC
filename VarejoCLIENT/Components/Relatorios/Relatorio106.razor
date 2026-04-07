@@ -13,15 +13,15 @@
                                      DataFimChanged="v => filtro.DataFim = v" />
             </div>
             <div class="col-md-6 col-lg-3">
-                <label class="form-label fw-bold small" style="color: var(--sys-primary);">O que deseja ver?</label>
-                <select class="form-select shadow-sm" @bind="filtro.TipoOrdem">
-                    <option value="MAIS_VENDIDOS">🏆 Mais Vendidos</option>
-                    <option value="MENOS_VENDIDOS">⚠️ Menos Vendidos</option>
+                <label class="form-label">O que deseja ver?</label>
+                <select class="form-select" @bind="filtro.TipoOrdem">
+                    <option value="MAIS_VENDIDOS">&#xf091; Mais Vendidos</option> @* Ícone Trophy *@
+                    <option value="MENOS_VENDIDOS">&#xf071; Menos Vendidos</option> @* Ícone Triangle-Exclamation *@
                 </select>
             </div>
             <div class="col-md-6 col-lg-3">
-                <label class="form-label fw-bold small" style="color: var(--sys-primary);">Mostrar Quantos?</label>
-                <select class="form-select shadow-sm" @bind="filtro.QuantidadeRegistros">
+                <label class="form-label">Mostrar Quantos?</label>
+                <select class="form-select" @bind="filtro.QuantidadeRegistros">
                     <option value="10">Top 10</option>
                     <option value="50">Top 50</option>
                     <option value="100">Top 100</option>
@@ -52,56 +52,27 @@
 <div class="mt-4">
     @if (loading)
     {
-        <div class="text-center p-5">
+        <div class="text-center p-5 glass-card">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
             <p class="mt-3 fw-bold text-primary">Processando Ranking...</p>
         </div>
     }
     else
     {
-        <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
-            <div class="table-responsive">
-                @if (listaDados != null && listaDados.Any())
-                {
-                    <table class="table mb-0 align-middle" style="color: var(--sys-primary);">
-                        <thead style="background: linear-gradient(145deg, rgba(150,150,150,0.15), rgba(150,150,150,0.05));">
-                            <tr style="font-size: 0.85rem; text-transform: uppercase;">
-                                <th class="text-center">Posição</th>
-                                <th>ID</th>
-                                <th>Produto</th>
-                                <th>Categoria</th>
-                                <th class="text-end">Qtd Vendida</th>
-                                <th class="text-end">Faturamento</th>
-                            </tr>
-                        </thead>
-                        <tbody style="font-size: 0.95rem;">
-                            @{
-                                int i = 1;
-                            }
-                            @foreach (var item in listaDados)
-                            {
-                                <tr>
-                                    <td style="border-color: var(--glass-border);" class="text-center fw-bold">@(i)º</td>
-                                    <td style="border-color: var(--glass-border);">@item.IdProduto</td>
-                                    <td style="border-color: var(--glass-border); font-weight: 500;">@item.NomeProduto</td>
-                                    <td style="border-color: var(--glass-border);">@item.Categoria</td>
-                                    <td style="border-color: var(--glass-border);" class="text-end">@item.QuantidadeVendida.ToString("N2")</td>
-                                    <td style="border-color: var(--glass-border);" class="text-end text-success fw-bold">@item.Faturamento.ToString("C2")</td>
-                                </tr>
-                                i++;
-                            }
-                        </tbody>
-                    </table>
-                }
-                else if (dadosVazios)
-                {
-                    <div class="p-5 text-center text-muted">
-                        <i class="fa-solid fa-ranking-star fa-2x mb-3 opacity-50"></i>
-                        <p class="mb-0">Nenhum dado encontrado para o período ou filtros selecionados.</p>
-                    </div>
-                }
+        @if (listaDados != null && listaDados.Any())
+        {
+            <div class="glass-card overflow-hidden">
+                <RelatorioTabelaDinamica TItem="Relatorio106DTO" Dados="listaDados" Colunas="colunas106" />
             </div>
-        </div>
+        }
+        else if (dadosVazios)
+        {
+            <div class="p-5 text-center glass-card">
+                <i class="fa-solid fa-ranking-star fa-2x mb-3 text-muted opacity-50"></i>
+                <h5 class="fw-bold" style="color: var(--ui-text-primary);">Nenhum dado encontrado</h5>
+                <p class="mb-0" style="color: var(--ui-text-secondary);">Não houve vendas no período ou com os filtros selecionados.</p>
+            </div>
+        }
     }
 </div>
 
@@ -129,6 +100,15 @@
     private List<string> selecionadosMarcas = new();
     private List<string> selecionadosFamilias = new();
     private List<string> selecionadosProdutos = new();
+
+    // === DEFINIÇÃO DAS COLUNAS ===
+    private List<RelatorioTabelaDinamica<Relatorio106DTO>.ConfigColuna> colunas106 = new() {
+        new() { Titulo = "ID", Propriedade = "IdProduto" },
+        new() { Titulo = "Produto", Propriedade = "NomeProduto" },
+        new() { Titulo = "Categoria", Propriedade = "Categoria" },
+        new() { Titulo = "Qtd Vendida", Propriedade = "QuantidadeVendida", Formato = "N2" },
+        new() { Titulo = "Faturamento", Propriedade = "Faturamento", Formato = "C2" }
+    };
 
     protected override async Task OnInitializedAsync()
     {

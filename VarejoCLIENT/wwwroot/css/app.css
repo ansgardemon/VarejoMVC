@@ -478,3 +478,107 @@ label, .form-label {
         color: var(--sys-primary-light);
     }
 }
+
+/* =========================================
+   7. HEADERS E ALERTAS DE RELATÓRIOS
+========================================= */
+.report-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.glass-header {
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(var(--ui-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
+    border: 1px solid var(--ui-glass-border);
+    border-radius: 22px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .glass-header {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-back-ios {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--ui-glass-border);
+    color: var(--sys-primary);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+    .btn-back-ios:hover {
+        background: var(--sys-primary);
+        color: white;
+        transform: translateX(-3px); /* Animação sutil para a esquerda */
+    }
+
+[data-theme="dark"] .btn-back-ios {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ui-text-primary);
+}
+
+.report-id {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--sys-primary);
+    opacity: 0.8;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: -2px;
+}
+
+/* Título com contraste inteligente */
+.report-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ui-text-primary); /* Garante leitura perfeita em Light/Dark */
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+/* Alerta de Relatório não implementado */
+.glass-alert {
+    background: rgba(255, 193, 7, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: #856404;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="dark"] .glass-alert {
+    background: rgba(255, 193, 7, 0.05);
+    color: #ffc107;
+}
+
+/* =========================================
+   8. CORREÇÃO DO DROPDOWN NATIVO (SELECT OPTIONS)
+========================================= */
+/* Estiliza a lista do <select> nativo (O navegador bloqueia o efeito de vidro aqui) */
+option {
+    background-color: #ffffff;
+    color: var(--sys-primary);
+    font-weight: 500;
+    padding: 10px; /* Alguns navegadores respeitam esse padding */
+}
+
+/* No Dark Mode, pintamos a lista nativa com o azul escuro da sua paleta */
+[data-theme="dark"] option {
+    background-color: #0f172a !important; /* Cor sólida do seu fundo escuro */
+    color: #ffffff !important;
+}

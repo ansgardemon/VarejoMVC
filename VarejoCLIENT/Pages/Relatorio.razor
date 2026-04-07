@@ -9,25 +9,21 @@
 <main class="container-fluid py-4 report-wrapper">
     @if (definicao != null)
     {
-        @* HEADER LIQUID GLASS *@
+        @* HEADER LIQUID GLASS (Sem o botão de compartilhar) *@
         <div class="glass-header mb-4 animate__animated animate__fadeInDown">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    @* Botão Voltar Estilo iOS *@
-                    <button class="btn-back-ios me-3" @onclick='() => Nav.NavigateTo("/relatorios")' title="Voltar">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </button>
-                    
-                    <div class="title-section">
-                        <span class="report-id">ID #@definicao.Codigo</span>
-                        <h2 class="report-title">@definicao.Nome</h2>
-                    </div>
+            <div class="d-flex align-items-center">
+                
+                @* Botão Voltar Estilo iOS *@
+                <button class="btn-back-ios me-3" @onclick='() => Nav.NavigateTo("/relatorios")' title="Voltar">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                
+                <div class="title-section">
+                    <span class="report-id">ID #@definicao.Codigo</span>
+                    @* O título agora vai respeitar o Dark/Light mode pelo CSS global *@
+                    <h2 class="report-title">@definicao.Nome</h2>
                 </div>
 
-                @* Botão de Ação Rápida (Ex: Imprimir/Exportar) - Opcional *@
-                <div class="header-actions">
-                     <button class="btn-action-glass"><i class="fa-solid fa-share-nodes"></i></button>
-                </div>
             </div>
         </div>
 
@@ -35,111 +31,27 @@
         <div class="dynamic-content-container animate__animated animate__fadeInUp">
             @if (ObterComponenteDoRelatorio() != null)
             {
-                @* Adicionamos uma Key para forçar o componente a reiniciar animação ao mudar o código *@
                 <DynamicComponent @key="Codigo" Type="@ObterComponenteDoRelatorio()" Parameters="@componentParameters" />
             }
             else
             {
                 <div class="glass-alert">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span>Relatório em desenvolvimento ou não implementado.</span>
+                    <i class="fa-solid fa-triangle-exclamation mb-2 fs-3"></i>
+                    <h5 class="fw-bold">Em construção</h5>
+                    <span>Este relatório está em desenvolvimento ou não foi implementado.</span>
                 </div>
             }
         </div>
     }
     else
     {
-        @* Skeleton Screen ou Loading no estilo Glass *@
-        <div class="glass-loading">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-3">Carregando inteligência de dados...</p>
+        @* Loading estilo Glass *@
+        <div class="glass-loading text-center p-5 mt-5">
+            <div class="spinner-border" style="color: var(--sys-primary);" role="status"></div>
+            <p class="mt-3 fw-bold" style="color: var(--sys-primary);">Carregando inteligência de dados...</p>
         </div>
     }
 </main>
-
-<style>
-    /* Estilização Liquid Glass Específica para Relatórios */
-    .report-wrapper {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .glass-header {
-        background: var(--ui-glass-bg);
-        backdrop-filter: blur(var(--ui-glass-blur));
-        -webkit-backdrop-filter: blur(var(--ui-glass-blur));
-        border: 1px solid var(--ui-glass-border);
-        border-radius: 22px; /* Super arredondado */
-        padding: 1.5rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-    }
-
-    .btn-back-ios {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid var(--ui-glass-border);
-        color: var(--sys-primary);
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-back-ios:hover {
-        background: var(--sys-primary);
-        color: white;
-        transform: scale(1.05);
-    }
-
-    .report-id {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--sys-primary);
-        opacity: 0.8;
-        letter-spacing: 1px;
-    }
-
-    .report-title {
-        font-size: 1.4rem;
-        font-weight: 800;
-        color: var(--brand-dark);
-        margin: 0;
-    }
-
-    /* Estilo para os componentes filhos (RelatorioXXX) */
-    .dynamic-content-container {
-        /* Garante que os cards dentro dos componentes filhos sigam o padrão */
-        --card-border-radius: 20px;
-    }
-
-    .glass-alert {
-        background: rgba(255, 193, 7, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 193, 7, 0.2);
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: center;
-        color: #856404;
-    }
-
-    .btn-action-glass {
-        background: transparent;
-        border: 1px solid var(--ui-glass-border);
-        color: var(--sys-primary);
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        transition: 0.3s;
-    }
-
-    .btn-action-glass:hover {
-        background: var(--ui-glass-bg);
-        border-color: var(--sys-primary);
-    }
-</style>
 
 @code {
     [Parameter] public int Codigo { get; set; }
@@ -148,8 +60,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        // Reset para efeito visual de transição
-        definicao = null; 
+        definicao = null;
         
         definicao = await RelService.GetDefinicaoAsync(Codigo);
         

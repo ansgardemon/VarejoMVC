@@ -1,60 +1,70 @@
-.navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
+@page
+
+"/relatorios"
+
+<div class="reports-container" >
+<h3 class="mb-4 fw-bold" > Relatórios Gerenciais</h3 >
+
+<details class="glass-accordion mb-3" >
+<summary >
+<i class="fa-solid fa-cart-shopping me-2" > </i >
+Vendas por Período
+<i class="fa-solid fa-chevron-down float-end arrow" > </i >
+</summary >
+<div class="accordion-content" >
+<p > Filtros de data e gráficos de faturamento...</p >
+</div >
+</details >
+
+<details class="glass-accordion mb-3" >
+<summary >
+<i class="fa-solid fa-boxes-stacked me-2" > </i >
+Posição de Estoque
+<i class="fa-solid fa-chevron-down float-end arrow" > </i >
+</summary >
+<div class="accordion-content" >
+<p > Lista de produtos com baixo giro...</p >
+</div >
+</details >
+</div >
+
+<style >
+.glass-accordion {
+    background: var(--ui-glass-bg);
+    border: 1px solid var(--ui-glass-border);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-.top-row {
-    min-height: 4rem;
-    background-color: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.glass-accordion summary {
+    padding: 20px;
+    list-style: none;
+    cursor: pointer;
+    font-weight: 600;
+    outline: none;
 }
 
-.navbar-brand {
-    font-size: 1.1rem;
-    color: #ffffff;
+.glass-accordion[open] {
+    background: rgba(255, 255, 255, 0.4);
 }
 
-.nav-item {
-    font-size: 0.95rem;
-    padding-bottom: 0.5rem;
+.accordion-content {
+    padding: 20px;
+    border-top: 1px solid var(--ui-glass-border);
+    animation: slideDown 0.3s ease-out;
 }
 
-    .nav-item:first-of-type {
-        padding-top: 1rem;
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
 
-    .nav-item ::deep a {
-        color: rgba(255, 255, 255, 0.7);
-        border-radius: 12px;
-        height: 3.2rem;
-        display: flex;
-        align-items: center;
-        line-height: 3.2rem;
-        transition: all 0.3s ease;
-    }
-
-        .nav-item ::deep a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            font-weight: bold;
-            box-shadow: inset 4px 0 0 0 #ffffff; /* Linha de destaque na esquerda */
-        }
-
-        .nav-item ::deep a:hover:not(.active) {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-        }
-
-@media (min-width: 641px) {
-    .navbar-toggler {
-        display: none;
-    }
-
-    .collapse {
-        display: block;
-    }
-
-    .nav-scrollable {
-        height: calc(100vh - 4rem);
-        overflow-y: auto;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
+
+</style >

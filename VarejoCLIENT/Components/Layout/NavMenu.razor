@@ -1,39 +1,97 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" style="letter-spacing: 1px;" href="">VAREJO GESTOR</a>
-        <button title="Navigation menu" class="navbar-toggler border-0" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
+﻿<nav class="nav flex-column px-3 nav-container">
+    <div class="nav-label">MENU PRINCIPAL</div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column mt-2">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="dashboard">
-                <i class="fa-solid fa-gauge-high me-3 fs-5"></i> Dashboard
-            </NavLink>
+    <NavLink class="nav-link-glass" href="dashboard" Match="NavLinkMatch.All" @onclick="HandleClick">
+        <div class="icon-wrapper">
+            <i class="fa-solid fa-chart-pie"></i>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="relatorios">
-                <i class="fa-solid fa-clipboard-list me-3 fs-5"></i> Relatórios
-            </NavLink>
+        <span class="nav-text">Dashboard</span>
+    </NavLink>
+
+    <NavLink class="nav-link-glass" href="relatorios" @onclick="HandleClick">
+        <div class="icon-wrapper">
+            <i class="fa-solid fa-file-lines"></i>
         </div>
-        <div class="nav-item px-3 mt-4">
-            <NavLink class="nav-link text-danger" style="background: rgba(220, 53, 69, 0.1);" href="logout">
-                <i class="fa-solid fa-right-from-bracket me-3 fs-5"></i> Sair do Sistema
-            </NavLink>
+        <span class="nav-text">Relatórios</span>
+    </NavLink>
+
+    <div class="nav-spacer"></div>
+
+    <NavLink class="nav-link-glass logout-btn" href="logout" @onclick="HandleClick">
+        <div class="icon-wrapper">
+            <i class="fa-solid fa-power-off"></i>
         </div>
-    </nav>
-</div>
+        <span class="nav-text">Sair do Sistema</span>
+    </NavLink>
+</nav>
 
 @code {
-    private bool collapseNavMenu = true;
+    [Parameter] public EventCallback OnMenuItemClicked { get; set; }
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
+    private async Task HandleClick()
     {
-        collapseNavMenu = !collapseNavMenu;
+        if (OnMenuItemClicked.HasDelegate)
+        {
+            await OnMenuItemClicked.InvokeAsync();
+        }
     }
 }
+
+<style>
+    .nav-container { gap: 10px; margin-top: 10px; }
+
+    .nav-label {
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: var(--sys-primary);
+        opacity: 0.5;
+        padding-left: 12px;
+        margin-bottom: 5px;
+        letter-spacing: 1.2px;
+    }
+
+    .nav-link-glass {
+        display: flex;
+        align-items: center;
+        padding: 14px 16px;
+        border-radius: 18px;
+        text-decoration: none;
+        color: var(--ui-text-secondary);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid transparent;
+    }
+
+    .nav-text {
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: -0.2px;
+    }
+
+    .icon-wrapper {
+        width: 32px;
+        font-size: 1.1rem;
+        color: var(--sys-primary);
+        transition: transform 0.3s ease;
+    }
+
+    /* Active State (iPhone style) */
+    .nav-link-glass.active {
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid var(--ui-glass-border);
+        color: var(--sys-primary);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .nav-link-glass.active .nav-text { font-weight: 700; }
+    .nav-link-glass.active .icon-wrapper { transform: scale(1.1); }
+
+    .nav-link-glass:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(-5px); /* Slide para a esquerda (direção do menu) */
+    }
+
+    .nav-spacer { flex: 1; min-height: 20px; }
+
+    .logout-btn { color: var(--state-danger) !important; margin-top: auto; margin-bottom: 20px; }
+    .logout-btn .icon-wrapper { color: var(--state-danger); }
+</style>

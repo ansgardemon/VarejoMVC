@@ -1,82 +1,126 @@
+/* Layout Base */
 .page {
-    position: relative;
+    background: linear-gradient(135deg, var(--ui-bg-gradient-start), var(--ui-bg-gradient-end));
+    min-height: 100vh;
+    display: flex;
+    transition: background 0.5s ease;
+    overflow-x: hidden;
+}
+
+/* Centralização do Login (Estilo Clean) */
+.login-centered-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--ui-bg-gradient-start), var(--ui-bg-gradient-end));
+}
+
+.login-card-wrapper {
+    width: 100%;
+    max-width: 400px; /* Largura ideal para Mobile e Web */
+    padding: 20px;
+}
+
+/* Sidebar Drawer (DIREITA) */
+.sidebar-drawer-right {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    bottom: 20px;
+    width: 280px;
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(var(--ui-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
+    border: 1px solid var(--ui-glass-border);
+    border-radius: 28px;
+    z-index: 1050;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
 }
 
-main {
-    flex: 1;
-}
+    .sidebar-drawer-right.collapsed {
+        transform: translateX(340px);
+    }
 
-.sidebar {
-    /* Degradê de Azul Padrão para um Azul Marinho Profundo */
-    background: linear-gradient(180deg, var(--sys-primary) 0%, rgba(13, 33, 80, 1) 100%);
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-}
-
-.top-row {
-    background-color: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border-bottom: 1px solid var(--glass-border);
-    justify-content: flex-end;
-    height: 4rem;
+/* Header da Sidebar */
+.sidebar-header {
+    padding: 25px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-        color: var(--sys-primary);
-        font-weight: 500;
-    }
-
-        .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-            text-decoration: underline;
-        }
-
-        .top-row ::deep a:first-child {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-@media (max-width: 640.98px) {
-    .top-row {
-        justify-content: space-between;
-    }
-
-        .top-row ::deep a, .top-row ::deep .btn-link {
-            margin-left: 0;
-        }
+.brand-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--sys-primary);
+    letter-spacing: -0.5px;
 }
 
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
+/* Conteúdo Principal */
+.main-content {
+    flex: 1;
+    transition: margin-right 0.4s ease;
+    width: 100%;
+}
+
+@media (min-width: 1200px) {
+    .main-content:not(.full-width) {
+        margin-right: 320px;
     }
 
-    .sidebar {
-        width: 260px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
+    .sidebar-drawer-right.collapsed {
+        transform: translateX(0); /* Sempre visível no Desktop */
     }
 
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
+    .menu-toggle-btn {
+        display: none;
+    }
+}
+
+/* Botão Toggle Mobile */
+.menu-toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--ui-glass-border);
+    color: var(--sys-primary);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Overlay */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    display: none;
+    z-index: 1040;
+}
+
+    .sidebar-overlay.show {
+        display: block;
     }
 
-        .top-row.auth ::deep a:first-child {
-            flex: 1;
-            text-align: right;
-            width: 0;
-        }
-
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }
+/* Dark Mode Switcher */
+.theme-switch {
+    background: var(--brand-accent);
+    color: var(--brand-dark);
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    cursor: pointer;
 }

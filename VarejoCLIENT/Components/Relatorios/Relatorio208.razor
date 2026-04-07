@@ -5,43 +5,118 @@
 
 <RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
     <ChildContent>
-        <div class="row"><div class="col-md-6"><div class="form-check form-switch mt-2"><input class="form-check-input" type="checkbox" id="sc" @bind="filtro.OcultarEstoqueSistema"><label class="form-check-label fw-bold ms-2" for="sc">Contagem Cega (Ocultar Sistema)</label></div></div></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <RelatorioFiltroData DataInicio="filtro.DataInicio" DataInicioChanged="v => filtro.DataInicio = v" DataFim="filtro.DataFim" DataFimChanged="v => filtro.DataFim = v" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold small text-primary">Qual operação foi usada para o ajuste?</label>
+                <select class="form-select" @bind="filtro.IdTipoMovimentoAjuste">
+                    <option value="">-- Todos os Tipos de Movimento --</option>
+                    @foreach (var t in listaTipos)
+                    {
+                        <option value="@t.IdTipoMovimento">@t.DescricaoTipoMovimento</option>
+                    }
+                </select>
+            </div>
+        </div>
     </ChildContent>
-    <BarraPesquisa><div class="row g-3"><div class="col-md-6"><RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" /></div></div></BarraPesquisa>
 </RelatorioFiltro>
 
 <div class="mt-4">
     @if (loading)
     {
-        <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+        <div class="text-center p-5">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 fw-bold text-primary">Analisando divergências e ajustes...</p>
+        </div>
     }
     else if (listaDados != null && listaDados.Any())
     {
-        <table class="table table-hover align-middle bg-white shadow-sm rounded">
-            <thead class="bg-light"><tr><th>Produto</th> @if(!filtro.OcultarEstoqueSistema){
-                <th class="text-end">Sistema</th>
-            }
-            <th class="text-center">Físico</th></tr></thead>
-            <tbody>
-                @foreach (var item in listaDados)
-                {
-                    <tr><td>@item.NomeProduto</td> @if(!filtro.OcultarEstoqueSistema){
-                        <td class="text-end text-muted">@item.EstoqueAtual.ToString("N2")</td>
-                    }
-                    <td class="text-center"><span class="text-muted opacity-25">. . . . . . . .</span></td></tr>
-                }
-            </tbody>
-        </table>
+        <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); border: 1px solid var(--glass-border) !important;">
+            <div class="table-responsive">
+                <table class="table mb-0 align-middle bg-white shadow-sm rounded">
+                    <thead class="bg-light">
+                        <tr style="font-size: 0.85rem; text-transform: uppercase;">
+                            <th>Data / Produto</th>
+                            <th class="text-end">Qtd Ajuste</th>
+                            <th class="text-end">R$ Impacto</th>
+                            <th>Obs</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 0.95rem;">
+                        @foreach (var item in listaDados)
+                        {
+                            <tr>
+                                <td style="border-color: var(--glass-border);">
+                                    <div class="fw-bold">@item.NomeProduto</div>
+                                    <small class="text-muted">@item.DataAjuste.ToString("dd/MM/yyyy HH:mm")</small>
+                                </td>
+                                <td class="text-end fw-bold @(item.QuantidadeAjustada < 0 ? "text-danger" : "text-success")" style="border-color: var(--glass-border);">
+                                    @item.QuantidadeAjustada.ToString("N2")
+                                </td>
+                                <td class="text-end fw-bold @(item.ImpactoFinanceiro < 0 ? "text-danger" : "text-success")" style="border-color: var(--glass-border);">
+                                    @item.ImpactoFinanceiro.ToString("C2")
+                                </td>
+                                <td style="border-color: var(--glass-border);" class="text-muted small">
+                                    @item.Observacao
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else if (dadosVazios)
+    {
+        <div class="p-5 text-center text-muted">
+            <i class="fa-solid fa-clipboard-check fa-2x mb-3 opacity-50"></i>
+            <p class="mb-0">Nenhuma divergência ou ajuste registrado para este período.</p>
+        </div>
     }
 </div>
 
 @code {
     [Parameter] public int Codigo { get; set; }
     [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
-    private RelatorioFiltro208DTO filtro = new(); private List<Relatorio208DTO>? listaDados; private bool loading = false;
-    private List<CategoriaOutputDTO> listaCategorias = new(); private List<string> selecionadosCategorias = new();
-    protected override async Task OnInitializedAsync() { listaCategorias = await RelService.GetCategoriasAsync(); }
-    private async Task ExecutarBusca() { loading = true; StateHasChanged(); filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList(); listaDados = await RelService.GetDadosRelatorio208Async(filtro); loading = false; StateHasChanged(); }
-    private void Limpar() { listaDados = null; filtro = new(); selecionadosCategorias.Clear(); StateHasChanged(); }
-    private async Task Exportar(string f) { await ExecutarBusca(); await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro); }
+
+    private RelatorioFiltro208DTO filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now };
+    private List<Relatorio208DTO>? listaDados;
+    
+    private bool loading = false;
+    private bool dadosVazios = false;
+
+    // Dropdown de Tipos
+    private List<TipoMovimentoOutputDTO> listaTipos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Popula o <select> da tela buscando os Tipos de Movimento na API
+        listaTipos = await RelService.GetTiposMovimentoAsync() ?? new();
+    }
+
+    private async Task ExecutarBusca()
+    {
+        loading = true; dadosVazios = false; StateHasChanged();
+
+        // Chama a rota do 208
+        listaDados = await RelService.GetDadosRelatorio208Async(filtro);
+        dadosVazios = listaDados == null || !listaDados.Any();
+        
+        loading = false; StateHasChanged();
+    }
+
+    private void Limpar()
+    {
+        listaDados = null;
+        filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now };
+        dadosVazios = false; StateHasChanged();
+    }
+
+    private async Task Exportar(string f)
+    {
+        await ExecutarBusca();
+        await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+    }
 }

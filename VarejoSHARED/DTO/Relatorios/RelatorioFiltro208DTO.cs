@@ -1,16 +1,18 @@
-﻿using VarejoSHARED.DTO.Relatorios;
-
-namespace VarejoSHARED.DTO.Relatorios
+﻿namespace VarejoSHARED.DTO.Relatorios
 {
     public class RelatorioFiltro208DTO : RelatorioFiltroProdutosDTO
     {
-        public bool OcultarEstoqueSistema { get; set; } = true;
+        // O usuário vai selecionar qual TipoMovimento representa "Ajuste de Estoque"
+        public int? IdTipoMovimentoAjuste { get; set; }
     }
     public class Relatorio208DTO
     {
         public int IdProduto { get; set; }
         public string NomeProduto { get; set; } = string.Empty;
-        public string Categoria { get; set; } = string.Empty;
-        public decimal EstoqueAtual { get; set; }
+        public DateTime DataAjuste { get; set; }
+        public decimal QuantidadeAjustada { get; set; } // Negativo é perda, positivo é sobra
+        public decimal CustoUnitario { get; set; }
+        public decimal ImpactoFinanceiro => QuantidadeAjustada * CustoUnitario;
+        public string Observacao { get; set; } = string.Empty;
     }
 }

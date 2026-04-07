@@ -32,21 +32,21 @@ namespace VarejoCLIENT.Services
                 new RelatorioDefinicaoDTO { Codigo = 104, Nome = "Curva ABC de Produtos", Categoria = "#100 - Produtos", IsFavorito = true },
                 new RelatorioDefinicaoDTO { Codigo = 105, Nome = "Produtos Sem Giro", Categoria = "#100 - Produtos", IsFavorito = true },
                 new RelatorioDefinicaoDTO { Codigo = 106, Nome = "Ranking de Vendas (Mais/Menos)", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 107, Nome = "Histórico de Alteração de Preços", Categoria = "#100 - Produtos" },
+                new RelatorioDefinicaoDTO { Codigo = 107, Nome = "Histórico de Alteração de Preços", Categoria = "#100 - Produtos", IsFavorito = true },
                 
                 // MÓDULO 200 - ESTOQUE
-                new RelatorioDefinicaoDTO { Codigo = 201, Nome = "Posição Atual de Estoque", Categoria = "#200 - Estoque" },
-                new RelatorioDefinicaoDTO { Codigo = 202, Nome = "Lotes e Validades", Categoria = "#200 - Estoque" },
-                new RelatorioDefinicaoDTO { Codigo = 203, Nome = "Movimentação de Estoque Geral", Categoria = "#200 - Estoque" },
-                new RelatorioDefinicaoDTO { Codigo = 204, Nome = "Sugestão de Compras e Cobertura", Categoria = "#200 - Estoque" },
-                new RelatorioDefinicaoDTO { Codigo = 205, Nome = "Ficha de Inventário (Contagem)", Categoria = "#200 - Estoque" },
-                new RelatorioDefinicaoDTO { Codigo = 206, Nome = "Valorização de Estoque (Projeção)", Categoria = "#200 - Estoque" },
-                new RelatorioDefinicaoDTO { Codigo = 207, Nome = "Giro e Velocidade de Estoque", Categoria = "#200 - Estoque" },
-new RelatorioDefinicaoDTO { Codigo = 208, Nome = "Inventário (Ficha de Contagem)", Categoria = "#200 - Estoque" },
-new RelatorioDefinicaoDTO { Codigo = 209, Nome = "Divergência de Inventário", Categoria = "#200 - Estoque" },
+                new RelatorioDefinicaoDTO { Codigo = 201, Nome = "Posição Atual de Estoque", Categoria = "#200 - Estoque", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 202, Nome = "Lotes e Validades", Categoria = "#200 - Estoque", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 203, Nome = "Movimentação de Estoque Geral", Categoria = "#200 - Estoque", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 204, Nome = "Sugestão de Compras e Cobertura", Categoria = "#200 - Estoque", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 205, Nome = "Ficha de Inventário (Contagem)", Categoria = "#200 - Estoque", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 206, Nome = "Valorização de Estoque (Projeção)", Categoria = "#200 - Estoque", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 207, Nome = "Giro e Velocidade de Estoque", Categoria = "#200 - Estoque", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 208, Nome = "Divergência de Inventário", Categoria = "#200 - Estoque", IsFavorito = true },
                 
+
                 // MÓDULO 300 - MOVIMENTAÇÕES
-                new RelatorioDefinicaoDTO { Codigo = 301, Nome = "Histórico de Movimentações", Categoria = "#300 - Movimentações" }
+                new RelatorioDefinicaoDTO { Codigo = 301, Nome = "Histórico Analítico Geral", Categoria = "#300 - Movimentações", IsFavorito = true }
             });
         }
 
@@ -284,19 +284,34 @@ new RelatorioDefinicaoDTO { Codigo = 209, Nome = "Divergência de Inventário", 
         }
         #endregion
 
+        #region RELATÓRIO 207 - GIRO E VELOCIDADE DE ESTOQUE
         public async Task<List<Relatorio207DTO>?> GetDadosRelatorio207Async(RelatorioFiltro207DTO filtro) { var r = await _http.PostAsJsonAsync("api/relatorio/207/dados", filtro); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<List<Relatorio207DTO>>() : new(); }
+        #endregion
+
+        #region RELATÓRIO 208 - DIVERGÊNCIA DE INVENTÁRIO
         public async Task<List<Relatorio208DTO>?> GetDadosRelatorio208Async(RelatorioFiltro208DTO filtro) { var r = await _http.PostAsJsonAsync("api/relatorio/208/dados", filtro); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<List<Relatorio208DTO>>() : new(); }
-        public async Task<List<Relatorio209DTO>?> GetDadosRelatorio209Async(RelatorioFiltro209DTO filtro) { var r = await _http.PostAsJsonAsync("api/relatorio/209/dados", filtro); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<List<Relatorio209DTO>>() : new(); }
-        public async Task<List<TipoMovimentoOutputDTO>> GetTiposMovimentoAsync() { var r = await _http.GetAsync("api/TipoMovimento"); return r.IsSuccessStatusCode ? await r.Content.ReadFromJsonAsync<List<TipoMovimentoOutputDTO>>() ?? new() : new(); }
 
+        #endregion
 
+        #region MÓDULO 301 - MOVIMENTAÇÕES
 
-        #region Relatório 301 (Movimentações)
-        public async Task<List<MovimentoOutputDTO>> GetMovimentacoesFiltradasAsync(RelatorioFiltroMovimentacaoDTO filtro)
+        public async Task<List<Relatorio301DTO>?> GetDadosRelatorio301Async(RelatorioFiltro301DTO filtro)
         {
-            var response = await _http.PostAsJsonAsync("api/relatorio/movimentacoes", filtro);
-            return await response.Content.ReadFromJsonAsync<List<MovimentoOutputDTO>>() ?? new();
+            try
+            {
+                var response = await _http.PostAsJsonAsync("api/relatorio/301/dados", filtro);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<List<Relatorio301DTO>>();
+
+                return new List<Relatorio301DTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar relatório 301: {ex.Message}");
+                return new List<Relatorio301DTO>();
+            }
         }
+
         #endregion
 
         #endregion
@@ -330,7 +345,7 @@ new RelatorioDefinicaoDTO { Codigo = 209, Nome = "Divergência de Inventário", 
                 206 => "api/relatorio/206/exportar/pdf",
                 207 => "api/relatorio/207/exportar/pdf",
                 208 => "api/relatorio/208/exportar/pdf",
-                209 => "api/relatorio/209/exportar/pdf",
+                301 => "api/relatorio/301/exportar/pdf",
                 _ => $"api/relatorio/exportar/pdf"
             };
 
@@ -382,6 +397,44 @@ new RelatorioDefinicaoDTO { Codigo = 209, Nome = "Divergência de Inventário", 
             {
                 Console.WriteLine($"Erro ao buscar famílias: {ex.Message}");
                 return new List<FamiliaOutputDTO>();
+            }
+        }
+
+        public async Task<List<TipoMovimentoOutputDTO>> GetTiposMovimentoAsync()
+        {
+            try
+            {
+                // Consome a rota padrão da sua API para buscar os Tipos
+                var response = await _http.GetAsync("api/TipoMovimento");
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<List<TipoMovimentoOutputDTO>>() ?? new();
+                }
+                return new List<TipoMovimentoOutputDTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar tipos de movimento: {ex.Message}");
+                return new List<TipoMovimentoOutputDTO>();
+            }
+        }
+
+        public async Task<List<PessoaOutputDTO>> GetPessoasAsync()
+        {
+            try
+            {
+                // Consome a rota padrão da sua API para buscar as Pessoas/Usuários
+                var response = await _http.GetAsync("api/Pessoa");
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<List<PessoaOutputDTO>>() ?? new();
+                }
+                return new List<PessoaOutputDTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar pessoas: {ex.Message}");
+                return new List<PessoaOutputDTO>();
             }
         }
         #endregion

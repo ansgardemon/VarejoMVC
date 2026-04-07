@@ -1,0 +1,152 @@
+﻿@using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
+@using VarejoCLIENT.Services
+@inject RelatorioService RelService
+
+<RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+    <ChildContent>
+        <div class="row g-3">
+            <div class="col-md-12 col-lg-8">
+                <RelatorioFiltroData DataInicio="filtro.DataInicio" DataInicioChanged="v => filtro.DataInicio = v" DataFim="filtro.DataFim" DataFimChanged="v => filtro.DataFim = v" />
+            </div>
+        </div>
+    </ChildContent>
+
+    <BarraPesquisa>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+                <RelatorioFiltroMultiSelect TItem="TipoMovimentoOutputDTO" Titulo="Tipos de Movimento" IconeClass="fa-solid fa-code-compare" Itens="listaTipos" GetId="t => t.IdTipoMovimento.ToString()" GetNome="t => t.DescricaoTipoMovimento" Selecionados="selecionadosTipos" SelecionadosChanged="v => selecionadosTipos = v" />
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <RelatorioFiltroMultiSelect TItem="PessoaOutputDTO" Titulo="Pessoas/Usuários" IconeClass="fa-solid fa-users" Itens="listaPessoas" GetId="p => p.IdPessoa.ToString()" GetNome="p => p.NomeRazao" Selecionados="selecionadosPessoas" SelecionadosChanged="v => selecionadosPessoas = v" />
+            </div>
+            <div class="col-md-12 col-lg-4">
+                <RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos Específicos" IconeClass="fa-solid fa-box" Itens="listaProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" />
+            </div>
+        </div>
+    </BarraPesquisa>
+</RelatorioFiltro>
+
+<div class="mt-4">
+    @if (loading)
+    {
+        <div class="text-center p-5">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 fw-bold text-primary">Buscando histórico de movimentações...</p>
+        </div>
+    }
+    else if (listaDados != null && listaDados.Any())
+    {
+        <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); border: 1px solid var(--glass-border) !important;">
+            <div class="table-responsive">
+                <table class="table mb-0 align-middle bg-white shadow-sm rounded">
+                    <thead class="bg-light">
+                        <tr style="font-size: 0.85rem; text-transform: uppercase;">
+                            <th>Data / Mov.</th>
+                            <th>Tipo / Pessoa</th>
+                            <th>Produto</th>
+                            <th class="text-end">Qtd</th>
+                            <th class="text-end">R$ Total</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 0.95rem;">
+                        @foreach (var item in listaDados)
+                        {
+                            <tr>
+                                <td style="border-color: var(--glass-border);">
+                                    <div class="fw-bold">@item.DataMovimento.ToString("dd/MM/yyyy")</div>
+                                    <small class="text-muted">@item.DataMovimento.ToString("HH:mm")</small>
+                                </td>
+                                <td style="border-color: var(--glass-border);">
+                                    <div class="fw-bold" style="color: var(--sys-primary);">@item.TipoMovimento</div>
+                                    <small class="text-muted"><i class="fa-regular fa-user me-1"></i> @item.Pessoa</small>
+                                </td>
+                                <td style="border-color: var(--glass-border);">
+                                    @item.Produto
+                                    @if (!string.IsNullOrEmpty(item.Observacao))
+                                    {
+                                        <div class="small text-muted fst-italic mt-1">Obs: @item.Observacao</div>
+                                    }
+                                </td>
+                                <td class="text-end fw-bold" style="border-color: var(--glass-border);">
+                                    @if (item.IsEntrada)
+                                    {
+                                        <span class="text-success"><i class="fa-solid fa-arrow-down me-1"></i> +@item.Quantidade.ToString("N2")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger"><i class="fa-solid fa-arrow-up me-1"></i> @item.Quantidade.ToString("N2")</span>
+                                    }
+                                </td>
+                                <td class="text-end text-muted" style="border-color: var(--glass-border);">@item.ValorTotal.ToString("C2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else if (dadosVazios)
+    {
+        <div class="p-5 text-center text-muted">
+            <i class="fa-solid fa-clock-rotate-left fa-2x mb-3 opacity-50"></i>
+            <p class="mb-0">Nenhuma movimentação registrada com os filtros informados.</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
+
+    private RelatorioFiltro301DTO filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now };
+    private List<Relatorio301DTO>? listaDados;
+    private bool loading = false;
+    private bool dadosVazios = false;
+
+    // Listas para os Dropdowns
+    private List<TipoMovimentoOutputDTO> listaTipos = new();
+    private List<PessoaOutputDTO> listaPessoas = new();
+    private List<ProdutoDTO> listaProdutos = new();
+    
+    // Variáveis dos selecionados
+    private List<string> selecionadosTipos = new();
+    private List<string> selecionadosPessoas = new();
+    private List<string> selecionadosProdutos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // CORRIGIDO: Agora chama os métodos auxiliares corretos!
+        listaTipos = await RelService.GetTiposMovimentoAsync() ?? new();
+        listaPessoas = await RelService.GetPessoasAsync() ?? new();
+        listaProdutos = await RelService.GetDadosRelatorio101Async(new RelatorioFiltroProdutosDTO()) ?? new();
+    }
+
+    private async Task ExecutarBusca()
+    {
+        loading = true; dadosVazios = false; StateHasChanged();
+
+        filtro.TiposMovimentoIds = selecionadosTipos.Select(int.Parse).ToList();
+        filtro.PessoasIds = selecionadosPessoas.Select(int.Parse).ToList();
+        filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+        listaDados = await RelService.GetDadosRelatorio301Async(filtro);
+        dadosVazios = listaDados == null || !listaDados.Any();
+        
+        loading = false; StateHasChanged();
+    }
+
+    private void Limpar()
+    {
+        listaDados = null;
+        filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now };
+        selecionadosTipos.Clear(); selecionadosPessoas.Clear(); selecionadosProdutos.Clear();
+        dadosVazios = false; StateHasChanged();
+    }
+
+    private async Task Exportar(string f)
+    {
+        await ExecutarBusca();
+        await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+    }
+}

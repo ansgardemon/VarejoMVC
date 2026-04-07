@@ -155,10 +155,16 @@ namespace VarejoAPI.Controllers
                 .AsQueryable();
 
             if (filtro.DataInicio.HasValue)
-                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio.Value);
+            {
+                var dataInicio = filtro.DataInicio.Value.Date;
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= dataInicio);
+            }
 
             if (filtro.DataFim.HasValue)
-                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim.Value);
+            {
+                var dataFim = filtro.DataFim.Value.Date.AddDays(1).AddSeconds(-1);
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= dataFim);
+            }
 
             if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
                 query = query.Where(pm => filtro.ProdutosIds.Contains(pm.ProdutoId));
@@ -222,12 +228,18 @@ namespace VarejoAPI.Controllers
                 .AsNoTracking()
                 .AsQueryable();
 
-            // Filtros de Data (Herdados da base)
+            // Filtros de Data (Blindados)
             if (filtro.DataInicio.HasValue)
-                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio.Value);
+            {
+                var dataInicio = filtro.DataInicio.Value.Date;
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= dataInicio);
+            }
 
             if (filtro.DataFim.HasValue)
-                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim.Value);
+            {
+                var dataFim = filtro.DataFim.Value.Date.AddDays(1).AddSeconds(-1);
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= dataFim);
+            }
 
             // Filtros de Produtos (Multiselect)
             if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
@@ -406,11 +418,18 @@ namespace VarejoAPI.Controllers
                 .AsNoTracking()
                 .AsQueryable();
 
+            // Filtros de Data (Blindados)
             if (filtro.DataInicio.HasValue)
-                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio.Value);
+            {
+                var dataInicio = filtro.DataInicio.Value.Date;
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= dataInicio);
+            }
 
             if (filtro.DataFim.HasValue)
-                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim.Value);
+            {
+                var dataFim = filtro.DataFim.Value.Date.AddDays(1).AddSeconds(-1);
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= dataFim);
+            }
 
             if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
                 query = query.Where(pm => pm.Produto.Familia != null && filtro.CategoriasIds.Contains(pm.Produto.Familia.CategoriaId));
@@ -487,10 +506,16 @@ namespace VarejoAPI.Controllers
                 .AsQueryable();
 
             if (filtro.DataInicio.HasValue)
-                query = query.Where(h => h.DataAlteracao >= filtro.DataInicio.Value);
+            {
+                var dataInicio = filtro.DataInicio.Value.Date;
+                query = query.Where(h => h.DataAlteracao >= dataInicio);
+            }
 
             if (filtro.DataFim.HasValue)
-                query = query.Where(h => h.DataAlteracao <= filtro.DataFim.Value);
+            {
+                var dataFim = filtro.DataFim.Value.Date.AddDays(1).AddSeconds(-1);
+                query = query.Where(h => h.DataAlteracao <= dataFim);
+            }
 
             // Filtros de Produto/Categoria
             if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
@@ -691,10 +716,16 @@ namespace VarejoAPI.Controllers
 
             // Filtros de Data
             if (filtro.DataInicio.HasValue)
-                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio.Value);
+            {
+                var dataInicio = filtro.DataInicio.Value.Date;
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= dataInicio);
+            }
 
             if (filtro.DataFim.HasValue)
-                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim.Value);
+            {
+                var dataFim = filtro.DataFim.Value.Date.AddDays(1).AddSeconds(-1);
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= dataFim);
+            }
 
             // Filtros Padrão de Produto
             if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
@@ -824,44 +855,43 @@ namespace VarejoAPI.Controllers
 
         #endregion
 
-        #region RELATÓRIO 205 - PRODUTOS COM ESTOQUE MÍNIMO
+        #region RELATÓRIO 205 - INVENTÁRIO E ESTOQUE MÍNIMO
 
         [HttpPost("205/dados")]
         public async Task<ActionResult<List<Relatorio205DTO>>> GetDadosRelatorio205([FromBody] RelatorioFiltro205DTO filtro)
         {
-            // Usamos _context.Set<EstoqueConfig>() para garantir que vai compilar 
-            // independente do nome do seu DbSet lá no VarejoDbContext
-            var query = _context.Set<EstoqueConfig>()
-                .Include(e => e.Produto).ThenInclude(p => p.Familia).ThenInclude(f => f.Categoria)
+            var query = _context.Produtos
+                .Include(p => p.Familia).ThenInclude(f => f.Categoria)
+                .Where(p => p.Ativo)
                 .AsNoTracking()
                 .AsQueryable();
 
-            // Filtros Padrão (Agora navegando através da entidade EstoqueConfig 'e')
-            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any())
-                query = query.Where(e => e.Produto.Familia != null && filtro.CategoriasIds.Contains(e.Produto.Familia.CategoriaId));
+            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any()) query = query.Where(p => p.Familia != null && filtro.CategoriasIds.Contains(p.Familia.CategoriaId));
+            if (filtro.FamiliasIds != null && filtro.FamiliasIds.Any()) query = query.Where(p => filtro.FamiliasIds.Contains(p.FamiliaId));
+            if (filtro.MarcasIds != null && filtro.MarcasIds.Any()) query = query.Where(p => p.Familia != null && p.Familia.MarcaId != null && filtro.MarcasIds.Contains(p.Familia.MarcaId.Value));
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any()) query = query.Where(p => filtro.ProdutosIds.Contains(p.IdProduto));
 
-            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
-                query = query.Where(e => filtro.ProdutosIds.Contains(e.ProdutoId));
-
-            // Lógica do Estoque Mínimo
-            // Filtramos apenas configurações válidas (maior que zero)
-            query = query.Where(e => e.EstoqueMinimo > 0);
-
-            // Se o switch da tela estiver ativo, traz só os que estão com o Estoque Atual ABAIXO do mínimo
+            // Mágica da Fusão: Só filtra pelo mínimo se o switch estiver ligado
             if (filtro.ApenasAbaixoDoMinimo)
-                query = query.Where(e => e.Produto.EstoqueAtual < e.EstoqueMinimo);
+            {
+                var produtosAbaixoDoMinimo = _context.Set<EstoqueConfig>()
+                    .Where(e => e.EstoqueMinimo > 0 && e.Produto.EstoqueAtual < e.EstoqueMinimo)
+                    .Select(e => e.ProdutoId);
+
+                query = query.Where(p => produtosAbaixoDoMinimo.Contains(p.IdProduto));
+            }
 
             var lista = await query
-                .OrderBy(e => e.Produto.NomeProduto)
-                .Select(e => new Relatorio205DTO
+                .OrderBy(p => p.Familia != null && p.Familia.Categoria != null ? p.Familia.Categoria.DescricaoCategoria : "")
+                .ThenBy(p => p.NomeProduto)
+                .Select(p => new Relatorio205DTO
                 {
-                    IdProduto = e.ProdutoId,
-                    NomeProduto = e.Produto.NomeProduto ?? "Sem Nome",
-                    Categoria = e.Produto.Familia != null && e.Produto.Familia.Categoria != null ? e.Produto.Familia.Categoria.DescricaoCategoria : "Sem Categoria",
-                    EstoqueAtual = e.Produto.EstoqueAtual,
-                    EstoqueMinimo = e.EstoqueMinimo
-                })
-                .ToListAsync();
+                    IdProduto = p.IdProduto,
+                    NomeProduto = p.NomeProduto ?? "",
+                    Categoria = p.Familia != null && p.Familia.Categoria != null ? p.Familia.Categoria.DescricaoCategoria : "",
+                    EstoqueAtual = p.EstoqueAtual,
+                    EstoqueMinimo = _context.Set<EstoqueConfig>().Where(e => e.ProdutoId == p.IdProduto).Select(e => e.EstoqueMinimo).FirstOrDefault()
+                }).ToListAsync();
 
             return Ok(lista);
         }
@@ -869,19 +899,13 @@ namespace VarejoAPI.Controllers
         [HttpPost("205/exportar/pdf")]
         public async Task<IActionResult> ExportarPdfRelatorio205([FromBody] RelatorioFiltro205DTO filtro)
         {
-            var actionResult = await GetDadosRelatorio205(filtro);
-            var okResult = actionResult.Result as OkObjectResult;
-            var lista205 = okResult?.Value as List<Relatorio205DTO>;
+            var dados = (await GetDadosRelatorio205(filtro)).Result as OkObjectResult;
+            var lista = dados?.Value as List<Relatorio205DTO>;
+            if (lista == null || !lista.Any()) return BadRequest("Nenhum produto encontrado para a ficha de contagem.");
 
-            if (lista205 == null || !lista205.Any())
-                return BadRequest("Nenhum produto abaixo do estoque mínimo encontrado.");
-
-            var service = new RelatorioExportService();
-            var pdfBytes = service.ExportarPdfRelatorio205(lista205);
-
-            return File(pdfBytes, "application/pdf", $"EstoqueMinimo_{DateTime.Now:ddMMyyyy}.pdf");
+            var pdfBytes = new RelatorioExportService().ExportarPdfRelatorio205(lista, filtro.OcultarEstoqueSistema);
+            return File(pdfBytes, "application/pdf", $"Inventario_{DateTime.Now:ddMMyyyy}.pdf");
         }
-
         #endregion
 
         #region RELATÓRIO 206 - VALORIZAÇÃO DE ESTOQUE E PROJEÇÃO
@@ -949,13 +973,17 @@ namespace VarejoAPI.Controllers
 
         #endregion
 
-        #region 207 - GIRO DE ESTOQUE (VELOCIDADE)
+        #region RELATÓRIO 207 - GIRO DE ESTOQUE (VELOCIDADE)
         [HttpPost("207/dados")]
         public async Task<ActionResult<List<Relatorio207DTO>>> GetDadosRelatorio207([FromBody] RelatorioFiltro207DTO filtro)
         {
-            var dataInicio = filtro.DataInicio ?? DateTime.Now.AddDays(-30);
-            var dataFim = filtro.DataFim ?? DateTime.Now;
-            var dias = (dataFim.Date - dataInicio.Date).Days;
+            var dataInicioBase = filtro.DataInicio ?? DateTime.Now.AddDays(-30);
+            var dataFimBase = filtro.DataFim ?? DateTime.Now;
+
+            var dataInicio = dataInicioBase.Date;
+            var dataFim = dataFimBase.Date.AddDays(1).AddSeconds(-1);
+
+            var dias = (dataFimBase.Date - dataInicioBase.Date).Days;
             if (dias <= 0) dias = 1;
 
             var query = _context.Produtos.Include(p => p.Familia).ThenInclude(f => f.Categoria).AsNoTracking().AsQueryable();
@@ -991,49 +1019,28 @@ namespace VarejoAPI.Controllers
         }
         #endregion
 
-        #region 208 - INVENTÁRIO (FICHA DE CONTAGEM)
+        #region RELATÓRIO 208 - DIVERGÊNCIA DE INVENTÁRIO
         [HttpPost("208/dados")]
         public async Task<ActionResult<List<Relatorio208DTO>>> GetDadosRelatorio208([FromBody] RelatorioFiltro208DTO filtro)
         {
-            var query = _context.Produtos.Include(p => p.Familia).ThenInclude(f => f.Categoria).Where(p => p.Ativo).AsNoTracking().AsQueryable();
-
-            if (filtro.CategoriasIds != null && filtro.CategoriasIds.Any()) query = query.Where(p => p.Familia != null && filtro.CategoriasIds.Contains(p.Familia.CategoriaId));
-            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any()) query = query.Where(p => filtro.ProdutosIds.Contains(p.IdProduto));
-
-            var lista = await query.OrderBy(p => p.Familia != null && p.Familia.Categoria != null ? p.Familia.Categoria.DescricaoCategoria : "").ThenBy(p => p.NomeProduto)
-                .Select(p => new Relatorio208DTO
-                {
-                    IdProduto = p.IdProduto,
-                    NomeProduto = p.NomeProduto ?? "",
-                    Categoria = p.Familia != null && p.Familia.Categoria != null ? p.Familia.Categoria.DescricaoCategoria : "",
-                    EstoqueAtual = p.EstoqueAtual
-                }).ToListAsync();
-
-            return Ok(lista);
-        }
-
-        [HttpPost("208/exportar/pdf")]
-        public async Task<IActionResult> ExportarPdfRelatorio208([FromBody] RelatorioFiltro208DTO filtro)
-        {
-            var dados = (await GetDadosRelatorio208(filtro)).Result as OkObjectResult;
-            var lista = dados?.Value as List<Relatorio208DTO>;
-            if (lista == null || !lista.Any()) return BadRequest("Nenhum produto para contagem.");
-            return File(new RelatorioExportService().ExportarPdfRelatorio208(lista, filtro.OcultarEstoqueSistema), "application/pdf", "FichaInventario.pdf");
-        }
-        #endregion
-
-        #region 209 - DIVERGÊNCIA DE INVENTÁRIO
-        [HttpPost("209/dados")]
-        public async Task<ActionResult<List<Relatorio209DTO>>> GetDadosRelatorio209([FromBody] RelatorioFiltro209DTO filtro)
-        {
             var query = _context.ProdutosMovimento.Include(pm => pm.Produto).Include(pm => pm.Movimento).AsNoTracking().AsQueryable();
 
-            if (filtro.DataInicio.HasValue) query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= filtro.DataInicio);
-            if (filtro.DataFim.HasValue) query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= filtro.DataFim);
+            if (filtro.DataInicio.HasValue)
+            {
+                var dataInicio = filtro.DataInicio.Value.Date;
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= dataInicio);
+            }
+
+            if (filtro.DataFim.HasValue)
+            {
+                var dataFim = filtro.DataFim.Value.Date.AddDays(1).AddSeconds(-1);
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= dataFim);
+            }
+
             if (filtro.IdTipoMovimentoAjuste.HasValue) query = query.Where(pm => pm.Movimento != null && pm.Movimento.TipoMovimentoId == filtro.IdTipoMovimentoAjuste);
             if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any()) query = query.Where(pm => filtro.ProdutosIds.Contains(pm.ProdutoId));
 
-            var lista = await query.Select(pm => new Relatorio209DTO
+            var lista = await query.Select(pm => new Relatorio208DTO
             {
                 IdProduto = pm.ProdutoId,
                 NomeProduto = pm.Produto.NomeProduto ?? "",
@@ -1046,85 +1053,86 @@ namespace VarejoAPI.Controllers
             return Ok(lista);
         }
 
-        [HttpPost("209/exportar/pdf")]
-        public async Task<IActionResult> ExportarPdfRelatorio209([FromBody] RelatorioFiltro209DTO filtro)
+        [HttpPost("208/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio208([FromBody] RelatorioFiltro208DTO filtro)
         {
-            var dados = (await GetDadosRelatorio209(filtro)).Result as OkObjectResult;
-            var lista = dados?.Value as List<Relatorio209DTO>;
+            var dados = (await GetDadosRelatorio208(filtro)).Result as OkObjectResult;
+            var lista = dados?.Value as List<Relatorio208DTO>;
             if (lista == null || !lista.Any()) return BadRequest("Nenhuma divergência no período.");
-            return File(new RelatorioExportService().ExportarPdfRelatorio209(lista), "application/pdf", "Divergencias.pdf");
+            return File(new RelatorioExportService().ExportarPdfRelatorio208(lista), "application/pdf", "Divergencias.pdf");
         }
         #endregion
 
+        #region RELATÓRIO 301 - HISTÓRICO ANALÍTICO DE MOVIMENTAÇÕES
 
-
-
-
-
-
-
-
-
-
-
-
-        #region MÓDULO 300 - MOVIMENTAÇÕES (Legado/Em Adaptação)
-
-        [HttpPost("movimentacoes")]
-        public async Task<ActionResult<List<MovimentoOutputDTO>>> GetMovimentacoes(RelatorioFiltroMovimentacaoDTO filtro)
+        [HttpPost("301/dados")]
+        public async Task<ActionResult<List<Relatorio301DTO>>> GetDadosRelatorio301([FromBody] RelatorioFiltro301DTO filtro)
         {
-            var query = _context.Movimentos.AsNoTracking();
+            var query = _context.ProdutosMovimento
+                .Include(pm => pm.Movimento).ThenInclude(m => m.TipoMovimento)
+                .Include(pm => pm.Movimento).ThenInclude(m => m.Pessoa)
+                .Include(pm => pm.Produto)
+                .AsNoTracking()
+                .AsQueryable();
 
+            // 1. Filtro Blindado de Datas
             if (filtro.DataInicio.HasValue)
-                query = query.Where(m => m.DataMovimento >= filtro.DataInicio.Value);
+            {
+                var dataInicio = filtro.DataInicio.Value.Date;
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento >= dataInicio);
+            }
 
             if (filtro.DataFim.HasValue)
-                query = query.Where(m => m.DataMovimento <= filtro.DataFim.Value);
+            {
+                var dataFim = filtro.DataFim.Value.Date.AddDays(1).AddSeconds(-1);
+                query = query.Where(pm => pm.Movimento != null && pm.Movimento.DataMovimento <= dataFim);
+            }
 
-            if (filtro.IdPessoa.HasValue)
-                query = query.Where(m => m.PessoaId == filtro.IdPessoa);
+            // 2. Filtro de Tipos de Movimento (Entrada, Saída, Ajuste, etc)
+            if (filtro.TiposMovimentoIds != null && filtro.TiposMovimentoIds.Any())
+                query = query.Where(pm => pm.Movimento != null && filtro.TiposMovimentoIds.Contains(pm.Movimento.TipoMovimentoId));
 
-            var movimentos = await query
-                 .OrderByDescending(m => m.DataMovimento)
-                 .Select(m => new MovimentoOutputDTO
-                 {
-                     IdMovimento = m.IdMovimento,
-                     Pessoa = m.Pessoa != null ? m.Pessoa.NomeRazao : "Consumidor",
-                     TipoMovimento = m.TipoMovimento != null ? m.TipoMovimento.DescricaoTipoMovimento : "Geral",
-                     DataMovimento = m.DataMovimento,
-                     Produtos = m.ProdutosMovimento.Select(p => new ProdutoMovimentoOutputDTO
-                     {
-                         IdProdutoMovimento = p.IdProdutoMovimento,
-                         Quantidade = p.Quantidade,
-                         Produto = p.Produto != null ? p.Produto.NomeProduto : "",
-                         Embalagem = p.ProdutoEmbalagem != null && p.ProdutoEmbalagem.TipoEmbalagem != null
-                                     ? p.ProdutoEmbalagem.TipoEmbalagem.DescricaoTipoEmbalagem : "Sem Embalagem"
-                     }).ToList()
-                 })
-                 .ToListAsync();
+            // 3. Filtro de Pessoas / Usuários
+            if (filtro.PessoasIds != null && filtro.PessoasIds.Any())
+                query = query.Where(pm => pm.Movimento != null && filtro.PessoasIds.Contains(pm.Movimento.PessoaId));
 
-            return Ok(movimentos);
+            // 4. Filtro Específico de Produtos
+            if (filtro.ProdutosIds != null && filtro.ProdutosIds.Any())
+                query = query.Where(pm => filtro.ProdutosIds.Contains(pm.ProdutoId));
+
+            var lista = await query
+                .OrderByDescending(pm => pm.Movimento != null ? pm.Movimento.DataMovimento : DateTime.MinValue)
+                .Select(pm => new Relatorio301DTO
+                {
+                    IdMovimento = pm.MovimentoId,
+                    DataMovimento = pm.Movimento != null ? pm.Movimento.DataMovimento : DateTime.MinValue,
+                    TipoMovimento = pm.Movimento != null && pm.Movimento.TipoMovimento != null ? pm.Movimento.TipoMovimento.DescricaoTipoMovimento : "Não Informado",
+                    Pessoa = pm.Movimento != null && pm.Movimento.Pessoa != null ? pm.Movimento.Pessoa.NomeRazao : "Sistema/Geral",
+                    Produto = pm.Produto != null ? pm.Produto.NomeProduto ?? "Sem Nome" : "Sem Nome",
+                    Quantidade = pm.Quantidade,
+                    ValorUnitario = pm.Produto != null ? pm.Produto.CustoMedio : 0, // Pode trocar para Preço se preferir
+                    Observacao = pm.Movimento != null && pm.Movimento.Observacao != null ? pm.Movimento.Observacao : ""
+                })
+                .ToListAsync();
+
+            return Ok(lista);
         }
 
-        // ADICIONADO: Exportação de Movimentações (Módulo 300)
-        /*
-        [HttpPost("movimentacoes/exportar/pdf")]
-        public async Task<IActionResult> ExportarPdfMovimentacoes([FromBody] RelatorioFiltroMovimentacaoDTO filtro)
+        [HttpPost("301/exportar/pdf")]
+        public async Task<IActionResult> ExportarPdfRelatorio301([FromBody] RelatorioFiltro301DTO filtro)
         {
-            var actionResult = await GetMovimentacoes(filtro);
-            var okResult = actionResult.Result as OkObjectResult;
-            var listaMovimentos = okResult?.Value as List<MovimentoOutputDTO>;
+            var dados = (await GetDadosRelatorio301(filtro)).Result as OkObjectResult;
+            var lista = dados?.Value as List<Relatorio301DTO>;
 
-            if (listaMovimentos == null || !listaMovimentos.Any())
-                return BadRequest("Nenhum registro encontrado para gerar o PDF.");
+            if (lista == null || !lista.Any())
+                return BadRequest("Nenhuma movimentação encontrada para o período e filtros selecionados.");
 
             var service = new RelatorioExportService();
-            // NECESSITA IMPLEMENTAÇÃO no RelatorioExportService
-            var pdfBytes = service.GerarPdfMovimentacoes(listaMovimentos);
+            var pdfBytes = service.ExportarPdfRelatorio301(lista);
 
-            return File(pdfBytes, "application/pdf", "RelatorioMovimentacoes.pdf");
+            return File(pdfBytes, "application/pdf", $"HistoricoMovimentacoes_{DateTime.Now:ddMMyyyy}.pdf");
         }
-        */
+
         #endregion
 
         #region FAVORITOS

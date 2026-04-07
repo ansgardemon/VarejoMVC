@@ -2,8 +2,8 @@
 {
     public class RelatorioFiltro205DTO : RelatorioFiltroProdutosDTO
     {
-        // Filtro para ver apenas quem está abaixo do mínimo ou todos que possuem mínimo cadastrado
-        public bool ApenasAbaixoDoMinimo { get; set; } = true;
+        public bool OcultarEstoqueSistema { get; set; } = true;
+        public bool ApenasAbaixoDoMinimo { get; set; } = false;
     }
 
     public class Relatorio205DTO
@@ -13,8 +13,5 @@
         public string Categoria { get; set; } = string.Empty;
         public decimal EstoqueAtual { get; set; }
         public decimal EstoqueMinimo { get; set; }
-
-        // Quanto falta para atingir o mínimo
-        public decimal NecessidadeCompra => EstoqueMinimo > EstoqueAtual ? EstoqueMinimo - EstoqueAtual : 0;
     }
 }

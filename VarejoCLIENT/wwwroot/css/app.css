@@ -569,15 +569,24 @@ option {
     color: var(--ui-text-primary);
 }
 
-.report-id {
+.report-id-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 8px;
     font-size: 0.75rem;
     font-weight: 700;
-    text-transform: uppercase;
-    color: var(--sys-primary);
-    opacity: 0.8;
-    letter-spacing: 1px;
-    display: block;
-    margin-bottom: -2px;
+    /* Usa a cor inteligente: Azul Escuro no Light / Azul Neon no Dark */
+    color: var(--ui-text-primary);
+    background: rgba(22, 56, 137, 0.1);
+    border: 1px solid rgba(22, 56, 137, 0.2);
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .report-id-badge {
+    /* No dark mode, o fundo e a borda ficam mais sutis (estilo vidro) */
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .report-title {

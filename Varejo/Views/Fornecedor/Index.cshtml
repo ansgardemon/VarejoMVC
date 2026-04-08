@@ -1,0 +1,109 @@
+﻿@model IEnumerable<Varejo.Models.Pessoa>
+
+@{
+    ViewData["Title"] = "Vínculo de Fornecedores";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h3 class="fw-bold text-primary text-uppercase" style="letter-spacing: 1px;">
+                <i class="fas fa-link text-primary me-2"></i>Mapeamento de Fornecedores
+            </h3>
+            <p class="text-muted">Gerencie os códigos de integração (De-Para) para importação de XML</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <form id="searchForm" asp-action="Index" method="get">
+                <div class="input-group input-group-lg shadow-sm border rounded-pill overflow-hidden bg-white">
+                    <span class="input-group-text bg-white border-0 ps-4">
+                        <i class="fas fa-search text-primary"></i>
+                    </span>
+                    <input type="text" id="txtBusca" name="termo" 
+                           class="form-control border-0 shadow-none ps-2" 
+                           placeholder="Digite o nome ou CNPJ do fornecedor..." 
+                           value="@ViewData["TermoBusca"]" autocomplete="off" autofocus />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="resultadoBusca" class="row justify-content-center">
+        @if (Model != null && Model.Any())
+        {
+            <div class="col-md-10">
+                @foreach (var f in Model)
+                {
+                    <div class="card mb-3 shadow-sm border-primary-hover shadow-hover" style="cursor:pointer; transition: 0.2s;" 
+                         onclick="window.location.href='@Url.Action("Gerenciar", "Fornecedor", new { id = f.IdPessoa })'">
+                        <div class="card-body p-3">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                        <i class="fas fa-truck text-primary fa-lg"></i>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <h5 class="mb-1 fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px; font-size: 1.1rem;">
+                                        @f.NomeRazao
+                                    </h5>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span class="badge bg-light text-secondary border">
+                                            <i class="fas fa-id-card me-1"></i> @f.CpfCnpj
+                                        </span>
+                                        <span class="badge bg-light text-secondary border">
+                                            <i class="fas fa-map-marker-alt me-1"></i> @(f.Enderecos?.FirstOrDefault()?.Cidade ?? "Cidade não cadastrada")
+                                        </span>
+                                        <span class="badge bg-light text-secondary border">
+                                            <i class="fas fa-tag me-1"></i> ID: @f.IdPessoa
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-auto text-muted">
+                                    <i class="fas fa-chevron-right fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(ViewData["TermoBusca"]?.ToString()))
+        {
+            <div class="col-12 text-center py-5">
+                <div class="bg-light d-inline-block p-4 rounded-circle mb-3">
+                    <i class="fas fa-search text-muted fa-3x"></i>
+                </div>
+                <h5 class="text-muted">Nenhum fornecedor encontrado para "@ViewData["TermoBusca"]"</h5>
+                <p class="small text-secondary">Verifique a ortografia ou tente um termo diferente.</p>
+            </div>
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        let timeout = null;
+        const inputBusca = document.getElementById('txtBusca');
+        const formBusca = document.getElementById('searchForm');
+
+        inputBusca.addEventListener('input', function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                const valor = inputBusca.value.trim();
+                // Submete o form para o servidor (Processamento via C#)
+                if (valor.length >= 3 || valor.length === 0) {
+                    formBusca.submit(); 
+                }
+            }, 600); // 600ms para dar tempo de digitar com calma
+        });
+
+        // Mantém o foco e cursor no final do input
+        const val = inputBusca.value;
+        inputBusca.value = '';
+        inputBusca.value = val;
+    </script>
+}

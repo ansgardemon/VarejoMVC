@@ -52,6 +52,7 @@ namespace Varejo.Data
         public DbSet<Recebimento> Recebimentos { get; set; }
         public DbSet<RecebimentoXmlLog> RecebimentosXmlLog { get; set; }
         public DbSet<RecebimentoItem> RecebimentosItem { get; set; }
+        public DbSet<ProdutoFornecedorVinculo> ProdutosFornecedorVinculo { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo

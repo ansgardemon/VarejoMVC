@@ -19,6 +19,6 @@ namespace Varejo.Models
         public string CodigoProdutoNoFornecedor { get; set; } // O <cProd> do XML
 
         [StringLength(100)]
-        public string DescricaoNoFornecedor { get; set; } // O <xProd> do XML para referência
+        public string? DescricaoNoFornecedor { get; set; } // O <xProd> do XML para referência
     }
 }

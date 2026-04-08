@@ -602,3 +602,18 @@ option {
         opacity: 0.8 !important;
         cursor: pointer;
     }
+
+/* =========================================
+   10. HIERARQUIA DE Z-INDEX (FILTRO VS TABELA)
+========================================= */
+/* O Blazor injeta o Filtro como 1º elemento e a Tabela como 2º.
+   Isso garante que o Filtro (e seus dropdowns) fique sempre por cima da Tabela. */
+.dynamic-content-container > *:nth-child(1) {
+    position: relative;
+    z-index: 9999;
+}
+
+.dynamic-content-container > *:nth-child(2) {
+    position: relative;
+    z-index: 1;
+}

@@ -582,3 +582,14 @@ option {
     background-color: #0f172a !important; /* Cor sólida do seu fundo escuro */
     color: #ffffff !important;
 }
+
+/* =========================================
+   9. CORREÇÃO INPUT DATA (DARK MODE)
+========================================= */
+/* Inverte a cor do ícone de calendário nativo do navegador para branco */
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.7;
+    cursor: pointer;
+}

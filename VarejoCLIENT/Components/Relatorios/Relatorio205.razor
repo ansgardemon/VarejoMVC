@@ -6,54 +6,70 @@
 <RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
     <ChildContent>
         <div class="row g-3">
-            <div class="col-md-6 col-lg-5"><div class="form-check form-switch mt-2"><input class="form-check-input" type="checkbox" id="sc" @bind="filtro.OcultarEstoqueSistema"><label class="form-check-label fw-bold ms-2" for="sc" style="color: var(--sys-primary);">Contagem Cega (Ocultar Sistema)</label></div></div>
-            <div class="col-md-6 col-lg-5"><div class="form-check form-switch mt-2"><input class="form-check-input" type="checkbox" id="sm" @bind="filtro.ApenasAbaixoDoMinimo"><label class="form-check-label fw-bold ms-2" for="sm" style="color: var(--sys-primary);">Focar Apenas em Estoque Mínimo</label></div></div>
-        </div>
-    </ChildContent>
-    <BarraPesquisa>
-        <div class="row g-3">
-            <div class="col-md-6 col-lg-3"><RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" /></div>
-            <div class="col-md-6 col-lg-3"><RelatorioFiltroMultiSelect TItem="MarcaOutputDTO" Titulo="Marcas" IconeClass="fa-solid fa-copyright" Itens="listaMarcas" GetId="m => m.IdMarca.ToString()" GetNome="m => m.NomeMarca" Selecionados="selecionadosMarcas" SelecionadosChanged="v => selecionadosMarcas = v" /></div>
-            <div class="col-md-6 col-lg-3"><RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO" Titulo="Famílias" IconeClass="fa-solid fa-users" Itens="listaFamilias" GetId="f => f.IdFamilia.ToString()" GetNome="f => f.NomeFamilia" Selecionados="selecionadosFamilias" SelecionadosChanged="v => selecionadosFamilias = v" /></div>
-            <div class="col-md-6 col-lg-3"><RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos" IconeClass="fa-solid fa-box" Itens="listaTodosProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" /></div>
-        </div>
-    </BarraPesquisa>
-</RelatorioFiltro>
+            <div class="col-md-6 col-lg-5">
+                <div class="form-check form-switch mt-2 d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" id="sc" style="width: 2.5em; height: 1.25em; cursor: pointer;" @bind="filtro.OcultarEstoqueSistema">
+                        <label class="form-check-label fw-bold" for="sc" style="color: var(--ui-text-primary); cursor: pointer;">
+                            <i class="fa-solid fa-eye-slash me-1 opacity-50"></i> Contagem Cega (Ocultar Sistema)
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-5">
+                    <div class="form-check form-switch mt-2 d-flex align-items-center gap-2">
+                        <input class="form-check-input mt-0" type="checkbox" id="sm" style="width: 2.5em; height: 1.25em; cursor: pointer;" @bind="filtro.ApenasAbaixoDoMinimo">
+                            <label class="form-check-label fw-bold" for="sm" style="color: var(--ui-text-primary); cursor: pointer;">
+                                <i class="fa-solid fa-arrow-down-short-wide me-1 opacity-50"></i> Focar Apenas em Estoque Mínimo
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </ChildContent>
+    
+            <BarraPesquisa>
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-3">
+                        <RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" />
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <RelatorioFiltroMultiSelect TItem="MarcaOutputDTO" Titulo="Marcas" IconeClass="fa-solid fa-copyright" Itens="listaMarcas" GetId="m => m.IdMarca.ToString()" GetNome="m => m.NomeMarca" Selecionados="selecionadosMarcas" SelecionadosChanged="v => selecionadosMarcas = v" />
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO" Titulo="Famílias" IconeClass="fa-solid fa-users" Itens="listaFamilias" GetId="f => f.IdFamilia.ToString()" GetNome="f => f.NomeFamilia" Selecionados="selecionadosFamilias" SelecionadosChanged="v => selecionadosFamilias = v" />
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos" IconeClass="fa-solid fa-box" Itens="listaTodosProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" />
+                    </div>
+                </div>
+            </BarraPesquisa>
+        </RelatorioFiltro>
 
-<div class="mt-4">
-    @if (loading)
-    {
-        <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
-    }
-    else if (listaDados != null && listaDados.Any())
-    {
-        <table class="table table-hover align-middle bg-white shadow-sm rounded">
-            <thead class="bg-light">
-                <tr>
-                    <th>Produto</th>
-                    <th class="text-end">Mínimo</th>@if(!filtro.OcultarEstoqueSistema){
-                    <th class="text-end">No Sistema</th>
-                }
-                <th class="text-center" style="width: 150px;">Físico</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in listaDados)
+        <div class="mt-4">
+            @if (loading)
             {
-                <tr>
-                    <td><div class="fw-bold">@item.NomeProduto</div><small class="text-muted">@item.Categoria</small></td>
-                    <td class="text-end text-muted">@(item.EstoqueMinimo > 0 ? item.EstoqueMinimo.ToString("N2") : "-")</td>
-                    @if (!filtro.OcultarEstoqueSistema)
-                    {
-                        <td class="text-end fw-bold">@item.EstoqueAtual.ToString("N2")</td>
-                    }
-                    <td class="text-center"><div class="bg-light border rounded shadow-sm d-flex align-items-center justify-content-center" style="height: 35px;"><span class="text-muted opacity-25">. . .</span></div></td>
-                </tr>
+                <div class="text-center p-5 glass-card">
+                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+                    <p class="mt-3 fw-bold text-primary">Gerando planilha de inventário...</p>
+                </div>
             }
-        </tbody>
-    </table>
-}
-</div>
+            else
+            {
+                @if (listaDados != null && listaDados.Any())
+                {
+                    <div class="glass-card overflow-hidden">
+                        @* A mágica: chamamos nosso método ObterColunas() que monta a lista na hora *@
+                        <RelatorioTabelaDinamica TItem="Relatorio205DTO" Dados="listaDados" Colunas="ObterColunas()" />
+                    </div>
+                }
+                else if (dadosVazios)
+                {
+                    <div class="p-5 text-center glass-card">
+                        <i class="fa-solid fa-clipboard-check fa-2x mb-3 text-muted opacity-50"></i>
+                        <h5 class="fw-bold" style="color: var(--ui-text-primary);">Nenhum item pendente</h5>
+                        <p class="mb-0" style="color: var(--ui-text-secondary);">Não há produtos correspondentes aos filtros para gerar a planilha de contagem.</p>
+                    </div>
+                }
+            }
+        </div>
 
 @code {
     [Parameter] public int Codigo { get; set; }
@@ -63,40 +79,66 @@
     private List<Relatorio205DTO>? listaDados;
     private bool loading = false;
     private bool dadosVazios = false;
-    
-    // Listas base para popular os Dropdowns
+
     private List<CategoriaOutputDTO> listaCategorias = new();
     private List<MarcaOutputDTO> listaMarcas = new();
     private List<FamiliaOutputDTO> listaFamilias = new();
     private List<ProdutoDTO> listaTodosProdutos = new();
-    
-    // Variáveis que guardam o que o usuário clicou na tela
+
     private List<string> selecionadosCategorias = new();
     private List<string> selecionadosMarcas = new();
     private List<string> selecionadosFamilias = new();
     private List<string> selecionadosProdutos = new();
     
+    // === LÓGICA DE COLUNAS DINÂMICAS ===
+    private List<RelatorioTabelaDinamica<Relatorio205DTO>.ConfigColuna> ObterColunas()
+    {
+        var colunas = new List<RelatorioTabelaDinamica<Relatorio205DTO>.ConfigColuna>
+        {
+            new() { Titulo = "ID", Propriedade = "IdProduto" },
+            new() { Titulo = "Produto", Propriedade = "NomeProduto" },
+            new() { Titulo = "Categoria", Propriedade = "Categoria" },
+            new() { Titulo = "Mínimo", Propriedade = "EstoqueMinimo", Formato = "N2" }
+        };
+
+        // Só adiciona a coluna de "Estoque no Sistema" se a Contagem Cega estiver desligada
+        if (!filtro.OcultarEstoqueSistema)
+        {
+            colunas.Add(new() { Titulo = "No Sistema", Propriedade = "EstoqueAtual", Formato = "N2" });
+        }
+
+        // Coluna "Fantasma" que não existe no DTO, retornando vazio para anotação na impressão
+        colunas.Add(new() { Titulo = "Contagem (Físico)", Propriedade = "ColunaInexistenteGerarBranco" });
+
+        return colunas;
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        listaCategorias = await RelService.GetCategoriasAsync() ?? new();
-        listaMarcas = await RelService.GetMarcasAsync() ?? new();
-        listaFamilias = await RelService.GetFamiliasAsync() ?? new();
-        listaTodosProdutos = await RelService.GetDadosRelatorio101Async(new RelatorioFiltroProdutosDTO()) ?? new();
+        try
+        {
+            listaCategorias = await RelService.GetCategoriasAsync() ?? new();
+            listaMarcas = await RelService.GetMarcasAsync() ?? new();
+            listaFamilias = await RelService.GetFamiliasAsync() ?? new();
+            listaTodosProdutos = await RelService.GetDadosRelatorio101Async(new RelatorioFiltroProdutosDTO()) ?? new();
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
     }
     
     private async Task ExecutarBusca()
     {
         loading = true; dadosVazios = false; StateHasChanged();
-        
-        // Passa as listas da Tela para o Filtro DTO
-        filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
-        filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
-        filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
-        filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
-        
-        listaDados = await RelService.GetDadosRelatorio205Async(filtro);
-        dadosVazios = listaDados == null || !listaDados.Any();
-        loading = false; StateHasChanged();
+        try
+        {
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+            
+            listaDados = await RelService.GetDadosRelatorio205Async(filtro);
+            dadosVazios = listaDados == null || !listaDados.Any();
+        }
+        finally { loading = false; StateHasChanged(); }
     }
     
     private void Limpar()
@@ -109,7 +151,17 @@
     
     private async Task Exportar(string f)
     {
-        await ExecutarBusca();
-        await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+        loading = true; StateHasChanged();
+        try
+        {
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            // A própria API precisará ler o "OcultarEstoqueSistema" para omitir no PDF gerado.
+            await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+        }
+        finally { loading = false; StateHasChanged(); }
     }
 }

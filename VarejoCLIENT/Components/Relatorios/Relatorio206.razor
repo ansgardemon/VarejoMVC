@@ -6,107 +6,93 @@
 <RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
     <ChildContent>
         <div class="row g-3">
-            <div class="col-md-6">
-                <div class="form-check form-switch mt-2">
-                    <input class="form-check-input" type="checkbox" id="switchComEstoque" @bind="filtro.ApenasComEstoque">
-                    <label class="form-check-label fw-bold ms-2" for="switchComEstoque" style="color: var(--sys-primary);">
-                        Ocultar produtos com estoque zerado
-                    </label>
+            <div class="col-md-6 col-lg-5">
+                <div class="form-check form-switch mt-2 d-flex align-items-center gap-2">
+                    <input class="form-check-input mt-0" type="checkbox" id="switchComEstoque" style="width: 2.5em; height: 1.25em; cursor: pointer;" @bind="filtro.ApenasComEstoque">
+                        <label class="form-check-label fw-bold" for="switchComEstoque" style="color: var(--ui-text-primary); cursor: pointer;">
+                            <i class="fa-solid fa-eye-slash me-1 opacity-50"></i> Ocultar produtos com estoque zerado
+                        </label>
+                    </div>
                 </div>
             </div>
-        </div>
-    </ChildContent>
-    <BarraPesquisa>
-        <div class="row g-3">
-            <div class="col-md-6 col-lg-3"><RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" /></div>
-            <div class="col-md-6 col-lg-3"><RelatorioFiltroMultiSelect TItem="MarcaOutputDTO" Titulo="Marcas" IconeClass="fa-solid fa-copyright" Itens="listaMarcas" GetId="m => m.IdMarca.ToString()" GetNome="m => m.NomeMarca" Selecionados="selecionadosMarcas" SelecionadosChanged="v => selecionadosMarcas = v" /></div>
-            <div class="col-md-6 col-lg-3"><RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO" Titulo="Famílias" IconeClass="fa-solid fa-users" Itens="listaFamilias" GetId="f => f.IdFamilia.ToString()" GetNome="f => f.NomeFamilia" Selecionados="selecionadosFamilias" SelecionadosChanged="v => selecionadosFamilias = v" /></div>
-            <div class="col-md-6 col-lg-3"><RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos" IconeClass="fa-solid fa-box" Itens="listaTodosProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" /></div>
-        </div>
-    </BarraPesquisa>
-</RelatorioFiltro>
+        </ChildContent>
+    
+        <BarraPesquisa>
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" />
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <RelatorioFiltroMultiSelect TItem="MarcaOutputDTO" Titulo="Marcas" IconeClass="fa-solid fa-copyright" Itens="listaMarcas" GetId="m => m.IdMarca.ToString()" GetNome="m => m.NomeMarca" Selecionados="selecionadosMarcas" SelecionadosChanged="v => selecionadosMarcas = v" />
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO" Titulo="Famílias" IconeClass="fa-solid fa-users" Itens="listaFamilias" GetId="f => f.IdFamilia.ToString()" GetNome="f => f.NomeFamilia" Selecionados="selecionadosFamilias" SelecionadosChanged="v => selecionadosFamilias = v" />
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos" IconeClass="fa-solid fa-box" Itens="listaTodosProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" />
+                </div>
+            </div>
+        </BarraPesquisa>
+    </RelatorioFiltro>
 
-<div class="mt-4">
-    @if (loading)
-    {
-        <div class="text-center p-5">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-            <p class="mt-3 fw-bold text-primary">Calculando projeção financeira do estoque...</p>
-        </div>
-    }
-    else if (listaDados != null && listaDados.Any())
-    {
-        @* DASHBOARD RESUMO *@
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-3" style="background: var(--glass-bg); border-left: 4px solid var(--sys-primary) !important;">
-                    <small class="text-muted fw-bold text-uppercase"><i class="fa-solid fa-boxes-stacked me-1"></i> Capital Empatado (Custo)</small>
-                    <h4 class="mb-0 mt-2 fw-bold" style="color: var(--sys-primary);">@listaDados.Sum(x => x.ValorTotalCusto).ToString("C2")</h4>
-                </div>
+    <div class="mt-4">
+        @if (loading)
+        {
+            <div class="text-center p-5 glass-card">
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+                <p class="mt-3 fw-bold text-primary">Calculando projeção financeira do estoque...</p>
             </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-3" style="background: var(--glass-bg); border-left: 4px solid #0d6efd !important;">
-                    <small class="text-muted fw-bold text-uppercase"><i class="fa-solid fa-cash-register me-1"></i> Valor de Venda Bruto</small>
-                    <h4 class="mb-0 mt-2 fw-bold text-primary">@listaDados.Sum(x => x.ValorTotalVenda).ToString("C2")</h4>
-                </div>
-            </div>
-            <div class="col-md-4">
-                @{ var totalLucro = listaDados.Sum(x => x.LucroProjetado); }
-                <div class="card border-0 shadow-sm p-3" style="background: var(--glass-bg); border-left: 4px solid @(totalLucro >= 0 ? "#198754" : "#dc3545") !important;">
-                    <small class="text-muted fw-bold text-uppercase"><i class="fa-solid fa-chart-line me-1"></i> Lucro Bruto Projetado</small>
-                    <h4 class="mb-0 mt-2 fw-bold @(totalLucro >= 0 ? "text-success" : "text-danger")">@totalLucro.ToString("C2")</h4>
-                </div>
-            </div>
-        </div>
-
-        @* TABELA *@
-        <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); border: 1px solid var(--glass-border) !important;">
-            <div class="table-responsive">
-                <table class="table mb-0 align-middle" style="color: var(--sys-primary);">
-                    <thead style="background: linear-gradient(145deg, rgba(150,150,150,0.15), rgba(150,150,150,0.05));">
-                        <tr style="font-size: 0.85rem; text-transform: uppercase;">
-                            <th>Produto</th>
-                            <th class="text-end">Estoque</th>
-                            <th class="text-end">Custo / Preço</th>
-                            <th class="text-end">Custo Total</th>
-                            <th class="text-end">Venda Total</th>
-                            <th class="text-end">Lucro Proj.</th>
-                        </tr>
-                    </thead>
-                    <tbody style="font-size: 0.95rem;">
-                        @foreach (var item in listaDados)
-                        {
-                            <tr>
-                                <td style="border-color: var(--glass-border);">
-                                    <div class="fw-bold">@item.NomeProduto</div>
-                                    <small class="text-muted">Cód: @item.IdProduto | @item.Categoria</small>
-                                </td>
-                                <td style="border-color: var(--glass-border);" class="text-end fw-bold">@item.EstoqueAtual.ToString("N2")</td>
-                                <td style="border-color: var(--glass-border);" class="text-end">
-                                    <div class="text-muted small">C: @item.CustoMedio.ToString("C2")</div>
-                                    <div style="color: #163889; font-weight: 500;">V: @item.PrecoVenda.ToString("C2")</div>
-                                </td>
-                                <td style="border-color: var(--glass-border);" class="text-end text-muted">@item.ValorTotalCusto.ToString("C2")</td>
-                                <td style="border-color: var(--glass-border); color: #163889;" class="text-end fw-bold">@item.ValorTotalVenda.ToString("C2")</td>
-                                <td style="border-color: var(--glass-border);" class="text-end fw-bold @(item.LucroProjetado >= 0 ? "text-success" : "text-danger")">
-                                    @item.LucroProjetado.ToString("C2")
-                                    <div class="small fw-normal opacity-75">(@item.MargemProjetada.ToString("N1")%)</div>
-                                </td>
-                            </tr>
+        }
+        else
+        {
+            @if (listaDados != null && listaDados.Any())
+            {
+                @* DASHBOARD RESUMO (ESTILO GLASS) *@
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="glass-card p-4 h-100" style="border-left: 4px solid var(--sys-primary) !important;">
+                            <small style="color: var(--ui-text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fa-solid fa-boxes-stacked me-2"></i> Capital Empatado (Custo)
+                            </small>
+                            <h3 class="mb-0 mt-2 fw-bold" style="color: var(--sys-primary);">@listaDados.Sum(x => x.ValorTotalCusto).ToString("C2")</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card p-4 h-100" style="border-left: 4px solid #0d6efd !important;">
+                            <small style="color: var(--ui-text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fa-solid fa-cash-register me-2"></i> Valor de Venda Bruto
+                            </small>
+                            <h3 class="mb-0 mt-2 fw-bold text-primary">@listaDados.Sum(x => x.ValorTotalVenda).ToString("C2")</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        @{
+                            var totalLucro = listaDados.Sum(x => x.LucroProjetado);
                         }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    }
-    else if (dadosVazios)
-    {
-        <div class="p-5 text-center text-muted">
-            <i class="fa-solid fa-piggy-bank fa-2x mb-3 opacity-50"></i>
-            <p class="mb-0">Nenhum produto encontrado para compor a valorização.</p>
-        </div>
-    }
-</div>
+                        <div class="glass-card p-4 h-100" style="border-left: 4px solid @(totalLucro >= 0 ? "#198754" : "#dc3545") !important;">
+                            <small style="color: var(--ui-text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fa-solid fa-chart-line me-2"></i> Lucro Bruto Projetado
+                            </small>
+                            <h3 class="mb-0 mt-2 fw-bold @(totalLucro >= 0 ? "text-success" : "text-danger")">@totalLucro.ToString("C2")</h3>
+                        </div>
+                    </div>
+                </div>
+
+                @* TABELA DINÂMICA *@
+                <div class="glass-card overflow-hidden">
+                    <RelatorioTabelaDinamica TItem="Relatorio206DTO" Dados="listaDados" Colunas="colunas206" />
+                </div>
+            }
+            else if (dadosVazios)
+            {
+                <div class="p-5 text-center glass-card">
+                    <i class="fa-solid fa-piggy-bank fa-2x mb-3 text-muted opacity-50"></i>
+                    <h5 class="fw-bold" style="color: var(--ui-text-primary);">Nenhum Produto Encontrado</h5>
+                    <p class="mb-0" style="color: var(--ui-text-secondary);">Não há produtos com estoque para compor a valorização no filtro atual.</p>
+                </div>
+            }
+        }
+    </div>
 
 @code {
     [Parameter] public int Codigo { get; set; }
@@ -127,6 +113,20 @@
     private List<string> selecionadosMarcas = new();
     private List<string> selecionadosFamilias = new();
     private List<string> selecionadosProdutos = new();
+
+    // === DEFINIÇÃO DAS COLUNAS ===
+    private List<RelatorioTabelaDinamica<Relatorio206DTO>.ConfigColuna> colunas206 = new() {
+        new() { Titulo = "ID", Propriedade = "IdProduto" },
+        new() { Titulo = "Produto", Propriedade = "NomeProduto" },
+        new() { Titulo = "Categoria", Propriedade = "Categoria" },
+        new() { Titulo = "Estoque", Propriedade = "EstoqueAtual", Formato = "N2" },
+        new() { Titulo = "Custo Un.", Propriedade = "CustoMedio", Formato = "C2" },
+        new() { Titulo = "Preço Un.", Propriedade = "PrecoVenda", Formato = "C2" },
+        new() { Titulo = "Custo Total", Propriedade = "ValorTotalCusto", Formato = "C2" },
+        new() { Titulo = "Venda Total", Propriedade = "ValorTotalVenda", Formato = "C2" },
+        new() { Titulo = "Lucro Proj.", Propriedade = "LucroProjetado", Formato = "C2" },
+        new() { Titulo = "Margem (%)", Propriedade = "MargemProjetada", Formato = "N1" }
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,8 +158,8 @@
 
     private void Limpar()
     {
-        listaDados = null; 
-        filtro = new(); 
+        listaDados = null;
+        filtro = new();
         selecionadosCategorias.Clear(); selecionadosMarcas.Clear();
         selecionadosFamilias.Clear(); selecionadosProdutos.Clear();
         dadosVazios = false; StateHasChanged();

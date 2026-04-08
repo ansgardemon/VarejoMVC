@@ -3,10 +3,8 @@
 @using VarejoCLIENT.Services
 @inject AuthService AuthService
 
-@* AQUI ESTÁ A MÁGICA: Adicionamos o @(IsLoginScreen ? "login-mode" : "") *@
 <div class="page @(isDarkMode ? "dark-theme" : "") @(IsLoginScreen ? "login-mode" : "")" data-theme="@(isDarkMode ? "dark" : "light")">
     
-    @* Usamos a mesma variável para limpar o If *@
     @if (IsLoginScreen)
     {
         <div class="login-centered-container">
@@ -15,29 +13,32 @@
     }
     else
     {
-        @* BOTÃO FAB: Mobile *@
+        @* BOTÃO FAB e OVERLAY: Mobile *@
         <button class="menu-fab-btn" @onclick="ToggleMenu">
             <i class="fa-solid @(collapseNavMenu ? "fa-bars-staggered" : "fa-xmark")"></i>
         </button>
 
         <div class="sidebar-overlay @(collapseNavMenu ? "" : "show")" @onclick="ToggleMenu"></div>
 
-        <aside class="sidebar-varejo @(collapseNavMenu ? "collapsed" : "")">
-            @* Passamos o método ToggleDarkMode e o estado isDarkMode para o NavMenu *@
-            <NavMenu OnMenuItemClicked="ToggleMenu" OnThemeToggle="ToggleDarkMode" IsDarkMode="isDarkMode" />
-        </aside>
+        @* O SEGREDO ESTÁ AQUI: Envolver a sidebar e o main num d-flex *@
+        <div class="d-flex w-100">
+            
+            <aside class="sidebar-varejo @(collapseNavMenu ? "collapsed" : "")">
+                <NavMenu OnMenuItemClicked="ToggleMenu" OnThemeToggle="ToggleDarkMode" IsDarkMode="isDarkMode" />
+            </aside>
 
-        <main class="main-content">
-            @Body
-        </main>
+            <main class="main-content flex-grow-1">
+                @Body
+            </main>
+
+        </div>
     }
 </div>
 
 @code {
     private bool collapseNavMenu = true;
     private bool isDarkMode = false;
-
-    // --- ADICIONADO: Propriedade que verifica se é a tela de login ---
+    
     private bool IsLoginScreen => Nav.Uri.ToLower().EndsWith("/login") || !AuthService.IsAutenticado;
 
     private void ToggleMenu() => collapseNavMenu = !collapseNavMenu;

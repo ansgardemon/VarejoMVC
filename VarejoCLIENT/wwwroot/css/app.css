@@ -617,3 +617,63 @@ option {
     position: relative;
     z-index: 1;
 }
+/* =========================================
+   11. DASHBOARD COMPONENTES
+========================================= */
+.dashboard-icon-container {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    opacity: 0.85;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.glass-card:hover .dashboard-icon-container {
+    transform: scale(1.08) rotate(3deg);
+    opacity: 1;
+}
+
+/* =========================================
+   12. MENU LATERAL FIXO (PADRÃO APP LAYOUT)
+========================================= */
+@media (min-width: 992px) {
+    /* 1. Trava a altura da página inteira em 100% da tela (Mata o scroll global) */
+    .page {
+        height: 100vh !important;
+        overflow: hidden !important;
+    }
+
+    /* 2. Menu lateral travado com 100% de altura */
+    .sidebar-varejo {
+        height: 100vh;
+        overflow-y: auto; /* O menu rola de forma independente (se tiver muitos botões) */
+        z-index: 1000;
+        flex-shrink: 0; /* Impede a tabela de "esmagar" o menu lateral */
+    }
+
+    /* 3. A MÁGICA: Apenas o painel direito rola! */
+    .main-content {
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        /* Padding inferior para a tabela não colar no rodapé do monitor */
+        padding-bottom: 2rem;
+    }
+
+        /* Opcional: Deixando a barra de rolagem do conteúdo mais fina e elegante (Glassmorphism) */
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.15);
+            border-radius: 10px;
+        }
+
+    [data-theme="dark"] .main-content::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.15);
+    }
+}

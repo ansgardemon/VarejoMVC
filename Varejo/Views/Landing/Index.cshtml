@@ -22,72 +22,80 @@
 
 <body>
 
-	<!-- Navbar-->
-	<nav class="navbar navbar-expand-lg navbar-dark bg-wine shadow-sm fixed-top">
-		<div class="container">
-			<a class="navbar-brand fw-bold" href="/">
-				<img src="~/img/LogoDoseCerta1.png" alt="Logo" class="d-inline-block align-text-center me-2 logo" style="height: 75px; border-radius: 50%; cursor: pointer" />
-			</a>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <img src="~/img/LogoDoseCerta1.png" alt="Logo" class="d-inline-block align-text-center me-2 logo" style="height: 70px; border-radius: 50%;" />
+            </a>
 
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-				<span class="navbar-toggler-icon"></span>
-			</button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-			<div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="/Landing/Index">Home</a></li>
-					<li class="nav-item"><a class="nav-link" href="/Landing/Produtos">Catálogo</a></li>
-					<li class="nav-item">
-						<a class="nav-link btn-restrict" href="/Usuario/Login">Área Restrita</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</nav>
-
-
-	<!-- Banner -->
-	<section class="hero-section">
-		<div class="hero-bg"></div>
-		<div class="hero-overlay"></div>
-		<div class="hero-content container">
-			<h1 class="display-1 home">Celebre com um drink.</h1>
-		</div>
-	</section>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav gap-lg-3">
+                    <li class="nav-item"><a class="nav-link" href="/Landing/Index">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Landing/Produtos">Catálogo</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-restrict" href="/Usuario/Login">Área Restrita</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
 
-	<!-- Produtos -->
-	<section id="produtos" class="py-5">
-		<div class="container">
-			<h2 class="text-center mb-4 fw-semibold">Produtos em Destaque</h2>
-			<div class="row g-4" id="produtosContainer">
-				<!-- Os cards serão carregados via AJAX -->
-			</div>
-		</div>
-	</section>
+    <section class="hero-section">
+        <div class="hero-content container fade-in-up">
+            <h1 class="display-1 home">
+                <span>A experiência líquida na</span>
+                Dose Certa
+            </h1>
+            <p class="text-white opacity-75 fs-5 mt-4 mx-auto" style="max-width: 600px;">
+                Cervejas premium, safras selecionadas e os melhores destilados do mundo em um só lugar.
+            </p>
+            <div class="mt-5">
+                <a href="#produtos" class="btn btn-outline-gold btn-lg">
+                    Explorar Produtos
+                </a>
+            </div>
+        </div>
+    </section>
 
 
-	<!-- Marcas -->
-	<section id="marcas" class="py-5">
-		<div class="container text-center">
-			<h2 class="fw-semibold mb-4">Nossas Marcas</h2>
-			<div id="marcasContainer" class="brand-carousel">
-				<!-- Marcas via AJAX -->
-			</div>
-		</div>
-	</section>
+    <section id="produtos">
+        <div class="container">
+            <div class="text-center mb-5 fade-in-up">
+                <h2>Destaques da Safra</h2>
+                <p class="text-muted mt-2">Os preferidos dos nossos clientes.</p>
+            </div>
+            <div class="row g-4" id="produtosContainer">
+            </div>
+        </div>
+    </section>
 
 
+    <section id="marcas" class="bg-white">
+        <div class="container text-center">
+            <div class="text-center mb-5 fade-in-up">
+                <h2>Nossas Marcas</h2>
+                <p class="text-muted mt-2">Parcerias com os melhores produtores.</p>
+            </div>
+            <div id="marcasContainer" class="brand-carousel">
+            </div>
+        </div>
+    </section>
 
-	<!-- Categorias -->
-	<section id="categorias" class="py-5">
-		<div class="container">
-			<h2 class="text-center mb-4 fw-semibold">Categorias</h2>
-			<div class="row g-4" id="categoriasContainer">
-				<!-- Os cards serão inseridos via AJAX -->
-			</div>
-		</div>
-	</section>
+
+    <section id="categorias">
+        <div class="container">
+            <div class="text-center mb-5 fade-in-up">
+                <h2>Explore por Categoria</h2>
+            </div>
+            <div class="row g-4" id="categoriasContainer">
+            </div>
+        </div>
+    </section>
 
 
 	<!-- Instagram -->

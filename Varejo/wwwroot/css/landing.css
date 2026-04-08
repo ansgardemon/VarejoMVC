@@ -1,15 +1,27 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400..900&family=Poppins:wght@100..900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap');
 
 :root {
-    --font-head: "Playfair Display";
-    --font-text: "Poppins";
+    --font-head: "Playfair Display", serif;
+    --font-text: "Poppins", sans-serif;
+    /* Cores do Sistema (Universal) - Mantemos para compatibilidade */
+    --sys-primary: #163889;
+    /* Novas Paletas de Luxo (Derivadas do Cliente) */
+    --wine-deep: #3e1021;
+    --wine-primary: #6D213C;
+    --gold-accent: #E6C786;
+    --cream-bg: #FBF5E8;
+    --dark-text: #1a1a1a;
+    --light-text: #FBF5E8;
+    /* Efeitos */
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --shadow-subtle: 0 10px 30px rgba(62, 16, 33, 0.05);
 }
 
+/* --- Global & Reset --- */
 * {
-    transition: .3s ease !important;
+    transition: all 0.3s ease-out !important;
     font-family: var(--font-text);
-    cursor: default;
-    color: var(--brand-dark);
 }
 
 html {
@@ -17,179 +29,222 @@ html {
 }
 
 body {
-    background: var(--brand-bg);
+    background-color: var(--cream-bg);
+    color: var(--dark-text);
+    overflow-x: hidden;
 }
 
-a {
-    cursor: pointer !important;
-}
-
-/* ========== Navbar ========== */
-.navbar {
-    background: var(--brand-primary) !important;
-}
-
-.navbar-nav {
-    display: flex;
-    align-items: flex-end !important;
-}
-
-.nav-link {
-    padding: .5rem;
-    font-weight: 600;
-    color: var(--brand-light);
-}
-
-    .nav-link:hover {
-        scale: 1.05;
-        font-weight: 700;
-    }
-
-/* Botão restrito */
-.btn-restrict {
-    background: var(--brand-secondary);
-    border: 2px solid var(--brand-primary);
-    color: var(--brand-light);
-    border-radius: 10px;
-}
-
-    .btn-restrict:hover {
-        background: var(--brand-primary);
-        border: 2px solid var(--brand-secondary);
-        color: var(--brand-light);
-    }
-
-/* ========== BANNER ========== */
-
-@keyframes neonPulse {
-    from {
-        text-shadow: 0 0 5px var(--brand-accent), 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 40px var(--brand-accent);
-    }
-
-    to {
-        text-shadow: 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 50px var(--brand-accent), 0 0 80px var(--brand-accent);
-    }
-}
-
-h1.home {
-    font-family: var(--font-head) !important;
-    color: var(--brand-accent);
-    font-size: 3.5rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    text-shadow: 0 0 5px var(--brand-accent), 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 40px var(--brand-accent);
-    animation: neonPulse 2s infinite alternate;
-}
-
-h2, h5 {
+h1, h2, h3, .navbar-brand {
     font-family: var(--font-head);
 }
 
-.hero-overlay {
-    background: rgba(40, 15, 10, 0.6);
+a {
+    text-decoration: none !important;
+    color: inherit;
+    cursor: pointer;
 }
 
-.hero-section:hover .hero-overlay {
-    background: rgba(40, 15, 10, 0.5);
+/* --- Animações de Entrada (Para serem usadas via JS ou classes) --- */
+.fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+    opacity: 0;
 }
 
-/* ========== PRODUTOS ========== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
 
-.card-title {
-    color: var(--ui-text-primary);
-    font-weight: 600;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.card-text {
-    color: var(--ui-text-secondary);
+/* ================== NAVBAR (GLASS) ================== */
+.navbar {
+    background: rgba(62, 16, 33, 0.85) !important;
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 0.8rem 0;
 }
 
-/* ========== MARCAS ========== */
+.logo {
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid transparent;
+}
 
-.brand-card {
-    width: 200px;
-    margin: 0 10px;
-    background: var(--brand-light);
-    border-radius: 12px;
-    padding: 1.5rem 1rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid var(--ui-table-even);
-    text-align: center;
+.navbar-brand:hover .logo {
+    transform: scale(1.1) rotate(-5deg);
+    border-color: var(--gold-accent);
+}
+
+.nav-link {
+    color: var(--light-text) !important;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+    .nav-link:hover {
+        color: var(--gold-accent) !important;
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+
+.btn-restrict {
+    background: transparent;
+    border: 1px solid var(--gold-accent) !important;
+    color: var(--gold-accent) !important;
+    border-radius: 30px;
+    padding: 0.5rem 1.5rem !important;
+}
+
+    .btn-restrict:hover {
+        background: var(--gold-accent);
+        color: var(--wine-deep) !important;
+    }
+
+/* ================== HERO SECTION (REMAKE COMPLETO) ================== */
+.hero-section {
     position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Fundo com textura de linho escuro para profundidade */
+    background-color: var(--wine-deep);
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4=');
+    overflow: hidden;
+    margin-top: -100px; /* Compensa a Nav */
 }
 
-    .brand-card::before {
-        content: '';
+    /* Tipografia de Fundo (Efeito Parallax) */
+    .hero-section::after {
+        content: "Dose Certa";
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 8px;
-        border-radius: 12px 12px 0 0;
-        background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+        font-family: var(--font-head);
+        font-size: 25vw;
+        font-weight: 900;
+        color: white;
+        opacity: 0.02;
+        white-space: nowrap;
+        bottom: -5vh;
+        left: -10vw;
+        z-index: 1;
     }
 
-    .brand-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .brand-card h5 {
-        color: var(--brand-dark);
-        font-weight: 600;
-    }
-
-/* ========== CATEGORIAS ========== */
-
-.category-card {
-    background: var(--brand-light);
-    border-radius: 12px;
-    padding: 1.5rem 1rem;
-    flex: 1 1 200px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid var(--ui-table-even);
+.hero-content {
+    position: relative;
+    z-index: 10;
     text-align: center;
+}
+
+h1.home {
+    font-size: clamp(3.5rem, 10vw, 7rem);
+    color: var(--gold-accent);
+    font-weight: 700;
+    text-transform: none;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+    h1.home span {
+        font-family: var(--font-text);
+        font-weight: 300;
+        font-size: 0.4em;
+        color: var(--light-text);
+        display: block;
+        letter-spacing: 2px;
+    }
+
+/* Botão Hero Customizado */
+.btn-outline-gold {
+    color: var(--gold-accent);
+    border: 2px solid var(--gold-accent);
+    border-radius: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 40px;
     position: relative;
     overflow: hidden;
+    background: transparent;
 }
 
-    .category-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+    .btn-outline-gold:hover {
+        background: var(--gold-accent);
+        color: var(--wine-deep);
+        box-shadow: 0 0 30px rgba(230, 199, 134, 0.3);
     }
 
-    .category-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-    }
-
-    .category-card h5 {
-        color: var(--brand-dark);
-        font-weight: 600;
-    }
-
-/* Botão categoria */
-.btn-category {
-    border: 1px solid var(--brand-secondary) !important;
+/* ================== SEÇÕES & TÍTULOS ================== */
+section {
+    padding: 80px 0;
 }
 
-    .btn-category:hover {
-        background: var(--brand-bg);
-        box-shadow: 0 4px 8px rgba(109, 33, 60, 0.4);
-        scale: 1.05;
+    section h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--wine-primary);
+        position: relative;
+        display: inline-block;
+        margin-bottom: 2rem;
     }
 
-/* ========== IMAGENS ========== */
+        section h2::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--gold-accent);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+/* ================== CARDS (GLASSMORFISMO & LUXO) ================== */
+.card {
+    background: var(--light-text);
+    border-radius: 20px !important;
+    border: 1px solid rgba(0,0,0,0.03) !important;
+    box-shadow: var(--shadow-subtle) !important;
+    overflow: hidden;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+    .card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 30px 60px rgba(109, 33, 60, 0.1) !important;
+    }
 
 .card-img-top {
-    height: 200px;
-    width: 100%;
+    height: 250px;
     object-fit: contain;
-    border-top-left-radius: .5rem;
-    border-top-right-radius: .5rem;
+    padding: 30px;
+    background: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.03);
 }
+
+.card-body {
+    padding: 2rem 1.5rem;
+}
+
+.card-title {
+    font-family: var(--font-head);
+    color: var(--wine-deep);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Botão WhatsApp Sexy */
+.btn-whatsapp {
+    background-color: #25d366;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 12px

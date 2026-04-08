@@ -138,42 +138,24 @@
         }
     });
 
+    const animaScroll = () => {
+        const target = $('.fade-in-up');
+        const windowHeight = $(window).height() * 0.85;
+        const scrollTop = $(window).scrollTop();
 
-    // API DO PEXELS PUXANDO IMAGEM DO DIA NO BANNER
-
-    const heroBg = $(".hero-bg");
-    const pexelsApiKey = "6jmswSf5W8nsVmOsVYwMSgzA4VzSNZaPSmfhDNcs0lb7G9x8JEWeYAUv";
-
-    // Queries possíveis
-    const queries = ["beer", "wine", "drink"];
-    // Escolhe uma query aleatória
-    const query = queries[Math.floor(Math.random() * queries.length)];
-
-    // Puxa várias imagens (15) para ter mais opções
-    const urlPexels = `https://api.pexels.com/v1/search?query=${query}&orientation=landscape&per_page=15`;
-
-    $.ajax({
-        url: urlPexels,
-        type: "GET",
-        headers: { Authorization: pexelsApiKey },
-        success: function (response) {
-            if (response.photos && response.photos.length > 0) {
-                const imagens = response.photos;
-                // Escolhe a imagem baseada no dia do mês
-                const hoje = new Date().getDate(); // 1-31
-                const index = hoje % imagens.length;
-                const imgUrl = imagens[index].src.landscape;
-
-                heroBg.css("background-image", `url(${imgUrl})`);
-                heroBg.css("opacity", 0);
-                heroBg.animate({ opacity: 1 }, 1000);
-
-                console.log("Imagem do dia carregada:", imgUrl, "(Query:", query + ")");
+        target.each(function () {
+            const itemTop = $(this).offset().top;
+            if (scrollTop > itemTop - windowHeight) {
+                $(this).css('opacity', 1); // Garante que fique visível se JS travar
+                $(this).addClass('active'); // Você pode criar a classe .active { opacity:1; transform:none; } no CSS
             }
-        },
-        error: function (err) {
-            console.error("Erro ao buscar imagem do Pexels:", err);
-        }
-    });
+        });
+    }
+
+    // Dispara no carregamento e na rolagem
+    $(window).on('scroll', animaScroll);
+    animaScroll(); // Gatilho inicial
+
+  
 
 });

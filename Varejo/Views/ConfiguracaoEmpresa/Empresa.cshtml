@@ -1,0 +1,125 @@
+﻿@model Varejo.ViewModels.ConfiguracaoEmpresaViewModel
+
+@{
+    ViewData["Title"] = "Configurações da Empresa";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fa fa-cog me-2"></i> Configurações da Empresa (Matriz)</h5>
+                    <span class="badge bg-info">ID: @(Model.Id > 0 ? Model.Id.ToString() : "Novo")</span>
+                </div>
+                <div class="card-body p-4">
+                    
+                    @if (TempData["MensagemSucesso"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fa fa-check-circle me-2"></i> @TempData["MensagemSucesso"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Empresa" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UrlLogotipo" />
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label asp-for="RazaoSocial" class="form-label fw-bold text-secondary"></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fa fa-building"></i></span>
+                                            <input asp-for="RazaoSocial" class="form-control" placeholder="Razão Social completa" />
+                                        </div>
+                                        <span asp-validation-for="RazaoSocial" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-7 mb-3">
+                                        <label asp-for="NomeFantasia" class="form-label fw-bold text-secondary"></label>
+                                        <input asp-for="NomeFantasia" class="form-control" placeholder="Nome de fachada" />
+                                        <span asp-validation-for="NomeFantasia" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-5 mb-3">
+                                        <label asp-for="Cnpj" class="form-label fw-bold text-secondary"></label>
+                                        <input asp-for="Cnpj" class="form-control cnpj-mask" placeholder="00.000.000/0000-00" />
+                                        <span asp-validation-for="Cnpj" class="text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 border-start ps-4 text-center">
+                                <label class="form-label fw-bold text-secondary">Logotipo da Empresa</label>
+                                <div class="mb-3">
+                                    <div class="img-preview-container mb-2 mx-auto" style="width: 150px; height: 150px; overflow: hidden; border-radius: 10px; border: 2px dashed #ddd;">
+                                        <img id="preview" src="@(string.IsNullOrEmpty(Model.UrlLogotipo) ? "/img/sem-imagem.png" : Model.UrlLogotipo)"
+                                             class="img-fluid h-100 w-100" style="object-fit: contain;" alt="Logotipo" />
+                                    </div>
+                                    <div class="input-group input-group-sm">
+                                        <input type="file" asp-for="LogotipoUpload" class="form-control" id="fileUpload" accept="image/*" />
+                                    </div>
+                                    <small class="text-muted">Formatos: JPG, PNG. Máx 2MB.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                
+                            <div>
+                                <a href="javascript:history.back()" class="btn btn-outline-secondary px-4 me-2">Cancelar</a>
+                                <button type="submit" class="btn btn-primary px-5 fw-bold">
+                                    <i class="fa fa-save me-2"></i> Salvar Configurações
+                                </button>
+                          
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    
+    <script>
+        $(document).ready(function () {
+            // Máscara de CNPJ
+            $('.cnpj-mask').on('input', function () {
+                let value = $(this).val().replace(/\D/g, '');
+                if (value.length > 14) value = value.slice(0, 14);
+                
+                value = value.replace(/^(\d{2})(\d)/, '$1.$2')
+                             .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                             .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                             .replace(/(\d{4})(\d)/, '$1-$2');
+                $(this).val(value);
+            });
+
+            // Preview de Imagem (Dinâmico ao selecionar arquivo)
+            $("#fileUpload").change(function () {
+                const file = this.files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function (event) {
+                        $("#preview").attr("src", event.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .card { border-radius: 12px; }
+        .input-group-text { border-right: none; }
+        .form-control:focus { box-shadow: none; border-color: #0d6efd; }
+        label { font-size: 0.9rem; }
+    </style>
+}

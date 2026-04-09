@@ -1,7 +1,8 @@
-﻿using System.Reflection.Emit;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.Reflection.Emit;
 using Varejo.Models;
+using Varejo.Models.Varejo.Models;
 using Varejo.ViewModels;
 
 namespace Varejo.Data
@@ -46,6 +47,12 @@ namespace Varejo.Data
         public DbSet<UsuarioRelatorioFavorito> UsuarioRelatoriosFavoritos { get; set; }
         public DbSet<Venda> Vendas { get; set; }
         public DbSet<VendaItem> VendasItem { get; set; }
+        public DbSet<ConfiguracaoEmpresa> ConfiguracoesEmpresa { get; set; }
+        public DbSet<ProdutoCusto> ProdutosCusto { get; set; }
+        public DbSet<Recebimento> Recebimentos { get; set; }
+        public DbSet<RecebimentoXmlLog> RecebimentosXmlLog { get; set; }
+        public DbSet<RecebimentoItem> RecebimentosItem { get; set; }
+        public DbSet<ProdutoFornecedorVinculo> ProdutosFornecedorVinculo { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo

@@ -1,195 +1,341 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400..900&family=Poppins:wght@100..900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Poppins:wght@300;400;600;800&display=swap');
 
 :root {
-    --font-head: "Playfair Display";
-    --font-text: "Poppins";
-}
-
-* {
-    transition: .3s ease !important;
-    font-family: var(--font-text);
-    cursor: default;
-    color: var(--brand-dark);
-}
-
-html {
-    scroll-behavior: smooth;
+    --font-head: "Oswald", sans-serif; /* Fonte mais pesada e impactante */
+    --font-text: "Poppins", sans-serif;
+    --brand-primary: #6D213C;
+    --brand-black: #0D0D0D; /* Preto mais profundo */
+    --brand-accent: #FFD700; /* Dourado Ouro real */
+    --brand-danger: #ff003c;
+    --text-light: #F8F9FA;
 }
 
 body {
-    background: var(--brand-bg);
+    background-color: var(--brand-black);
+    color: var(--text-light);
+    font-family: var(--font-text);
 }
 
-a {
-    cursor: pointer !important;
-}
-
-/* ========== Navbar ========== */
+/* Navbar mais robusta */
 .navbar {
-    background: var(--brand-primary) !important;
+    background: rgba(13, 13, 13, 0.9) !important;
+    border-bottom: 2px solid var(--brand-primary);
+    padding: 1rem 0;
 }
 
-.navbar-nav {
+.logo {
+    border: 2px solid var(--brand-accent);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+/* HERO SECTION - O PAREDÃO */
+.hero-section {
+    height: 85vh;
+    background: linear-gradient(180deg, rgba(109, 33, 60, 0.4) 0%, var(--brand-black) 100%), url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); /* Textura de fibra de carbono */
     display: flex;
-    align-items: flex-end !important;
-}
-
-.nav-link {
-    padding: .5rem;
-    font-weight: 600;
-    color: var(--brand-light);
-}
-
-    .nav-link:hover {
-        scale: 1.05;
-        font-weight: 700;
-    }
-
-/* Botão restrito */
-.btn-restrict {
-    background: var(--brand-secondary);
-    border: 2px solid var(--brand-primary);
-    color: var(--brand-light);
-    border-radius: 10px;
-}
-
-    .btn-restrict:hover {
-        background: var(--brand-primary);
-        border: 2px solid var(--brand-secondary);
-        color: var(--brand-light);
-    }
-
-/* ========== BANNER ========== */
-
-@keyframes neonPulse {
-    from {
-        text-shadow: 0 0 5px var(--brand-accent), 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 40px var(--brand-accent);
-    }
-
-    to {
-        text-shadow: 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 50px var(--brand-accent), 0 0 80px var(--brand-accent);
-    }
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-bottom: 4px solid var(--brand-primary);
 }
 
 h1.home {
-    font-family: var(--font-head) !important;
-    color: var(--brand-accent);
-    font-size: 3.5rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    text-shadow: 0 0 5px var(--brand-accent), 0 0 10px var(--brand-accent), 0 0 20px var(--brand-light), 0 0 40px var(--brand-accent);
-    animation: neonPulse 2s infinite alternate;
-}
-
-h2, h5 {
     font-family: var(--font-head);
+    font-size: clamp(3rem, 12vw, 8rem);
+    text-transform: uppercase;
+    color: var(--text-light);
+    line-height: 0.9;
+    letter-spacing: -2px;
 }
 
-.hero-overlay {
-    background: rgba(40, 15, 10, 0.6);
+    h1.home span {
+        color: var(--brand-accent);
+        display: block;
+        font-size: 0.4em;
+        letter-spacing: 5px;
+    }
+
+/* Botão Chama no Zap */
+.btn-cta {
+    background: var(--brand-accent);
+    color: var(--brand-black) !important;
+    font-weight: 800;
+    font-size: 1.2rem;
+    padding: 15px 40px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
-.hero-section:hover .hero-overlay {
-    background: rgba(40, 15, 10, 0.5);
+    .btn-cta:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+        background: #fff;
+    }
+
+/* CARDS DE PRODUTO - ESTILO VITRINE */
+.card {
+    background: #1A1A1A !important;
+    border: 1px solid #333 !important;
+    border-radius: 15px !important;
+    transition: 0.3s;
 }
 
-/* ========== PRODUTOS ========== */
+    .card:hover {
+        border-color: var(--brand-accent) !important;
+        transform: translateY(-10px);
+    }
 
 .card-title {
-    color: var(--ui-text-primary);
-    font-weight: 600;
+    color: var(--brand-accent);
+    font-family: var(--font-head);
+    font-size: 1.4rem;
 }
 
 .card-text {
-    color: var(--ui-text-secondary);
+    color: #ccc;
 }
 
-/* ========== MARCAS ========== */
+.price-tag {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    display: block;
+    margin-bottom: 10px;
+}
 
-.brand-card {
-    width: 200px;
-    margin: 0 10px;
-    background: var(--brand-light);
+/* Badges e Tags */
+.badge-destaque {
+    background: var(--brand-danger);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+
+
+/* Correção do Botão de Explorar (Outline Gold) */
+.btn-outline-gold {
+    color: var(--brand-accent) !important;
+    border: 2px solid var(--brand-accent) !important;
+    background: transparent !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+    .btn-outline-gold:hover {
+        background: var(--brand-accent) !important;
+        color: var(--brand-black) !important;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+/* Forçar visibilidade dos textos de apoio */
+.text-gold {
+    color: var(--brand-accent) !important;
+}
+
+.text-light-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Ajuste nos títulos das seções para não sumirem */
+section h2 {
+    color: var(--brand-accent) !important;
+    font-family: var(--font-head);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Ajuste específico para seções com fundo branco (Marcas e Instagram) */
+#marcas.bg-white h2,
+#marcas.bg-white p {
+    color: var(--brand-primary) !important;
+}
+
+/* Unificando o visual escuro para o Instagram */
+#instagram {
+    background-color: #FFFFFF !important; /* Força o branco */
     border-radius: 12px;
-    padding: 1.5rem 1rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid var(--ui-table-even);
-    text-align: center;
     position: relative;
+    padding: 2rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra suave para destacar do fundo preto */
 }
 
-    .brand-card::before {
-        content: '';
+    /* Título Dourado no Instagram (Fundo Escuro) */
+    #instagram h2 {
+        color: var(--brand-primary) !important; /* Cor Vinho da Adega */
+        font-family: var(--font-head);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: none; /* Remove o brilho dourado */
+    }
+
+    /* Borda Degradê do Instagram (Vibrante) */
+    #instagram .insta-border {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: 8px;
-        border-radius: 12px 12px 0 0;
-        background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+        bottom: 0;
+        padding: 3px;
+        border-radius: 12px;
+        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
     }
 
-    .brand-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    /* Iframe do LightWidget (Ajuste de Cor de Fundo) */
+    #instagram iframe {
+        background: transparent !important;
+        border-radius: 8px;
+        border: none;
     }
+
+
+
+
+/*CARROUSEL bdo SILVIO SANTOS*/
+
+/* Container do Carrossel */
+.brand-carousel {
+    padding: 20px 0;
+}
+
+/* O Card da Marca */
+.brand-card {
+    background: #fff !important;
+    margin: 0 15px; /* Espaçamento entre as marcas */
+    padding: 40px 20px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+}
 
     .brand-card h5 {
-        color: var(--brand-dark);
-        font-weight: 600;
+        color: var(--brand-primary);
+        font-family: var(--font-head);
+        font-weight: 700;
+        text-transform: uppercase;
+        margin: 0;
+        letter-spacing: 1px;
     }
 
-/* ========== CATEGORIAS ========== */
+    /* Efeito de destaque no hover */
+    .brand-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--brand-accent);
+        box-shadow: 0 10px 25px rgba(109, 33, 60, 0.1);
+    }
 
-.category-card {
-    background: var(--brand-light);
-    border-radius: 12px;
-    padding: 1.5rem 1rem;
-    flex: 1 1 200px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid var(--ui-table-even);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+/* Customizando as setas do Slick (as setas padrão são horríveis) */
+.slick-prev:before, .slick-next:before {
+    color: var(--brand-primary) !important;
+    font-size: 30px;
+    opacity: 0.7;
 }
 
-    .category-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
-    }
-
-    .category-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-    }
-
-    .category-card h5 {
-        color: var(--brand-dark);
-        font-weight: 600;
-    }
-
-/* Botão categoria */
-.btn-category {
-    border: 1px solid var(--brand-secondary) !important;
+.slick-prev {
+    left: -40px;
 }
 
-    .btn-category:hover {
-        background: var(--brand-bg);
-        box-shadow: 0 4px 8px rgba(109, 33, 60, 0.4);
-        scale: 1.05;
+.slick-next {
+    right: -40px;
+}
+
+@media (max-width: 768px) {
+    .slick-prev, .slick-next {
+        display: none !important;
+    }
+    /* Esconde setas no mobile */
+}
+
+
+
+/*FILTROS DO CATALOGO*/
+
+/* Estilo dos Botões de Filtro */
+.btn-filter {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 50px; /* Deixa arredondado estilo Pill */
+    padding: 8px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+    .btn-filter:hover {
+        border-color: var(--brand-accent);
+        color: var(--brand-accent);
     }
 
-/* ========== IMAGENS ========== */
+    .btn-filter.active {
+        background: var(--brand-accent);
+        color: var(--brand-black);
+        border-color: var(--brand-accent);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    }
 
-.card-img-top {
-    height: 200px;
-    width: 100%;
-    object-fit: contain;
-    border-top-left-radius: .5rem;
-    border-top-right-radius: .5rem;
+/* Scroll horizontal no mobile se tiver muita categoria */
+#categoriaPills, #marcaPills {
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: none; /* Firefox */
 }
+
+    #categoriaPills::-webkit-scrollbar {
+        display: none;
+    }
+/* Chrome/Safari */
+
+/* Custom Select para o Catálogo */
+.custom-select-dark {
+    background-color: #0D0D0D !important;
+    border: 1px solid #444 !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+}
+
+    .custom-select-dark:focus {
+        border-color: var(--brand-accent) !important;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.2) !important;
+    }
+
+/* Efeito de brilho na imagem do produto */
+.product-img {
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+    transition: transform 0.3s ease;
+}
+
+.card:hover .product-img {
+    transform: scale(1.1) rotate(2deg);
+}
+
+/* Botão Zap mais chamativo */
+.btn-zap {
+    background: #25D366 !important;
+    border: none !important;
+    transition: 0.3s;
+}
+
+    .btn-zap:hover {
+        background: #128C7E !important;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4) !important;
+    }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Varejo.Data;
 
@@ -11,9 +12,11 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    partial class VarejoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260407003941_recebimento")]
+    partial class recebimento
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -839,38 +842,6 @@ namespace Varejo.Migrations
                     b.ToTable("ProdutosEmbalagem");
                 });
 
-            modelBuilder.Entity("Varejo.Models.ProdutoFornecedorVinculo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CodigoProdutoNoFornecedor")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("DescricaoNoFornecedor")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("PessoaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProdutoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PessoaId");
-
-                    b.HasIndex("ProdutoId");
-
-                    b.ToTable("ProdutosFornecedorVinculo");
-                });
-
             modelBuilder.Entity("Varejo.Models.ProdutoMovimento", b =>
                 {
                     b.Property<int>("IdProdutoMovimento")
@@ -1593,25 +1564,6 @@ namespace Varejo.Migrations
                     b.Navigation("Produto");
 
                     b.Navigation("TipoEmbalagem");
-                });
-
-            modelBuilder.Entity("Varejo.Models.ProdutoFornecedorVinculo", b =>
-                {
-                    b.HasOne("Varejo.Models.Pessoa", "Fornecedor")
-                        .WithMany()
-                        .HasForeignKey("PessoaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Varejo.Models.Produto", "Produto")
-                        .WithMany()
-                        .HasForeignKey("ProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Fornecedor");
-
-                    b.Navigation("Produto");
                 });
 
             modelBuilder.Entity("Varejo.Models.ProdutoMovimento", b =>

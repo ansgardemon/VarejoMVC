@@ -116,21 +116,32 @@ h1.vitrino {
 /* #region 3. ESTRUTURA DO MENU (FLOAT NAV) */
 .navbar-varejo {
     position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 10000;
-    display: flex;
+    /* --- A MÁGICA DO FORMATO PILL --- */
+    height: 70px !important; /* Altura CRAVADA */
+    max-height: 70px !important; /* Impede qualquer elemento de esticar o menu */
+    border-radius: 100px !important; /* Arredondamento extremo para criar as pontas da pílula */
+    padding: 0 25px !important; /* ZERO de espaçamento vertical, apenas nas laterais */
+
+    display: flex !important;
     align-items: center;
-    padding: 10px 25px;
-    border-radius: 60px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(var(--ui-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
+    border: 1px solid var(--ui-glass-border);
     box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    bottom: 30px; /* Posição Inicial: Home */
+    width: auto;
+    min-width: fit-content;
 }
+
+    .navbar-varejo > .container-fluid {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+    }
 
     /* Classe ativada via JS ao sair da Home ou Scroll */
     .navbar-varejo.sticky-nav {

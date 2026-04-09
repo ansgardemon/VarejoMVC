@@ -1,82 +1,116 @@
+/* --- BASE & LOGIN --- */
 .page {
-    position: relative;
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--ui-bg-gradient-start), var(--ui-bg-gradient-end));
+    overflow: hidden;
+}
+
+    .page.login-mode {
+        height: 100vh;
+        height: 100dvh; /* Truque para o mobile ignorar a barra de navegação do Chrome/Safari */
+        overflow: hidden; /* Trava o scroll SÓ no login */
+    }
+
+.login-centered-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* --- MOBILE (Default) --- */
+.sidebar-varejo {
+    position: fixed;
+    right: 15px;
+    top: 15px;
+    bottom: 90px;
+    width: 280px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 28px;
+    z-index: 1050;
+    /* Adicionada transição de background e borda para o clique do botão ficar suave */
+    transition: background 0.4s ease, border-color 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
 }
 
-main {
-    flex: 1;
-}
-
-.sidebar {
-    /* Degradê de Azul Padrão para um Azul Marinho Profundo */
-    background: linear-gradient(180deg, var(--sys-primary) 0%, rgba(13, 33, 80, 1) 100%);
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-}
-
-.top-row {
-    background-color: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border-bottom: 1px solid var(--glass-border);
-    justify-content: flex-end;
-    height: 4rem;
-    display: flex;
-    align-items: center;
-}
-
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-        color: var(--sys-primary);
-        font-weight: 500;
+    .sidebar-varejo.collapsed {
+        transform: translateX(350px);
     }
 
-        .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-            text-decoration: underline;
-        }
-
-        .top-row ::deep a:first-child {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-@media (max-width: 640.98px) {
-    .top-row {
-        justify-content: space-between;
-    }
-
-        .top-row ::deep a, .top-row ::deep .btn-link {
-            margin-left: 0;
-        }
+.menu-fab-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--sys-primary);
+    color: white;
+    border: none;
+    z-index: 1100;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    display: none;
+    z-index: 1040;
+}
+
+    .sidebar-overlay.show {
+        display: block;
     }
 
-    .sidebar {
-        width: 260px;
+/* --- DESKTOP (PC) --- */
+@media (min-width: 1200px) {
+    .sidebar-varejo {
+        position: relative;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: auto;
         height: 100vh;
-        position: sticky;
-        top: 0;
+        width: 280px;
+        border-radius: 0;
+        border: none;
+        border-right: 1px solid var(--ui-glass-border);
+        transform: none !important;
+        background: rgba(255, 255, 255, 0.6);
     }
 
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
+    .main-content {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
     }
 
-        .top-row.auth ::deep a:first-child {
-            flex: 1;
-            text-align: right;
-            width: 0;
-        }
+    .menu-fab-btn, .sidebar-overlay {
+        display: none;
+    }
+}
 
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
+/* =========================================
+   DARK MODE ADJUSTMENTS (O Pulo do Gato)
+========================================= */
+
+/* Mobile Dark Mode */
+[data-theme="dark"] .sidebar-varejo {
+    background: rgba(15, 23, 42, 0.85); /* Fundo azul marinho bem opaco */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda mais discreta no escuro */
+}
+
+/* Desktop Dark Mode */
+@media (min-width: 1200px) {
+    [data-theme="dark"] .sidebar-varejo {
+        background: rgba(15, 23, 42, 0.6); /* Mantém mais transparência no Desktop */
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
 }

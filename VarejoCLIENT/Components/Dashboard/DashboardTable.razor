@@ -1,27 +1,39 @@
 ﻿@typeparam TItem
 
-<div class="card shadow-sm mb-4 border-0" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));">
-    <div class="card-header py-3 bg-transparent border-0 border-bottom" style="border-color: var(--glass-border) !important;">
-        <h6 class="m-0 fw-bold" style="color: var(--sys-primary);">
-            <i class="fa-solid fa-table me-2"></i>@Title
+<div class="glass-card mb-4 overflow-hidden">
+    @* Cabeçalho da Tabela *@
+    <div class="card-header py-3 bg-transparent border-0 border-bottom" style="border-color: var(--ui-glass-border) !important;">
+        <h6 class="m-0 fw-bold" style="color: var(--ui-text-primary);">
+            <i class="fa-solid fa-table me-2 opacity-75"></i>@Title
         </h6>
     </div>
-    <div class="card-body p-3">
-        <div class="table-responsive">
-            <table class="table mb-0 align-middle">
-                <thead style="background: linear-gradient(145deg, rgba(150,150,150,0.15), rgba(150,150,150,0.05)); color: var(--sys-primary);">
-                    <tr style="font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase;">
-                        @HeaderTemplate
-                    </tr>
-                </thead>
-                <tbody style="font-size: 0.95rem;">
+    
+    @* O Corpo usando nosso Motor de Tabela Glass *@
+    <div class="glass-table-container">
+        <table class="glass-table">
+            <thead>
+                <tr>
+                    @HeaderTemplate
+                </tr>
+            </thead>
+            <tbody>
+                @if (Items != null && Items.Any())
+                {
                     @foreach (var item in Items)
                     {
                         <tr>@RowTemplate(item)</tr>
                     }
-                </tbody>
-            </table>
-        </div>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="100%" class="text-center py-4" style="color: var(--ui-text-secondary);">
+                            Nenhum dado para exibir no momento.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 

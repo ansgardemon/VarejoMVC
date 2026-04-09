@@ -1,0 +1,137 @@
+﻿@using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
+@using VarejoCLIENT.Services
+@inject RelatorioService RelService
+
+<RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+    <ChildContent>
+        <div class="row g-3">
+            <div class="col-md-12 col-lg-8">
+                <RelatorioFiltroData DataInicio="filtro.DataInicio"
+                                     DataInicioChanged="v => filtro.DataInicio = v"
+                                     DataFim="filtro.DataFim"
+                                     DataFimChanged="v => filtro.DataFim = v" />
+            </div>
+        </div>
+    </ChildContent>
+
+    <BarraPesquisa>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+                <RelatorioFiltroMultiSelect TItem="TipoMovimentoOutputDTO" Titulo="Tipos de Movimento" IconeClass="fa-solid fa-code-compare" Itens="listaTipos" GetId="t => t.IdTipoMovimento.ToString()" GetNome="t => t.DescricaoTipoMovimento" Selecionados="selecionadosTipos" SelecionadosChanged="v => selecionadosTipos = v" />
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <RelatorioFiltroMultiSelect TItem="PessoaOutputDTO" Titulo="Pessoas/Usuários" IconeClass="fa-solid fa-users" Itens="listaPessoas" GetId="p => p.IdPessoa.ToString()" GetNome="p => p.NomeRazao" Selecionados="selecionadosPessoas" SelecionadosChanged="v => selecionadosPessoas = v" />
+            </div>
+            <div class="col-md-12 col-lg-4">
+                <RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos Específicos" IconeClass="fa-solid fa-box" Itens="listaProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" />
+            </div>
+        </div>
+    </BarraPesquisa>
+</RelatorioFiltro>
+
+<div class="mt-4">
+    @if (loading)
+    {
+        <div class="text-center p-5 glass-card">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 fw-bold text-primary">Buscando histórico de movimentações...</p>
+        </div>
+    }
+    else
+    {
+        @if (listaDados != null && listaDados.Any())
+        {
+            <div class="glass-card overflow-hidden">
+                <RelatorioTabelaDinamica TItem="Relatorio301DTO" Dados="listaDados" Colunas="colunas301" />
+            </div>
+        }
+        else if (dadosVazios)
+        {
+            <div class="p-5 text-center glass-card">
+                <i class="fa-solid fa-clock-rotate-left fa-2x mb-3 text-muted opacity-50"></i>
+                <h5 class="fw-bold" style="color: var(--ui-text-primary);">Sem Movimentações</h5>
+                <p class="mb-0" style="color: var(--ui-text-secondary);">Nenhuma movimentação registrada com os filtros e datas informados.</p>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
+
+    private RelatorioFiltro301DTO filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now };
+    private List<Relatorio301DTO>? listaDados;
+    private bool loading = false;
+    private bool dadosVazios = false;
+
+    // Listas para os Dropdowns
+    private List<TipoMovimentoOutputDTO> listaTipos = new();
+    private List<PessoaOutputDTO> listaPessoas = new();
+    private List<ProdutoDTO> listaProdutos = new();
+    
+    // Variáveis dos selecionados
+    private List<string> selecionadosTipos = new();
+    private List<string> selecionadosPessoas = new();
+    private List<string> selecionadosProdutos = new();
+
+    // === DEFINIÇÃO DAS COLUNAS ===
+    private List<RelatorioTabelaDinamica<Relatorio301DTO>.ConfigColuna> colunas301 = new() {
+        new() { Titulo = "Data/Hora", Propriedade = "DataMovimento", Formato = "dd/MM/yyyy HH:mm" },
+        new() { Titulo = "Operação", Propriedade = "TipoMovimento" },
+        new() { Titulo = "Pessoa", Propriedade = "Pessoa" },
+        new() { Titulo = "Produto", Propriedade = "Produto" },
+        new() { Titulo = "Qtd", Propriedade = "Quantidade", Formato = "N2" },
+        new() { Titulo = "Total (R$)", Propriedade = "ValorTotal", Formato = "C2" },
+        new() { Titulo = "Obs", Propriedade = "Observacao" }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            listaTipos = await RelService.GetTiposMovimentoAsync() ?? new();
+            listaPessoas = await RelService.GetPessoasAsync() ?? new();
+            listaProdutos = await RelService.GetDadosRelatorio101Async(new RelatorioFiltroProdutosDTO()) ?? new();
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+    }
+
+    private async Task ExecutarBusca()
+    {
+        loading = true; dadosVazios = false; StateHasChanged();
+        try
+        {
+            filtro.TiposMovimentoIds = selecionadosTipos.Select(int.Parse).ToList();
+            filtro.PessoasIds = selecionadosPessoas.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            listaDados = await RelService.GetDadosRelatorio301Async(filtro);
+            dadosVazios = listaDados == null || !listaDados.Any();
+        }
+        finally { loading = false; StateHasChanged(); }
+    }
+
+    private void Limpar()
+    {
+        listaDados = null;
+        filtro = new() { DataInicio = DateTime.Now.AddDays(-7), DataFim = DateTime.Now };
+        selecionadosTipos.Clear(); selecionadosPessoas.Clear(); selecionadosProdutos.Clear();
+        dadosVazios = false; StateHasChanged();
+    }
+
+    private async Task Exportar(string f)
+    {
+        loading = true; StateHasChanged();
+        try
+        {
+            filtro.TiposMovimentoIds = selecionadosTipos.Select(int.Parse).ToList();
+            filtro.PessoasIds = selecionadosPessoas.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+        }
+        finally { loading = false; StateHasChanged(); }
+    }
+}

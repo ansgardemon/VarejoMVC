@@ -1,17 +1,15 @@
 ﻿<div class="col-xl-3 col-md-6 mb-4">
-    <div class="card h-100 py-2 border-0 shadow-sm" style="border-left: 5px solid @Color !important; background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));">
-        <div class="card-body">
-            <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
-                    <div class="text-uppercase mb-1 fw-bold" style="font-size: 0.8rem; color: var(--subtext);">
-                        @Title
-                    </div>
-                    <div class="h4 mb-0 fw-bold" style="color: var(--sys-primary);">@Value</div>
+    <div class="glass-card h-100 py-3 px-4 d-flex flex-column justify-content-center" style="border-left: 5px solid @Color !important;">
+        <div class="row g-0 align-items-center">
+            <div class="col me-2">
+                <div class="text-uppercase fw-bold mb-1" style="font-size: 0.75rem; color: var(--ui-text-secondary); letter-spacing: 0.5px;">
+                    @Title
                 </div>
-                <div class="col-auto">
-                    <div style="background: @Color; opacity: 0.85; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                        <i class="bi @Icon text-white fs-4"></i>
-                    </div>
+                <div class="h4 mb-0 fw-bold" style="color: var(--ui-text-primary);">@Value</div>
+            </div>
+            <div class="col-auto">
+                <div class="dashboard-icon-container" style="background-color: @Color;">
+                    <i class="@Icon text-white fs-4"></i>
                 </div>
             </div>
         </div>
@@ -21,6 +19,6 @@
 @code {
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public string Value { get; set; } = "0";
-    [Parameter] public string Color { get; set; } = "primary";
+    [Parameter] public string Color { get; set; } = "var(--sys-primary)";
     [Parameter] public string Icon { get; set; } = "";
 }

@@ -6,19 +6,13 @@
 <RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
     <ChildContent>
         <div class="row g-3">
-            <div class="col-md-6 col-lg-4">
-                <label class="form-label">Sem Giro há quantos dias?</label>
-                <div class="d-flex align-items-center gap-3">
-                    <input type="number" class="form-control text-center" style="max-width: 120px;" min="1" @bind="filtro.DiasSemGiro" />
-                    <span style="color: var(--ui-text-secondary); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">dias ou mais</span>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <label class="form-label">Situação</label>
-                <select class="form-select" @bind="filtro.Ativo">
-                    <option value="true">Ativos (Recomendado)</option>
-                    <option value="false">Inativos</option>
-                    <option value="">Todos</option>
+            <div class="col-md-12 col-lg-6">
+                <label class="form-label">Alerta de Vencimento</label>
+                <select class="form-select" @bind="filtro.StatusValidade">
+                    <option value="TODOS">&#xf133; Mostrar Todos (Em Estoque)</option> @* fa-calendar-days *@
+                    <option value="VENCIDOS">&#xf06a; Produtos Vencidos</option> @* fa-circle-exclamation *@
+                    <option value="VENCENDO_30">&#xf071; Vencem nos próximos 30 dias</option> @* fa-triangle-exclamation *@
+                    <option value="NO_PRAZO">&#xf058; Tudo no Prazo (> 30 dias)</option> @* fa-circle-check *@
                 </select>
             </div>
         </div>
@@ -26,14 +20,17 @@
 
     <BarraPesquisa>
         <div class="row g-3">
-            <div class="col-md-6 col-lg-4">
+            <div class="col-md-6 col-lg-3">
                 <RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" />
             </div>
-            <div class="col-md-6 col-lg-4">
+            <div class="col-md-6 col-lg-3">
                 <RelatorioFiltroMultiSelect TItem="MarcaOutputDTO" Titulo="Marcas" IconeClass="fa-solid fa-copyright" Itens="listaMarcas" GetId="m => m.IdMarca.ToString()" GetNome="m => m.NomeMarca" Selecionados="selecionadosMarcas" SelecionadosChanged="v => selecionadosMarcas = v" />
             </div>
-            <div class="col-md-6 col-lg-4">
+            <div class="col-md-6 col-lg-3">
                 <RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO" Titulo="Famílias" IconeClass="fa-solid fa-users" Itens="listaFamilias" GetId="f => f.IdFamilia.ToString()" GetNome="f => f.NomeFamilia" Selecionados="selecionadosFamilias" SelecionadosChanged="v => selecionadosFamilias = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos" IconeClass="fa-solid fa-box" Itens="listaTodosProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" />
             </div>
         </div>
     </BarraPesquisa>
@@ -44,24 +41,23 @@
     {
         <div class="text-center p-5 glass-card">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-            <p class="mt-3 fw-bold text-primary">Calculando giros e datas...</p>
+            <p class="mt-3 fw-bold text-primary">Analisando lotes e validades...</p>
         </div>
     }
     else
     {
         @if (listaDados != null && listaDados.Any())
         {
-            @* Aplicamos o fundo de vidro por trás da tabela *@
             <div class="glass-card overflow-hidden">
-                <RelatorioTabelaDinamica TItem="Relatorio105DTO" Dados="listaDados" Colunas="colunas105" />
+                <RelatorioTabelaDinamica TItem="Relatorio202DTO" Dados="listaDados" Colunas="colunas202" />
             </div>
         }
         else if (dadosVazios)
         {
             <div class="p-5 text-center glass-card">
-                <i class="fa-solid fa-check-circle fa-2x mb-3 text-success opacity-75"></i>
-                <h5 class="fw-bold" style="color: var(--ui-text-primary);">Tudo Certo!</h5>
-                <p class="mb-0" style="color: var(--ui-text-secondary);">Nenhum produto está parado há mais de @filtro.DiasSemGiro dias com os filtros informados.</p>
+                <i class="fa-solid fa-calendar-check fa-2x mb-3 text-muted opacity-50"></i>
+                <h5 class="fw-bold" style="color: var(--ui-text-primary);">Tudo sob controle!</h5>
+                <p class="mb-0" style="color: var(--ui-text-secondary);">Nenhuma validade encontrada para os filtros selecionados. O estoque está seguro.</p>
             </div>
         }
     }
@@ -74,25 +70,26 @@
     private bool loading = false;
     private bool dadosVazios = false;
 
-    private RelatorioFiltro105DTO filtro = new();
-    private List<Relatorio105DTO>? listaDados;
+    private RelatorioFiltro202DTO filtro = new();
+    private List<Relatorio202DTO>? listaDados;
     
     private List<CategoriaOutputDTO> listaCategorias = new();
     private List<MarcaOutputDTO> listaMarcas = new();
     private List<FamiliaOutputDTO> listaFamilias = new();
+    private List<ProdutoDTO> listaTodosProdutos = new();
 
     private List<string> selecionadosCategorias = new();
     private List<string> selecionadosMarcas = new();
     private List<string> selecionadosFamilias = new();
+    private List<string> selecionadosProdutos = new();
 
-    // === DEFINIÇÃO DAS COLUNAS PARA A TABELA DINÂMICA ===
-    private List<RelatorioTabelaDinamica<Relatorio105DTO>.ConfigColuna> colunas105 = new() {
+    // === DEFINIÇÃO DAS COLUNAS ===
+    private List<RelatorioTabelaDinamica<Relatorio202DTO>.ConfigColuna> colunas202 = new() {
         new() { Titulo = "ID", Propriedade = "IdProduto" },
         new() { Titulo = "Produto", Propriedade = "NomeProduto" },
         new() { Titulo = "Categoria", Propriedade = "Categoria" },
-        new() { Titulo = "Estoque", Propriedade = "EstoqueAtual", Formato = "N2" },
-        new() { Titulo = "Última Venda", Propriedade = "UltimaVenda", Formato = "dd/MM/yyyy" },
-        new() { Titulo = "Dias Parado", Propriedade = "DiasParado" }
+        new() { Titulo = "Validade", Propriedade = "DataValidade", Formato = "dd/MM/yyyy" },
+        new() { Titulo = "Dias p/ Vencer", Propriedade = "DiasParaVencer" }
     };
 
     protected override async Task OnInitializedAsync()
@@ -102,6 +99,7 @@
             listaCategorias = await RelService.GetCategoriasAsync() ?? new();
             listaMarcas = await RelService.GetMarcasAsync() ?? new();
             listaFamilias = await RelService.GetFamiliasAsync() ?? new();
+            listaTodosProdutos = await RelService.GetDadosRelatorio101Async(new RelatorioFiltroProdutosDTO()) ?? new();
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); }
     }
@@ -114,8 +112,9 @@
             filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
             filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
             filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
 
-            listaDados = await RelService.GetDadosRelatorio105Async(filtro);
+            listaDados = await RelService.GetDadosRelatorio202Async(filtro);
             dadosVazios = listaDados == null || !listaDados.Any();
         }
         finally { loading = false; StateHasChanged(); }
@@ -125,11 +124,9 @@
     {
         listaDados = null;
         filtro = new();
-        selecionadosCategorias.Clear();
-        selecionadosMarcas.Clear();
-        selecionadosFamilias.Clear();
-        dadosVazios = false;
-        StateHasChanged();
+        selecionadosCategorias.Clear(); selecionadosMarcas.Clear();
+        selecionadosFamilias.Clear(); selecionadosProdutos.Clear();
+        dadosVazios = false; StateHasChanged();
     }
 
     private async Task Exportar(string formato)
@@ -140,16 +137,10 @@
             filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
             filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
             filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
-            
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
             await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erro na exportação: {ex.Message}");
-        }
-        finally
-        {
-            loading = false; StateHasChanged();
-        }
+        finally { loading = false; StateHasChanged(); }
     }
 }

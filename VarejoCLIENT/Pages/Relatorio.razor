@@ -6,30 +6,50 @@
 @inject RelatorioService RelService
 @inject NavigationManager Nav
 
-<main class="container-fluid py-4">
+<main class="container-fluid py-4 report-wrapper">
     @if (definicao != null)
     {
-        @* HEADER (Fica na página pai, pois é igual para todos) *@
-        <div class="card p-3 mb-4 border-0 shadow-sm" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+        @* HEADER LIQUID GLASS (Sem o botão de compartilhar) *@
+        <div class="glass-header mb-4 animate__animated animate__fadeInDown">
             <div class="d-flex align-items-center">
-                <button class="btn btn-sm me-3" style="background: rgba(255,255,255,0.2); border: 1px solid var(--glass-border);" @onclick='() => Nav.NavigateTo("/relatorios")'>
-                    <i class="fa-solid fa-chevron-left" style="color: var(--sys-primary);"></i>
+                
+                @* Botão Voltar Estilo iOS *@
+                <button class="btn-back-ios me-3" @onclick='() => Nav.NavigateTo("/relatorios")' title="Voltar">
+                    <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <h3 class="mb-0 fw-bold" style="color: var(--sys-primary);">
-                    <span class="badge" style="background: var(--sys-primary); color: white; margin-right: 0.5rem;">#@definicao.Codigo</span> @definicao.Nome
-                </h3>
+                
+                <div class="title-section">
+                    <span class="report-id">ID #@definicao.Codigo</span>
+                    @* O título agora vai respeitar o Dark/Light mode pelo CSS global *@
+                    <h2 class="report-title">@definicao.Nome</h2>
+                </div>
+
             </div>
         </div>
 
-        @* ROTEADOR DINÂMICO (Chama o componente certo baseado no código) *@
-        @if (ObterComponenteDoRelatorio() != null)
-        {
-            <DynamicComponent Type="@ObterComponenteDoRelatorio()" Parameters="@componentParameters" />
-        }
-        else
-        {
-            <div class="alert alert-warning">Relatório não implementado ou em desenvolvimento.</div>
-        }
+        @* ÁREA DO CONTEÚDO DINÂMICO *@
+        <div class="dynamic-content-container animate__animated animate__fadeInUp">
+            @if (ObterComponenteDoRelatorio() != null)
+            {
+                <DynamicComponent @key="Codigo" Type="@ObterComponenteDoRelatorio()" Parameters="@componentParameters" />
+            }
+            else
+            {
+                <div class="glass-alert">
+                    <i class="fa-solid fa-triangle-exclamation mb-2 fs-3"></i>
+                    <h5 class="fw-bold">Em construção</h5>
+                    <span>Este relatório está em desenvolvimento ou não foi implementado.</span>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        @* Loading estilo Glass *@
+        <div class="glass-loading text-center p-5 mt-5">
+            <div class="spinner-border" style="color: var(--sys-primary);" role="status"></div>
+            <p class="mt-3 fw-bold" style="color: var(--sys-primary);">Carregando inteligência de dados...</p>
+        </div>
     }
 </main>
 
@@ -40,9 +60,10 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        definicao = null;
+        
         definicao = await RelService.GetDefinicaoAsync(Codigo);
         
-        // Passa os dados para o componente filho que for renderizado
         componentParameters = new Dictionary<string, object>
         {
             { "Codigo", Codigo },
@@ -50,7 +71,6 @@
         };
     }
 
-    // A MÁGICA ACONTECE AQUI: Devolve o componente correto para renderizar
     private Type? ObterComponenteDoRelatorio()
     {
         return Codigo switch
@@ -61,7 +81,15 @@
             105 => typeof(Relatorio105),
             106 => typeof(Relatorio106),
             107 => typeof(Relatorio107),
-            // 301 => typeof(Relatorio301),  <-- Descomente isso quando você criar o Relatorio301.razor
+            201 => typeof(Relatorio201),
+            202 => typeof(Relatorio202),
+            203 => typeof(Relatorio203),
+            204 => typeof(Relatorio204),
+            205 => typeof(Relatorio205),
+            206 => typeof(Relatorio206),
+            207 => typeof(Relatorio207),
+            208 => typeof(Relatorio208),
+            301 => typeof(Relatorio301),
             _ => null
         };
     }

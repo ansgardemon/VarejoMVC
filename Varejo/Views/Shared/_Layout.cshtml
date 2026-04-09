@@ -1,162 +1,153 @@
 ﻿@using System.Security.Claims
-
 @{
-	var nomeUsuario = User.Identity?.Name ?? "Visitante";
-	var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "Outros";
+    var nomeUsuario = User.Identity?.Name ?? "Visitante";
+    var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "Outros";
+
+    // Lógica para descobrir se estamos na Home
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+    bool isHome = currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
+                  currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+
+    // Classe de posicionamento inicial
+    string navPositionClass = isHome ? "nav-home-center" : "nav-top-fixed";
 }
-
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - Varejo</title>
-	<script type="importmap"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/morph.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/liquidGlass.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/Varejo.styles.css" asp-append-version="true" />
-	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
-	
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Varejo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
 </head>
-<body class="w-100 page-bg">
-	<header>
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-lightaccept-policy border-bottom box-shadow mb-3 mx-auto @(ViewData["NavbarClass"] ?? "") @(User.Identity?.IsAuthenticated ?? false ? "logged-in" : "logged-out")">
-			<div class="container-fluid m-auto w-100">
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-						aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="navbar-collapse collapse w-100 align-items-center justify-content-evenly">
-					@* ul *@
-					<ul class="navbar-nav flex-grow-1 fs-4 fw-bold">
-						@if (User.Identity?.IsAuthenticated ?? false)
-						{
+<body class="w-100">
 
-							@if (role == "Administrador" || role == "Gerente")
-							{
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
-								</li>
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-user"></i><span>Pessoa</span></a>
-								</li>
-								<li class="nav-item tetx-white">
+    <header>
+        <nav class="navbar-varejo @(ViewData["NavbarClass"] ?? "") @navPositionClass">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                
+                @* Botão Mobile *@
+                <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navVitrino">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
 
-									<a class="nav-link" asp-area="" asp-controller="Fornecedor" asp-action="Index"><i class="fa-solid fa-user"></i><span>Fornecedor</span></a>
-								</li>
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-open"></i><span>Categorias</span></a>
-								</li>
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tags"></i><span>Marcas</span></a>
-								</li>
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-basket-shopping"></i><span>Famílias</span></a>
-								</li>
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Movimento" asp-action="Index"><i class="fa-solid fa-shuffle"></i><span>Movimentos</span></a>
-								</li>
+                <div class="collapse navbar-collapse justify-content-center" id="navVitrino">
+                    <ul class="nav-group">
+                        <li class="">
+                            <a class="nav-link-glass" asp-controller="Home" asp-action="Index" title="Home">
+                                <i class="fa-solid fa-house"></i>
+                            </a>
+                        </li>
 
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Validade" asp-action="Index"><i class="fa-solid fa-clock"></i><span>Validades</span></a>
-								</li>
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            @* --- CATEGORIA: OPERACIONAL --- *@
+                            <li class="nav-drop">
+                                <i class="fa-solid fa-cash-register"></i>
+                                <div class="nav-drop-content">
+                                    <h6 class="drop-title">Operacional</h6>
+                                    <a asp-controller="Venda" asp-action="Index"><i class="fa-solid fa-cart-shopping"></i> Vendas</a>
+                                    <a asp-controller="Movimento" asp-action="Index"><i class="fa-solid fa-shuffle"></i> Movimentações</a>
+                                    <a asp-controller="Inventario" asp-action="Index"><i class="fa-solid fa-warehouse"></i> Inventário</a>
+                                    <a asp-controller="Validade" asp-action="Index"><i class="fa-solid fa-clock"></i> Validades</a>
+                                </div>
+                            </li>
 
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="TituloFinanceiro" asp-action="Index"><i class="fa-solid fa-money-bill"></i><span>Financeiro</span></a>
-								</li>
+                            @if (role == "Administrador" || role == "Gerente")
+                            {
+                                @* --- CATEGORIA: GESTÃO --- *@
+                                <li class="nav-drop">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                    <div class="nav-drop-content">
+                                        <h6 class="drop-title">Gestão e Dash</h6>
+                                        <a asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                                        <a asp-controller="Estoque" asp-action="Index"><i class="fa-solid fa-boxes-stacked"></i> Estoque</a>
+                                        <a asp-controller="TituloFinanceiro" asp-action="Index"><i class="fa-solid fa-money-bill-wave"></i> Financeiro</a>
+                                    </div>
+                                </li>
 
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Inventario" asp-action="Index"><i class="fa-solid fa-warehouse"></i><span>Inventario</span></a>
-								</li>
+                                @* --- CATEGORIA: CADASTROS --- *@
+                                <li class="nav-drop">
+                                    <i class="fa-solid fa-address-book"></i>
+                                    <div class="nav-drop-content">
+                                        <h6 class="drop-title">Cadastros Base</h6>
+                                        <a asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-user-group"></i> Pessoas</a>
+                                         <a asp-controller="Fornecedor" asp-action="Index"><i class="fas fa-link"></i> Famílias</a>
+                                        <a asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-tree"></i> Categorias</a>
+                                        <a asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tag"></i> Marcas</a>
+                                        <a asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-users-rectangle"></i> Famílias</a>
+                                    </div>
+                                </li>
+                            }
+                      
+    
 
+                            @if (role == "Administrador")
+                            {
+                                @* --- CATEGORIA: CONFIGURAÇÕES --- *@
+                                <li class="nav-drop">
+                                    <i class="fa-solid fa-gears"></i>
+                                    <div class="nav-drop-content">
+                                        <h6 class="drop-title">Configurações</h6>
+                                        <a asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-shield"></i> Usuários</a>
+                                        <a asp-controller="Parametro" asp-action="Index"><i class="fa-solid fa-sliders"></i> Parâmetros</a>
+                                        <a asp-controller="TipoMovimento" asp-action="Index"><i class="fa-solid fa-route"></i> Tipos de Movimento</a>
+                                        <a asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box-open"></i> Embalagens</a>
+                                        <a asp-controller="FormaPagamento" asp-action="Index"><i class="fa-solid fa-credit-card"></i> Formas Pagto</a>
+                                        <a asp-controller="PrazoPagamento" asp-action="Index"><i class="fa-solid fa-calendar-days"></i> Prazos Pagto</a>
+                                        <a asp-controller="ConfiguracaoEmpresa" asp-action="Empresa"><i class="fa-solid fa-building"></i>Dados da Empresa</a>
+                                      
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
 
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Estoque" asp-action="Index"><i class="fa-solid fa-boxes-stacked"></i><span>Estoque</span></a>
-								</li>
-								
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="Venda" asp-action="Index"><i class="fas fa-cash-register me-2"></i><span>Venda</span></a>
-								</li>
-							}
+                <div class="nav-divider d-none d-lg-block"></div>
 
-							@if (role == "Administrador")
-							{
-								<li class="nav-item tetx-white">
-									<a class="nav-link" asp-area="" asp-controller="TipoMovimento" asp-action="Index"><i class="fa-solid fa-arrows-turn-to-dots"></i><span>Tipo Movimento</span></a>
-								</li>
+                @* HUB: Usuário e DarkMode *@
+                <div class="nav-hub">
+                    <div class="user-section d-none d-sm-block">
+                        @await Html.PartialAsync("_UsuarioLogado")
+                    </div>
+                    
+                    <label class="theme-switch" title="Alternar Tema">
+                        <input type="checkbox" id="theme-checkbox">
+                        <span class="theme-slider">
+                            <i class="fa-solid fa-sun sun-icon"></i>
+                            <i class="fa-solid fa-moon moon-icon"></i>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-								<li class="nav-item embal">
-									<a class="nav-link" asp-area="" asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box"></i><span>Embalagens</span></a>
-								</li>
-								<li class="nav-item user">
-									<a class="nav-link" asp-area="" asp-controller="Usuario" asp-action="Index"><i class="fa-solid fa-user-secret"></i><span>Usuários</span></a>
-								</li>
+    <main role="main" class="main-content pb-3 @(!isHome ? "content-with-nav" : "")">
+        <div class="container-fluid px-lg-5">
+            @RenderBody()
+        </div>
 
-								<li class="nav-item user">
-									<a class="nav-link" asp-area="" asp-controller="Parametro" asp-action="Index"><i class="fa-solid fa-gear"></i><span>Parametros</span></a>
-								</li>
+        <span class="btn-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <i class="fa-solid fa-chevron-up"></i>
+        </span>
+    </main>
 
-								<li class="nav-item user">
-									<a class="nav-link" asp-area="" asp-controller="FormaPagamento" asp-action="Index"><i class="fa-solid fa-handshake"></i><span>Formas de Pagamento</span></a>
-								</li>
-								<li class="nav-item user">
-									<a class="nav-link" asp-area="" asp-controller="PrazoPagamento" asp-action="Index"><i class="fa-solid fa-calendar"></i><span>Prazos de Pagamento</span></a>
-								</li>
+    <footer class="footer-glass">
+        <div class="container text-center">
+            &copy; 2025 - Varejo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacidade</a>
+        </div>
+    </footer>
 
-								<li class="nav-item user">
-									<a class="nav-link" asp-area="" asp-controller="ConfiguracaoEmpresa" asp-action="Empresa"><i class="fa-solid fa-building"></i><span>Prazos de Pagamento</span></a>
-								</li>
-							}
-						}
-						<li class="nav-item home">
-							<a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house"></i><span>Home</span></a>
-						</li>
-					</ul>
-
-					@* <!-- Usuário logado / Login --> *@
-					<div class="d-flex align-items-center ms-auto master">
-						@await Html.PartialAsync("_UsuarioLogado")
-					</div>
-
-					@* <!-- Switch --> *@
-					<label class="switch me-3 m-auto">
-						<input type="checkbox" class="check m-auto">
-						<span class="slider m-auto"></span>
-					</label>
-				</div>
-
-			</div>
-		</nav>
-	</header>
-
-	<div class="container mb-5 pb-3">
-		<main role="main" class="pb-3">
-			@RenderBody()
-
-			<span class="btn-top" onclick="window.scrollTo(0, 0)">
-				<i class="fa-solid fa-arrow-up"></i>
-			</span>
-		</main>
-	</div>
-
-	<footer class="border-top footer text-muted text-center mx-auto bottom-0">
-		<div class="container">
-			&copy; 2025 - Varejo - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-		</div>
-	</footer>
-
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-	<script src="~/js/pessoa.js" asp-append-version="true"></script>
-	<script src="~/js/site.js" asp-append-version="true"></script>
-	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-
-	@await RenderSectionAsync("Scripts", required: false)
-
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

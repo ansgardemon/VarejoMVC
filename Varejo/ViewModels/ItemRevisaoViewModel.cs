@@ -13,6 +13,8 @@ namespace Varejo.ViewModels
         public int? ProdutoIdInterno { get; set; }
         public int? ProdutoEmbalagemId { get; set; } // ESSENCIAL para o estoque
 
+        public bool EhBonificacao { get; set; }
+
         public List<SelectListItem> EmbalagensDisponiveis { get; set; } = new List<SelectListItem>();
     }
 }

@@ -15,6 +15,8 @@ namespace Varejo.Controllers
         private readonly IFormaPagamentoRepository _formaRepo;
         private readonly IXmlService _xmlService;
         private readonly IProdutoEmbalagemRepository _embalagemRepo;
+        private readonly IConfiguracaoEmpresaRepository _empresaRepo;
+
 
         public RecebimentoController(
             IRecebimentoRepository recebimentoRepo,
@@ -23,7 +25,8 @@ namespace Varejo.Controllers
             IPrazoPagamentoRepository prazoRepo,
             IFormaPagamentoRepository formaRepo,
             IXmlService xmlService,
-            IProdutoEmbalagemRepository embalagemRepo)
+            IProdutoEmbalagemRepository embalagemRepo,
+            IConfiguracaoEmpresaRepository empresaRepo)
         {
             _recebimentoRepo = recebimentoRepo;
             _pessoaRepo = pessoaRepo;
@@ -32,6 +35,7 @@ namespace Varejo.Controllers
             _formaRepo = formaRepo;
             _xmlService = xmlService;
             _embalagemRepo = embalagemRepo;
+            _empresaRepo = empresaRepo;
         }
 
         public IActionResult Importar() => View();
@@ -47,23 +51,40 @@ namespace Varejo.Controllers
         {
             if (xmlFile == null || xmlFile.Length == 0) return RedirectToAction(nameof(Importar));
 
+            // 1. Carrega os dados do XML
             var viewModel = _xmlService.CarregarDadosDoXml(xmlFile);
 
+            // 2. Validação do Destinatário (Sua Empresa)
+            var empresa = await _empresaRepo.GetConfiguracaoAsync(); // Assumindo que este método busque a config única
+            if (empresa != null)
+            {
+                // Remove pontuação para comparar apenas os números
+                string cnpjMinhaEmpresa = new string(empresa.Cnpj.Where(char.IsDigit).ToArray());
+                string cnpjNoXml = new string(viewModel.CnpjDestinatarioXml.Where(char.IsDigit).ToArray());
+
+                if (cnpjNoXml != cnpjMinhaEmpresa)
+                {
+                    TempData["Erro"] = $"Bloqueio de Segurança: Esta nota foi emitida para o CNPJ {viewModel.CnpjDestinatarioXml}. " +
+                                       $"O sistema está configurado para: {empresa.RazaoSocial}.";
+                    return RedirectToAction(nameof(Importar));
+                }
+            }
+
+            // 3. Verificação de Nota Já Importada
             if (await _recebimentoRepo.ExisteChaveAcessoAsync(viewModel.ChaveAcesso))
             {
                 TempData["Erro"] = "Nota já importada.";
                 return RedirectToAction(nameof(Importar));
             }
 
-            // Tratativa para o CNPJ: Se o banco tem pontuação e o XML não,
-            // garantimos que a busca funcione tentando ambos ou limpando.
-            var cnpjDoXml = viewModel.CnpjCpfFornecedorXml;
-            var fornecedor = await _pessoaRepo.GetByCnpjAsync(cnpjDoXml);
+            // 4. Identificação do Fornecedor (Emissor da Nota)
+            var cnpjFornecedorXml = viewModel.CnpjCpfFornecedorXml;
+            var fornecedor = await _pessoaRepo.GetByCnpjAsync(cnpjFornecedorXml);
 
-            // Se não achou pelo CNPJ limpo, tenta formatar para o padrão do seu banco
-            if (fornecedor == null && cnpjDoXml.Length == 14)
+            // Tenta formatar se não achar o CNPJ limpo
+            if (fornecedor == null && cnpjFornecedorXml.Length == 14)
             {
-                string cnpjFormatado = Convert.ToUInt64(cnpjDoXml).ToString(@"00\.000\.000\/0000\-00");
+                string cnpjFormatado = Convert.ToUInt64(cnpjFornecedorXml).ToString(@"00\.000\.000\/0000\-00");
                 fornecedor = await _pessoaRepo.GetByCnpjAsync(cnpjFormatado);
             }
 
@@ -72,9 +93,9 @@ namespace Varejo.Controllers
                 viewModel.PessoaId = fornecedor.IdPessoa;
                 viewModel.NomeFornecedor = fornecedor.NomeRazao;
 
+                // 5. Mapeamento de Itens (De-Para)
                 foreach (var item in viewModel.Itens)
                 {
-                    // Busca o De/Para (754 do XML vs ID do fornecedor no seu sistema)
                     var vinculo = await _vinculoRepo.GetVinculoPorCodigoExternoAsync(viewModel.PessoaId, item.CodigoFornecedor.Trim());
 
                     if (vinculo != null)
@@ -85,13 +106,8 @@ namespace Varejo.Controllers
                         item.EmbalagensDisponiveis = embalagens.Select(e => new SelectListItem
                         {
                             Value = e.IdProdutoEmbalagem.ToString(),
-                            Text = e.TipoEmbalagem != null ? e.TipoEmbalagem.DescricaoTipoEmbalagem : "Embalagem " + e.IdProdutoEmbalagem
+                            Text = e.TipoEmbalagem?.DescricaoTipoEmbalagem ?? $"Embalagem {e.IdProdutoEmbalagem}"
                         }).ToList();
-                    }
-                    else
-                    {
-                        item.ProdutoIdInterno = null;
-                        item.EmbalagensDisponiveis = new List<SelectListItem>();
                     }
                 }
             }
@@ -129,7 +145,8 @@ namespace Varejo.Controllers
                         ProdutoEmbalagemId = i.ProdutoEmbalagemId.Value,
                         Quantidade = i.Quantidade, // Ex: 25
                         ValorUnitario = i.ValorUnitario, // Ex: 105.00
-                        CodigoProdutoFornecedor = i.CodigoFornecedor
+                        CodigoProdutoFornecedor = i.CodigoFornecedor,
+                        EhBonificacao = i.EhBonificacao
                     }).ToList()
                 };
 

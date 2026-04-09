@@ -18,7 +18,8 @@ namespace Varejo.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TipoMovimentoVendaId = table.Column<int>(type: "int", nullable: false),
                     TipoMovimentoCompraId = table.Column<int>(type: "int", nullable: false),
-                    TipoMovimentoAvariaId = table.Column<int>(type: "int", nullable: false)
+                    TipoMovimentoAvariaId = table.Column<int>(type: "int", nullable: false),
+               
                 },
                 constraints: table =>
                 {
@@ -41,6 +42,8 @@ namespace Varejo.Migrations
                         principalTable: "TiposMovimento",
                         principalColumn: "IdTipoMovimento",
                         onDelete: ReferentialAction.Restrict);
+                
+         
                 });
 
             migrationBuilder.CreateIndex(
@@ -57,6 +60,8 @@ namespace Varejo.Migrations
                 name: "IX_Parametros_TipoMovimentoVendaId",
                 table: "Parametros",
                 column: "TipoMovimentoVendaId");
+           
+     
 
 
             // SEED AQUI
@@ -74,7 +79,7 @@ namespace Varejo.Migrations
             1, // ID fixo do parâmetro
             4, // Venda
             1, // Compra
-            6  // Avaria
+            6
                 });
         }
 

@@ -8,7 +8,9 @@
         public int PessoaId { get; set; }
         public string NomeFornecedor { get; set; }
 
-        public string CnpjCpfFornecedorXml { get; set; } 
+        public string CnpjCpfFornecedorXml { get; set; }
+
+        public string CnpjDestinatarioXml { get; set; }
 
 
         // Campos que o usuário vai preencher

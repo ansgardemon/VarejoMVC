@@ -18,5 +18,7 @@ namespace Varejo.Interfaces
 
         Task<List<Pessoa>> SearchClientesAsync(string termo);
         Task<List<Pessoa>> SearchFornecedoresAsync(string termo);
+
+        Task<Pessoa?> GetByCnpjAsync(string cnpj);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Varejo.Models.Varejo.Models;
 
 namespace Varejo.Models
 {
@@ -22,5 +21,15 @@ namespace Varejo.Models
 
         // Relacionamento com itens e financeiro
         public virtual ICollection<RecebimentoItem> Itens { get; set; }
+
+        [Display(Name = "Prazo de Pagamento")]
+        public int? PrazoPagamentoId { get; set; }
+        public virtual PrazoPagamento? PrazoPagamento { get; set; }
+
+        // Na sua classe Recebimento.cs
+        [Display(Name = "Forma de Pagamento")]
+        public int? FormaPagamentoId { get; set; }
+        public virtual FormaPagamento? FormaPagamento { get; set; }
+
     }
 }

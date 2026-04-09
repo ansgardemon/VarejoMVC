@@ -102,5 +102,12 @@ namespace Varejo.Repositories
                 .Take(10)
                 .ToListAsync();
         }
+
+        public async Task<Pessoa?> GetByCnpjAsync(string cnpj)
+        {
+            return await _context.Pessoas
+                .Include(p => p.Enderecos)
+                .FirstOrDefaultAsync(p => p.CpfCnpj == cnpj && p.EhFornecedor);
+        }
     }
 }

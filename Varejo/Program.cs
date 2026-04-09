@@ -5,6 +5,7 @@ using Varejo.Interfaces;
 using Varejo.Repositories;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Varejo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,8 @@ builder.Services.AddScoped<IHistoricoProdutoRepository, HistoricoProdutoReposito
 builder.Services.AddScoped<IVendaRepository, VendaRepository>();
 builder.Services.AddScoped<IConfiguracaoEmpresaRepository, ConfiguracaoEmpresaRepository>();
 builder.Services.AddScoped<IFornecedorConfigRepository, FornecedorConfigRepository>();
+builder.Services.AddScoped<IRecebimentoRepository, RecebimentoRepository>();
+builder.Services.AddScoped<IXmlService, XmlService>();
 
 
 

@@ -2,7 +2,6 @@
 using Microsoft.Identity.Client;
 using System.Reflection.Emit;
 using Varejo.Models;
-using Varejo.Models.Varejo.Models;
 using Varejo.ViewModels;
 
 namespace Varejo.Data
@@ -289,6 +288,27 @@ namespace Varejo.Data
                 .HasOne(v => v.Pessoa)
                 .WithMany()
                 .HasForeignKey(v => v.PessoaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<HistoricoPreco>()
+        .Property(h => h.PrecoAntigo)
+        .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<HistoricoPreco>()
+                .Property(h => h.PrecoNovo)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<RecebimentoItem>()
+        .HasOne(i => i.ProdutoEmbalagem)
+        .WithMany() // ou .WithMany(e => e.RecebimentosItens) se existir a lista na model
+        .HasForeignKey(i => i.ProdutoEmbalagemId)
+        .OnDelete(DeleteBehavior.Restrict); // <--- ISSO AQUI MATA O ERRO
+
+            // Recomendo fazer o mesmo para o Produto dentro do item da nota
+            modelBuilder.Entity<RecebimentoItem>()
+                .HasOne(i => i.Produto)
+                .WithMany()
+                .HasForeignKey(i => i.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 

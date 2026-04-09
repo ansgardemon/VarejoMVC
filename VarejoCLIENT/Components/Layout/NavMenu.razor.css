@@ -1,60 +1,150 @@
-.navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
+/* Wrapper principal */
+.nav-wrapper {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
 }
 
-.top-row {
-    min-height: 4rem;
-    background-color: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* Header do Menu */
+.nav-header-varejo {
+    padding: 30px 24px 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.navbar-brand {
+.brand-group {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.brand-main {
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: var(--sys-primary);
+    letter-spacing: -1px;
+}
+
+.brand-sub {
+    font-weight: 300;
+    font-size: 0.75rem;
+    color: var(--ui-text-secondary);
+    opacity: 0.7;
+    margin-top: 2px;
+    letter-spacing: 2px;
+}
+
+/* Botão de Tema */
+.theme-minimal-btn {
+    background: var(--ui-glass-bg);
+    border: 1px solid var(--ui-glass-border);
+    color: var(--ui-text-primary);
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+    .theme-minimal-btn:hover {
+        transform: scale(1.1);
+        background: var(--sys-primary);
+        color: white;
+    }
+
+/* Lista do Menu */
+.nav-menu-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--sys-primary);
+    letter-spacing: 1.5px;
+    margin: 20px 0 10px 15px;
+    opacity: 0.5;
+}
+
+/* --- O SEGREDO DO LAYOUT DOS LINKS --- */
+/* Forçamos a tag <a> gerada pelo NavLink a obedecer nosso Flexbox */
+::deep a.nav-item-glass,
+a.nav-item-glass {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    color: var(--ui-text-secondary) !important;
+    text-decoration: none !important;
+    font-weight: 500;
+    margin-bottom: 6px;
+    transition: all 0.25s ease;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.icon-box {
+    width: 24px;
     font-size: 1.1rem;
-    color: #ffffff;
+    color: var(--sys-primary);
+    display: flex;
+    justify-content: center;
 }
 
-.nav-item {
-    font-size: 0.95rem;
-    padding-bottom: 0.5rem;
+/* ESTADO ATIVO: Light Mode */
+::deep a.nav-item-glass.active,
+a.nav-item-glass.active {
+    background: var(--ui-text-primary) !important;
+    color: var(--ui-bg-gradient-start) !important;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-    .nav-item:first-of-type {
-        padding-top: 1rem;
+    a.nav-item-glass.active .icon-box {
+        color: inherit !important;
     }
 
-    .nav-item ::deep a {
-        color: rgba(255, 255, 255, 0.7);
-        border-radius: 12px;
-        height: 3.2rem;
-        display: flex;
-        align-items: center;
-        line-height: 3.2rem;
-        transition: all 0.3s ease;
-    }
-
-        .nav-item ::deep a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            font-weight: bold;
-            box-shadow: inset 4px 0 0 0 #ffffff; /* Linha de destaque na esquerda */
-        }
-
-        .nav-item ::deep a:hover:not(.active) {
-            background-color: rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-        }
-
-@media (min-width: 641px) {
-    .navbar-toggler {
-        display: none;
-    }
-
-    .collapse {
-        display: block;
-    }
-
-    .nav-scrollable {
-        height: calc(100vh - 4rem);
-        overflow-y: auto;
-    }
+/* ESTADO ATIVO: Dark Mode */
+.dark-menu ::deep a.nav-item-glass.active,
+.dark-menu a.nav-item-glass.active {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    box-shadow: none;
 }
+
+.nav-spacer {
+    flex: 1;
+    min-height: 50px;
+}
+
+::deep a.logout-btn,
+a.logout-btn {
+    color: var(--state-danger) !important;
+    margin-bottom: 20px;
+}
+
+    a.logout-btn .icon-box {
+        color: var(--state-danger) !important;
+    }
+
+/* Logout Dark Mode */
+.dark-menu ::deep a.logout-btn,
+.dark-menu a.logout-btn {
+    color: #ff6b6b !important;
+}
+
+    .dark-menu a.logout-btn .icon-box {
+        color: #ff6b6b !important;
+    }

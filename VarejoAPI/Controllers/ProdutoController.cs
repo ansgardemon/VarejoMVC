@@ -118,8 +118,8 @@ namespace VarejoAPI.Controllers
                     NomeProduto = p.NomeProduto,
                     UrlImagem = p.UrlImagem,
                     Preco = p.ProdutosEmbalagem
-                        .Where(pe => pe.Preco > 0)
-                        .Min(pe => pe.Preco)
+          .Where(pe => pe.Preco > 0)
+          .Min(pe => (decimal?)pe.Preco) ?? 0
                 });
 
                 return Ok(resultado);

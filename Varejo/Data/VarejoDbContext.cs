@@ -1,6 +1,6 @@
-﻿using System.Reflection.Emit;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.Reflection.Emit;
 using Varejo.Models;
 using Varejo.ViewModels;
 
@@ -46,6 +46,12 @@ namespace Varejo.Data
         public DbSet<UsuarioRelatorioFavorito> UsuarioRelatoriosFavoritos { get; set; }
         public DbSet<Venda> Vendas { get; set; }
         public DbSet<VendaItem> VendasItem { get; set; }
+        public DbSet<ConfiguracaoEmpresa> ConfiguracoesEmpresa { get; set; }
+        public DbSet<ProdutoCusto> ProdutosCusto { get; set; }
+        public DbSet<Recebimento> Recebimentos { get; set; }
+        public DbSet<RecebimentoXmlLog> RecebimentosXmlLog { get; set; }
+        public DbSet<RecebimentoItem> RecebimentosItem { get; set; }
+        public DbSet<ProdutoFornecedorVinculo> ProdutosFornecedorVinculo { get; set; }
 
         /*
         metodo opcional deve ser usado para configurar o modelo
@@ -282,6 +288,27 @@ namespace Varejo.Data
                 .HasOne(v => v.Pessoa)
                 .WithMany()
                 .HasForeignKey(v => v.PessoaId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<HistoricoPreco>()
+        .Property(h => h.PrecoAntigo)
+        .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<HistoricoPreco>()
+                .Property(h => h.PrecoNovo)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<RecebimentoItem>()
+        .HasOne(i => i.ProdutoEmbalagem)
+        .WithMany() // ou .WithMany(e => e.RecebimentosItens) se existir a lista na model
+        .HasForeignKey(i => i.ProdutoEmbalagemId)
+        .OnDelete(DeleteBehavior.Restrict); // <--- ISSO AQUI MATA O ERRO
+
+            // Recomendo fazer o mesmo para o Produto dentro do item da nota
+            modelBuilder.Entity<RecebimentoItem>()
+                .HasOne(i => i.Produto)
+                .WithMany()
+                .HasForeignKey(i => i.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 

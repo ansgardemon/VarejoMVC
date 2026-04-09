@@ -1,0 +1,120 @@
+﻿@model Varejo.ViewModels.RevisaoNotaViewModel
+
+<div class="container-fluid mt-4">
+    <form asp-action="Confirmar" method="post">
+        @* Cabeçalho Oculto para persistência no POST *@
+        <input type="hidden" asp-for="ChaveAcesso" />
+        <input type="hidden" asp-for="NumeroNota" />
+        <input type="hidden" asp-for="DataEntrada" />
+        <input type="hidden" asp-for="PessoaId" />
+        <input type="hidden" asp-for="CnpjCpfFornecedorXml" />
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Revisão de Entrada: NF @Model.NumeroNota</h2>
+            <div class="text-end">
+                <a asp-action="Importar" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-success px-5 shadow">Finalizar Recebimento</button>
+            </div>
+        </div>
+
+        @if (TempData["Erro"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Erro"]</div>
+        }
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-light fw-bold">Dados do Fornecedor</div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>Razão Social:</strong> @Model.NomeFornecedor</p>
+                        <p class="mb-0"><strong>CNPJ/CPF:</strong> @Model.CnpjCpfFornecedorXml</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-light fw-bold">Financeiro</div>
+                    <div class="card-body row">
+                        <div class="col-md-6">
+                            <label class="form-label small">Prazo de Pagamento</label>
+                            <select asp-for="PrazoPagamentoId" class="form-select" asp-items="ViewBag.Prazos" required>
+                                <option value="">-- Selecione --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Forma de Pagamento</label>
+                            <select asp-for="FormaPagamentoId" class="form-select" asp-items="ViewBag.Formas" required>
+                                <option value="">-- Selecione --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">Itens da Nota</div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 15%">Cód. Fornecedor</th>
+                            <th>Produto (XML)</th>
+                            <th style="width: 25%">Vínculo Interno / Embalagem</th>
+                            <th style="width: 10%">Qtd</th>
+                            <th style="width: 10%">Vlr. Unit</th>
+                            <th style="width: 10%">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Itens.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Model.Itens[i].CodigoFornecedor
+                                    <input type="hidden" asp-for="Itens[i].CodigoFornecedor" />
+                                </td>
+                                <td>
+                                    <span class="d-block small text-muted">@Model.Itens[i].NomeProdutoXml</span>
+                                    <input type="hidden" asp-for="Itens[i].NomeProdutoXml" />
+                                </td>
+                                <td>
+                                    @if (Model.Itens[i].ProdutoIdInterno.HasValue)
+                                    {
+                                        <input type="hidden" asp-for="Itens[i].ProdutoIdInterno" />
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text bg-success text-white"><i class="bi bi-check"></i></span>
+                                            <select asp-for="Itens[i].ProdutoEmbalagemId"
+                                                    class="form-select border-success"
+                                                    asp-items="Model.Itens[i].EmbalagensDisponiveis" required>
+                                                <option value="">Selecione a Embalagem...</option>
+                                            </select>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-grid">
+                                            <button type="button" class="btn btn-sm btn-outline-danger">
+                                                Vincular Produto Manualmente
+                                            </button>
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    <input asp-for="Itens[i].Quantidade" class="form-control form-control-sm text-center" readonly />
+                                </td>
+                                <td>
+                                    <input asp-for="Itens[i].ValorUnitario" class="form-control form-control-sm text-end" readonly />
+                                </td>
+                                <td class="text-end fw-bold">
+                                    @((Model.Itens[i].Quantidade * Model.Itens[i].ValorUnitario).ToString("C2"))
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>

@@ -50,6 +50,47 @@ namespace Varejo.Migrations
                     b.ToTable("Parametros");
                 });
 
+            modelBuilder.Entity("RecebimentoItem", b =>
+                {
+                    b.Property<int>("IdRecebimentoItem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRecebimentoItem"));
+
+                    b.Property<string>("CodigoProdutoFornecedor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EhBonificacao")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProdutoEmbalagemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int>("RecebimentoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.HasKey("IdRecebimentoItem");
+
+                    b.HasIndex("ProdutoEmbalagemId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("RecebimentoId");
+
+                    b.ToTable("RecebimentosItem");
+                });
+
             modelBuilder.Entity("Varejo.Models.Categoria", b =>
                 {
                     b.Property<int>("IdCategoria")
@@ -79,6 +120,38 @@ namespace Varejo.Migrations
                         .IsUnique();
 
                     b.ToTable("Categorias");
+                });
+
+            modelBuilder.Entity("Varejo.Models.ConfiguracaoEmpresa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Cnpj")
+                        .IsRequired()
+                        .HasMaxLength(18)
+                        .HasColumnType("nvarchar(18)");
+
+                    b.Property<string>("Logotipo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NomeFantasia")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("RazaoSocial")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConfiguracoesEmpresa");
                 });
 
             modelBuilder.Entity("Varejo.Models.Endereco", b =>
@@ -728,6 +801,38 @@ namespace Varejo.Migrations
                     b.ToTable("Produtos");
                 });
 
+            modelBuilder.Entity("Varejo.Models.ProdutoCusto", b =>
+                {
+                    b.Property<int>("IdProdutoCusto")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdProdutoCusto"));
+
+                    b.Property<DateTime>("DataRegistro")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("EhCustoAtual")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecebimentoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ValorCustoUnitario")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.HasKey("IdProdutoCusto");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("RecebimentoId");
+
+                    b.ToTable("ProdutosCusto");
+                });
+
             modelBuilder.Entity("Varejo.Models.ProdutoEmbalagem", b =>
                 {
                     b.Property<int>("IdProdutoEmbalagem")
@@ -775,6 +880,38 @@ namespace Varejo.Migrations
                     b.ToTable("ProdutosEmbalagem");
                 });
 
+            modelBuilder.Entity("Varejo.Models.ProdutoFornecedorVinculo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CodigoProdutoNoFornecedor")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("DescricaoNoFornecedor")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("PessoaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PessoaId");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.ToTable("ProdutosFornecedorVinculo");
+                });
+
             modelBuilder.Entity("Varejo.Models.ProdutoMovimento", b =>
                 {
                     b.Property<int>("IdProdutoMovimento")
@@ -814,6 +951,75 @@ namespace Varejo.Migrations
                     b.HasIndex("ProdutoId");
 
                     b.ToTable("ProdutosMovimento");
+                });
+
+            modelBuilder.Entity("Varejo.Models.Recebimento", b =>
+                {
+                    b.Property<int>("IdRecebimento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRecebimento"));
+
+                    b.Property<string>("ChaveAcesso")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DataEntrada")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("FormaPagamentoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NumeroNota")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PessoaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PrazoPagamentoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdRecebimento");
+
+                    b.HasIndex("FormaPagamentoId");
+
+                    b.HasIndex("PessoaId");
+
+                    b.HasIndex("PrazoPagamentoId");
+
+                    b.ToTable("Recebimentos");
+                });
+
+            modelBuilder.Entity("Varejo.Models.RecebimentoXmlLog", b =>
+                {
+                    b.Property<int>("IdXmlLog")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdXmlLog"));
+
+                    b.Property<string>("ChaveAcesso")
+                        .IsRequired()
+                        .HasMaxLength(44)
+                        .HasColumnType("nvarchar(44)");
+
+                    b.Property<DateTime>("DataImportacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RecebimentoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("XmlCaminho")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdXmlLog");
+
+                    b.HasIndex("RecebimentoId");
+
+                    b.ToTable("RecebimentosXmlLog");
                 });
 
             modelBuilder.Entity("Varejo.Models.TipoEmbalagem", b =>
@@ -1186,6 +1392,33 @@ namespace Varejo.Migrations
                     b.Navigation("TipoMovimentoVenda");
                 });
 
+            modelBuilder.Entity("RecebimentoItem", b =>
+                {
+                    b.HasOne("Varejo.Models.ProdutoEmbalagem", "ProdutoEmbalagem")
+                        .WithMany()
+                        .HasForeignKey("ProdutoEmbalagemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Recebimento", "Recebimento")
+                        .WithMany("Itens")
+                        .HasForeignKey("RecebimentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("ProdutoEmbalagem");
+
+                    b.Navigation("Recebimento");
+                });
+
             modelBuilder.Entity("Varejo.Models.Endereco", b =>
                 {
                     b.HasOne("Varejo.Models.Pessoa", "Pessoa")
@@ -1359,6 +1592,25 @@ namespace Varejo.Migrations
                     b.Navigation("Familia");
                 });
 
+            modelBuilder.Entity("Varejo.Models.ProdutoCusto", b =>
+                {
+                    b.HasOne("Varejo.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Recebimento", "Recebimento")
+                        .WithMany()
+                        .HasForeignKey("RecebimentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("Recebimento");
+                });
+
             modelBuilder.Entity("Varejo.Models.ProdutoEmbalagem", b =>
                 {
                     b.HasOne("Varejo.Models.Produto", "Produto")
@@ -1376,6 +1628,25 @@ namespace Varejo.Migrations
                     b.Navigation("Produto");
 
                     b.Navigation("TipoEmbalagem");
+                });
+
+            modelBuilder.Entity("Varejo.Models.ProdutoFornecedorVinculo", b =>
+                {
+                    b.HasOne("Varejo.Models.Pessoa", "Fornecedor")
+                        .WithMany()
+                        .HasForeignKey("PessoaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Fornecedor");
+
+                    b.Navigation("Produto");
                 });
 
             modelBuilder.Entity("Varejo.Models.ProdutoMovimento", b =>
@@ -1403,6 +1674,40 @@ namespace Varejo.Migrations
                     b.Navigation("Produto");
 
                     b.Navigation("ProdutoEmbalagem");
+                });
+
+            modelBuilder.Entity("Varejo.Models.Recebimento", b =>
+                {
+                    b.HasOne("Varejo.Models.FormaPagamento", "FormaPagamento")
+                        .WithMany()
+                        .HasForeignKey("FormaPagamentoId");
+
+                    b.HasOne("Varejo.Models.Pessoa", "Fornecedor")
+                        .WithMany()
+                        .HasForeignKey("PessoaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Varejo.Models.PrazoPagamento", "PrazoPagamento")
+                        .WithMany()
+                        .HasForeignKey("PrazoPagamentoId");
+
+                    b.Navigation("FormaPagamento");
+
+                    b.Navigation("Fornecedor");
+
+                    b.Navigation("PrazoPagamento");
+                });
+
+            modelBuilder.Entity("Varejo.Models.RecebimentoXmlLog", b =>
+                {
+                    b.HasOne("Varejo.Models.Recebimento", "Recebimento")
+                        .WithMany()
+                        .HasForeignKey("RecebimentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recebimento");
                 });
 
             modelBuilder.Entity("Varejo.Models.TipoMovimento", b =>
@@ -1598,6 +1903,11 @@ namespace Varejo.Migrations
                     b.Navigation("Historicos");
 
                     b.Navigation("ProdutosEmbalagem");
+                });
+
+            modelBuilder.Entity("Varejo.Models.Recebimento", b =>
+                {
+                    b.Navigation("Itens");
                 });
 
             modelBuilder.Entity("Varejo.Models.TipoEmbalagem", b =>

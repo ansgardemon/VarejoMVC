@@ -8,6 +8,9 @@
         public int PessoaId { get; set; }
         public string NomeFornecedor { get; set; }
 
+        public string CnpjCpfFornecedorXml { get; set; } 
+
+
         // Campos que o usuário vai preencher
         public int? PrazoPagamentoId { get; set; }
         public int? FormaPagamentoId { get; set; }

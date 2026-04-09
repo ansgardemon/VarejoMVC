@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Globalization;
+using System.Xml.Linq;
 using Varejo.Interfaces;
 using Varejo.ViewModels;
 
@@ -21,7 +22,7 @@ namespace Varejo.Services
             {
                 ChaveAcesso = infNFe?.Attribute("Id")?.Value.Replace("NFe", "") ?? "",
                 NumeroNota = ide?.Element(ns + "nNF")?.Value ?? "",
-                CnpjFornecedor = emit?.Element(ns + "CNPJ")?.Value ?? emit?.Element(ns + "CPF")?.Value ?? "",
+                CnpjCpfFornecedorXml = emit?.Element(ns + "CNPJ")?.Value ?? emit?.Element(ns + "CPF")?.Value ?? "",
                 NomeFornecedor = emit?.Element(ns + "xNome")?.Value ?? "Fornecedor Desconhecido",
                 Itens = new List<ItemRevisaoViewModel>()
             };
@@ -35,10 +36,21 @@ namespace Varejo.Services
 
                 model.Itens.Add(new ItemRevisaoViewModel
                 {
-                    CodigoFornecedor = prod?.Element(ns + "cProd")?.Value ?? "",
-                    DescricaoXml = prod?.Element(ns + "xProd")?.Value ?? "",
-                    Quantidade = decimal.Parse(prod?.Element(ns + "qCom")?.Value.Replace(".", ",") ?? "0"),
-                    ValorUnitario = decimal.Parse(prod?.Element(ns + "vUnCom")?.Value.Replace(".", ",") ?? "0")
+                    // Puxa o código <cProd> do XML
+                    CodigoFornecedor = prod?.Element(ns + "cProd")?.Value ?? string.Empty,
+
+                    // Puxa o nome <xProd> do XML
+                    NomeProdutoXml = prod?.Element(ns + "xProd")?.Value ?? "Produto sem descrição",
+
+                    // Converte a quantidade <qCom> tratando o ponto decimal corretamente
+                    Quantidade = decimal.Parse(prod?.Element(ns + "qCom")?.Value ?? "0", CultureInfo.InvariantCulture),
+
+                    // Converte o valor unitário <vUnCom> tratando o ponto decimal corretamente
+                    ValorUnitario = decimal.Parse(prod?.Element(ns + "vUnCom")?.Value ?? "0", CultureInfo.InvariantCulture),
+
+                    // Campos de vínculo começam nulos para o Controller preencher via banco de dados
+                    ProdutoIdInterno = null,
+                    ProdutoEmbalagemId = null
                 });
             }
 

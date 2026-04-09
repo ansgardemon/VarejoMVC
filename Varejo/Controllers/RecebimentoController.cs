@@ -112,31 +112,6 @@ namespace Varejo.Controllers
 
             try
             {
-                var listaItensFinal = new List<RecebimentoItem>();
-
-                foreach (var item in model.Itens)
-                {
-                    // Busca a embalagem para saber o multiplicador (Ex: Caixa com 12)
-                    var embalagemObj = await _embalagemRepo.GetByIdAsync(item.ProdutoEmbalagemId.Value);
-                    decimal multiplicador = embalagemObj?.TipoEmbalagem?.Multiplicador ?? 1;
-
-                    // CONVERSÃO: 
-                    // Se o XML diz 25 (caixas) a 105.00 e a embalagem interna é x12:
-                    // Quantidade = 25 * 12 = 300 unidades
-                    // Valor Unitário = 105.00 / 12 = 8.75 cada
-                    decimal qtdConvertida = item.Quantidade * multiplicador;
-                    decimal vlrConvertido = item.ValorUnitario / multiplicador;
-
-                    listaItensFinal.Add(new RecebimentoItem
-                    {
-                        ProdutoId = item.ProdutoIdInterno.Value,
-                        ProdutoEmbalagemId = item.ProdutoEmbalagemId.Value,
-                        Quantidade = qtdConvertida,
-                        ValorUnitario = vlrConvertido,
-                        CodigoProdutoFornecedor = item.CodigoFornecedor
-                    });
-                }
-
                 var recebimento = new Recebimento
                 {
                     PessoaId = model.PessoaId,
@@ -145,10 +120,21 @@ namespace Varejo.Controllers
                     DataEntrada = model.DataEntrada,
                     PrazoPagamentoId = model.PrazoPagamentoId,
                     FormaPagamentoId = model.FormaPagamentoId,
-                    Itens = listaItensFinal
+
+                    // MANDE OS DADOS BRUTOS DA TELA
+                    // Deixe o RegistrarRecebimentoAsync cuidar da matemática
+                    Itens = model.Itens.Select(i => new RecebimentoItem
+                    {
+                        ProdutoId = i.ProdutoIdInterno.Value,
+                        ProdutoEmbalagemId = i.ProdutoEmbalagemId.Value,
+                        Quantidade = i.Quantidade, // Ex: 25
+                        ValorUnitario = i.ValorUnitario, // Ex: 105.00
+                        CodigoProdutoFornecedor = i.CodigoFornecedor
+                    }).ToList()
                 };
 
                 var sucesso = await _recebimentoRepo.RegistrarRecebimentoAsync(recebimento);
+                // ... restante do código
 
                 if (sucesso)
                 {

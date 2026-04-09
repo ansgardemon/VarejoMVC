@@ -20,16 +20,23 @@
                 console.log("Processando categoria:", categoria);
 
                 const card = `
-                    <div class="col-12 col-md-6 col-lg-3 mx-auto">
-                        <div class="card border-0 shadow-sm text-center h-100 category-card">
-                            <div class="card-body d-flex flex-column justify-content-between">
-                                <h5 class="card-title">${categoria.descricaoCategoria}</h5>
-                                <p class="card-text text-muted">Explore nossa seleção de ${categoria.descricaoCategoria.toLowerCase()}.</p>
-                                <a href="/Landing/Produtos?categoriaId=${categoria.idCategoria}" class="btn btn-category">Ver mais</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
+    <div class="col-12 col-md-6 col-lg-3 mx-auto">
+        <div class="card h-100 shadow border-0 text-center">
+            <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="card-title text-uppercase fw-bold">${categoria.descricaoCategoria}</h5>
+                
+                <p class="card-text text-light-muted mb-4">
+                    Explore nossa seleção de ${categoria.descricaoCategoria.toLowerCase()}.
+                </p>
+                
+                <a href="/Landing/Produtos?categoriaId=${categoria.idCategoria}" 
+                   class="btn btn-outline-gold mt-auto">
+                    Ver mais
+                </a>
+            </div>
+        </div>
+    </div>
+`;
                 categoriasContainer.append(card);
             });
 
@@ -108,25 +115,22 @@
                 const linkWhatsApp = `https://wa.me/5511985967421?text=${mensagem}`;
 
                 const card = `
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card h-100 shadow-sm border-0" style="height: 200px;">
-                        <img src="${produto.urlImagem || 'https://placehold.co/400x300?text=Sem+Imagem'}" 
-                                class="card-img-top" 
-                                alt="${produto.nomeProduto}"/>
-                        <div class="card-body text-center d-flex flex-column justify-content-between">
-                            <div>
-                                <h5 class="card-title">${produto.nomeProduto}</h5>
-                                <p class="text-muted mb-3">${precoFormatado}</p>
-                            </div>
-                            <a href="${linkWhatsApp}" 
-                                target="_blank" 
-                                class="btn btn-success w-100 mt-auto">
-                                Pedir pelo WhatsApp
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `;
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card h-100 shadow">
+            <div class="position-absolute top-0 end-0 m-2">
+                <span class="badge-destaque">TOP!</span>
+            </div>
+            <img src="${produto.urlImagem || '...'}" class="card-img-top"; padding:15px;">
+            <div class="card-body text-center">
+                <h5 class="card-title">${produto.nomeProduto}</h5>
+                <span class="price-tag">${precoFormatado}</span>
+                <a href="${linkWhatsApp}" target="_blank" class="btn btn-success w-100 fw-bold py-2">
+                    <i class="fab fa-whatsapp me-1"></i> ENVIAR PEDIDO
+                </a>
+            </div>
+        </div>
+    </div>
+`;
                 produtosContainer.append(card);
             });
 
@@ -138,42 +142,24 @@
         }
     });
 
+    const animaScroll = () => {
+        const target = $('.fade-in-up');
+        const windowHeight = $(window).height() * 0.85;
+        const scrollTop = $(window).scrollTop();
 
-    // API DO PEXELS PUXANDO IMAGEM DO DIA NO BANNER
-
-    const heroBg = $(".hero-bg");
-    const pexelsApiKey = "6jmswSf5W8nsVmOsVYwMSgzA4VzSNZaPSmfhDNcs0lb7G9x8JEWeYAUv";
-
-    // Queries possíveis
-    const queries = ["beer", "wine", "drink"];
-    // Escolhe uma query aleatória
-    const query = queries[Math.floor(Math.random() * queries.length)];
-
-    // Puxa várias imagens (15) para ter mais opções
-    const urlPexels = `https://api.pexels.com/v1/search?query=${query}&orientation=landscape&per_page=15`;
-
-    $.ajax({
-        url: urlPexels,
-        type: "GET",
-        headers: { Authorization: pexelsApiKey },
-        success: function (response) {
-            if (response.photos && response.photos.length > 0) {
-                const imagens = response.photos;
-                // Escolhe a imagem baseada no dia do mês
-                const hoje = new Date().getDate(); // 1-31
-                const index = hoje % imagens.length;
-                const imgUrl = imagens[index].src.landscape;
-
-                heroBg.css("background-image", `url(${imgUrl})`);
-                heroBg.css("opacity", 0);
-                heroBg.animate({ opacity: 1 }, 1000);
-
-                console.log("Imagem do dia carregada:", imgUrl, "(Query:", query + ")");
+        target.each(function () {
+            const itemTop = $(this).offset().top;
+            if (scrollTop > itemTop - windowHeight) {
+                $(this).css('opacity', 1); // Garante que fique visível se JS travar
+                $(this).addClass('active'); // Você pode criar a classe .active { opacity:1; transform:none; } no CSS
             }
-        },
-        error: function (err) {
-            console.error("Erro ao buscar imagem do Pexels:", err);
-        }
-    });
+        });
+    }
+
+    // Dispara no carregamento e na rolagem
+    $(window).on('scroll', animaScroll);
+    animaScroll(); // Gatilho inicial
+
+  
 
 });

@@ -81,7 +81,17 @@ namespace Varejo.Repositories
 
         }
 
-     
+        public async Task<List<Familia>> SearchFamiliasAsync(string termo)
+        {
+            return await _context.Familias
+                .Where(f => f.NomeFamilia.Contains(termo))
+                .Include(f => f.Categoria)
+                .AsNoTracking()
+                .Take(10) // Limite de segurança para a busca rápida
+                .ToListAsync();
+        }
+
+
     }
 }
 

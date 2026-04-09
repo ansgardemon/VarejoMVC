@@ -229,6 +229,55 @@ namespace Varejo.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> ImprimirTermica(int id)
+        {
+            var venda = await _context.Vendas
+                .Include(v => v.Pessoa)
+                .Include(v => v.FormaPagamento)
+                .Include(v => v.PrazoPagamento)
+                .Include(v => v.Itens).ThenInclude(i => i.Produto)
+                .Include(v => v.Itens).ThenInclude(i => i.ProdutoEmbalagem).ThenInclude(e => e.TipoEmbalagem)
+                .FirstOrDefaultAsync(m => m.IdVenda == id);
+
+            if (venda == null) return NotFound();
+
+            var model = new VendaViewModelDetails
+            {
+                IdVenda = venda.IdVenda,
+                PessoaId = venda.PessoaId,
+                FormaPagamentoId = venda.FormaPagamentoId,
+                PrazoPagamentoId = venda.PrazoPagamentoId,
+                Observacao = venda.Observacao,
+                Finalizada = venda.Finalizada,
+
+                // REGRAS DE CÁLCULO CORRIGIDAS:
+                // Soma dos Brutos (Qtd * Unitario)
+                ValorSubtotal = venda.Itens.Sum(i => i.Quantidade * i.ValorUnitario),
+
+                // Soma dos Descontos
+                DescontoTotal = venda.Itens.Sum(i => i.Quantidade * i.DescontoUnitario),
+
+                Itens = venda.Itens.Select(i => new VendaItemViewModelDetails
+                {
+                    ProdutoId = i.ProdutoId,
+                    NomeProduto = i.Produto?.NomeProduto ?? "Produto não encontrado",
+                    NomeEmbalagem = i.ProdutoEmbalagem?.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "UN",
+                    Quantidade = i.Quantidade,
+                    ValorUnitario = i.ValorUnitario,
+                    DescontoUnitario = i.DescontoUnitario
+                }).ToList()
+            };
+
+            // Dados para o cabeçalho do cupom
+            ViewBag.NomeCliente = venda.Pessoa?.NomeRazao ?? "CONSUMIDOR FINAL";
+            ViewBag.DocCliente = venda.Pessoa?.CpfCnpj ?? "000.000.000-00";
+            ViewBag.DataVenda = venda.DataVenda.ToString("dd/MM/yyyy HH:mm");
+            ViewBag.FormaPagto = venda.FormaPagamento?.DescricaoFormaPagamento ?? "N/A";
+            ViewBag.Prazo = venda.PrazoPagamento?.Descricao ?? "À VISTA";
+
+            return View(model);
+        }
+
 
 
         // GET: Venda/Cancelar/5

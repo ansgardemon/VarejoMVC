@@ -1,0 +1,94 @@
+﻿@model Varejo.ViewModels.VinculoGradeViewModel
+
+@{
+    ViewData["Title"] = "Mapeamento: " + Model.NomeFamilia;
+}
+
+<div class="container-fluid mt-4 px-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Fornecedores</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Gerenciar" asp-route-id="@Model.PessoaId" class="text-decoration-none">@Model.NomeFornecedor</a></li>
+                    <li class="breadcrumb-item active fw-bold">Mapeamento @Model.NomeFamilia</li>
+                </ol>
+            </nav>
+            <h4 class="fw-bold text-dark mb-0">
+                <i class="fas fa-th-list text-primary me-2"></i>Mapeamento de Produtos (De-Para)
+            </h4>
+        </div>
+        <div class="col-auto">
+            <button type="button" onclick="document.getElementById('btnSalvarLote').click()" class="btn btn-primary px-4 shadow-sm fw-bold">
+                <i class="fas fa-save me-2"></i>Salvar Tudo
+            </button>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <form asp-action="SalvarGrade" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="PessoaId" />
+                <input type="hidden" asp-for="FamiliaId" />
+                <input type="hidden" asp-for="NomeFornecedor" />
+                <input type="hidden" asp-for="NomeFamilia" />
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light border-bottom">
+                            <tr>
+                                <th class="ps-4 py-3 text-secondary" style="width: 50px;">ID</th>
+                                <th class="py-3 text-secondary">Produto Interno (Sistema)</th>
+                                <th class="py-3 text-secondary" style="width: 250px;">Cód. no Fornecedor <span class="badge bg-info ms-1 small">cProd</span></th>
+                                <th class="py-3 text-secondary" style="width: 350px;">Desc. no Fornecedor <span class="badge bg-info ms-1 small">xProd</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Itens.Count; i++)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="text-muted small">@Model.Itens[i].ProdutoId</span>
+                                        <input type="hidden" asp-for="Itens[i].ProdutoId" />
+                                    </td>
+                                    <td>
+                                        <input type="hidden" asp-for="Itens[i].NomeProduto" />
+                                        <div class="fw-bold text-dark text-uppercase" style="font-size: 0.9rem;">
+                                            @Model.Itens[i].NomeProduto
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input asp-for="Itens[i].CodigoNoFornecedor"
+                                               class="form-control form-control-sm border-0 bg-light focus-ring"
+                                               placeholder="Digite o código..." />
+                                    </td>
+                                    <td class="pe-4">
+                                        <input asp-for="Itens[i].DescricaoNoFornecedor"
+                                               class="form-control form-control-sm border-0 bg-light focus-ring"
+                                               placeholder="Descrição opcional do fornecedor..." />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="submit" id="btnSalvarLote" class="d-none"></button>
+            </form>
+        </div>
+        
+        <div class="card-footer bg-white py-3 d-flex justify-content-between align-items-center">
+            <span class="text-muted small">
+                <i class="fas fa-info-circle me-1"></i>
+                Mostrando <strong>@Model.Itens.Count</strong> produtos da família @Model.NomeFamilia.
+            </span>
+            <div>
+                <a asp-action="Gerenciar" asp-route-id="@Model.PessoaId" class="btn btn-light border px-4 me-2">Cancelar</a>
+                <button type="button" onclick="document.getElementById('btnSalvarLote').click()" class="btn btn-primary px-5 fw-bold">
+                    Salvar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

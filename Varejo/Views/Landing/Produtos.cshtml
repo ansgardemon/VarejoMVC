@@ -45,16 +45,22 @@
 			<h1 class="text-center my-4 fw-bold">Todos os Produtos</h1>
 
 			<!-- Filtro rápido (template) -->
-			<div class="mb-4 text-center">
-				<select id="categoriaSelect" class="form-select d-inline-block w-auto me-2">
-					<option value="">Todas as Categorias</option>
-					<!-- As outras opções serão inseridas via AJAX -->
-				</select>
+			<div class="row mb-5 justify-content-center">
+				<div class="col-12 text-center">
+					<div class="filter-group mb-4">
+						<label class="text-gold small fw-bold mb-3 d-block text-uppercase" style="letter-spacing: 2px;">Categorias</label>
+						<div id="categoriaPills" class="d-flex flex-wrap justify-content-center gap-2">
+							<button class="btn btn-filter active" data-value="">Todas</button>
+						</div>
+					</div>
 
-				<select id="marcaSelect" class="form-select d-inline-block w-auto">
-					<option value="">Todas as Marcas</option>
-					<!-- As outras opções serão inseridas via AJAX -->
-				</select>
+					<div class="filter-group">
+						<label class="text-gold small fw-bold mb-3 d-block text-uppercase" style="letter-spacing: 2px;">Marcas</label>
+						<div id="marcaPills" class="d-flex flex-wrap justify-content-center gap-2">
+							<button class="btn btn-filter active" data-value="">Todas</button>
+						</div>
+					</div>
+				</div>
 			</div>
 
 

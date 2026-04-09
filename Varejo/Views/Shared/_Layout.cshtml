@@ -77,12 +77,15 @@
                                     <div class="nav-drop-content">
                                         <h6 class="drop-title">Cadastros Base</h6>
                                         <a asp-controller="Pessoa" asp-action="Index"><i class="fa-solid fa-user-group"></i> Pessoas</a>
+                                         <a asp-controller="Fornecedor" asp-action="Index"><i class="fas fa-link"></i> Famílias</a>
                                         <a asp-controller="Categoria" asp-action="Index"><i class="fa-solid fa-folder-tree"></i> Categorias</a>
                                         <a asp-controller="Marca" asp-action="Index"><i class="fa-solid fa-tag"></i> Marcas</a>
                                         <a asp-controller="Familia" asp-action="Index"><i class="fa-solid fa-users-rectangle"></i> Famílias</a>
                                     </div>
                                 </li>
                             }
+                      
+    
 
                             @if (role == "Administrador")
                             {
@@ -97,6 +100,8 @@
                                         <a asp-controller="TipoEmbalagem" asp-action="Index"><i class="fa-solid fa-box-open"></i> Embalagens</a>
                                         <a asp-controller="FormaPagamento" asp-action="Index"><i class="fa-solid fa-credit-card"></i> Formas Pagto</a>
                                         <a asp-controller="PrazoPagamento" asp-action="Index"><i class="fa-solid fa-calendar-days"></i> Prazos Pagto</a>
+                                        <a asp-controller="ConfiguracaoEmpresa" asp-action="Empresa"><i class="fa-solid fa-building"></i>Dados da Empresa</a>
+                                      
                                     </div>
                                 </li>
                             }

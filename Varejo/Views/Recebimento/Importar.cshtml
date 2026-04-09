@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Importar Nota Fiscal";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white d-flex align-items-center">
+                    <i class="bi bi-file-earmark-arrow-up me-2"></i>
+                    <h5 class="mb-0">Entrada por XML (NFe)</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-4">Selecione o arquivo .xml da nota fiscal de compra para iniciar a revisão e entrada no estoque.</p>
+
+                    @if (TempData["Erro"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            @TempData["Erro"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Revisar" method="post" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="xmlFile" class="form-label fw-bold">Arquivo XML</label>
+                            <input type="file" id="xmlFile" name="xmlFile" class="form-control form-control-lg" accept=".xml" required />
+                            <div class="form-text">Apenas arquivos .xml são permitidos.</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-search me-2"></i> Carregar Dados para Revisão
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                Voltar para a Lista
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i> O sistema irá buscar automaticamente o fornecedor e os produtos vinculados.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

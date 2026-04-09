@@ -14,6 +14,11 @@ namespace Varejo.Interfaces
 
         Task<List<Pessoa>> GetClientesAtivosAsync();
 
+        Task<List<Pessoa>> GetFornecedoresAtivosAsync();
+
         Task<List<Pessoa>> SearchClientesAsync(string termo);
+        Task<List<Pessoa>> SearchFornecedoresAsync(string termo);
+
+        Task<Pessoa?> GetByCnpjAsync(string cnpj);
     }
 }

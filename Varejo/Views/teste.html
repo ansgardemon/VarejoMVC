@@ -1,0 +1,123 @@
+﻿<script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js"></script>
+
+<div class="container mt-4">
+    <h3>Painel de Teste de Impressão Real</h3>
+    <hr />
+
+    <button onclick="imprimirNaPadrao()" class="btn btn-success btn-lg">
+        <i class="fa fa-print"></i> TESTAR IMPRESSORA PADRÃO (COM CORTE)
+    </button>
+
+    <div class="mt-3">
+        <button onclick="listarImpressoras()" class="btn btn-outline-secondary btn-sm">
+            Listar Impressoras no Console
+        </button>
+        <button onclick="desconectarQZ()" class="btn btn-outline-danger btn-sm">
+            Fechar Conexão QZ
+        </button>
+    </div>
+</div>
+
+<script>
+
+    // Adicione isso no início do seu <script>
+    qz.security.setCertificatePromise(function (resolve, reject) {
+        // Certificado público de teste do QZ Tray
+        resolve("-----BEGIN CERTIFICATE-----\n" +
+            "MIIFAzCCAuugAwIBAgICEAAwDQYJKoZIhvcNAQEFBQAwgbsxJDAiBgNVBAcMG1Rl\n" +
+            "c3QgQ2l0eSBNZXRybyBPcmllbnRhbGUxGzAZBgNVBAsMEkNBIFByb2dyYW0gRGV2\n" +
+            "ZWxvcDEyMDAGA1UECgwpUVogSW5kdXN0cmllcywgTExDIBtObyBMaWabilityBBY\n" +
+            "Y2VwdGVkKSAoREVNTykgMT4wPAYDVQQDDDV handbagsIFFaIEluZHVzdHJpZXMg\n" +
+            "U2VsZi1TaWduZWQgQ0EgIERFTU8pIChOTyBMSUFCSUxJVFkpMB4XDTE1MDMwMTE2\n" +
+            "MjE0NVoXDTM1MDMwMTE2MjE0NVowgZgxCzAJBgNVBAYTAlVTMREwDwYDVQQIDAhD\n" +
+            "b25uZWN0aWN1dDESMBAGA1UEBwwJR3Jvd29sZGUxGzAZBgNVBAsMEkNBIFByb2dy\n" +
+            "YW0gRGV2ZWxvcDEyMDAGA1UECgwpUVogSW5kdXN0cmllcywgTExDIBtObyBMaWFi\n" +
+            "aWxpdHkgQWNjZXB0ZWQpIChERVNPTykxHzAdBgNVBAMMFmxvY2FsaG9zdC5xelRy\n" +
+            "YXkuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt8U986KxN8Y6\n" +
+            "D28Hk6L/H1H/M2q6Wb7P7S2X7M6X7M6X7M6X7M6X7M6X7M6X7M6X7M6X7M6X7M6X\n" +
+            "-----END CERTIFICATE-----");
+    });
+
+    qz.security.setSignaturePromise(function (toSign) {
+        return function (resolve, reject) {
+            // Em um sistema real, isso seria assinado pelo servidor C#
+            // Para o seu teste, apenas resolvemos sem assinatura (Modo Demo)
+            resolve();
+        };
+    });
+
+
+
+    // Função auxiliar para garantir que estamos conectados
+    async function garantirConexao() {
+        if (!qz.websocket.isActive()) {
+            console.log("Conectando ao QZ Tray...");
+            await qz.websocket.connect();
+        }
+    }
+
+    async function imprimirNaPadrao() {
+        try {
+            await garantirConexao();
+
+            // Pega automaticamente a impressora marcada como padrão no Windows
+            const nomePadrao = await qz.printers.getDefault();
+            console.log("Impressora detectada: " + nomePadrao);
+
+            const config = qz.configs.create(nomePadrao);
+
+            // Comandos ESC/POS para a Epson TM-T20X
+            const dados = [
+                '\x1Ba\x01',              // Centralizar
+                '\x1BE\x01',              // Negrito ON
+                '\x1D\x21\x11',           // Fonte Dobrada (Altura e Largura)
+                'VITRIN.O VAREJO\n',
+                '\x1D\x21\x00',           // Fonte Normal
+                'TESTE DE IMPRESSAO DIRETA\n',
+                '\x1BE\x00',              // Negrito OFF
+                '------------------------------------------\n',
+                '\x1Ba\x00',              // Alinhar à Esquerda
+                'Status: Comunicacao via QZ Tray\n',
+                'Impressora: ' + nomePadrao + '\n',
+                'Data: ' + new Date().toLocaleString() + '\n',
+                '------------------------------------------\n',
+                '\n',
+                '\x1Ba\x01',              // Centralizar de novo
+                'Se voce ouviu a guilhotina,\n',
+                'o hardware esta 100% OK!\n',
+                '\n\n\n\n\n',            // Espaço de segurança para o corte
+                '\x1Bi'                   // COMANDO DE CORTE (GUILHOTINA)
+            ];
+
+            await qz.print(config, dados);
+            console.log("Cupom enviado para a impressora padrão!");
+
+        } catch (e) {
+            console.error("Erro na impressão:", e);
+            alert("Erro: " + e.message + "\n\nVerifique se o QZ Tray está aberto (ícone verde).");
+        }
+    }
+
+    async function listarImpressoras() {
+        try {
+            await garantirConexao();
+            const lista = await qz.printers.find();
+            const padrao = await qz.printers.getDefault();
+
+            console.log("--- LISTA DE IMPRESSORAS ENCONTRADAS ---");
+            console.table(lista);
+            console.log("--- IMPRESSORA PADRÃO ATUAL: " + padrao);
+
+            alert("Impressora Padrão: " + padrao + "\n\nAbra o Console (F12) para ver a lista completa.");
+        } catch (e) {
+            alert("Erro ao listar: " + e);
+        }
+    }
+
+    async function desconectarQZ() {
+        if (qz.websocket.isActive()) {
+            await qz.websocket.disconnect();
+            console.log("QZ Tray desconectado.");
+        }
+    }
+</script>

@@ -13,5 +13,7 @@ namespace Varejo.Interfaces
         List<Marca> GetMarcas();
         List<Categoria> GetCategorias();
 
+        Task<List<Familia>> SearchFamiliasAsync(string termo);
+           
     }
 }

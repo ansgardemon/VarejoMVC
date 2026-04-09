@@ -179,7 +179,7 @@ namespace VarejoAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] ProdutoInputDTO dto)
+        public async Task<ActionResult<ProdutoDTO>> Post([FromBody] ProdutoInputDTO dto)
         {
             var familia = await _familiaRepository.GetByIdAsync(dto.FamiliaId);
             if (familia == null)
@@ -200,7 +200,7 @@ namespace VarejoAPI.Controllers
 
             await _produtoRepository.AddAsync(produto);
 
-            return CreatedAtAction(nameof(Get), new { id = produto.IdProduto }, produto.IdProduto);
+            return await Get(produto.IdProduto);
         }
 
         [HttpPut("{id}")]

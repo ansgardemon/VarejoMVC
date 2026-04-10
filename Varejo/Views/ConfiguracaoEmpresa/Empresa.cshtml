@@ -4,82 +4,89 @@
     ViewData["Title"] = "Configurações da Empresa";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fa fa-cog me-2"></i> Configurações da Empresa (Matriz)</h5>
-                    <span class="badge bg-info">ID: @(Model.Id > 0 ? Model.Id.ToString() : "Novo")</span>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 900px;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-building-user fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">Configurações da Empresa (Matriz)</h4>
+            </div>
+            <span class="report-id-badge">ID: @(Model.Id > 0 ? Model.Id.ToString() : "Novo")</span>
+        </div>
+        
+        @if (TempData["MensagemSucesso"] != null)
+        {
+            <div class="alert bg-success bg-opacity-10 border border-success border-opacity-25 text-success fw-semibold d-flex justify-content-between align-items-center mb-4" role="alert">
+                <div>
+                    <i class="fa-solid fa-circle-check fs-5 me-2"></i> @TempData["MensagemSucesso"]
                 </div>
-                <div class="card-body p-4">
-                    
-                    @if (TempData["MensagemSucesso"] != null)
-                    {
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fa fa-check-circle me-2"></i> @TempData["MensagemSucesso"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    }
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
 
-                    <form asp-action="Empresa" method="post" enctype="multipart/form-data">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <input type="hidden" asp-for="Id" />
-                        <input type="hidden" asp-for="UrlLogotipo" />
+        <form asp-action="Empresa" method="post" enctype="multipart/form-data">
+            
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
+            
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="UrlLogotipo" />
 
-                        <div class="row g-3">
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-md-12 mb-3">
-                                        <label asp-for="RazaoSocial" class="form-label fw-bold text-secondary"></label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light"><i class="fa fa-building"></i></span>
-                                            <input asp-for="RazaoSocial" class="form-control" placeholder="Razão Social completa" />
-                                        </div>
-                                        <span asp-validation-for="RazaoSocial" class="text-danger small"></span>
-                                    </div>
-
-                                    <div class="col-md-7 mb-3">
-                                        <label asp-for="NomeFantasia" class="form-label fw-bold text-secondary"></label>
-                                        <input asp-for="NomeFantasia" class="form-control" placeholder="Nome de fachada" />
-                                        <span asp-validation-for="NomeFantasia" class="text-danger small"></span>
-                                    </div>
-
-                                    <div class="col-md-5 mb-3">
-                                        <label asp-for="Cnpj" class="form-label fw-bold text-secondary"></label>
-                                        <input asp-for="Cnpj" class="form-control cnpj-mask" placeholder="00.000.000/0000-00" />
-                                        <span asp-validation-for="Cnpj" class="text-danger small"></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 border-start ps-4 text-center">
-                                <label class="form-label fw-bold text-secondary">Logotipo da Empresa</label>
-                                <div class="mb-3">
-                                    <div class="img-preview-container mb-2 mx-auto" style="width: 150px; height: 150px; overflow: hidden; border-radius: 10px; border: 2px dashed #ddd;">
-                                        <img id="preview" src="@(string.IsNullOrEmpty(Model.UrlLogotipo) ? "/img/sem-imagem.png" : Model.UrlLogotipo)"
-                                             class="img-fluid h-100 w-100" style="object-fit: contain;" alt="Logotipo" />
-                                    </div>
-                                    <div class="input-group input-group-sm">
-                                        <input type="file" asp-for="LogotipoUpload" class="form-control" id="fileUpload" accept="image/*" />
-                                    </div>
-                                    <small class="text-muted">Formatos: JPG, PNG. Máx 2MB.</small>
-                                </div>
-                            </div>
-                        </div>
-
+            <div class="row g-4">
                 
-                            <div>
-                                <a href="javascript:history.back()" class="btn btn-outline-secondary px-4 me-2">Cancelar</a>
-                                <button type="submit" class="btn btn-primary px-5 fw-bold">
-                                    <i class="fa fa-save me-2"></i> Salvar Configurações
-                                </button>
-                          
+                <div class="col-lg-8">
+                    <div class="row g-3">
+                        <div class="col-12 mb-3">
+                            <label asp-for="RazaoSocial" class="form-label fw-bold opacity-75"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--glass-border); color: var(--sys-primary-light, #4facfe);">
+                                    <i class="fa-solid fa-building"></i>
+                                </span>
+                                <input asp-for="RazaoSocial" class="form-control form-control-lg border-start-0 ps-0" placeholder="Razão Social completa" />
+                            </div>
+                            <span asp-validation-for="RazaoSocial" class="text-danger small mt-1 d-block fw-semibold"></span>
                         </div>
-                    </form>
+
+                        <div class="col-md-7 mb-3">
+                            <label asp-for="NomeFantasia" class="form-label fw-bold opacity-75"></label>
+                            <input asp-for="NomeFantasia" class="form-control form-control-lg" placeholder="Nome de fachada" />
+                            <span asp-validation-for="NomeFantasia" class="text-danger small mt-1 d-block fw-semibold"></span>
+                        </div>
+
+                        <div class="col-md-5 mb-3">
+                            <label asp-for="Cnpj" class="form-label fw-bold opacity-75"></label>
+                            <input asp-for="Cnpj" class="form-control form-control-lg cnpj-mask" placeholder="00.000.000/0000-00" />
+                            <span asp-validation-for="Cnpj" class="text-danger small mt-1 d-block fw-semibold"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="d-flex flex-column align-items-center justify-content-center h-100 p-4 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px dashed var(--glass-border);">
+                        <label class="form-label fw-bold opacity-75 text-center mb-3">Logotipo da Empresa</label>
+                        
+                        <div class="img-preview-container mb-3 shadow-sm" style="width: 140px; height: 140px; border-radius: 15px; overflow: hidden; border: 1px solid var(--glass-border); background: var(--glass-bg);">
+                            <img id="preview" src="@(string.IsNullOrEmpty(Model.UrlLogotipo) ? "/img/sem-imagem.png" : Model.UrlLogotipo)"
+                                 class="img-fluid h-100 w-100" style="object-fit: cover;" alt="Logotipo" />
+                        </div>
+                        
+                        <div class="w-100">
+                            <input type="file" asp-for="LogotipoUpload" class="form-control" id="fileUpload" accept="image/*" />
+                        </div>
+                        <small class="opacity-50 mt-2 text-center" style="font-size: 0.75rem;">Formatos: JPG, PNG. Máx 2MB.</small>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top border-secondary border-opacity-25">
+                <a href="javascript:history.back()" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Configurações
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -90,7 +97,7 @@
     
     <script>
         $(document).ready(function () {
-            // Máscara de CNPJ
+            // Máscara de CNPJ - Pode ser migrada pro site.js no futuro se tivermos várias telas com CNPJ
             $('.cnpj-mask').on('input', function () {
                 let value = $(this).val().replace(/\D/g, '');
                 if (value.length > 14) value = value.slice(0, 14);
@@ -115,11 +122,4 @@
             });
         });
     </script>
-
-    <style>
-        .card { border-radius: 12px; }
-        .input-group-text { border-right: none; }
-        .form-control:focus { box-shadow: none; border-color: #0d6efd; }
-        label { font-size: 0.9rem; }
-    </style>
 }

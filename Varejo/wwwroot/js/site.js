@@ -25,12 +25,12 @@
     const isHome = path === '/' || path === '' || path.includes('/home/index') || path.endsWith('/home');
 
     function handleScroll() {
+        if (isHome) return; // Se for a Home, o JS não empurra o menu!
+
         if ($(window).scrollTop() > 50) {
             nav.addClass('sticky-nav');
-            if (isHome) nav.removeClass('nav-home-center'); // Tira do centro se rolar a home
         } else {
             nav.removeClass('sticky-nav');
-            if (isHome) nav.addClass('nav-home-center'); // Devolve para o centro no topo da home
         }
     }
 
@@ -102,4 +102,98 @@
         });
     }
     // #endregion
+
+    // #region 6. MOBILE DRILL-DOWN MENU LOGIC
+    // Usar $(document).on garante que o evento funcione mesmo se o Bootstrap recriar o elemento
+    $(document).on('click', '.mobile-drill-trigger', function (e) {
+        e.preventDefault();
+        const targetId = $(this).data('target');
+        const title = $(this).data('title');
+
+        $('#mobileMainView').removeClass('active').addClass('main-pushed');
+        $(targetId).addClass('active');
+
+        $('#mobileBackTitle').text(title);
+        $('#mobileBackBtn').removeClass('d-none');
+    });
+
+    $(document).on('click', '#mobileBackBtn', function (e) {
+        e.preventDefault();
+        $('.mobile-view-container').removeClass('active');
+        $('#mobileMainView').removeClass('main-pushed').addClass('active');
+        $(this).addClass('d-none');
+    });
+
+    // Reset nativo do Bootstrap (sem jQuery para evitar o erro de backdrop)
+    const offcanvasEl = document.getElementById('mobileMenuOffcanvas');
+    if (offcanvasEl) {
+        offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
+            $('.mobile-view-container').removeClass('active main-pushed');
+            $('#mobileMainView').addClass('active');
+            $('#mobileBackBtn').addClass('d-none');
+        });
+    }
+    $('#theme-checkbox-mobile').on('change', function () {
+        $('#theme-checkbox').prop('checked', this.checked).trigger('change');
+    });
+
+    // #endregion
+
+    // #region 11. ENGINE DE ORDENAÇÃO DE TABELAS UNIVERSAL
+    $(document).on('click', 'th[data-sortable="true"]', function () {
+        const th = $(this);
+        const table = th.closest('table');
+        const tbody = table.find('tbody');
+        const rows = tbody.find('tr').toArray();
+
+        // Ignora se a tabela estiver vazia (linha de "Nenhum registro")
+        if (rows.length === 1 && $(rows[0]).find('td').attr('colspan')) return;
+
+        const columnIndex = th.index();
+        const type = th.data('sort-type') || 'string'; // 'number' ou 'string'
+
+        let isAsc = table.attr('data-sort-dir') === 'asc';
+        const currentSortCol = table.attr('data-sort-col');
+
+        if (currentSortCol == columnIndex) {
+            isAsc = !isAsc; // Inverte direção
+        } else {
+            isAsc = true; // Zera para A-Z
+        }
+
+        table.attr('data-sort-dir', isAsc ? 'asc' : 'desc');
+        table.attr('data-sort-col', columnIndex);
+
+        // Reseta todos os ícones desta tabela específica
+        table.find('th i.fa-sort, th i.fa-sort-up, th i.fa-sort-down')
+            .attr('class', 'fa-solid fa-sort opacity-50 ms-2');
+
+        // Destaca o ícone da coluna clicada
+        const activeIcon = th.find('i');
+        if (activeIcon.length) {
+            activeIcon.attr('class', isAsc ? 'fa-solid fa-sort-up text-primary opacity-100 ms-2' : 'fa-solid fa-sort-down text-primary opacity-100 ms-2');
+        }
+
+        // Processamento da ordenação
+        rows.sort(function (a, b) {
+            let valA = $(a).find('td').eq(columnIndex).text().trim();
+            let valB = $(b).find('td').eq(columnIndex).text().trim();
+
+            if (type === 'number') {
+                // Remove tudo que não for número, ponto ou sinal negativo (para moedas e IDs)
+                valA = parseFloat(valA.replace(/[^\d.-]/g, '')) || 0;
+                valB = parseFloat(valB.replace(/[^\d.-]/g, '')) || 0;
+                return isAsc ? valA - valB : valB - valA;
+            }
+
+            return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        });
+
+        // Reinsere as linhas na tabela
+        $.each(rows, function (index, row) {
+            tbody.append(row);
+        });
+    });
+    // #endregion
+
 });

@@ -79,7 +79,7 @@ builder.Services.AddAuthentication("VarejoAuth")
         options.SlidingExpiration = true;
     });
 
-// MVC + JSON + AutoValidateAntiForgeryToken em métodos de escrita
+// MVC + JSON + AutoValidateAntiForgeryToken em m?todos de escrita
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());

@@ -21,16 +21,16 @@
 
 @if (User.Identity?.IsAuthenticated ?? false)
 {
-    <div class="d-flex align-items-center gap-2">
-        <img src="~/img/@icone"class="avatar avatar-master" alt="Avatar" />
-        <div class="small master">
-            Olá, <strong>@nome</strong>
-            <span class="badge bg-@badge">@role</span>
+    <div class="d-flex align-items-center gap-3">
+        <div class="avatar-varejo-pill">
+            <img src="~/img/@icone" alt="Avatar do @nome" />
         </div>
-        <a asp-controller="Usuario" asp-action="Logout" class="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+        <div class="user-info-varejo">
+            <span class="user-name">Olá, @nome</span>
+            <span class="user-role badge bg-@badge">@role</span>
+        </div>
+        <a asp-controller="Usuario" asp-action="Logout" class="logout-btn-varejo" title="Sair">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </a>
     </div>
-}
-else
-{
-    <a asp-controller="Usuario" asp-action="Login" class="login"><i class="fa-solid fa-arrow-right-to-bracket"></i></a>
 }

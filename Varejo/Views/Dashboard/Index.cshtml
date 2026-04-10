@@ -1,280 +1,334 @@
 ﻿@model Varejo.ViewModels.DashboardViewModel
 @{
-	ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Dashboard";
 }
 
-<h2 class="mb-4">📊 @ViewData["Title"]</h2>
+<div class="container-fluid mt-4">
+    
+    <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+        <i class="fa-solid fa-chart-pie fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+        <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+    </div>
 
-<div class="container-fluid py-3">
+    <div class="row g-3 mb-5">
+        @* Produtos *@
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="glass-card h-100 text-center d-flex flex-column justify-content-center align-items-center p-3">
+                <i class="fa-solid fa-box-open fs-3 mb-2 opacity-50" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <div class="fs-2 fw-bold">@Model.TotalProdutos</div>
+                <div class="opacity-75 text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Produtos</div>
+            </div>
+        </div>
 
-	<!-- ===================== -->
-	<!-- KPIs CARDS -->
-	<!-- ===================== -->
-	<div class="row g-3 mb-4">
-		@* Produtos *@
-		<div class="col-6 col-md-3">
-			<div class="card shadow-sm h-100 text-center">
-				<div class="card-body">
-					<div class="fs-1 fw-bold">@Model.TotalProdutos</div>
-					<div class="fs-5">Produtos</div>
-				</div>
-			</div>
-		</div>
+        @* Categorias *@
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="glass-card h-100 text-center d-flex flex-column justify-content-center align-items-center p-3">
+                <i class="fa-solid fa-folder-tree fs-3 mb-2 opacity-50" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <div class="fs-2 fw-bold">@Model.TotalCategorias</div>
+                <div class="opacity-75 text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Categorias</div>
+            </div>
+        </div>
 
-		@* Categorias *@
-		<div class="col-6 col-md-3">
-			<div class="card shadow-sm h-100 text-center">
-				<div class="card-body">
-					<div class="fs-1 fw-bold">@Model.TotalCategorias</div>
-					<div class="fs-5">Categorias</div>
-				</div>
-			</div>
-		</div>
+        @* Famílias *@
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="glass-card h-100 text-center d-flex flex-column justify-content-center align-items-center p-3">
+                <i class="fa-solid fa-users-rectangle fs-3 mb-2 opacity-50" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <div class="fs-2 fw-bold">@Model.TotalFamilias</div>
+                <div class="opacity-75 text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Famílias</div>
+            </div>
+        </div>
 
-		@* Famílias *@
-		<div class="col-6 col-md-3">
-			<div class="card shadow-sm h-100 text-center">
-				<div class="card-body">
-					<div class="fs-1 fw-bold">@Model.TotalFamilias</div>
-					<div class="fs-5">Famílias</div>
-				</div>
-			</div>
-		</div>
+        @* Marcas *@
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="glass-card h-100 text-center d-flex flex-column justify-content-center align-items-center p-3">
+                <i class="fa-solid fa-tags fs-3 mb-2 opacity-50" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <div class="fs-2 fw-bold">@Model.TotalMarcas</div>
+                <div class="opacity-75 text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Marcas</div>
+            </div>
+        </div>
 
-		@* Marcas *@
-		<div class="col-6 col-md-3">
-			<div class="card shadow-sm h-100 text-center">
-				<div class="card-body">
-					<div class="fs-1 fw-bold">@Model.TotalMarcas</div>
-					<div class="fs-5">Marcas</div>
-				</div>
-			</div>
-		</div>
+        @* Movimentos *@
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="glass-card h-100 text-center d-flex flex-column justify-content-center align-items-center p-3">
+                <i class="fa-solid fa-shuffle fs-3 mb-2 opacity-50" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <div class="fs-2 fw-bold">@Model.TotalMovimentos</div>
+                <div class="opacity-75 text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Movimentos</div>
+            </div>
+        </div>
 
-		@* Movimentos *@
-		<div class="col-6 col-md-3">
-			<div class="card shadow-sm h-100 text-center">
-				<div class="card-body">
-					<div class="fs-1 fw-bold">@Model.TotalMovimentos</div>
-					<div class="fs-5">Movimentos</div>
-				</div>
-			</div>
-		</div>
+        @* Produtos Movimentados *@
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="glass-card h-100 text-center d-flex flex-column justify-content-center align-items-center p-3">
+                <i class="fa-solid fa-truck-ramp-box fs-3 mb-2 opacity-50" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <div class="fs-2 fw-bold">@Model.TotalProdutosMovimentados</div>
+                <div class="opacity-75 text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Movimentados</div>
+            </div>
+        </div>
+    </div>
 
-		@* Produtos Movimentados *@
-		<div class="col-6 col-md-3">
-			<div class="card shadow-sm h-100 text-center">
-				<div class="card-body">
-					<div class="fs-1 fw-bold">@Model.TotalProdutosMovimentados</div>
-					<div class="fs-5">Produtos Movimentados</div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-6">
+            <div class="glass-card h-100 p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fa-solid fa-clock-rotate-left fs-4 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
+                    <h5 class="fw-bold mb-0">Últimos 5 Produtos</h5>
+                </div>
+                
+                @if (Model.UltimosProdutos?.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table-glass table-responsive-stack">
+                            <thead>
+                                <tr>
+                                    <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center"># <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Nome <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Categoria <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Família <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in Model.UltimosProdutos)
+                                {
+                                    <tr>
+                                        <td data-label="#">@p.IdProduto</td>
+                                        <td data-label="Nome" class="fw-semibold">@p.Nome</td>
+                                        <td data-label="Categoria">@p.Categoria</td>
+                                        <td data-label="Família">@p.Familia</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4 opacity-50">
+                        <i class="fa-solid fa-box-open fs-2 mb-2"></i>
+                        <p class="m-0 fw-semibold">Nenhum produto cadastrado.</p>
+                    </div>
+                }
+            </div>
+        </div>
 
-	<!-- ===================== -->
-	<!-- Últimos produtos / Produtos por categoria -->
-	<!-- ===================== -->
-	<div class="row g-3 mb-4">
-		<div class="col-12 col-lg-6">
-			<div class="card shadow-sm h-100">
-				<div class="card-header fw-semibold">🆕 Últimos 5 Produtos</div>
-				<div class="card-body p-2">
-					@if (Model.UltimosProdutos?.Count > 0)
-					{
-						<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-							<table class="w-100">
-								<thead class="table-dark">
-									<tr>
-										<th>#</th>
-										<th>Nome</th>
-										<th>Categoria</th>
-										<th>Família</th>
-									</tr>
-								</thead>
-								<tbody>
-									@foreach (var p in Model.UltimosProdutos)
-									{
-										<tr>
-											<td data-label="#">@p.IdProduto</td>
-											<td data-label="Nome">@p.Nome</td>
-											<td data-label="Categoria">@p.Categoria</td>
-											<td data-label="Família">@p.Familia</td>
-										</tr>
-									}
-								</tbody>
-							</table>
-						</div>
-					}
-					else
-					{
-						<p class="text-muted m-0">Nenhum produto cadastrado ainda.</p>
-					}
-				</div>
-			</div>
-		</div>
+        <div class="col-12 col-lg-6">
+            <div class="glass-card h-100 p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fa-solid fa-layer-group fs-4 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
+                    <h5 class="fw-bold mb-0">Produtos por Categoria</h5>
+                </div>
+                
+                @if (Model.ProdutosPorCategoria?.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table-glass table-responsive-stack">
+                            <thead>
+                                <tr>
+                                    <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center"># <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Categoria <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Qtd. Produtos <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var c in Model.ProdutosPorCategoria)
+                                {
+                                    <tr>
+                                        <td data-label="#">@c.IdCategoria</td>
+                                        <td data-label="Categoria" class="fw-semibold">@c.Descricao</td>
+                                        <td data-label="Qtd. Produtos"><span class="report-id-badge">@c.QtdeProdutos</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4 opacity-50">
+                        <i class="fa-solid fa-folder-open fs-2 mb-2"></i>
+                        <p class="m-0 fw-semibold">Nenhuma categoria cadastrada.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 
-		<div class="col-12 col-lg-6">
-			<div class="card shadow-sm h-100">
-				<div class="card-header fw-semibold">📂 Produtos por Categoria</div>
-				<div class="card-body p-2">
-					@if (Model.ProdutosPorCategoria?.Count > 0)
-					{
-						<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-							<table class="w-100">
-								<thead class="table-dark">
-									<tr>
-										<th>#</th>
-										<th>Categoria</th>
-										<th>Qtd Produtos</th>
-									</tr>
-								</thead>
-								<tbody>
-									@foreach (var c in Model.ProdutosPorCategoria)
-									{
-										<tr>
-											<td data-label="#">@c.IdCategoria</td>
-											<td data-label="Categoria">@c.Descricao</td>
-											<td data-label="Qtd Produtos">@c.QtdeProdutos</td>
-										</tr>
-									}
-								</tbody>
-							</table>
-						</div>
-					}
-					else
-					{
-						<p class="text-muted m-0">Nenhuma categoria cadastrada.</p>
-					}
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-6">
+            <div class="glass-card h-100 p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fa-solid fa-users-viewfinder fs-4 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
+                    <h5 class="fw-bold mb-0">Produtos por Família</h5>
+                </div>
+                
+                @if (Model.ProdutosPorFamilia?.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table-glass table-responsive-stack">
+                            <thead>
+                                <tr>
+                                    <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center"># <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Família <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Qtd. Produtos <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var f in Model.ProdutosPorFamilia)
+                                {
+                                    <tr>
+                                        <td data-label="#">@f.IdFamilia</td>
+                                        <td data-label="Família" class="fw-semibold">@f.Descricao</td>
+                                        <td data-label="Qtd. Produtos"><span class="report-id-badge">@f.QtdeProdutos</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4 opacity-50">
+                        <i class="fa-solid fa-users-slash fs-2 mb-2"></i>
+                        <p class="m-0 fw-semibold">Nenhuma família cadastrada.</p>
+                    </div>
+                }
+            </div>
+        </div>
 
-	<!-- ===================== -->
-	<!-- Produtos por família / Últimos Movimentos -->
-	<!-- ===================== -->
-	<div class="row g-3 mb-4">
-		<div class="col-12 col-lg-6">
-			<div class="card shadow-sm h-100">
-				<div class="card-header fw-semibold">🏷️ Produtos por Família</div>
-				<div class="card-body p-2">
-					@if (Model.ProdutosPorFamilia?.Count > 0)
-					{
-						<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-							<table class="w-100">
-								<thead class="table-dark">
-									<tr>
-										<th>#</th>
-										<th>Família</th>
-										<th>Qtd Produtos</th>
-									</tr>
-								</thead>
-								<tbody>
-									@foreach (var f in Model.ProdutosPorFamilia)
-									{
-										<tr>
-											<td data-label="#">@f.IdFamilia</td>
-											<td data-label="Família">@f.Descricao</td>
-											<td data-label="Qtd Produtos">@f.QtdeProdutos</td>
-										</tr>
-									}
-								</tbody>
-							</table>
-						</div>
-					}
-					else
-					{
-						<p class="text-muted m-0">Nenhuma família cadastrada.</p>
-					}
-				</div>
-			</div>
-		</div>
+        <div class="col-12 col-lg-6">
+            <div class="glass-card h-100 p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fa-solid fa-right-left fs-4 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
+                    <h5 class="fw-bold mb-0">Últimos 5 Movimentos</h5>
+                </div>
 
-		<div class="col-12 col-lg-6">
-			<div class="card shadow-sm h-100">
-				<div class="card-header fw-semibold">🆕 Últimos 5 Movimentos</div>
-				<div class="card-body p-2">
-					@if (Model.UltimosMovimentos?.Count > 0)
-					{
-						<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-							<table class="w-100">
-								<thead class="table-dark">
-									<tr>
-										<th>#</th>
-										<th>Pessoa</th>
-										<th>Tipo</th>
-										<th>Qtde Produtos</th>
-										<th>Data</th>
-									</tr>
-								</thead>
-								<tbody>
-									@foreach (var m in Model.UltimosMovimentos)
-									{
-										<tr>
-											<td data-label="#">@m.IdMovimento</td>
-											<td data-label="Pessoa">@m.Pessoa</td>
-											<td data-label="Tipo">@m.TipoMovimento</td>
-											<td data-label="Qtde Produtos">@m.QtdeProdutos</td>
-											<td data-label="Data">@m.Data.ToString("dd/MM/yyyy HH:mm")</td>
-										</tr>
-									}
-								</tbody>
-							</table>
-						</div>
-					}
-					else
-					{
-						<p class="text-muted m-0">Nenhum movimento registrado.</p>
-					}
-				</div>
-			</div>
-		</div>
-	</div>
+                @if (Model.UltimosMovimentos?.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table-glass table-responsive-stack">
+                            <thead>
+                                <tr>
+                                    <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center"># <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Pessoa <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Tipo <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Qtd. <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                        <div class="d-flex justify-content-between align-items-center">Data <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var m in Model.UltimosMovimentos)
+                                {
+                                    <tr>
+                                        <td data-label="#">@m.IdMovimento</td>
+                                        <td data-label="Pessoa" class="fw-semibold">@m.Pessoa</td>
+                                        <td data-label="Tipo">
+                                            <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: var(--glass-border);">@m.TipoMovimento</span>
+                                        </td>
+                                        <td data-label="Qtde">@m.QtdeProdutos</td>
+                                        <td data-label="Data">@m.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center p-4 opacity-50">
+                        <i class="fa-solid fa-clipboard-list fs-2 mb-2"></i>
+                        <p class="m-0 fw-semibold">Nenhum movimento registrado.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 
-	<!-- ===================== -->
-	<!-- Gráfico Produtos por Categoria -->
-	<!-- ===================== -->
-	<div class="row g-3 mb-4">
-		<div class="col-12">
-			<div class="card shadow-sm h-100">
-				<div class="card-header fw-semibold">📊 Produtos por Categoria (Gráfico)</div>
-				<div class="card-body">
-					<canvas id="chartProdutosCategoria"></canvas>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="row g-3 mb-5">
+        <div class="col-12">
+            <div class="glass-card p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <i class="fa-solid fa-chart-bar fs-4 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
+                    <h5 class="fw-bold mb-0">Produtos por Categoria (Gráfico)</h5>
+                </div>
+                <div style="position: relative; height: 350px; width: 100%;">
+                    <canvas id="chartProdutosCategoria"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
-@section Scripts {
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<script>
-		const catLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProdutosPorCategoria.Select(x => x.Descricao)));
-		const catData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProdutosPorCategoria.Select(x => x.QtdeProdutos)));
 
-		new Chart(document.getElementById('chartProdutosCategoria'), {
-			type: 'bar',
-			data: {
-				labels: catLabels,
-				datasets: [{
-					label: 'Qtd Produtos',
-					data: catData,
-					backgroundColor: "rgba(34, 211, 238, 0.85)",
-					borderColor: "rgba(34, 211, 238, 1)",
-					borderWidth: 1
-				}]
-			},
-			options: {
-				indexAxis: 'y',
-				responsive: true,
-				maintainAspectRatio: false,
-				plugins: { legend: { display: false } },
-				scales: {
-					x: { beginAtZero: true, ticks: { stepSize: 1 } },
-					y: { ticks: { autoSkip: false } }
-				}
-			}
-		});
-	</script>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const catLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProdutosPorCategoria.Select(x => x.Descricao)));
+        const catData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProdutosPorCategoria.Select(x => x.QtdeProdutos)));
+
+        // Coletamos a cor primária do CSS Variable via JS para o gráfico acompanhar o tema
+        const rootStyles = getComputedStyle(document.documentElement);
+        const primaryColor = rootStyles.getPropertyValue('--sys-primary-light').trim() || '#4facfe';
+
+        new Chart(document.getElementById('chartProdutosCategoria'), {
+        type: 'bar',
+        data: {
+        labels: catLabels,
+        datasets: [{
+        label: 'Qtd Produtos',
+        data: catData,
+        backgroundColor: primaryColor, // Usa a cor do sistema
+        borderRadius: 8, // Barras arredondadas e modernas
+        borderWidth: 0
+        }]
+        },
+        options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        legend: { display: false }
+        },
+        scales: {
+        x: {
+        beginAtZero: true,
+        ticks: { stepSize: 1 },
+        grid: { color: 'rgba(128, 128, 128, 0.1)' } // Gridlines sutis
+        },
+        y: {
+        ticks: { autoSkip: false },
+        grid: { display: false }
+        }
+        }
+        }
+        });
+    </script>
 }

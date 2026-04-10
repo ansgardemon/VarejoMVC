@@ -916,6 +916,66 @@ input:checked + .slider:before {
 }
 /* #endregion */
 
+/* #region 12. PESSOAS - TOGGLES E CHECKS CUSTOMIZADOS */
+.btn-check-glass {
+    cursor: pointer;
+    position: relative;
+}
+
+    .btn-check-glass input {
+        display: none;
+    }
+
+    .btn-check-glass .check-content {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        padding: 15px;
+        border-radius: 15px;
+        text-align: center;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        opacity: 0.6;
+    }
+
+    .btn-check-glass input:checked + .check-content {
+        opacity: 1;
+        background: rgba(var(--sys-primary-rgb, 79, 172, 254), 0.2);
+        border-color: var(--sys-primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+/* Toggle Ativo Específico (Verde/Vermelho) */
+.toggle-ativo .if-not-checked {
+    display: block;
+    color: var(--btn-danger);
+}
+
+.toggle-ativo .if-checked {
+    display: none;
+    color: var(--btn-success);
+}
+
+.toggle-ativo input:checked + .check-content {
+    background: rgba(40, 167, 69, 0.15) !important;
+    border-color: #28a745 !important;
+}
+
+    .toggle-ativo input:checked + .check-content .if-not-checked {
+        display: none;
+    }
+
+    .toggle-ativo input:checked + .check-content .if-checked {
+        display: block;
+    }
+
+.toggle-ativo input:not(:checked) + .check-content {
+    background: rgba(220, 53, 69, 0.1) !important;
+    border-color: #dc3545 !important;
+    opacity: 1;
+}
+/* #endregion */
+
 /* --- DARK MODE GLOBAL PARA INPUTS E SELECTS --- */
 [data-theme="dark"] .form-control,
 [data-theme="dark"] .form-select {

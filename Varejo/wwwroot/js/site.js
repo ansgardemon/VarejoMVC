@@ -25,12 +25,12 @@
     const isHome = path === '/' || path === '' || path.includes('/home/index') || path.endsWith('/home');
 
     function handleScroll() {
+        if (isHome) return; // Se for a Home, o JS não empurra o menu!
+
         if ($(window).scrollTop() > 50) {
             nav.addClass('sticky-nav');
-            if (isHome) nav.removeClass('nav-home-center'); // Tira do centro se rolar a home
         } else {
             nav.removeClass('sticky-nav');
-            if (isHome) nav.addClass('nav-home-center'); // Devolve para o centro no topo da home
         }
     }
 

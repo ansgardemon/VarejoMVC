@@ -35,6 +35,9 @@ html, body {
     color: var(--text) !important;
     min-height: 100vh;
     scroll-behavior: smooth;
+    transform: none !important;
+    filter: none !important;
+    perspective: none !important;
 }
 
 /* Scrollbar Customizada (Padrão App) */
@@ -392,11 +395,13 @@ input:checked + .slider:before {
     min-width: fit-content;
 }
 
-    /* ESTADO 1: HOME (Centralizado) */
+    /* ESTADO 1: HOME (Centralizado) - Blindado contra quebras de layout */
     .navbar-varejo.nav-home-center {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        top: 50vh !important; /* vh garante que é 50% da altura da TELA, ignorando o tamanho da página */
+        left: 50vw !important; /* vw garante 50% da largura da TELA */
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important; /* Remove qualquer margem herdada do Bootstrap */
+        position: fixed !important;
     }
 
     /* ESTADO 2: OUTRAS TELAS (Fixo no Topo) */
@@ -522,30 +527,88 @@ input:checked + .slider:before {
 .nav-hub {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 15px; /* Mantém o espaçamento respirável */
     color: var(--text);
 }
 
-.logout-btn-varejo i {
-    font-size: 1.7rem !important;
-    color: var(--text);
-    transition: all 0.3s ease;
-    vertical-align: middle;
-}
-
-.logout-btn-varejo:hover i {
-    transform: scale(1.1);
-    color: #dc3545 !important;
-    filter: drop-shadow(0 0 5px rgba(220, 53, 69, 0.4));
-}
-
+/* O Divisor que separa o menu do Hub do usuário */
 .nav-divider {
     width: 1px;
-    height: 30px;
+    height: 35px; /* Aumentei um pouco para acompanhar a altura da navbar */
     background: var(--ui-glass-border);
     margin: 0 10px;
     opacity: 0.5;
 }
+
+/* --- AJUSTE DA FOTO DE PERFIL (Avatar Pill) --- */
+.avatar-varejo-pill {
+    width: 40px; /* Tamanho exato e proporcional */
+    height: 40px;
+    border-radius: 50%; /* Círculo perfeito */
+    background-color: var(--ui-glass-bg);
+    border: 2px solid var(--sys-primary-light); /* Borda com a cor do tema */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem; /* Tamanho do emoji/ícone caso não tenha foto */
+    color: var(--sys-primary-light);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden; /* Garante que fotos não vazem do círculo */
+}
+
+    /* Se você usar uma tag <img> real para a foto, isso garante que ela preencha o círculo */
+    .avatar-varejo-pill img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+/* Ajuste dos textos ao lado da foto (Nome e Cargo) */
+.user-info-varejo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.2; /* Tira os espaços mortos entre as linhas */
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* --- AJUSTE DO BOTÃO DE LOGOUT --- */
+.logout-btn-varejo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Mesma largura da foto para equilíbrio */
+    height: 40px; /* Mesma altura da foto */
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+    .logout-btn-varejo i {
+        font-size: 1.7rem !important; /* Tamanho exato dos ícones do menu principal */
+        color: var(--text);
+        transition: all 0.3s ease;
+    }
+
+    /* Efeito Hover do Logout (Igual aos ícones do menu, mas vermelho) */
+    .logout-btn-varejo:hover {
+        background-color: rgba(220, 53, 69, 0.1); /* Fundo vermelho bem suave */
+    }
+
+        .logout-btn-varejo:hover i {
+            transform: translateY(-2px) scale(1.05); /* O mesmo "pulinho" dos outros ícones */
+            color: #dc3545 !important; /* Vermelho forte */
+            filter: saturate(1.5) drop-shadow(0 0 5px rgba(220, 53, 69, 0.4));
+        }
 
 /* 8.5 - Switch de Tema Premium (Sol e Lua) */
 .theme-switch {
@@ -629,3 +692,56 @@ input:checked + .slider:before {
     background-color: rgba(255,255,255,0.1);
 }
 /* #endregion */
+
+
+/* Garante que o footer fique preso embaixo e não empurre a tela na Home */
+.footer-glass {
+    width: 100%;
+    padding: 15px 0;
+    z-index: 10;
+}
+
+/* --- BOTÃO VOLTAR AO TOPO (PREMIUM GLASS) --- */
+.btn-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px; /* Mantém ele alinhado no canto direito */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Círculo perfeito */
+    /* Efeito Vidro igual ao da Navbar */
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(var(--ui-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
+    border: 1px solid var(--ui-glass-border);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    /* Centraliza o ícone */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 9999;
+    /* Transição elástica do hover */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+    /* Efeito ao passar o mouse */
+    .btn-top:hover {
+        transform: translateY(-2px) scale(1.05); /* Pulinho pra cima */
+        background-color: var(--sys-primary-light, #0d6efd); /* Cor de destaque */
+        color: #ffffff; /* Fica branco para dar contraste */
+        border-color: transparent;
+        box-shadow: 0 15px 30px rgba(var(--sys-primary-rgb, 13, 110, 253), 0.4); /* Sombra colorida */
+    }
+
+        /* Garante que o ícone acompanhe o movimento e a cor sem quebrar */
+        .btn-top:hover i {
+            color: #ffffff !important;
+        }
+
+/* Ajuste no Dark Mode para não ofuscar */
+[data-theme="dark"] .btn-top {
+    background: rgba(15, 23, 42, 0.8);
+}

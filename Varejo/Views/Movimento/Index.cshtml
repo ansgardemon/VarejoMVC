@@ -1,39 +1,81 @@
 ﻿@model IEnumerable<Varejo.Models.Movimento>
 
 @{
-	ViewData["Title"] = "Movimentos";
+    ViewData["Title"] = "Movimentos";
 }
 
-<h1>Movimentos</h1>
+<div class="container-fluid mt-4">
+    <div class="glass-card">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-boxes-packing fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <a href="@Url.Action("Create", "Movimento")" class="btn-glass btn-success text-white text-decoration-none border-0">
+                <i class="fa-solid fa-plus"></i>
+                <span class="d-none d-sm-inline ms-1">Novo Movimento</span>
+            </a>
+        </div>
 
-<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-	<table class="w-100">
-		<thead class="table-dark">
-			<tr>
-				<th>Número do Documento</th>
-				<th>Data do Movimento</th>
-				<th>Tipo de Movimento</th>
-				<th>Cliente/Fornecedor</th>
-				<th>Total de Produtos</th>
-				<th>Ações</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var movimento in Model)
-			{
-				<tr>
-					<td data-label="Documento">@movimento.Documento</td>
-					<td data-label="Data">@movimento.DataMovimento.ToString("dd/MM/yyyy HH:mm")</td>
-					<td data-label="Tipo">@movimento.TipoMovimento?.DescricaoTipoMovimento</td>
-					<td data-label="Pessoa">@movimento.Pessoa?.NomeRazao</td>
-					<td data-label="Qtd Produtos">@(movimento.ProdutosMovimento?.Count() ?? 0)</td>
-					<td data-label="Ações">
-						<a class="btn btn-info btn-sm" href="@Url.Action("Details", "Movimento", new { id = movimento.IdMovimento })">Detalhes</a>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+        <div class="table-responsive">
+            <table class="table-glass table-responsive-stack" id="sortableTable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center">Documento <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center">Data <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center">Tipo <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center">Cliente/Fornecedor <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;" class="text-md-center">
+                            <div class="d-flex justify-content-between align-items-center justify-content-md-center">Qtd. Produtos <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var movimento in Model)
+                        {
+                            <tr>
+                                <td data-label="Documento" class="fw-bold opacity-75">@movimento.Documento</td>
+                                <td data-label="Data" class="fw-semibold">@movimento.DataMovimento.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td data-label="Tipo">
+                                    <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: var(--glass-border);">@movimento.TipoMovimento?.DescricaoTipoMovimento</span>
+                                </td>
+                                <td data-label="Pessoa" class="fw-semibold">@(movimento.Pessoa?.NomeRazao ?? "-")</td>
+                                <td data-label="Qtd Produtos" class="text-md-center">
+                                    <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: transparent;">@(movimento.ProdutosMovimento?.Count() ?? 0)</span>
+                                </td>
+                                <td data-label="Ações">
+                                    <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                        <a href="@Url.Action("Details", "Movimento", new { id = movimento.IdMovimento })" class="btn btn-sm btn-info text-white rounded-pill px-3" title="Detalhes">
+                                            <i class="fa-solid fa-eye"></i> <span class="d-none d-xl-inline ms-1">Detalhes</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center p-4">
+                                <i class="fa-solid fa-box-open fs-1 opacity-25 d-block mb-3"></i>
+                                <span class="opacity-75 fw-semibold">Nenhum movimento registrado.</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
-<a class="btn btn-success mt-3" href="@Url.Action("Create", "Movimento")">Novo Movimento</a>

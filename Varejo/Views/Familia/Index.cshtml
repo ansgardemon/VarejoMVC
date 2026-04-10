@@ -1,73 +1,120 @@
 ﻿@model IEnumerable<Varejo.ViewModels.FamiliaViewModel>
 
 @{
-	ViewData["Title"] = "Famílias";
+    ViewData["Title"] = "Famílias";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-users-rectangle fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <a asp-action="Create" class="btn-glass btn-success text-white text-decoration-none border-0">
+                <i class="fa-solid fa-plus"></i>
+                <span class="d-none d-sm-inline ms-1">Nova Família</span>
+            </a>
+        </div>
 
-<p>
-	<a asp-action="Create" class="btn btn-primary">Criar Nova Família</a>
-</p>
+        <div class="p-3 mb-4 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+            <form method="get">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label opacity-75 small fw-bold text-uppercase mb-1">Pesquisar</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--glass-border);"><i class="fa-solid fa-magnifying-glass opacity-50"></i></span>
+                            <input type="text" name="search" value="@ViewBag.Search" class="form-control border-start-0 ps-0" placeholder="Nome da Família..." />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label opacity-75 small fw-bold text-uppercase mb-1">Marca</label>
+                        <select name="marcaId" class="form-select" asp-items="ViewBag.Marcas">
+                            <option value="">Todas as Marcas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label opacity-75 small fw-bold text-uppercase mb-1">Categoria</label>
+                        <select name="categoriaId" class="form-select" asp-items="ViewBag.Categorias">
+                            <option value="">Todas as Categorias</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn-glass btn-info text-white border-0 w-100 justify-content-center">
+                            Filtrar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-<!-- FILTROS -->
-<form method="get" class="mb-3">
-	<div class="row g-2">
-		<div class="col-md-3">
-			<input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Pesquisar por nome" />
-		</div>
-		<div class="col-md-3">
-			<select name="marcaId" class="form-select" asp-items="ViewBag.Marcas">
-				<option value="">Todas as Marcas</option>
-			</select>
-		</div>
-		<div class="col-md-3">
-			<select name="categoriaId" class="form-select" asp-items="ViewBag.Categorias">
-				<option value="">Todas as Categorias</option>
-			</select>
-		</div>
-		<div class="col-md-3">
-			<button type="submit" class="btn btn-secondary w-100">Filtrar</button>
-		</div>
-	</div>
-</form>
-<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-	<table class="w-100">
-		<thead>
-			<tr class="text-center">
-				<th>#</th>
-				<th>Nome</th>
-				<th>Marca</th>
-				<th>Categoria</th>
-				<th>Ativo</th>
-				<th>Ações</th>
-			</tr>
-		</thead>
-		<tbody>
-			@if (Model != null && Model.Any())
-			{
-				foreach (var familia in Model)
-				{
-					<tr class="text-center">
-						<td data-label="ID">@familia.IdFamilia</td>
-						<td data-label="Família">@familia.NomeFamilia</td>
-						<td data-label="Marca">@familia.Marca?.NomeMarca</td>
-						<td data-label="Categoria">@familia.Categoria?.DescricaoCategoria</td>
-						<td data-label="Ativo">@(familia.Ativo ? "✅" : "❌")</td>
-						<td data-label="Ações">
-							<a asp-action="Details" asp-route-id="@familia.IdFamilia" class="btn btn-sm btn-info">Exibir Produtos</a>
-							<a asp-action="Edit" asp-route-id="@familia.IdFamilia" class="btn btn-sm btn-warning">Editar</a>
-						</td>
-					</tr>
-
-				}
-			}
-			else
-			{
-				<tr>
-					<td colspan="6" class="text-center">Nenhuma família encontrada.</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+        <div class="table-responsive">
+            <table class="table-glass table-responsive-stack" id="sortableTable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center"># <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center">Nome <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center">Marca <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center">Categoria <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" class="text-md-center" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center justify-content-md-center">Ativo <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var familia in Model)
+                        {
+                            <tr>
+                                <td data-label="ID">@familia.IdFamilia</td>
+                                <td data-label="Família" class="fw-semibold">@familia.NomeFamilia</td>
+                                <td data-label="Marca" class="opacity-75">@(familia.Marca?.NomeMarca ?? "-")</td>
+                                <td data-label="Categoria" class="opacity-75">@(familia.Categoria?.DescricaoCategoria ?? "-")</td>
+                                <td data-label="Ativo" class="text-md-center">
+                                    @if (familia.Ativo)
+                                    {
+                                        <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25"><i class="fa-solid fa-check me-1 d-none d-md-inline"></i> Ativo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25"><i class="fa-solid fa-xmark me-1 d-none d-md-inline"></i> Inativo</span>
+                                    }
+                                </td>
+                                <td data-label="Ações">
+                                    <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@familia.IdFamilia" class="btn btn-sm btn-info text-white rounded-pill px-3" title="Exibir Produtos">
+                                            <i class="fa-solid fa-eye"></i> <span class="d-none d-xl-inline ms-1">Produtos</span>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@familia.IdFamilia" class="btn btn-sm btn-warning text-dark rounded-pill px-3" title="Editar">
+                                            <i class="fa-solid fa-pen-to-square"></i> <span class="d-none d-xl-inline ms-1">Editar</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center p-4">
+                                <i class="fa-solid fa-magnifying-glass fs-1 opacity-25 d-block mb-3"></i>
+                                <span class="opacity-75 fw-semibold">Nenhuma família encontrada.</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

@@ -1,46 +1,65 @@
 ﻿@model IEnumerable<Varejo.ViewModels.PessoaViewModel>
 
 @{
-	ViewData["Title"] = "Pessoas";
+    ViewData["Title"] = "Pessoas";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-users fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">Gestão de Pessoas</h4>
+            </div>
+            <a asp-action="Create" class="btn-glass btn-success text-white border-0 text-decoration-none">
+                <i class="fa-solid fa-plus me-1"></i> Nova Pessoa
+            </a>
+        </div>
 
-<h3>Lista de Pessoas</h3>
-
-<p>
-	<a asp-action="Create" class="btn btn-primary">Criar Nova Pessoa</a>
-</p>
-<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-
-	<table class="w-100">
-		<thead>
-			<tr class="text-center">
-				<th>#</th>
-				<th>Nome</th>
-				<th>CPF/CNPJ</th>
-				<th>Telefone</th>
-				<th>Email</th>
-				<th>Ativo</th>
-				<th>Ações</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var pessoa in Model)
-			{
-				<tr class="text-center">
-					<td data-label="ID">@pessoa.IdPessoa</td>
-					<td data-label="Nome">@pessoa.NomeRazao</td>
-					<td data-label="CPF/CNPJ">@pessoa.CpfCnpj</td>
-					<td data-label="Telefone">@($"({pessoa.Ddd}) {pessoa.Telefone}")</td>
-					<td data-label="Email">@pessoa.Email</td>
-					<td data-label="Ativo">@(pessoa.Ativo ? "✅" : "❌")</td>
-					<td data-label="Ações">
-						<a asp-action="Details" asp-route-id="@pessoa.IdPessoa" class="btn btn-sm btn-info">Detalhes</a>
-						<a asp-action="Edit" asp-route-id="@pessoa.IdPessoa" class="btn btn-sm btn-warning">Editar</a>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+        <div class="table-responsive">
+            <table class="table-glass table-responsive-stack" id="sortableTable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-sort-type="number" class="ps-md-4">#</th>
+                        <th data-sortable="true" data-sort-type="string">Nome / Razão</th>
+                        <th data-sortable="true" data-sort-type="string">CPF / CNPJ</th>
+                        <th>Contato</th>
+                        <th data-sortable="true" data-sort-type="string" class="text-md-center">Status</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pessoa in Model)
+                    {
+                        <tr>
+                            <td class="ps-md-4" data-label="ID">@pessoa.IdPessoa</td>
+                            <td data-label="Nome" class="fw-bold">@pessoa.NomeRazao</td>
+                            <td data-label="Documento">@pessoa.CpfCnpj</td>
+                            <td data-label="Contato">
+                                <small class="d-block fw-bold opacity-75">@pessoa.Email</small>
+                                <small class="opacity-50">(@pessoa.Ddd) @pessoa.Telefone</small>
+                            </td>
+                            <td data-label="Status" class="text-md-center">
+                                @if (pessoa.Ativo)
+                                {
+                                    <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25">ATIVO</span>
+                                }
+                                else
+                                {
+                                    <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25">INATIVO</span>
+                                }
+                            </td>
+                            <td data-label="Ações">
+                                <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                    <a asp-action="Details" asp-route-id="@pessoa.IdPessoa" class="btn btn-sm btn-info text-white rounded-pill px-3" title="Detalhes"><i class="fa-solid fa-eye"></i></a>
+                                    <a asp-action="Edit" asp-route-id="@pessoa.IdPessoa" class="btn btn-sm btn-warning text-dark rounded-pill px-3" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

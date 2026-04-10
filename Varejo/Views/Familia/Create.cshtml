@@ -4,53 +4,60 @@
     ViewData["Title"] = "Criar Nova Família";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-folder-plus fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
-        <div class="card-body">
-            <form asp-action="Create" method="post">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-                <div class="mb-3">
-                    <label asp-for="NomeFamilia" class="form-label"></label>
-                    <input asp-for="NomeFamilia" class="form-control" />
-                    <span asp-validation-for="NomeFamilia" class="text-danger"></span>
-                </div>
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
 
-                <div class="mb-3">
-                    <label asp-for="MarcaId" class="form-label">Marca</label>
-                    <select asp-for="MarcaId" class="form-select card" asp-items="ViewBag.Marcas">
+            <div class="mb-3">
+                <label asp-for="NomeFamilia" class="form-label fw-bold opacity-75"></label>
+                <input asp-for="NomeFamilia" class="form-control form-control-lg" placeholder="Nome da Família..." />
+                <span asp-validation-for="NomeFamilia" class="text-danger small mt-1 d-block fw-semibold"></span>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="MarcaId" class="form-label fw-bold opacity-75">Marca</label>
+                    <select asp-for="MarcaId" class="form-select form-control-lg" asp-items="ViewBag.Marcas">
                         <option value="">-- Selecione a Marca --</option>
                     </select>
-                    <span asp-validation-for="MarcaId" class="text-danger"></span>
+                    <span asp-validation-for="MarcaId" class="text-danger small mt-1 d-block fw-semibold"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="CategoriaId" class="form-label">Categoria</label>
-                    <select asp-for="CategoriaId" class="form-select card" asp-items="ViewBag.Categorias">
+                <div class="col-md-6">
+                    <label asp-for="CategoriaId" class="form-label fw-bold opacity-75">Categoria</label>
+                    <select asp-for="CategoriaId" class="form-select form-control-lg" asp-items="ViewBag.Categorias">
                         <option value="">-- Selecione a Categoria --</option>
                     </select>
-                    <span asp-validation-for="CategoriaId" class="text-danger"></span>
+                    <span asp-validation-for="CategoriaId" class="text-danger small mt-1 d-block fw-semibold"></span>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="card check p-3 text-center ativo-btn mb-2">
-                        <input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
-                    </label>
+            <div class="mb-5 p-3 rounded-4 d-flex align-items-center justify-content-between" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                <div>
+                    <h6 class="mb-0 fw-bold opacity-75">Status da Família</h6>
+                    <small class="text-muted">Define se a família estará disponível no sistema.</small>
                 </div>
+                <div class="form-check form-switch fs-4 mb-0">
+                    <input asp-for="Ativo" class="form-check-input" type="checkbox" role="switch" checked />
+                </div>
+            </div>
 
-                <div class="d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-chevron-left"></i> Voltar
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-circle-plus"></i> Criar Família
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-circle-check"></i> Criar Família
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 

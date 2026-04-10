@@ -1,105 +1,99 @@
 ﻿@model Varejo.ViewModels.ParametroViewModel
 @{
-    ViewData["Title"] = "Parâmetros";
+    ViewData["Title"] = "Parâmetros do Sistema";
     var tipos = ViewBag.Tipos as List<Varejo.Models.TipoMovimento>;
 }
 
-<h2 class="mb-4">⚙️ @ViewData["Title"]</h2>
-
-<div class="container-fluid py-3">
-
+<div class="container-fluid mt-4">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
-
-            <div class="card shadow-sm">
-                <div class="card-header fw-semibold">
-                    Configuração de Tipos de Movimento
+        <div class="col-12 col-lg-7">
+            
+            <div class="glass-card">
+                
+                <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                    <i class="fa-solid fa-gears fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                    <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
                 </div>
 
-                <div class="card-body">
-
-                    <form asp-action="Index" method="post">
-
-                        <div class="row g-3">
-
-                            <!-- VENDA -->
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">🛒 Venda</label>
-                                <select asp-for="TipoMovimentoVendaId" class="form-select">
-                                    <option value="">-- selecione --</option>
-                                    @foreach (var t in tipos)
-                                    {
-                                        <option value="@t.IdTipoMovimento">
-                                            @t.DescricaoTipoMovimento
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-
-                            <!-- COMPRA -->
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">📦 Compra</label>
-                                <select asp-for="TipoMovimentoCompraId" class="form-select">
-                                    <option value="">-- selecione --</option>
-                                    @foreach (var t in tipos)
-                                    {
-                                        <option value="@t.IdTipoMovimento">
-                                            @t.DescricaoTipoMovimento
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-
-                            <!-- AVARIA -->
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">⚠️ Avaria</label>
-                                <select asp-for="TipoMovimentoAvariaId" class="form-select">
-                                    <option value="">-- selecione --</option>
-                                    @foreach (var t in tipos)
-                                    {
-                                        <option value="@t.IdTipoMovimento">
-                                            @t.DescricaoTipoMovimento
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-
-
-                            <!-- BONIFICAÇÃO -->
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">⚠️ Bonificação</label>
-                                <select asp-for="TipoMovimentoEntradaBonificacaoId" class="form-select">
-                                    <option value="">-- selecione --</option>
-                                    @foreach (var t in tipos)
-                                    {
-                                        <option value="@t.IdTipoMovimento">
-                                            @t.DescricaoTipoMovimento
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-
-                        </div>
-
-                        <div class="mt-4 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">
-                                💾 Salvar Parâmetros
-                            </button>
-                        </div>
-
-                    </form>
-
+                <div class="alert bg-info bg-opacity-10 border border-info border-opacity-25 text-info mb-4 d-flex align-items-center" role="alert">
+                    <i class="fa-solid fa-circle-info fs-5 me-3"></i>
+                    <div class="small fw-semibold">
+                        Defina os tipos de movimento padrão que o sistema deve utilizar para as operações automáticas.
+                    </div>
                 </div>
+
+                <form asp-action="Index" method="post">
+                    <div class="row g-4">
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold opacity-75 d-flex align-items-center">
+                                <i class="fa-solid fa-cart-shopping me-2 text-success"></i> Venda
+                            </label>
+                            <select asp-for="TipoMovimentoVendaId" class="form-select form-control-lg">
+                                <option value="">-- selecione o tipo --</option>
+                                @foreach (var t in tipos)
+                                {
+                                    <option value="@t.IdTipoMovimento">@t.DescricaoTipoMovimento</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold opacity-75 d-flex align-items-center">
+                                <i class="fa-solid fa-truck-ramp-box me-2" style="color: var(--sys-primary-light);"></i> Compra
+                            </label>
+                            <select asp-for="TipoMovimentoCompraId" class="form-select form-control-lg">
+                                <option value="">-- selecione o tipo --</option>
+                                @foreach (var t in tipos)
+                                {
+                                    <option value="@t.IdTipoMovimento">@t.DescricaoTipoMovimento</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold opacity-75 d-flex align-items-center">
+                                <i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i> Avaria
+                            </label>
+                            <select asp-for="TipoMovimentoAvariaId" class="form-select form-control-lg">
+                                <option value="">-- selecione o tipo --</option>
+                                @foreach (var t in tipos)
+                                {
+                                    <option value="@t.IdTipoMovimento">@t.DescricaoTipoMovimento</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold opacity-75 d-flex align-items-center">
+                                <i class="fa-solid fa-gift me-2 text-warning"></i> Bonificação
+                            </label>
+                            <select asp-for="TipoMovimentoEntradaBonificacaoId" class="form-select form-control-lg">
+                                <option value="">-- selecione o tipo --</option>
+                                @foreach (var t in tipos)
+                                {
+                                    <option value="@t.IdTipoMovimento">@t.DescricaoTipoMovimento</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-5 pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-end">
+                        <button type="submit" class="btn-glass btn-success border-0 text-white">
+                            <i class="fa-solid fa-floppy-disk"></i> Salvar Parâmetros
+                        </button>
+                    </div>
+                </form>
             </div>
 
             @if (TempData["Sucesso"] != null)
             {
-                <div class="alert alert-success mt-3">
-                    @TempData["Sucesso"]
+                <div class="alert bg-success bg-opacity-10 border border-success border-opacity-25 text-success fw-semibold d-flex align-items-center mt-3 animate__animated animate__fadeInUp" role="alert">
+                    <i class="fa-solid fa-circle-check fs-5 me-2"></i>
+                    <div>@TempData["Sucesso"]</div>
                 </div>
             }
-
         </div>
     </div>
-
 </div>

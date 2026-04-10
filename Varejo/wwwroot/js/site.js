@@ -102,4 +102,41 @@
         });
     }
     // #endregion
+
+    // #region 6. MOBILE DRILL-DOWN MENU LOGIC
+    // Usar $(document).on garante que o evento funcione mesmo se o Bootstrap recriar o elemento
+    $(document).on('click', '.mobile-drill-trigger', function (e) {
+        e.preventDefault();
+        const targetId = $(this).data('target');
+        const title = $(this).data('title');
+
+        $('#mobileMainView').removeClass('active').addClass('main-pushed');
+        $(targetId).addClass('active');
+
+        $('#mobileBackTitle').text(title);
+        $('#mobileBackBtn').removeClass('d-none');
+    });
+
+    $(document).on('click', '#mobileBackBtn', function (e) {
+        e.preventDefault();
+        $('.mobile-view-container').removeClass('active');
+        $('#mobileMainView').removeClass('main-pushed').addClass('active');
+        $(this).addClass('d-none');
+    });
+
+    // Reset nativo do Bootstrap (sem jQuery para evitar o erro de backdrop)
+    const offcanvasEl = document.getElementById('mobileMenuOffcanvas');
+    if (offcanvasEl) {
+        offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
+            $('.mobile-view-container').removeClass('active main-pushed');
+            $('#mobileMainView').addClass('active');
+            $('#mobileBackBtn').addClass('d-none');
+        });
+    }
+    $('#theme-checkbox-mobile').on('change', function () {
+        $('#theme-checkbox').prop('checked', this.checked).trigger('change');
+    });
+
+    // #endregion
+
 });

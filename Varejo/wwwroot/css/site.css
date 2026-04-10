@@ -166,6 +166,11 @@ h1.vitrino {
     margin: 0 15px;
     opacity: 0.5;
 }
+
+[data-theme="dark"] .navbar-varejo {
+    background: rgba(15, 23, 42, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.1);
+}
 /* #endregion */
 
 /* #region 4. DROPDOWNS E TOOLTIPS (VITRIN.O STYLE) */
@@ -440,12 +445,14 @@ input:checked + .slider:before {
         display: block;
         transition: all 0.3s ease !important;
         filter: saturate(1.3) brightness(1.1);
+        
     }
 
     .nav-drop:hover > i, .nav-link-glass:hover i, .nav-drop.active > i {
         transform: translateY(-4px) scale(1.05);
         filter: saturate(1) brightness(1.1);
         color: var(--sys-primary-light) !important;
+        text-decoration: none;
     }
 
 /* 8.3 - Dropdowns Estilo Glass (SEMPRE ABRE PARA BAIXO AGORA) */
@@ -744,4 +751,183 @@ input:checked + .slider:before {
 /* Ajuste no Dark Mode para não ofuscar */
 [data-theme="dark"] .btn-top {
     background: rgba(15, 23, 42, 0.8);
+}
+
+/* #region 9. OFFCANVAS MOBILE (DRILL-DOWN MENU) */
+
+/* 1. Base Offcanvas (Efeito Vidro e Estrutura Flex) */
+.glass-offcanvas.offcanvas {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid var(--ui-glass-border);
+    color: var(--text) !important;
+    width: 85vw !important;
+    max-width: 320px;
+    z-index: 10005 !important;
+    /* Prepara o menu para ter topo fixo, meio rolável e rodapé fixo */
+    display: flex;
+    flex-direction: column;
+}
+
+[data-theme="dark"] .glass-offcanvas.offcanvas {
+    background: rgba(15, 23, 42, 0.98) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Esconde no Desktop para não poluir o DOM (Evita conflitos visuais) */
+@media (min-width: 992px) {
+    .glass-offcanvas.offcanvas {
+        display: none !important;
+    }
+}
+
+/* 2. Textos, Ícones e Cabeçalho do Mobile */
+.glass-offcanvas .offcanvas-title {
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .glass-offcanvas .offcanvas-title {
+    color: #fff !important;
+}
+
+/* Inverte a cor do 'X' de fechar dependendo do tema */
+.btn-close-white {
+    filter: invert(0);
+}
+
+[data-theme="dark"] .btn-close-white {
+    filter: invert(1);
+}
+
+.user-section-mobile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* 3. Itens do Menu (Links) */
+.mobile-menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    color: var(--text) !important;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: transparent;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .mobile-menu-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mobile-menu-item:hover, .mobile-menu-item:active {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .mobile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Ícones à esquerda de cada link */
+.mobile-menu-item i:first-child {
+    width: 25px;
+    text-align: center;
+    color: var(--sys-primary-light, #4facfe);
+    font-size: 1.2rem;
+    margin-right: 8px;
+}
+
+/* 4. Lógica de Gavetas e Rolagem (Drill-down) */
+.mobile-view-container {
+    width: 100%;
+    height: 100%; /* Ocupa o espaço livre do meio do menu */
+    overflow-y: auto; /* Permite rolagem vertical */
+    overflow-x: hidden; /* Corta rolagem horizontal */
+
+    display: none; /* Esconde as gavetas inativas */
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+    .mobile-view-container.active {
+        display: block; /* Exibe apenas a gaveta ativa */
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .mobile-view-container.sub-view {
+        /*transform: translateX(50px);*/ /* Efeito de deslizar da direita */
+    }
+
+    .mobile-view-container.main-pushed {
+        display: none; /* Esconde a tela principal quando uma gaveta abre */
+    }
+
+    /* Customização da barra de rolagem (Fina e elegante) */
+    .mobile-view-container::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .mobile-view-container::-webkit-scrollbar-thumb {
+        background: rgba(128, 128, 128, 0.3);
+        border-radius: 10px;
+    }
+
+/* 5. Botão Voltar (Aparece ao entrar nas gavetas) */
+.mobile-back-header {
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--sys-primary-light, #4facfe);
+    border-bottom: 1px solid var(--ui-glass-border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+[data-theme="dark"] .mobile-back-header {
+    background: rgba(255, 255, 255, 0.05);
+}
+/* #endregion */
+
+/* MOBILE (Celulares e Tablets menores) */
+@media (max-width: 991px) {
+    /* 1. Esconde as estruturas de links que vão no PC */
+    .navbar-collapse,
+    .nav-hub,
+    .nav-divider {
+        display: none !important;
+    }
+
+    /* 2. Arranca a pílula do meio da tela e joga pro canto superior direito */
+    .navbar-varejo {
+        bottom: 20px !important;
+        right: 20px !important;
+        left: auto !important; /* Mata o left: 50% do desktop */
+        bottom: auto !important;
+        transform: none !important; /* Mata o translate do desktop */
+        /* Transforma a pílula numa bolinha perfeita */
+        width: 55px !important;
+        height: 55px !important;
+        min-width: 55px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        justify-content: center !important;
+    }
+
+    /* 3. O botão sanduíche aparece e ocupa a bolinha toda */
+    .navbar-toggler {
+        display: flex !important;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        outline: none !important;
+        box-shadow: none !important;
+    }
 }

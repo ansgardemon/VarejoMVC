@@ -4,44 +4,94 @@
     ViewData["Title"] = "Detalhes do Movimento";
 }
 
-<h1>Detalhes do Movimento</h1>
+<div class="container-fluid mt-4">
+    <div class="glass-card mb-4">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-circle-info fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">Movimento: #@Model.IdMovimento</h4>
+        </div>
 
-<!-- Dados gerais do movimento -->
-<div class="card mb-4">
-    <div class="card-body">
-        <h5 class="card-title">Movimento: @Model.IdMovimento</h5>
-        <p><strong>Documento:</strong> @Model.Documento</p>
-        <p><strong>Observação:</strong> @Model.Observacao</p>
-        <p><strong>Tipo de Movimento:</strong> @Model.TipoMovimento?.DescricaoTipoMovimento</p>
-        <p><strong>Cliente/Fornecedor:</strong> @Model.Pessoa?.NomeRazao</p>
-        <p><strong>Data:</strong> @Model.DataMovimento.ToString("dd/MM/yyyy HH:mm")</p>
-    </div>
-</div>
-
-<hr />
-
-<h3>Produtos do Movimento</h3>
-
-<div class="row">
-    @foreach (var pm in Model.ProdutosMovimento)
-    {
-        var produto = pm.Produto;
-        var imagem = produto?.UrlImagem ?? "/images/produto-padrao.png";
-        <div class="col-md-3 mb-3">
-            <div class="card">
-                <img src="@imagem" class="card-img-top" alt="@produto?.NomeProduto" style="height:150px; object-fit:cover;">
-                <div class="card-body">
-                    <h5 class="card-title">@produto?.NomeProduto</h5>
-                    <p><strong>Quantidade:</strong> @pm.Quantidade</p>
-                    <p><strong>Embalagem:</strong> @(pm.ProdutoEmbalagem?.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "Padrão")</p>
-                    @if (pm.ProdutoEmbalagem != null)
-                    {
-                        <p><strong>Preço:</strong> R$ @pm.ProdutoEmbalagem.Preco.ToString("0.00")</p>
-                    }
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Documento</span>
+                    <span class="fs-6 fw-semibold">@Model.Documento</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Tipo</span>
+                    <span class="fs-6 fw-semibold text-primary">@Model.TipoMovimento?.DescricaoTipoMovimento</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Cliente/Fornecedor</span>
+                    <span class="fs-6 fw-semibold text-truncate d-block">@(Model.Pessoa?.NomeRazao ?? "-")</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Data</span>
+                    <span class="fs-6 fw-semibold">@Model.DataMovimento.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Observação</span>
+                    <span class="fs-6 fw-semibold">@(string.IsNullOrEmpty(Model.Observacao) ? "-" : Model.Observacao)</span>
                 </div>
             </div>
         </div>
-    }
-</div>
 
-<a asp-action="Index" class="btn btn-secondary mt-3">Voltar</a>
+        <hr class="border-secondary border-opacity-25 my-4" />
+
+        <div class="d-flex align-items-center mb-4">
+            <i class="fa-solid fa-boxes-stacked fs-4 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h5 class="fw-bold mb-0">Produtos do Movimento</h5>
+        </div>
+
+        <div class="row g-4">
+            @if (Model.ProdutosMovimento != null && Model.ProdutosMovimento.Any())
+            {
+                foreach (var pm in Model.ProdutosMovimento)
+                {
+                    var produto = pm.Produto;
+                    var imagem = produto?.UrlImagem ?? "/img/sem-foto.png";
+                    
+                    <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+                        <div class="glass-card h-100 d-flex flex-column p-3 text-center">
+                            <div class="d-flex justify-content-center align-items-center rounded-4 mb-3 p-2" style="height: 140px; background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border); overflow:hidden;">
+                                <img src="@imagem" alt="@produto?.NomeProduto" style="max-height:100%; max-width:100%; object-fit:contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));">
+                            </div>
+                            
+                            <h6 class="fw-bold mb-3 text-truncate" style="color: var(--text);">@produto?.NomeProduto</h6>
+                            
+                            <div class="mt-auto text-start p-2 rounded-3" style="background: rgba(0,0,0,0.02); border: 1px dashed var(--glass-border);">
+                                <p class="mb-1 small"><strong class="opacity-75">Qtd:</strong> <span class="fw-bold text-primary fs-6">@pm.Quantidade</span></p>
+                                <p class="mb-1 small"><strong class="opacity-75">Embalagem:</strong> @(pm.ProdutoEmbalagem?.TipoEmbalagem?.DescricaoTipoEmbalagem ?? "Padrão")</p>
+                                @if (pm.ProdutoEmbalagem != null)
+                                {
+                                    <p class="mb-0 small"><strong class="opacity-75">Preço:</strong> R$ @pm.ProdutoEmbalagem.Preco.ToString("N2")</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center p-4 opacity-50">
+                    <p class="mb-0 fw-semibold">Nenhum produto vinculado a este movimento.</p>
+                </div>
+            }
+        </div>
+
+        <div class="mt-5 pt-3 border-top border-secondary border-opacity-25">
+            <a asp-action="Index" class="btn-glass text-decoration-none d-inline-flex">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+</div>

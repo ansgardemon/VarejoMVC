@@ -4,57 +4,65 @@
     ViewData["Title"] = "Editar Família";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-warning text-dark">
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-warning border-opacity-25">
+            <i class="fa-solid fa-pen-to-square fs-3 me-3 text-warning"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
-        <div class="card-body">
-            <form asp-action="Edit">
-                <input type="hidden" asp-for="IdFamilia" />
 
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="IdFamilia" />
 
-                <div class="mb-3">
-                    <label asp-for="NomeFamilia" class="form-label"></label>
-                    <input asp-for="NomeFamilia" class="form-control" />
-                    <span asp-validation-for="NomeFamilia" class="text-danger"></span>
-                </div>
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
 
-                <div class="mb-3">
-                    <label asp-for="MarcaId" class="form-label">Marca</label>
-                    <select asp-for="MarcaId" class="form-select card" asp-items="ViewBag.Marcas">
+            <div class="mb-3">
+                <label asp-for="NomeFamilia" class="form-label fw-bold opacity-75"></label>
+                <input asp-for="NomeFamilia" class="form-control form-control-lg" />
+                <span asp-validation-for="NomeFamilia" class="text-danger small mt-1 d-block fw-semibold"></span>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="MarcaId" class="form-label fw-bold opacity-75">Marca</label>
+                    <select asp-for="MarcaId" class="form-select form-control-lg" asp-items="ViewBag.Marcas">
                         <option value="">Selecione a marca</option>
                     </select>
-                    <span asp-validation-for="MarcaId" class="text-danger"></span>
+                    <span asp-validation-for="MarcaId" class="text-danger small mt-1 d-block fw-semibold"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="CategoriaId" class="form-label">Categoria</label>
-                    <select asp-for="CategoriaId" class="form-select card" asp-items="ViewBag.Categorias">
+                <div class="col-md-6">
+                    <label asp-for="CategoriaId" class="form-label fw-bold opacity-75">Categoria</label>
+                    <select asp-for="CategoriaId" class="form-select form-control-lg" asp-items="ViewBag.Categorias">
                         <option value="">Selecione a categoria</option>
                     </select>
-                    <span asp-validation-for="CategoriaId" class="text-danger"></span>
+                    <span asp-validation-for="CategoriaId" class="text-danger small mt-1 d-block fw-semibold"></span>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="card check p-3 text-center ativo-btn mb-2">
-                        <input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
-                    </label>
+            <div class="mb-5 p-3 rounded-4 d-flex align-items-center justify-content-between" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                <div>
+                    <h6 class="mb-0 fw-bold opacity-75">Status da Família</h6>
+                    <small class="text-muted">Desativar ocultará a família de novas operações.</small>
                 </div>
+                <div class="form-check form-switch fs-4 mb-0">
+                    <input asp-for="Ativo" class="form-check-input" type="checkbox" role="switch" />
+                </div>
+            </div>
 
-                <div class="d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-chevron-left"></i> Voltar
-                    </a>
-                    <button type="submit" class="btn btn-warning">
-                        <i class="fa-solid fa-pen-to-square"></i> Atualizar
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-warning border-0 text-dark">
+                    <i class="fa-solid fa-floppy-disk"></i> Atualizar
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-}
+}   

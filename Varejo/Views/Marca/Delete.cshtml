@@ -1,45 +1,45 @@
 ﻿@model Varejo.ViewModels.MarcaViewModel
 
-
-
 @{
     ViewData["Title"] = "Excluir Marca";
 }
 
-
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-danger text-white">
-
-            @if (ViewData["DeleteError"] != null)
-            {
-                <div class="alert alert-danger mt-3">
-                    @ViewData["DeleteError"]
-                </div>
-            }
-
-
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-danger border-opacity-25">
+            <i class="fa-solid fa-triangle-exclamation fs-3 me-3 text-danger"></i>
+            <h4 class="mb-0 fw-bold text-danger">@ViewData["Title"]</h4>
         </div>
-        <div class="card-body">
-            <h5>Você tem certeza que deseja excluir esta marca?</h5>
-            <hr />
-            <dl class="row">
-                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.NomeMarca)</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.NomeMarca)</dd>
-            </dl>
 
-            <form asp-action="Delete">
-                <input type="hidden" asp-for="IdMarca" />
-                <div class="d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-chevron-left"></i> Cancelar
-                    </a>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fa-solid fa-trash"></i> Excluir
-                    </button>
-                </div>
-            </form>
+        @if (ViewData["DeleteError"] != null)
+        {
+            <div class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold d-flex align-items-center mb-4" role="alert">
+                <i class="fa-solid fa-circle-exclamation fs-5 me-3"></i>
+                <div>@ViewData["DeleteError"]</div>
+            </div>
+        }
+
+        <h5 class="fw-bold mb-4">Você tem certeza que deseja excluir esta marca?</h5>
+
+        <div class="p-4 rounded-4 mb-5 text-center" style="background: rgba(0, 0, 0, 0.03); border: 1px dashed var(--glass-border);">
+            <p class="mb-1 opacity-75 fw-bold text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">@Html.DisplayNameFor(model => model.NomeMarca)</p>
+            <p class="mb-0 fs-4 fw-semibold" style="color: var(--sys-primary-light, #4facfe);">
+                @Html.DisplayFor(model => model.NomeMarca)
+            </p>
         </div>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="IdMarca" />
+            
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-danger border-0">
+                    <i class="fa-solid fa-trash-can"></i> Confirmar Exclusão
+                </button>
+            </div>
+        </form>
     </div>
 </div>

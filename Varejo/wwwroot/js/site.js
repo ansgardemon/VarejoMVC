@@ -59,14 +59,17 @@
     $(seletores).filter(':visible:first').focus();
     // #endregion
 
-    // #region 3. NAVEGAÇÃO COM ENTER
-    $('form').on('keydown', 'input, select, textarea', function (e) {
+    // #region 3. NAVEGAÇÃO COM ENTER (Formulários)
+    $('form').on('keydown', 'input, select', function (e) {
         if (e.key === 'Enter') {
-            if (this.tagName.toLowerCase() === 'textarea') return;
-            e.preventDefault();
+            e.preventDefault(); // Impede o envio acidental antes da hora
             const form = $(this).closest('form');
-            const campos = form.find('input, select, textarea, button:not([type="button"])').filter(':visible:not([disabled]):not([readonly])');
+
+            // Mapeia todos os inputs visíveis, habilitados e o botão de submit final
+            const campos = form.find('input, select, textarea, button[type="submit"]').filter(':visible:not([disabled]):not([readonly])');
             const indexAtual = campos.index(this);
+
+            // Se houver um próximo campo, foca nele. Se for o último, submete.
             if (indexAtual > -1 && indexAtual + 1 < campos.length) {
                 campos.eq(indexAtual + 1).focus();
             } else {
@@ -194,6 +197,116 @@
             tbody.append(row);
         });
     });
+    // #endregion
+
+    // #region 12. UTILITÁRIOS: MÁSCARAS, VALIDAÇÕES E VIACEP
+
+    // --- MÁSCARAS INTELIGENTES ---
+    $(document).on('input', '.cpf-cnpj-mask', function () {
+        let v = $(this).val().replace(/\D/g, "");
+        if (v.length <= 11) {
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        } else {
+            v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+            v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+            v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+            v = v.replace(/(\d{4})(\d)/, "$1-$2");
+        }
+        $(this).val(v.length > 18 ? v.substring(0, 18) : v);
+    });
+
+    $(document).on('input', '.cep-mask', function () {
+        let v = $(this).val().replace(/\D/g, "");
+        v = v.replace(/(\d{5})(\d)/, "$1-$2");
+        $(this).val(v.length > 9 ? v.substring(0, 9) : v);
+    });
+
+    $(document).on('input', '.tel-mask', function () {
+        let v = $(this).val().replace(/\D/g, "");
+        v = v.replace(/(\d{5})(\d)/, "$1-$2");
+        $(this).val(v.length > 10 ? v.substring(0, 10) : v);
+    });
+
+    // --- BUSCA VIACEP (DINÂMICA PARA MÚLTIPLOS ENDEREÇOS) ---
+    $(document).on('blur', '.cep-mask', function () {
+        const cep = $(this).val().replace(/\D/g, '');
+        const container = $(this).closest('.endereco-item'); // Encontra o card do endereço atual
+
+        if (cep !== "" && /^[0-9]{8}$/.test(cep)) {
+            // Feedback visual de carregamento
+            $(this).addClass('is-loading');
+
+            $.getJSON(`https://viacep.com.br/ws/${cep}/json/?callback=?`, function (dados) {
+                if (!("erro" in dados)) {
+                    container.find('input[name*="Logradouro"]').val(dados.logradouro);
+                    container.find('input[name*="Bairro"]').val(dados.bairro);
+                    container.find('input[name*="Cidade"]').val(dados.localidade);
+                    container.find('input[name*="Uf"]').val(dados.uf);
+                    container.find('input[name*="Numero"]').focus();
+                } else {
+                    alert("CEP não encontrado.");
+                }
+            }).always(function () {
+                $('.cep-mask').removeClass('is-loading');
+            });
+        }
+    });
+
+    // --- VALIDAÇÃO REAL-TIME CPF/CNPJ ---
+    $(document).on('blur', '.cpf-cnpj-mask', function () {
+        const valor = $(this).val().replace(/\D/g, '');
+        const input = $(this);
+
+        if (valor === "") return;
+
+        let valido = false;
+        if (valor.length === 11) valido = validarCPF(valor);
+        else if (valor.length === 14) valido = validarCNPJ(valor);
+
+        if (!valido) {
+            input.addClass('is-invalid').removeClass('is-valid');
+            if (!input.next('.invalid-feedback').length) {
+                input.after('<div class="invalid-feedback fw-bold">Documento inválido. Verifique os números.</div>');
+            }
+        } else {
+            input.removeClass('is-invalid').addClass('is-valid');
+            input.next('.invalid-feedback').remove();
+        }
+    });
+
+    function validarCPF(cpf) {
+        if (cpf.length !== 11 || !!cpf.match(/(\d)\1{10}/)) return false;
+        cpf = cpf.split('').map(el => +el);
+        const rest = (count) => (cpf.slice(0, count - 12).reduce((soma, el, i) => soma + el * (count - i), 0) * 10) % 11 % 10;
+        return rest(10) === cpf[9] && rest(11) === cpf[10];
+    }
+
+    function validarCNPJ(cnpj) {
+        if (cnpj.length !== 14 || !!cnpj.match(/(\d)\1{13}/)) return false;
+        let tamanho = cnpj.length - 2;
+        let numeros = cnpj.substring(0, tamanho);
+        let digitos = cnpj.substring(tamanho);
+        let soma = 0;
+        let pos = tamanho - 7;
+        for (let i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+        if (resultado != digitos.charAt(0)) return false;
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (let i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+        return resultado == digitos.charAt(1);
+    }
     // #endregion
 
 });

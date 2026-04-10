@@ -1,82 +1,105 @@
 ﻿@model Varejo.ViewModels.InventarioViewModel
 
-<div class="container mt-4">
-    @* --- CABEÇALHO --- *@
-    <div class="card mb-4 shadow-sm border-0">
-        <div class="card-body d-flex justify-content-between align-items-center">
+@{
+    ViewData["Title"] = $"Inventário #{Model.Id}";
+}
+
+<div class="container-fluid mt-4">
+    
+    <div class="glass-card mb-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
             <div>
-                <h4 class="mb-1">Inventário #@Model.Id - @Model.Observacao</h4>
-                <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">
+                <h4 class="fw-bold mb-2">Inventário #@Model.Id - @Model.Observacao</h4>
+                <div class="d-flex align-items-center flex-wrap gap-2 opacity-75 fw-semibold small">
+                    @if (Model.Finalizado)
+                    {
+                        <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25 py-1">
+                            <i class="fa-solid fa-lock me-1"></i> Finalizado
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="report-id-badge bg-warning bg-opacity-10 text-warning border-warning border-opacity-25 py-1" style="color: #d97706 !important;">
+                            <i class="fa-solid fa-lock-open me-1"></i> Em Aberto
+                        </span>
+                    }
+                    <span>|</span>
+                    <span><i class="fa-regular fa-calendar me-1"></i> @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
                     <i class="fa-solid fa-chevron-left"></i> Voltar
                 </a>
-
-                <a asp-action="Imprimir" asp-route-id="@Model.Id" target="_blank" class="btn btn-outline-secondary shadow-sm">
+                <a asp-action="Imprimir" asp-route-id="@Model.Id" target="_blank" class="btn-glass btn-info text-white border-0">
                     <i class="fa-solid fa-print"></i> Imprimir
                 </a>
-                <p class="text-muted mb-0">
-                    <span class="badge @(Model.Finalizado ? "bg-success" : "bg-warning text-dark")">
-                        @(Model.Finalizado ? "Finalizado" : "Em Aberto")
-                    </span>
-                    | 📅 @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")
-                </p>
+                @if (!Model.Finalizado)
+                {
+                    <form asp-action="Finalizar" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('ATENÇÃO: Deseja realmente finalizar? O estoque será atualizado e o inventário será bloqueado.')" class="m-0">
+                        <button type="submit" class="btn-glass btn-success text-white border-0">
+                            <i class="fa-solid fa-check-double"></i> Finalizar Contagem
+                        </button>
+                    </form>
+                }
             </div>
-
-            @if (Model.Finalizado)
-            {
-                <div class="alert alert-info shadow-sm d-flex align-items-center" role="alert">
-                    <span class="me-3 fs-4">🔒</span>
-                    <div>
-                        <strong>Este inventário está finalizado.</strong>
-                        Os itens abaixo estão bloqueados para alteração e o estoque já foi ajustado.
-                    </div>
-                    <a asp-action="Index" class="btn btn-sm btn-outline-primary ms-auto">Voltar para a Lista</a>
-                </div>
-            }
-            else
-            {
-                <form asp-action="Finalizar" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Deseja realmente finalizar?')">
-                    <button type="submit" class="btn btn-success shadow-sm">
-                        <i class="fa-solid fa-check"></i> Finalizar e Ajustar Estoque
-                    </button>
-                </form>
-            }
         </div>
+
+        @if (Model.Finalizado)
+        {
+            <div class="alert bg-info bg-opacity-10 border border-info border-opacity-25 text-info mt-4 mb-0 d-flex align-items-center" role="alert">
+                <i class="fa-solid fa-shield-halved fs-3 me-3"></i>
+                <div>
+                    <strong>Inventário Finalizado.</strong><br />
+                    Os itens abaixo estão bloqueados para alteração e o estoque já foi ajustado no sistema.
+                </div>
+            </div>
+        }
     </div>
 
-    @* --- BUSCA DE PRODUTOS --- *@
     @if (!Model.Finalizado)
     {
-        <div class="card mb-4 border-primary shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-primary">🔍 Adicionar Itens à Contagem</h5>
-                <input type="text" id="produtoSearch" class="form-control form-control-lg mb-3" placeholder="Digite o nome do produto..." autocomplete="off" />
-                <div id="produtoCards" class="row"></div>
+        <div class="glass-card mb-4" style="border-left: 4px solid var(--sys-primary-light, #4facfe);">
+            <div class="d-flex align-items-center mb-3">
+                <i class="fa-solid fa-barcode fs-4 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h5 class="fw-bold mb-0">Adicionar Itens à Contagem</h5>
             </div>
+            <input type="text" id="produtoSearch" class="form-control form-control-lg mb-4" placeholder="Digite o nome do produto para buscar..." autocomplete="off" />
+            <div id="produtoCards" class="row g-3"></div>
         </div>
     }
 
-    @* --- TABELA DE ITENS --- *@
-    <div class="card shadow-sm border-0 overflow-hidden">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
-            <h6 class="mb-0"><i class="fa-solid fa-list-check me-2"></i>Itens no Inventário</h6>
+    <div class="glass-card overflow-hidden p-0">
+        <div class="p-4 d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25">
+            <h5 class="fw-bold mb-0"><i class="fa-solid fa-list-check me-2" style="color: var(--sys-primary-light, #4facfe);"></i> Itens Lançados</h5>
             @if (!Model.Finalizado)
             {
-                <small class="badge bg-primary-subtle text-primary border border-primary-subtle fw-normal">
-                    💡 Salvamento automático ativo
-                </small>
+                <span class="report-id-badge bg-primary bg-opacity-10 text-primary border-primary border-opacity-25 py-1">
+                    <i class="fa-solid fa-cloud-arrow-up me-1"></i> Salva Automático
+                </span>
             }
         </div>
       
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 custom-table">
-                <thead class="table-light">
+            <table class="table-glass table-responsive-stack mb-0" id="sortableTable">
+                <thead>
                     <tr>
-                        <th class="ps-4">Produto</th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer;" class="ps-md-4">
+                            <div class="d-flex justify-content-between align-items-center">Produto <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
                         <th>Embalagem</th>
-                        <th class="text-center">Qtd. Sistema</th>
-                        <th class="text-center" style="width: 180px;">Sua Contagem</th>
-                        <th class="text-center">Diferença</th>
-                        <th class="text-end pe-4">Ações</th>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer;" class="text-md-center">
+                            <div class="d-flex justify-content-between align-items-center">Qtd. Sistema <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th class="text-md-center" style="width: 180px;">Sua Contagem</th>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer;" class="text-md-center">
+                            <div class="d-flex justify-content-between align-items-center">Diferença <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        @if (!Model.Finalizado)
+                        {
+                            <th class="text-center pe-md-4">Ações</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -85,57 +108,57 @@
                         foreach (var item in Model.Itens)
                         {
                             <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold text-dark">@item.NomeProduto</div>
-                                    <small class="text-muted">ID: @item.ProdutoId</small>
+                                <td class="ps-md-4" data-label="Produto">
+                                    <div class="fw-bold">@item.NomeProduto</div>
+                                    <small class="opacity-50 fw-semibold">ID: @item.ProdutoId</small>
                                 </td>
-                                <td>
-                                    <span class="badge rounded-pill bg-light text-dark border">
+                                <td data-label="Embalagem">
+                                    <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: var(--glass-border);">
                                         @(item.DescricaoEmbalagem ?? "N/A")
                                     </span>
                                 </td>
-                                <td class="text-center">
-                                    <span class="text-muted fw-medium">@item.QuantidadeSistema</span>
+                                <td class="text-md-center opacity-75 fw-bold" data-label="Qtd. Sistema">
+                                    @item.QuantidadeSistema
                                 </td>
-                                <td class="text-center">
+                                <td class="text-md-center" data-label="Sua Contagem">
                                     <input type="number" step="0.01"
                                            class="form-control form-control-sm text-center fw-bold input-qtd-tabela shadow-none"
+                                           style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text);"
                                            data-itemid="@item.Id"
                                            value="@((item.QuantidadeContada / (item.Multiplicador > 0 ? item.Multiplicador : 1)).ToString().Replace(",", "."))"
                                     @(Model.Finalizado ? "disabled" : "") />
                                 </td>
-                                <td class="text-center">
+                                <td class="text-md-center" data-label="Diferença">
                                     @{
-                                        var diffClass = item.Diferenca < 0 ? "bg-danger-subtle text-danger" :
-                                                        item.Diferenca > 0 ? "bg-success-subtle text-success" : "bg-light text-muted";
+                                        var diffClass = item.Diferenca < 0 ? "bg-danger bg-opacity-10 text-danger border-danger border-opacity-25" :
+                                                        item.Diferenca > 0 ? "bg-success bg-opacity-10 text-success border-success border-opacity-25" :
+                                                        "bg-secondary bg-opacity-10 text-secondary border-secondary border-opacity-25";
                                     }
-                                    <span class="badge @diffClass px-3 py-2" style="min-width: 60px;">
+                                    <span class="report-id-badge @diffClass" style="min-width: 60px;">
                                         @(item.Diferenca > 0 ? "+" : "")@item.Diferenca
                                     </span>
                                 </td>
-                                <td class="text-end pe-4">
-                                    @if (!Model.Finalizado)
-                                    {
-                                        <form asp-action="RemoveItem" method="post" class="d-inline">
+                                @if (!Model.Finalizado)
+                                {
+                                    <td class="text-md-center pe-md-4" data-label="Ações">
+                                        <form asp-action="RemoveItem" method="post" class="m-0 d-inline">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="itemId" value="@item.Id" />
-                                            <button type="submit" class="btn btn-sm btn-light text-danger btn-delete-row shadow-sm"
-                                                    onclick="return confirm('Remover item?')">
-         
-                                                <i class="fa-solid fa-trash"></i> Excluir
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('Remover este item da contagem?')">
+                                                <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         </form>
-                                    }
-                                </td>
+                                    </td>
+                                }
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
-                                <i class="fa-solid fa-box d-block fs-2 mb-2"></i>
-                                Nenhum item adicionado ainda.
+                            <td colspan="@(Model.Finalizado ? 5 : 6)" class="text-center p-5">
+                                <i class="fa-solid fa-box-open fs-1 opacity-25 d-block mb-3"></i>
+                                <span class="opacity-75 fw-semibold">Nenhum item adicionado a este inventário ainda.</span>
                             </td>
                         </tr>
                     }
@@ -166,22 +189,26 @@
                         const id = p.idProduto || p.IdProduto;
                         const nome = p.nomeProduto || p.NomeProduto;
                         const emb = p.embalagens || p.Embalagens || [];
-                        const img = p.urlImagem || p.UrlImagem || '/images/sem-foto.png';
+                        const img = p.urlImagem || p.UrlImagem || '/img/sem-foto.png';
 
                         const div = document.createElement('div');
-                        div.className = 'col-md-3 mb-3';
+                        div.className = 'col-sm-6 col-md-4 col-lg-3';
+                        // Renderiza em Glass Card customizado via JS
                         div.innerHTML = `
-                            <div class="card h-100 shadow-sm text-center p-2 border-0 bg-light">
-                                <img src="${img}" style="height:60px; object-fit:contain;" class="mb-2 mx-auto">
-                                <h6 style="font-size:0.75rem; min-height: 2.2rem;" class="mb-2">${nome}</h6>
-                                <select class="form-select form-select-sm mb-2 sel-emb">
+                            <div class="glass-card h-100 text-center p-3 d-flex flex-column">
+                                <div class="d-flex justify-content-center align-items-center rounded-3 mb-2 p-1" style="height: 100px; background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border); overflow:hidden;">
+                                    <img src="${img}" style="max-height:100%; max-width:100%; object-fit:contain;">
+                                </div>
+                                <h6 class="fw-bold mb-2 text-truncate opacity-75" style="font-size:0.8rem;" title="${nome}">${nome}</h6>
+                                <select class="form-select form-select-sm mb-3 sel-emb border-0" style="background: rgba(0,0,0,0.05); color: var(--text);">
                                     ${emb.map(e => {
-                                        // Garante que pega a descrição independente do nome da propriedade (C# vs JS)
                                         const desc = e.tipoEmbalagemDescricao || e.TipoEmbalagemDescricao || "Unidade";
                                         return `<option value="${e.idProdutoEmbalagem || e.IdProdutoEmbalagem}">${desc}</option>`;
                                     }).join('')}
                                 </select>
-                                <button class="btn btn-primary btn-sm btn-add" data-id="${id}">➕ Adicionar</button>
+                                <button class="btn-glass btn-success text-white border-0 mt-auto btn-add w-100 justify-content-center py-1" data-id="${id}">
+                                    <i class="fa-solid fa-plus me-1"></i> Adicionar
+                                </button>
                             </div>`;
                         
                         div.querySelector('.btn-add').addEventListener('click', () => {
@@ -199,7 +226,7 @@
             fd.append('InventarioId', '@Model.Id');
             fd.append('ProdutoId', prodId);
             fd.append('ProdutoEmbalagemId', embId);
-            fd.append('QuantidadeContada', '0'); // Inicia zerado
+            fd.append('QuantidadeContada', '0');
 
             const resp = await fetch('@Url.Action("AddItem", "Inventario")', { method: 'POST', body: fd });
             if (resp.ok) {
@@ -213,8 +240,9 @@
             input.addEventListener('change', async function() {
                 const itemId = this.dataset.itemid;
                 const qtdDigitada = this.value.replace('.', ',');
-
-                this.classList.add('is-invalid');
+                
+                // Feedback visual de salvamento
+                this.style.borderColor = 'var(--sys-primary-light, #4facfe)';
 
                 const fd = new FormData();
                 fd.append('itemId', itemId);
@@ -230,7 +258,7 @@
                         location.reload();
                     } else {
                         alert('Erro ao salvar.');
-                        this.classList.remove('is-invalid');
+                        this.style.borderColor = 'red';
                     }
                 } catch (err) {
                     console.error(err);

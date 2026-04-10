@@ -1,129 +1,175 @@
 ﻿@model Varejo.ViewModels.PessoaViewModel
 
 @{
-	ViewData["Title"] = "Nova Pessoa";
+    ViewData["Title"] = "Nova Pessoa";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 1100px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-user-plus fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+        </div>
 
-<form asp-action="Create">
+        <form asp-action="Create" id="formPessoa">
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
 
-	<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="NomeRazao" class="form-label fw-bold opacity-75"></label>
+                    <input asp-for="NomeRazao" class="form-control form-control-lg" placeholder="Nome completo ou Razão Social" />
+                    <span asp-validation-for="NomeRazao" class="text-danger small fw-semibold"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TratamentoFantasia" class="form-label fw-bold opacity-75"></label>
+                    <input asp-for="TratamentoFantasia" class="form-control form-control-lg" placeholder="Apelido ou Nome Fantasia" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="CpfCnpj" class="form-label fw-bold opacity-75"></label>
+                    <input asp-for="CpfCnpj" id="CpfCnpj" class="form-control form-control-lg cpf-cnpj-mask" placeholder="000.000.000-00" />
+                    <span asp-validation-for="CpfCnpj" class="text-danger small fw-semibold"></span>
+                </div>
+                <div class="col-md-5">
+                    <label asp-for="Email" class="form-label fw-bold opacity-75"></label>
+                    <input asp-for="Email" class="form-control form-control-lg" placeholder="email@exemplo.com" />
+                </div>
+                <div class="col-md-1">
+                    <label asp-for="Ddd" class="form-label fw-bold opacity-75">DDD</label>
+                    <input asp-for="Ddd" class="form-control form-control-lg" maxlength="2" />
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="Telefone" class="form-label fw-bold opacity-75"></label>
+                    <input asp-for="Telefone" class="form-control form-control-lg tel-mask" />
+                </div>
+            </div>
 
-	<div class="mb-3">
-		<label asp-for="NomeRazao" class="form-label"></label>
-		<input asp-for="NomeRazao" class="form-control" />
-		<span asp-validation-for="NomeRazao" class="text-danger"></span>
-	</div>
+            <div class="row g-2 mb-5">
+                <div class="col-md-2 col-6">
+                    <label class="btn-check-glass w-100">
+                        <input asp-for="EhJuridico" id="EhJuridico" type="checkbox" />
+                        <div class="check-content"><i class="fa-solid fa-building me-2"></i>Jurídico</div>
+                    </label>
+                </div>
+                <div class="col-md-2 col-6">
+                    <label class="btn-check-glass w-100">
+                        <input asp-for="EhUsuario" type="checkbox" />
+                        <div class="check-content"><i class="fa-solid fa-user-gear me-2"></i>Usuário</div>
+                    </label>
+                </div>
+                <div class="col-md-2 col-6">
+                    <label class="btn-check-glass w-100">
+                        <input asp-for="EhCliente" type="checkbox" />
+                        <div class="check-content"><i class="fa-solid fa-cart-shopping me-2"></i>Cliente</div>
+                    </label>
+                </div>
+                <div class="col-md-2 col-6">
+                    <label class="btn-check-glass w-100">
+                        <input asp-for="EhFornecedor" type="checkbox" />
+                        <div class="check-content"><i class="fa-solid fa-truck me-2"></i>Fornecedor</div>
+                    </label>
+                </div>
+                <div class="col-md-4 col-12">
+                    <label class="btn-check-glass toggle-ativo w-100">
+                        <input asp-for="Ativo" type="checkbox" checked />
+                        <div class="check-content">
+                            <span class="if-checked"><i class="fa-solid fa-circle-check me-2"></i>Cadastro Ativo</span>
+                            <span class="if-not-checked"><i class="fa-solid fa-circle-xmark me-2"></i>Cadastro Inativo</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
 
-	<div class="mb-3">
-		<label asp-for="TratamentoFantasia" class="form-label"></label>
-		<input asp-for="TratamentoFantasia" class="form-control" />
-		<span asp-validation-for="TratamentoFantasia" class="text-danger"></span>
-	</div>
+            <div class="d-flex align-items-center mb-3">
+                <i class="fa-solid fa-map-location-dot fs-4 me-2" style="color: var(--sys-primary-light);"></i>
+                <h5 class="fw-bold mb-0">Endereços</h5>
+                <button type="button" id="adicionar-endereco" class="btn btn-sm btn-glass border-0 ms-3" style="background: rgba(0,0,0,0.05);">
+                    <i class="fa-solid fa-plus me-1"></i> Novo Endereço
+                </button>
+            </div>
 
-	<div class="mb-3">
-		<label asp-for="CpfCnpj" class="form-label"></label>
-		<input asp-for="CpfCnpj" id="CpfCnpj" class="form-control" />
-		<span asp-validation-for="CpfCnpj" class="text-danger"></span>
-	</div>
+            <div id="enderecos-container" class="row g-3">
+                @for (int i = 0; i < Model.Enderecos.Count; i++)
+                {
+                    <div class="col-12 endereco-item animate__animated animate__fadeIn">
+                        <div class="p-4 rounded-4 position-relative" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 mt-3 me-3 remover-endereco rounded-circle shadow-sm">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                            <div class="row g-3">
+                                <div class="col-md-2">
+                                    <label class="form-label small fw-bold opacity-75">CEP</label>
+                                    <input asp-for="Enderecos[i].Cep" class="form-control cep-mask" placeholder="00000-000" />
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-bold opacity-75">Logradouro</label>
+                                    <input asp-for="Enderecos[i].Logradouro" class="form-control" />
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label small fw-bold opacity-75">Nº</label>
+                                    <input asp-for="Enderecos[i].Numero" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold opacity-75">Bairro</label>
+                                    <input asp-for="Enderecos[i].Bairro" class="form-control" />
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-bold opacity-75">Cidade</label>
+                                    <input asp-for="Enderecos[i].Cidade" class="form-control" />
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label small fw-bold opacity-75">UF</label>
+                                    <input asp-for="Enderecos[i].Uf" class="form-control" maxlength="2" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold opacity-75">Complemento</label>
+                                    <input asp-for="Enderecos[i].Complemento" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
 
-	<div class="mb-3">
-		<label asp-for="Ddd" class="form-label"></label>
-		<input asp-for="Ddd" class="form-control" />
-		<span asp-validation-for="Ddd" class="text-danger"></span>
-	</div>
+            <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Cadastro
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
-	<div class="mb-3">
-		<label asp-for="Telefone" class="form-label"></label>
-		<input asp-for="Telefone" class="form-control" />
-		<span asp-validation-for="Telefone" class="text-danger"></span>
-	</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('#adicionar-endereco').click(function () {
+                const index = $('.endereco-item').length;
+                const html = `
+                <div class="col-12 endereco-item animate__animated animate__fadeIn">
+                    <div class="p-4 rounded-4 position-relative mt-3" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 mt-3 me-3 remover-endereco rounded-circle shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+                        <div class="row g-3">
+                            <div class="col-md-2"><label class="form-label small fw-bold opacity-75">CEP</label><input name="Enderecos[${index}].Cep" class="form-control cep-mask" /></div>
+                            <div class="col-md-5"><label class="form-label small fw-bold opacity-75">Logradouro</label><input name="Enderecos[${index}].Logradouro" class="form-control" /></div>
+                            <div class="col-md-1"><label class="form-label small fw-bold opacity-75">Nº</label><input name="Enderecos[${index}].Numero" class="form-control" /></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold opacity-75">Bairro</label><input name="Enderecos[${index}].Bairro" class="form-control" /></div>
+                            <div class="col-md-5"><label class="form-label small fw-bold opacity-75">Cidade</label><input name="Enderecos[${index}].Cidade" class="form-control" /></div>
+                            <div class="col-md-1"><label class="form-label small fw-bold opacity-75">UF</label><input name="Enderecos[${index}].Uf" class="form-control" maxlength="2" /></div>
+                            <div class="col-md-6"><label class="form-label small fw-bold opacity-75">Complemento</label><input name="Enderecos[${index}].Complemento" class="form-control" /></div>
+                        </div>
+                    </div>
+                </div>`;
+                $('#enderecos-container').append(html);
+            });
 
-	<div class="mb-3">
-		<label asp-for="Email" class="form-label"></label>
-		<input asp-for="Email" class="form-control" />
-		<span asp-validation-for="Email" class="text-danger"></span>
-	</div>
-
-	<div class="mb-3 d-flex justify-content-evenly flex-column flex-md-row">
-
-		<label class="card check p-3 text-center mb-2">
-			<input asp-for="EhJuridico" id="EhJuridico" class="form-check-input d-none" type="checkbox" />
-			Jurídico
-		</label>
-
-		<label class="card check p-3 text-center mb-2">
-			<input asp-for="EhUsuario" class="form-check-input d-none" type="checkbox" />
-			Usuário
-		</label>
-
-		<label class="card check p-3 text-center mb-2">
-			<input asp-for="EhCliente" class="form-check-input d-none" type="checkbox" />
-			Cliente
-		</label>
-
-		<label class="card check p-3 text-center mb-2">
-			<input asp-for="EhFornecedor" class="form-check-input d-none" type="checkbox" />
-			Fornecedor
-		</label>
-
-		<label class="card check p-3 text-center ativo-btn mb-2">
-			<input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
-		</label>
-	</div>
-
-	<h4>Endereços</h4>
-	<div id="enderecos-container">
-		@for (int i = 0; i < Model.Enderecos.Count; i++)
-		{
-			<div class="endereco-item mb-3 border p-2">
-				<div class="mb-3">
-					<label asp-for="Enderecos[i].Cep" class="form-label"></label>
-					<input asp-for="Enderecos[i].Cep" class="form-control" />
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="Enderecos[i].Logradouro" class="form-label"></label>
-					<input asp-for="Enderecos[i].Logradouro" class="form-control" />
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="Enderecos[i].Numero" class="form-label"></label>
-					<input asp-for="Enderecos[i].Numero" class="form-control" />
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="Enderecos[i].Bairro" class="form-label"></label>
-					<input asp-for="Enderecos[i].Bairro" class="form-control" />
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="Enderecos[i].Cidade" class="form-label"></label>
-					<input asp-for="Enderecos[i].Cidade" class="form-control" />
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="Enderecos[i].Uf" class="form-label"></label>
-					<input asp-for="Enderecos[i].Uf" class="form-control" />
-				</div>
-
-				<div class="mb-3">
-					<label asp-for="Enderecos[i].Complemento" class="form-label"></label>
-					<input asp-for="Enderecos[i].Complemento" class="form-control" />
-				</div>
-				<div class="mb-3 d-flex justify-content-end">
-					<button type="button" class="btn btn-danger mt-2 remover-endereco">Remover</button>
-				</div>
-			</div>
-
-		}
-	</div>
-	
-	<div class="btns-add-ajust d-inline-flex">
-		<button type="button" id="adicionar-endereco" class="btn btn-success">+ Adicionar Endereço</button>
-
-		<button type="submit" class="btn btn-primary">Salvar</button>
-		<a asp-action="Index" class="btn btn-secondary">Voltar</a>
-	</div>
-</form>
+            $(document).on('click', '.remover-endereco', function () {
+                $(this).closest('.endereco-item').remove();
+            });
+        });
+    </script>
+}

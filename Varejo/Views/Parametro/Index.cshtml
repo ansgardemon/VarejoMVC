@@ -64,6 +64,21 @@
                                 </select>
                             </div>
 
+
+                            <!-- BONIFICAÇÃO -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">⚠️ Bonificação</label>
+                                <select asp-for="TipoMovimentoEntradaBonificacaoId" class="form-select">
+                                    <option value="">-- selecione --</option>
+                                    @foreach (var t in tipos)
+                                    {
+                                        <option value="@t.IdTipoMovimento">
+                                            @t.DescricaoTipoMovimento
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
                         </div>
 
                         <div class="mt-4 d-flex justify-content-end">

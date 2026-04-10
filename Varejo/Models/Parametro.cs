@@ -18,9 +18,9 @@ public class Parametro
     public int TipoMovimentoCompraId { get; set; }
     public TipoMovimento TipoMovimentoCompra { get; set; }
 
-    //[Required]
-    //public int TipoMovimentoEntradaBonificacaoId { get; set; }
-    //public TipoMovimento TipoMovimentoEntradaBonificacao { get; set; }
+    [Required]
+    public int TipoMovimentoEntradaBonificacaoId { get; set; }
+    public TipoMovimento TipoMovimentoEntradaBonificacao { get; set; }
 
     [Required]
     public int TipoMovimentoAvariaId { get; set; }

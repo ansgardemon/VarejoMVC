@@ -1,0 +1,74 @@
+﻿@model Varejo.Models.Recebimento
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Detalhes do Recebimento #@Model.IdRecebimento</h2>
+        <div>
+            <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+            <button class="btn btn-danger" onclick="confirmarExclusao(@Model.IdRecebimento)">Desintegrar Nota</button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Dados da Nota</div>
+                <div class="card-body">
+                    <p><strong>NF:</strong> @Model.NumeroNota</p>
+                    <p><strong>Fornecedor:</strong> @Model.Fornecedor.NomeRazao</p>
+                    <p><strong>Data Entrada:</strong> @Model.DataEntrada.ToShortDateString()</p>
+                    <p class="small text-muted text-break"><strong>Chave:</strong> @Model.ChaveAcesso</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-light fw-bold">Itens Recebidos</div>
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Qtd</th>
+                    <th>Vlr. Unit</th>
+                    <th>Total</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Itens)
+                {
+                    <tr class="@(item.EhBonificacao ? "table-info" : "")">
+                        <td>@item.Produto.NomeProduto</td>
+                        <td>@item.Quantidade</td>
+                        <td>@item.ValorUnitario.ToString("C2")</td>
+                        <td>@((item.Quantidade * item.ValorUnitario).ToString("C2"))</td>
+                        <td>
+                            @if (item.EhBonificacao)
+                            {
+                                <span class="badge bg-primary">Bonificação</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Compra</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form id="formDesintegrar" asp-action="Desintegrar" method="post">
+    <input type="hidden" name="id" id="desintegrarId" />
+</form>
+
+<script>
+    function confirmarExclusao(id) {
+        if (confirm("ATENÇÃO: Isso irá estornar o estoque, apagar o financeiro e excluir este recebimento. Confirma?")) {
+            document.getElementById('desintegrarId').value = id;
+            document.getElementById('formDesintegrar').submit();
+        }
+    }
+</script>

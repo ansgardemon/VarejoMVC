@@ -12,5 +12,7 @@ namespace Varejo.ViewModels
 
         [Required]
         public int TipoMovimentoAvariaId { get; set; }
+        [Required]
+        public int TipoMovimentoEntradaBonificacaoId { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Varejo.Data;
 
@@ -11,9 +12,11 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    partial class VarejoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260410001842_FinanceiroIdVenda")]
+    partial class FinanceiroIdVenda
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -621,9 +624,6 @@ namespace Varejo.Migrations
                     b.Property<int>("TipoMovimentoId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("VendaId")
-                        .HasColumnType("int");
-
                     b.HasKey("IdMovimento");
 
                     b.HasIndex("PessoaId");
@@ -631,8 +631,6 @@ namespace Varejo.Migrations
                     b.HasIndex("RecebimentoId");
 
                     b.HasIndex("TipoMovimentoId");
-
-                    b.HasIndex("VendaId");
 
                     b.ToTable("Movimentos");
                 });
@@ -1602,17 +1600,11 @@ namespace Varejo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Varejo.Models.Venda", "Venda")
-                        .WithMany()
-                        .HasForeignKey("VendaId");
-
                     b.Navigation("Pessoa");
 
                     b.Navigation("Recebimento");
 
                     b.Navigation("TipoMovimento");
-
-                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("Varejo.Models.PagamentoTitulo", b =>

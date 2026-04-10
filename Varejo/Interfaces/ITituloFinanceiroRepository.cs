@@ -23,7 +23,9 @@ namespace Varejo.Interfaces
             int especieTituloId,
             int? formaPagamentoId,
             int? pessoaId,
-            DateTime dataEmissao
+            DateTime dataEmissao,
+            int? recebimentoId = null,
+            int? vendaId = null
         );
     }
 }

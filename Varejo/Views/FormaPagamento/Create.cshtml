@@ -3,23 +3,36 @@
 @{
     ViewData["Title"] = "Adicionar Forma de Pagamento";
 }
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-<div class="card-header bg-primary text-white">
-<h5 class="mb-0">@ViewData["Title"]</h5>
-</div>
 
-<div class="card-body">
-    <form asp-action="Create" method="post">
-        <div class="mb-3">
-            <label class="form-label">Descrição</label>
-            <input asp-for="DescricaoFormaPagamento" class="form-control" />
-            <span asp-validation-for="DescricaoFormaPagamento" class="text-danger"></span>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-credit-card fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
 
-        <button type="submit" class="btn btn-success">Salvar</button>
-        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
-    </form>
-        </div>
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
+
+            <div class="mb-5">
+                <label asp-for="DescricaoFormaPagamento" class="form-label fw-bold opacity-75">Descrição</label>
+                <input asp-for="DescricaoFormaPagamento" class="form-control form-control-lg" placeholder="Ex: Cartão de Crédito, PIX, Dinheiro..." />
+                <span asp-validation-for="DescricaoFormaPagamento" class="text-danger small mt-1 d-block fw-semibold"></span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-circle-check"></i> Salvar
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

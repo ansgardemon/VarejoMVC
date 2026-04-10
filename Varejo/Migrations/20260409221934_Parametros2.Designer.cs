@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Varejo.Data;
 
@@ -11,9 +12,11 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    partial class VarejoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260409221934_Parametros2")]
+    partial class Parametros2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -615,24 +618,14 @@ namespace Varejo.Migrations
                     b.Property<int>("PessoaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RecebimentoId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TipoMovimentoId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VendaId")
                         .HasColumnType("int");
 
                     b.HasKey("IdMovimento");
 
                     b.HasIndex("PessoaId");
 
-                    b.HasIndex("RecebimentoId");
-
                     b.HasIndex("TipoMovimentoId");
-
-                    b.HasIndex("VendaId");
 
                     b.ToTable("Movimentos");
                 });
@@ -1174,17 +1167,11 @@ namespace Varejo.Migrations
                     b.Property<bool>("Quitado")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("RecebimentoId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Valor")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ValorAberto")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("VendaId")
-                        .HasColumnType("int");
 
                     b.HasKey("IdTituloFinanceiro");
 
@@ -1195,10 +1182,6 @@ namespace Varejo.Migrations
                     b.HasIndex("PessoaId");
 
                     b.HasIndex("PrazoPagamentoId");
-
-                    b.HasIndex("RecebimentoId");
-
-                    b.HasIndex("VendaId");
 
                     b.ToTable("TitulosFinanceiro");
                 });
@@ -1592,27 +1575,15 @@ namespace Varejo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Varejo.Models.Recebimento", "Recebimento")
-                        .WithMany()
-                        .HasForeignKey("RecebimentoId");
-
                     b.HasOne("Varejo.Models.TipoMovimento", "TipoMovimento")
                         .WithMany()
                         .HasForeignKey("TipoMovimentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Varejo.Models.Venda", "Venda")
-                        .WithMany()
-                        .HasForeignKey("VendaId");
-
                     b.Navigation("Pessoa");
 
-                    b.Navigation("Recebimento");
-
                     b.Navigation("TipoMovimento");
-
-                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("Varejo.Models.PagamentoTitulo", b =>
@@ -1786,14 +1757,6 @@ namespace Varejo.Migrations
                         .WithMany("Titulos")
                         .HasForeignKey("PrazoPagamentoId");
 
-                    b.HasOne("Varejo.Models.Recebimento", "Recebimento")
-                        .WithMany()
-                        .HasForeignKey("RecebimentoId");
-
-                    b.HasOne("Varejo.Models.Venda", "Venda")
-                        .WithMany()
-                        .HasForeignKey("VendaId");
-
                     b.Navigation("EspecieTitulo");
 
                     b.Navigation("FormaPagamento");
@@ -1801,10 +1764,6 @@ namespace Varejo.Migrations
                     b.Navigation("Pessoa");
 
                     b.Navigation("PrazoPagamento");
-
-                    b.Navigation("Recebimento");
-
-                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("Varejo.Models.Usuario", b =>

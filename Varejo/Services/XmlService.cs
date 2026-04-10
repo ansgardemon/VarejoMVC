@@ -17,12 +17,14 @@ namespace Varejo.Services
             var infNFe = xml.Descendants(ns + "infNFe").FirstOrDefault();
             var ide = xml.Descendants(ns + "ide").FirstOrDefault();
             var emit = xml.Descendants(ns + "emit").FirstOrDefault();
+            var dest = xml.Descendants(ns + "dest").FirstOrDefault();
 
             var model = new RevisaoNotaViewModel
             {
                 ChaveAcesso = infNFe?.Attribute("Id")?.Value.Replace("NFe", "") ?? "",
                 NumeroNota = ide?.Element(ns + "nNF")?.Value ?? "",
                 CnpjCpfFornecedorXml = emit?.Element(ns + "CNPJ")?.Value ?? emit?.Element(ns + "CPF")?.Value ?? "",
+                CnpjDestinatarioXml = dest?.Element(ns + "CNPJ")?.Value ?? dest?.Element(ns + "CPF")?.Value ?? "",
                 NomeFornecedor = emit?.Element(ns + "xNome")?.Value ?? "Fornecedor Desconhecido",
                 Itens = new List<ItemRevisaoViewModel>()
             };

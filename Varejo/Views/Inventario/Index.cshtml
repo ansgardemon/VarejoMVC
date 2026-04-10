@@ -4,92 +4,90 @@
     ViewData["Title"] = "Inventários";
 }
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
+    <div class="glass-card">
 
-    <div class="card shadow-sm border-0">
-
-        <!-- HEADER -->
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Inventários</h5>
-
-            <a asp-action="Create" class="btn btn-light btn-sm">
-                ➕ Novo Inventário
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-clipboard-list fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <a asp-action="Create" class="btn-glass btn-success border-0 text-white text-decoration-none">
+                <i class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Novo Inventário</span>
             </a>
         </div>
 
-        <!-- BODY -->
-        <div class="card-body">
+        @if (TempData["Erro"] != null)
+        {
+            <div class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold d-flex align-items-center mb-4" role="alert">
+                <i class="fa-solid fa-circle-exclamation fs-5 me-3"></i>
+                <div>@TempData["Erro"]</div>
+            </div>
+        }
 
-            <!-- ALERTAS -->
-            @if (TempData["Erro"] != null)
-            {
-                <div class="alert alert-danger">
-                    @TempData["Erro"]
-                </div>
-            }
+        @if (TempData["Sucesso"] != null)
+        {
+            <div class="alert bg-success bg-opacity-10 border border-success border-opacity-25 text-success fw-semibold d-flex align-items-center mb-4" role="alert">
+                <i class="fa-solid fa-circle-check fs-5 me-3"></i>
+                <div>@TempData["Sucesso"]</div>
+            </div>
+        }
 
-            @if (TempData["Sucesso"] != null)
-            {
-                <div class="alert alert-success">
-                    @TempData["Sucesso"]
-                </div>
-            }
-
-            <!-- TABELA -->
-            <table class="table table-hover align-middle">
-
+        <div class="table-responsive">
+            <table class="table-glass table-responsive-stack" id="sortableTable">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Data</th>
-                        <th>Status</th>
-                        <th>Qtd Itens</th>
-                        <th style="width: 240px;">Ações</th>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer;" class="ps-md-4">
+                            <div class="d-flex justify-content-between align-items-center">ID <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center">Data <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer;" class="text-md-center">
+                            <div class="d-flex justify-content-between align-items-center justify-content-md-center">Status <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer;" class="text-md-center">
+                            <div class="d-flex justify-content-between align-items-center justify-content-md-center">Qtd. Itens <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th class="text-center">Ações</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
                     @if (Model != null && Model.Any())
                     {
                         foreach (var inv in Model)
                         {
                             <tr>
-                                <td>@inv.Id</td>
-
-                                <td>@inv.DataCriacao.ToString("dd/MM/yyyy HH:mm")</td>
-
-                                <td>
+                                <td class="ps-md-4 fw-bold opacity-75" data-label="ID">#@inv.Id</td>
+                                <td data-label="Data" class="fw-semibold">@inv.DataCriacao.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td data-label="Status" class="text-md-center">
                                     @if (inv.Finalizado)
                                     {
-                                        <span class="badge bg-success">Finalizado</span>
+                                        <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25"><i class="fa-solid fa-lock me-1"></i> Finalizado</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-warning text-dark">Aberto</span>
+                                        <span class="report-id-badge bg-warning bg-opacity-10 text-warning border-warning border-opacity-25" style="color: #d97706 !important;"><i class="fa-solid fa-lock-open me-1"></i> Em Aberto</span>
                                     }
                                 </td>
-
-                                <td>@(inv.Itens?.Count ?? 0)</td>
-
-                                <td class="d-flex gap-2">
-                                    @* Usei gap-2 para um espaçamento melhor *@
-
-                                    <a asp-action="Details" asp-route-id="@inv.Id" class="btn btn-sm btn-info text-white">
-                                        <i class="fa-solid fa-magnifying-glass"></i> Abrir
-                                    </a>
-
-                                    @if (!inv.Finalizado)
-                                    {
-                                        <a asp-action="Edit" asp-route-id="@inv.Id" class="btn btn-sm btn-warning">
-                                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                                <td data-label="Qtd Itens" class="text-md-center">
+                                    <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: transparent;">@(inv.Itens?.Count ?? 0)</span>
+                                </td>
+                                <td data-label="Ações">
+                                    <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                        @if (!inv.Finalizado)
+                                        {
+                                            <a asp-action="Delete" asp-route-id="@inv.Id" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Excluir">
+                                                <i class="fa-solid fa-trash-can"></i> <span class="d-none d-xl-inline ms-1">Excluir</span>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@inv.Id" class="btn btn-sm btn-warning text-dark rounded-pill px-3" title="Editar">
+                                                <i class="fa-solid fa-pen-to-square"></i> <span class="d-none d-xl-inline ms-1">Editar</span>
+                                            </a>
+                                        }
+                                        <a asp-action="Details" asp-route-id="@inv.Id" class="btn btn-sm btn-info text-white rounded-pill px-3" title="Abrir">
+                                            <i class="fa-solid fa-folder-open"></i> <span class="d-none d-xl-inline ms-1">Abrir</span>
                                         </a>
-
-                                        <a asp-action="Delete" asp-route-id="@inv.Id" class="btn btn-sm btn-danger">
-                                            <i class="fa-solid fa-trash"></i> Excluir
-                                        </a>
-                                    }
-
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -97,18 +95,14 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted">
-                                Nenhum inventário encontrado
+                            <td colspan="5" class="text-center p-5">
+                                <i class="fa-solid fa-clipboard fs-1 opacity-25 d-block mb-3"></i>
+                                <span class="opacity-75 fw-semibold">Nenhum inventário encontrado.</span>
                             </td>
                         </tr>
                     }
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
 </div>

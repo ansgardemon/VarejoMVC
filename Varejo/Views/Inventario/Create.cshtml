@@ -4,67 +4,45 @@
     ViewData["Title"] = "Novo Inventário";
 }
 
-<div class="container mt-4">
-
-    <div class="card shadow-sm border-0">
-
-        <!-- HEADER -->
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Novo Inventário</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 700px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-clipboard-check fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
 
-        <!-- BODY -->
-        <div class="card-body">
+        @if (TempData["Erro"] != null)
+        {
+            <div class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold d-flex align-items-center mb-4" role="alert">
+                <i class="fa-solid fa-circle-exclamation fs-5 me-3"></i>
+                <div>@TempData["Erro"]</div>
+            </div>
+        }
 
-            <!-- ALERTAS -->
-            @if (TempData["Erro"] != null)
-            {
-                <div class="alert alert-danger">
-                    @TempData["Erro"]
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold opacity-75">Data de Abertura</label>
+                    <input type="datetime-local" name="DataCriacao" class="form-control form-control-lg" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
                 </div>
-            }
-
-            <!-- FORM -->
-            <form asp-action="Create" method="post">
-
-                @Html.AntiForgeryToken()
-
-                <div class="row mb-3">
-
-                    <div class="col-md-6">
-                        <label class="form-label">Data</label>
-                        <input type="datetime-local"
-                               name="DataCriacao"
-                               class="form-control"
-                               value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
-                    </div>
-
+                
+                <div class="col-md-12">
+                    <label class="form-label fw-bold opacity-75">Observação / Título</label>
+                    <textarea name="observacao" class="form-control form-control-lg" rows="3" placeholder="Ex: Inventário mensal de bebidas..."></textarea>
                 </div>
+            </div>
 
-                <div class="row mb-3">
-
-                    <div class="col-md-12">
-                        <label class="form-label">Observação</label>
-                        <textarea name="observacao" class="form-control" rows="3" placeholder="Ex: Inventário mensal de bebidas..."></textarea>
-                    </div>
-
-                </div>
-
-                <!-- BOTÕES -->
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">
-                        💾 Criar Inventário
-                    </button>
-
-                    <a asp-action="Index" class="btn btn-secondary">
-                        Cancelar
-                    </a>
-                </div>
-
-            </form>
-
-        </div>
-
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-floppy-disk"></i> Criar Inventário
+                </button>
+            </div>
+        </form>
     </div>
-
 </div>

@@ -1,56 +1,94 @@
 ﻿@model Varejo.ViewModels.MarcaViewModel
 
 @{
-	ViewData["Title"] = "Detalhes da Categoria";
+    ViewData["Title"] = "Detalhes da Marca";
 }
 
-<h2>Detalhes da Marca</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 900px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-circle-info fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+        </div>
 
-<div>
-	<h4>@Model.NomeMarca</h4>
-	<hr />
-	<dl class="row">
-		<dt class="col-sm-2">ID</dt>
-		<dd class="col-sm-10">@Model.IdMarca</dd>
+        <div class="row g-3 mb-5">
+            <div class="col-md-3 col-6">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">ID</span>
+                    <span class="fs-5 fw-semibold">@Model.IdMarca</span>
+                </div>
+            </div>
+            <div class="col-md-5 col-6">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Descrição</span>
+                    <span class="fs-5 fw-semibold">@Model.NomeMarca</span>
+                </div>
+            </div>
+            <div class="col-md-4 col-12">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Quantidade de Famílias</span>
+                    <span class="fs-5 fw-semibold">@Model.QuantidadeFamilia</span>
+                </div>
+            </div>
+        </div>
 
-		<dt class="col-sm-2">Descrição</dt>
-		<dd class="col-sm-10">@Model.NomeMarca</dd>
+        <div class="d-flex align-items-center mb-3">
+            <i class="fa-solid fa-users-rectangle fs-5 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h5 class="fw-bold mb-0">Famílias desta Marca</h5>
+        </div>
 
-		<dt class="col-sm-2">Quantidade de Famílias</dt>
-		<dd class="col-sm-10">@Model.QuantidadeFamilia</dd>
-	</dl>
+        @if (Model.Familias != null && Model.Familias.Any())
+        {
+            <div class="table-responsive mb-4">
+                <table class="table-glass table-responsive-stack" id="sortableTable">
+                    <thead>
+                        <tr>
+                            <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                                <div class="d-flex justify-content-between align-items-center"># <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                            </th>
+                            <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                <div class="d-flex justify-content-between align-items-center">Descrição <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                            </th>
+                            <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;" class="text-md-center">
+                                <div class="d-flex justify-content-between align-items-center justify-content-md-center">Status <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var familia in Model.Familias)
+                        {
+                            <tr>
+                                <td data-label="ID">@familia.IdFamilia</td>
+                                <td data-label="Família" class="fw-semibold">@familia.NomeFamilia</td>
+                                <td data-label="Status" class="text-md-center">
+                                    @if (familia.Ativo)
+                                    {
+                                        <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25"><i class="fa-solid fa-check me-1 d-none d-md-inline"></i> Ativo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25"><i class="fa-solid fa-xmark me-1 d-none d-md-inline"></i> Inativo</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="p-4 text-center rounded-4 mb-5" style="background: rgba(0,0,0,0.02); border: 1px dashed var(--glass-border);">
+                <i class="fa-regular fa-folder-open fs-1 opacity-25 mb-3 d-block"></i>
+                <p class="mb-0 opacity-75 fw-semibold">Nenhuma família cadastrada nesta marca.</p>
+            </div>
+        }
+
+        <div class="d-flex justify-content-start pt-3 border-top border-secondary border-opacity-25">
+            <a asp-action="Index" class="btn-glass text-decoration-none">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </div>
 </div>
-
-@if (Model.Familias != null && Model.Familias.Any())
-{
-	<h3>Famílias</h3>
-	<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-		<table class="w-100">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>Descrição</th>
-					<th>Status</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var familia in Model.Familias)
-				{
-					<tr>
-						<td data-label="ID">@familia.IdFamilia</td>
-						<td data-label="Família">@familia.NomeFamilia</td>
-						<td data-label="Ativo">@(familia.Ativo ? "✅" : "❌")</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
-}
-else
-{
-	<p>Nenhuma família cadastrada nesta marca.</p>
-}
-
-<p>
-	<a class="btn btn-secondary mt-3" asp-action="Index">Voltar</a>
-</p>

@@ -976,6 +976,92 @@ input:checked + .slider:before {
 }
 /* #endregion */
 
+/* #region 13. RESPONSIVIDADE AVANÇADA PARA CARDS GLASS */
+
+@media (max-width: 768px) {
+    /* 1. Ajuste de Padding nos Cards para telas pequenas */
+    .glass-card {
+        padding: 1rem !important;
+        margin-bottom: 1rem;
+        border-radius: 15px; /* Bordas um pouco menos agressivas no mobile */
+    }
+
+    /* 2. Grid de Mini-Cards (Informações/KPIs) */
+    /* Faz com que os mini-cards de Detalhes fiquem em 2 colunas no mobile em vez de 1 */
+    .row.g-3 > [class*='col-'] {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    /* 3. Botões no Mobile (Ocupar largura total se necessário) */
+    .d-flex.justify-content-between {
+        flex-direction: column-reverse; /* Botão de ação principal fica em cima do "Voltar" */
+        gap: 10px;
+    }
+
+        .d-flex.justify-content-between .btn-glass,
+        .d-flex.justify-content-between a {
+            width: 100% !important;
+            justify-content: center;
+        }
+
+    /* 4. Inputs em sequência (Melhorar área de toque) */
+    .form-control-lg {
+        font-size: 1rem;
+        padding: 12px;
+    }
+
+    /* 5. Ajuste para os Checkboxes/Toggles de Pessoa */
+    .btn-check-glass .check-content {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+}
+
+/* 6. Efeito Hover apenas em dispositivos com Mouse */
+/* Isso evita que o card fique "preso" no estado hover após o toque no celular */
+@media (hover: hover) {
+    .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+        border-color: var(--sys-primary-light);
+    }
+}
+
+/* #endregion */
+
+/* #region 14. FIX DE TRANSBORDO E QUEBRA DE TEXTO */
+
+.glass-card {
+    /* ... suas regras anteriores ... */
+    overflow: hidden; /* Garante que nada saia das bordas arredondadas */
+    word-wrap: break-word; /* Força a quebra de palavras longas */
+    max-width: 100%; /* Impede o card de ser maior que o container pai */
+}
+
+    /* Garante que textos dentro de labels ou DD/DT não estourem */
+    .glass-card h4, .glass-card p, .glass-card span, .glass-card dd {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Adiciona "..." se o texto for muito longo */
+        white-space: normal; /* Permite que o texto pule linha se necessário */
+    }
+
+/* Ajuste nos Inputs para não empurrarem o card */
+.form-control, .form-select {
+    max-width: 100%;
+    width: 100%; /* Força o input a respeitar a coluna do Bootstrap */
+}
+
+/* Fix específico para as Tabelas que saem do Card */
+.table-responsive {
+    border-radius: 15px;
+    overflow-x: auto; /* Permite rolar a TABELA sem quebrar o CARD */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* #endregion */
+
 /* --- DARK MODE GLOBAL PARA INPUTS E SELECTS --- */
 [data-theme="dark"] .form-control,
 [data-theme="dark"] .form-select {
@@ -1047,3 +1133,4 @@ input:checked + .slider:before {
     font-size: 0.75rem;
     color: #ff6b6b !important;
 }
+

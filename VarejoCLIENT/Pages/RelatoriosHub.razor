@@ -10,27 +10,29 @@
 <main class="container-fluid py-4">
     <div class="d-flex align-items-center mb-4">
         <div class="me-3" style="width: 8px; height: 32px; background: var(--sys-primary); border-radius: 4px;"></div>
-        <h2 class="fw-bold mb-0" style="color: var(--sys-primary);">Central de Relatórios</h2>
+        <h2 class="fw-bold mb-0" style="color: var(--ui-text-primary);">Central de Relatórios</h2>
     </div>
 
-    @* BARRA DE PESQUISA E FAVORITOS *@
-    <div class="row g-3 mb-5">
-        <div class="col-md-6">
-            <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);">
-                <span class="input-group-text border-0" style="background: rgba(255, 255, 255, 0.4); color: var(--sys-primary);"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input type="text" class="form-control border-0" style="background: rgba(255, 255, 255, 0.4); color: var(--sys-primary);" placeholder="Buscar por código ou nome..."
+    @* BARRA DE PESQUISA E FAVORITOS (TOTALMENTE INTEGRADA E RESPONSIVA) *@
+    <div class="row g-3 mb-4">
+        
+        @* Barra de Pesquisa Integrada *@
+        <div class="col-12 col-md-7 col-lg-8">
+            <div class="search-bar-glass">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" class="form-control" placeholder="Buscar por código ou nome..."
                        @bind="termoBusca" @bind:event="oninput" />
             </div>
         </div>
-        <div class="col-md-6 text-end">
-            <div class="btn-group shadow-sm" style="border-radius: 12px; overflow: hidden;">
-                <button class="btn border-0 @(mostrarApenasFavoritos ? "active fw-bold" : "")"
-                        style="background: @(mostrarApenasFavoritos ? "var(--state-warning)" : "rgba(255, 255, 255, 0.3)"); color: @(mostrarApenasFavoritos ? "#000" : "var(--sys-primary)"); backdrop-filter: blur(10px);"
+
+        @* Botões Responsivos (Esticam no mobile, alinham à direita no PC) *@
+        <div class="col-12 col-md-5 col-lg-4">
+            <div class="d-flex gap-2 w-100">
+                <button class="btn-glass flex-grow-1 @(mostrarApenasFavoritos ? "btn-glass-primary" : "")"
                         @onclick="() => mostrarApenasFavoritos = !mostrarApenasFavoritos">
-                    <i class="bi @(mostrarApenasFavoritos ? "fa-solid fa-star" : "fa-regular fa-star") me-1"></i> Favoritos
+                    <i class="@(mostrarApenasFavoritos ? "fa-solid fa-star text-warning" : "fa-regular fa-star")"></i> Favoritos
                 </button>
-                <button class="btn border-0 @(!mostrarApenasFavoritos ? "active fw-bold" : "")"
-                        style="background: @(!mostrarApenasFavoritos ? "var(--sys-primary)" : "rgba(255, 255, 255, 0.3)"); color: @(!mostrarApenasFavoritos ? "#fff" : "var(--sys-primary)"); backdrop-filter: blur(10px);"
+                <button class="btn-glass flex-grow-1 @(!mostrarApenasFavoritos ? "btn-glass-primary" : "")"
                         @onclick="() => mostrarApenasFavoritos = false">
                     Todos
                 </button>
@@ -38,57 +40,49 @@
         </div>
     </div>
 
-    @* GAVETAS DOS RELATÓRIOS (CONTROLE NATIVO BLAZOR) *@
-    <div class="accordion shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);">
+    @* GAVETAS DOS RELATÓRIOS (USANDO GLASS-CARD) *@
+    <div class="accordion glass-card p-0 overflow-hidden">
         @foreach (var grupo in RelatoriosFiltrados.GroupBy(x => x.Categoria))
         {
-            // Lógica inteligente: Abre se estiver pesquisando ou se o usuário clicou na gaveta
             var isSearching = !string.IsNullOrWhiteSpace(termoBusca);
             var isOpen = isSearching || gavetasAbertas.Contains(grupo.Key);
 
             var btnClass = isOpen ? "accordion-button fw-bold" : "accordion-button collapsed fw-bold";
             var collapseClass = isOpen ? "accordion-collapse collapse show" : "accordion-collapse collapse";
 
-            <div class="accordion-item border-0" style="background: transparent;">
-                
-                @* CABEÇALHO DA GAVETA (Aciona o ToggleGaveta do C#) *@
+            <div class="accordion-item border-0 bg-transparent">
                 <h2 class="accordion-header">
                     <button class="@btnClass" type="button" @onclick="() => ToggleGaveta(grupo.Key)"
-                            style="background: rgba(255, 255, 255, 0.6); color: var(--sys-primary); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
+                            style="background: transparent; color: var(--ui-text-primary); border-bottom: 1px solid var(--ui-glass-border); box-shadow: none;">
                         <i class="fa-solid fa-folder-open me-2 opacity-75"></i> @grupo.Key.ToUpper()
-                        <span class="badge rounded-pill ms-3" style="background: var(--sys-primary); font-size: 0.75rem;">@grupo.Count()</span>
+                        <span class="badge rounded-pill ms-3" style="background: var(--sys-primary); font-size: 0.75rem; color: white;">@grupo.Count()</span>
                     </button>
                 </h2>
                 
-                @* CORPO DA GAVETA *@
                 <div class="@collapseClass">
-                    <div class="accordion-body" style="background: var(--glass-bg); padding: 1.5rem;">
+                    <div class="accordion-body" style="background: rgba(0,0,0,0.02);">
                         <div class="row g-4">
                             @foreach (var rel in grupo)
                             {
                                 <div class="col-md-4 col-lg-3">
-                                    <div class="card h-100 border-0 shadow-sm" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important; cursor: pointer; transition: transform 0.2s;"
+                                    <div class="glass-card h-100 p-3" style="cursor: pointer;"
                                          @onclick='() => Navegar(rel.Codigo)'
-                                         onmouseover="this.style.transform='translateY(-5px)'"
+                                         onmouseover="this.style.transform='translateY(-3px)'"
                                          onmouseout="this.style.transform='translateY(0)'">
                                         
-                                        <div class="card-body p-4">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <span class="badge" style="background: rgba(22, 56, 137, 0.1); color: var(--sys-primary); font-size: 0.9rem; border: 1px solid rgba(22, 56, 137, 0.2);">
-                                                    <i class="fa-solid fa-file-lines me-1"></i> @rel.Codigo
-                                                </span>
-                                                
-                                                <button class="btn btn-link p-0 border-0 text-decoration-none"
-                                                        style="color: @(rel.IsFavorito ? "var(--state-warning)" : "rgba(22, 56, 137, 0.3)"); transition: 0.2s;"
-                                                        @onclick:stopPropagation
-                                                        @onclick="() => rel.IsFavorito = !rel.IsFavorito">
-                                                    <i class="bi @(rel.IsFavorito ? "fa-solid fa-star" : "fa-regular fa-star") fs-5"></i>
-                                                </button>
-                                            </div>
-                                            
-                                            <h6 class="fw-bold mb-1" style="color: var(--sys-primary); font-size: 1.1rem;">@rel.Nome</h6>
-                                            <small style="color: var(--subtext); opacity: 0.8;">Módulo Gerencial</small>
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <span class="report-id-badge">
+                                                <i class="fa-solid fa-file-lines me-1"></i> @rel.Codigo
+                                            </span>
+                                            <button class="btn btn-link p-0 border-0 text-decoration-none"
+                                                    style="color: @(rel.IsFavorito ? "var(--state-warning)" : "var(--ui-text-secondary)"); opacity: @(rel.IsFavorito ? "1" : "0.3");"
+                                                    @onclick:stopPropagation
+                                                    @onclick="() => rel.IsFavorito = !rel.IsFavorito">
+                                                <i class="fa-solid fa-star fs-5"></i>
+                                            </button>
                                         </div>
+                                        <h6 class="fw-bold mb-1" style="color: var(--ui-text-primary);">@rel.Nome</h6>
+                                        <small style="color: var(--ui-text-secondary); opacity: 0.6;">Módulo Gerencial</small>
                                     </div>
                                 </div>
                             }
@@ -101,10 +95,10 @@
     
     @if (!RelatoriosFiltrados.Any())
     {
-        <div class="text-center p-5 mt-4" style="background: var(--glass-bg); border-radius: 12px; border: 1px solid var(--glass-border);">
+        <div class="text-center p-5 mt-4 glass-card">
             <i class="fa-solid fa-magnifying-glass fa-2x mb-3 text-muted opacity-50"></i>
-            <h5 class="fw-bold text-muted">Nenhum relatório encontrado</h5>
-            <p class="text-muted mb-0">Tente buscar por outro nome, código ou remova o filtro de favoritos.</p>
+            <h5 class="fw-bold" style="color: var(--ui-text-primary);">Nenhum relatório encontrado</h5>
+            <p class="mb-0" style="color: var(--ui-text-secondary); opacity: 0.7;">Tente buscar por outro nome, código ou remova o filtro de favoritos.</p>
         </div>
     }
 </main>
@@ -113,33 +107,18 @@
     private string termoBusca = "";
     private bool mostrarApenasFavoritos = false;
     private List<RelatorioDefinicaoDTO> todosRelatorios = new();
-    
-    // Lista que guarda qual gaveta está aberta
     private HashSet<string> gavetasAbertas = new();
 
     protected override async Task OnInitializedAsync()
     {
         todosRelatorios = await RelService.GetMenuRelatoriosAsync();
-        
-        // UX: Abre a gaveta de Produtos por padrão quando a tela carrega
-        if (todosRelatorios.Any())
-        {
-            gavetasAbertas.Add("#100 - Produtos");
-        }
+        if (todosRelatorios.Any()) gavetasAbertas.Add("#100 - Produtos");
     }
 
-    // Método 100% C# para abrir/fechar as gavetas
     private void ToggleGaveta(string categoria)
     {
-        if (gavetasAbertas.Contains(categoria))
-        {
-            gavetasAbertas.Remove(categoria); // Fecha se clicar na que já tá aberta
-        }
-        else
-        {
-            gavetasAbertas.Clear(); // Fecha as outras
-            gavetasAbertas.Add(categoria); // Abre a nova
-        }
+        if (gavetasAbertas.Contains(categoria)) gavetasAbertas.Remove(categoria);
+        else { gavetasAbertas.Clear(); gavetasAbertas.Add(categoria); }
     }
 
     private IEnumerable<RelatorioDefinicaoDTO> RelatoriosFiltrados =>

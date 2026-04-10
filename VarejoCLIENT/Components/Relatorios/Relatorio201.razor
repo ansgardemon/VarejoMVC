@@ -1,0 +1,162 @@
+﻿@using VarejoSHARED.DTO
+@using VarejoSHARED.DTO.Relatorios
+@using VarejoCLIENT.Services
+@inject RelatorioService RelService
+
+<RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
+    <ChildContent>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4">
+                <label class="form-label">Saldo de Estoque</label>
+                <select class="form-select" @bind="filtro.FiltroSaldo">
+                    <option value="TODOS">&#xf570; Mostrar Todos</option> @* fa-receipt *@
+                    <option value="COM_ESTOQUE">&#xf466; Apenas Com Estoque Positivo</option> @* fa-box *@
+                    <option value="SEM_ESTOQUE">&#xf071; Sem Estoque (Zerado)</option> @* fa-triangle-exclamation *@
+                    <option value="NEGATIVO">&#xf0f3; Estoque Negativo</option> @* fa-bell *@
+                </select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label class="form-label">Situação do Produto</label>
+                <select class="form-select" @bind="filtro.Ativo">
+                    <option value="true">Ativos</option>
+                    <option value="false">Inativos</option>
+                    <option value="">Todos</option>
+                </select>
+            </div>
+        </div>
+    </ChildContent>
+
+    <BarraPesquisa>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="CategoriaOutputDTO" Titulo="Categorias" IconeClass="fa-solid fa-tags" Itens="listaCategorias" GetId="c => c.IdCategoria.ToString()" GetNome="c => c.DescricaoCategoria" Selecionados="selecionadosCategorias" SelecionadosChanged="v => selecionadosCategorias = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="MarcaOutputDTO" Titulo="Marcas" IconeClass="fa-solid fa-copyright" Itens="listaMarcas" GetId="m => m.IdMarca.ToString()" GetNome="m => m.NomeMarca" Selecionados="selecionadosMarcas" SelecionadosChanged="v => selecionadosMarcas = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="FamiliaOutputDTO" Titulo="Famílias" IconeClass="fa-solid fa-users" Itens="listaFamilias" GetId="f => f.IdFamilia.ToString()" GetNome="f => f.NomeFamilia" Selecionados="selecionadosFamilias" SelecionadosChanged="v => selecionadosFamilias = v" />
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <RelatorioFiltroMultiSelect TItem="ProdutoDTO" Titulo="Produtos" IconeClass="fa-solid fa-box" Itens="listaTodosProdutos" GetId="p => p.IdProduto.ToString()" GetNome="p => p.NomeProduto" Selecionados="selecionadosProdutos" SelecionadosChanged="v => selecionadosProdutos = v" />
+            </div>
+        </div>
+    </BarraPesquisa>
+</RelatorioFiltro>
+
+<div class="mt-4">
+    @if (loading)
+    {
+        <div class="text-center p-5 glass-card">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 fw-bold text-primary">Processando posição de estoque...</p>
+        </div>
+    }
+    else
+    {
+        @if (listaDados != null && listaDados.Any())
+        {
+            <div class="glass-card overflow-hidden mb-3">
+                <RelatorioTabelaDinamica TItem="Relatorio201DTO" Dados="listaDados" Colunas="colunas201" />
+            </div>
+            
+            @* TOTALIZADOR EM FORMATO DE CARD *@
+            <div class="glass-card p-4 d-flex justify-content-between align-items-center">
+                <span class="text-uppercase fw-bold" style="color: var(--ui-text-secondary); font-size: 0.85rem; letter-spacing: 0.5px;">Patrimônio em Estoque</span>
+                <h4 class="fw-bold mb-0" style="color: var(--ui-text-primary);">@listaDados.Sum(x => x.ValorTotalCusto).ToString("C2")</h4>
+            </div>
+        }
+        else if (dadosVazios)
+        {
+            <div class="p-5 text-center glass-card">
+                <i class="fa-solid fa-boxes-stacked fa-2x mb-3 text-muted opacity-50"></i>
+                <h5 class="fw-bold" style="color: var(--ui-text-primary);">Nenhum registro encontrado</h5>
+                <p class="mb-0" style="color: var(--ui-text-secondary);">Não há posição de estoque para os filtros informados.</p>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int Codigo { get; set; }
+    [Parameter] public RelatorioDefinicaoDTO Definicao { get; set; }
+
+    private bool loading = false;
+    private bool dadosVazios = false;
+
+    private RelatorioFiltro201DTO filtro = new();
+    private List<Relatorio201DTO>? listaDados;
+    
+    private List<CategoriaOutputDTO> listaCategorias = new();
+    private List<MarcaOutputDTO> listaMarcas = new();
+    private List<FamiliaOutputDTO> listaFamilias = new();
+    private List<ProdutoDTO> listaTodosProdutos = new();
+
+    private List<string> selecionadosCategorias = new();
+    private List<string> selecionadosMarcas = new();
+    private List<string> selecionadosFamilias = new();
+    private List<string> selecionadosProdutos = new();
+
+    // === DEFINIÇÃO DAS COLUNAS ===
+    private List<RelatorioTabelaDinamica<Relatorio201DTO>.ConfigColuna> colunas201 = new() {
+        new() { Titulo = "ID", Propriedade = "IdProduto" },
+        new() { Titulo = "Produto", Propriedade = "NomeProduto" },
+        new() { Titulo = "Categoria", Propriedade = "Categoria" }, // Separamos categoria para manter a leitura limpa
+        new() { Titulo = "Marca", Propriedade = "Marca" },
+        new() { Titulo = "Estoque Atual", Propriedade = "EstoqueAtual", Formato = "N2" },
+        new() { Titulo = "Custo Un.", Propriedade = "CustoMedio", Formato = "C2" },
+        new() { Titulo = "Valor Total", Propriedade = "ValorTotalCusto", Formato = "C2" }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            listaCategorias = await RelService.GetCategoriasAsync() ?? new();
+            listaMarcas = await RelService.GetMarcasAsync() ?? new();
+            listaFamilias = await RelService.GetFamiliasAsync() ?? new();
+            listaTodosProdutos = await RelService.GetDadosRelatorio101Async(new RelatorioFiltroProdutosDTO()) ?? new();
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+    }
+
+    private async Task ExecutarBusca()
+    {
+        loading = true; dadosVazios = false; StateHasChanged();
+        try
+        {
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            listaDados = await RelService.GetDadosRelatorio201Async(filtro);
+            dadosVazios = listaDados == null || !listaDados.Any();
+        }
+        finally { loading = false; StateHasChanged(); }
+    }
+
+    private void Limpar()
+    {
+        listaDados = null;
+        filtro = new();
+        selecionadosCategorias.Clear(); selecionadosMarcas.Clear();
+        selecionadosFamilias.Clear(); selecionadosProdutos.Clear();
+        dadosVazios = false; StateHasChanged();
+    }
+
+    private async Task Exportar(string formato)
+    {
+        loading = true; StateHasChanged();
+        try
+        {
+            filtro.CategoriasIds = selecionadosCategorias.Select(int.Parse).ToList();
+            filtro.MarcasIds = selecionadosMarcas.Select(int.Parse).ToList();
+            filtro.FamiliasIds = selecionadosFamilias.Select(int.Parse).ToList();
+            filtro.ProdutosIds = selecionadosProdutos.Select(int.Parse).ToList();
+
+            await RelService.DownloadPdfAsync(Codigo, Definicao.Nome, filtro);
+        }
+        finally { loading = false; StateHasChanged(); }
+    }
+}

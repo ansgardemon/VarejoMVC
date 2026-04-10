@@ -425,6 +425,514 @@ namespace VarejoAPI.Services
         }
         #endregion
 
+        #region RELATÓRIO 201 - POSIÇÃO ATUAL DE ESTOQUE
+        public byte[] GerarPdfRelatorio201(List<Relatorio201DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "POSIÇÃO ATUAL DE ESTOQUE", "#201"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(2);   // Categoria
+                            columns.RelativeColumn(1);   // Estoque
+                            columns.RelativeColumn(1);   // Custo Un.
+                            columns.RelativeColumn(1);   // Total
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("CATEGORIA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("ESTOQUE");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("CUSTO UN.");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("TOTAL");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).Text(item.Categoria);
+
+                            var corEstoque = item.EstoqueAtual < 0 ? Colors.Red.Medium : Colors.Black;
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2")).FontColor(corEstoque).SemiBold();
+
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.CustoMedio.ToString("C2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ValorTotalCusto.ToString("C2")).SemiBold();
+                        }
+
+                        // Linha de Totalização Patrimonial
+                        table.Cell().ColumnSpan(5).PaddingVertical(5).PaddingHorizontal(5).AlignRight().Text("VALOR TOTAL EM ESTOQUE:").SemiBold().FontSize(10);
+                        table.Cell().PaddingVertical(5).PaddingHorizontal(5).AlignRight().Text(dados.Sum(x => x.ValorTotalCusto).ToString("C2")).SemiBold().FontSize(10).FontColor("#163889");
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 202 - LOTES E VALIDADES
+        public byte[] GerarPdfRelatorio202(List<Relatorio202DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "CONTROLE DE VALIDADES", "#202"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(2);   // Categoria
+                            columns.ConstantColumn(80);  // Data Validade
+                            columns.ConstantColumn(100); // Status / Dias
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).Text("CATEGORIA");
+                            header.Cell().Element(HeaderStyle).AlignCenter().Text("VALIDADE");
+                            header.Cell().Element(HeaderStyle).AlignCenter().Text("SITUAÇÃO");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).Text(item.Categoria);
+
+                            table.Cell().Element(RowStyle).AlignCenter().Text(item.DataValidade.ToString("dd/MM/yyyy"));
+
+                            // Lógica de Status
+                            string statusTexto;
+                            string corStatus = Colors.Black;
+
+                            if (item.DiasParaVencer < 0)
+                            {
+                                statusTexto = $"Vencido há {Math.Abs(item.DiasParaVencer)} d";
+                                corStatus = Colors.Red.Medium;
+                            }
+                            else if (item.DiasParaVencer == 0)
+                            {
+                                statusTexto = "Vence Hoje!";
+                                corStatus = Colors.Red.Medium;
+                            }
+                            else if (item.DiasParaVencer <= 30)
+                            {
+                                statusTexto = $"Vence em {item.DiasParaVencer} d";
+                                corStatus = Colors.Orange.Medium;
+                            }
+                            else
+                            {
+                                statusTexto = "No Prazo";
+                                corStatus = Colors.Green.Darken2;
+                            }
+
+                            table.Cell().Element(RowStyle).AlignCenter().Text(statusTexto).FontColor(corStatus).SemiBold();
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 203 - MOVIMENTAÇÃO DE ESTOQUE GERAL
+        public byte[] ExportarPdfRelatorio203(List<Relatorio203DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4.Landscape());
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "AUDITORIA DE MOVIMENTAÇÃO DE ESTOQUE", "#203"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(70);  // Data
+                            columns.ConstantColumn(40);  // Nº
+                            columns.RelativeColumn(2);   // Tipo Mov.
+                            columns.RelativeColumn(2);   // Pessoa
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(1);   // Qtd
+                            columns.RelativeColumn(1);   // V. Un
+                            columns.RelativeColumn(1);   // V. Total
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("DATA");
+                            header.Cell().Element(HeaderStyle).Text("Nº");
+                            header.Cell().Element(HeaderStyle).Text("OPERAÇÃO");
+                            header.Cell().Element(HeaderStyle).Text("PESSOA");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("QTD");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("V. UN.");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("TOTAL");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.DataMovimento.ToString("dd/MM/yyyy"));
+                            table.Cell().Element(RowStyle).Text(item.IdMovimento.ToString());
+                            table.Cell().Element(RowStyle).Text(item.TipoMovimento);
+                            table.Cell().Element(RowStyle).Text(item.Pessoa);
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto);
+
+                            var corQtd = item.IsEntrada ? Colors.Green.Darken2 : Colors.Red.Medium;
+                            var sinal = item.IsEntrada ? "+" : "";
+
+                            table.Cell().Element(RowStyle).AlignRight().Text($"{sinal}{item.Quantidade:N2}").FontColor(corQtd).SemiBold();
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ValorUnitario.ToString("C2")).FontColor(Colors.Grey.Darken2);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ValorTotal.ToString("C2")).SemiBold();
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 204 - SUGESTÃO DE COMPRAS
+        public byte[] ExportarPdfRelatorio204(List<Relatorio204DTO> dados, int diasDesejados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var documento = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, $"SUGESTÃO DE COMPRAS (COBERTURA: {diasDesejados} DIAS)", "#204"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(1);   // Estoque
+                            columns.RelativeColumn(1);   // Média/Dia
+                            columns.RelativeColumn(1);   // Cobertura Atual
+                            columns.RelativeColumn(1);   // Comprar (Sugestão)
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("ESTOQUE");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("MÉDIA/DIA");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("COB. (DIAS)");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("COMPRAR");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto);
+
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.VendaMediaDiaria.ToString("N2")).FontColor(Colors.Grey.Darken2);
+
+                            var corCobertura = item.DiasCoberturaAtual < 5 ? Colors.Red.Medium : Colors.Black;
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.DiasCoberturaAtual >= 999 ? "+999" : item.DiasCoberturaAtual.ToString("N0")).FontColor(corCobertura);
+
+                            // Coluna de Comprar em Destaque
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.SugestaoCompra.ToString("N2")).FontColor("#163889").SemiBold();
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            });
+
+            return documento.GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 205 - INVENTÁRIO E ESTOQUE MÍNIMO
+        public byte[] ExportarPdfRelatorio205(List<Relatorio205DTO> dados, bool cega)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            return Document.Create(container => {
+                container.Page(page => {
+                    page.Size(PageSizes.A4); page.Margin(1, Unit.Centimetre); page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+                    page.Header().Element(c => GerarCabecalho(c, cega ? "FICHA DE CONTAGEM CEGA" : "FICHA DE CONTAGEM (COM SALDO)", "#205"));
+                    page.Content().PaddingVertical(10).Table(table => {
+                        table.ColumnsDefinition(c => {
+                            c.ConstantColumn(40); c.RelativeColumn(3); c.ConstantColumn(60);
+                            if (!cega) c.ConstantColumn(60);
+                            c.ConstantColumn(80);
+                        });
+                        table.Header(h => {
+                            h.Cell().Element(HeaderStyle).Text("ID"); h.Cell().Element(HeaderStyle).Text("PRODUTO"); h.Cell().Element(HeaderStyle).AlignRight().Text("MÍNIMO");
+                            if (!cega) h.Cell().Element(HeaderStyle).AlignRight().Text("SISTEMA");
+                            h.Cell().Element(HeaderStyle).AlignCenter().Text("FÍSICO");
+                        });
+                        foreach (var item in dados)
+                        {
+                            Func<IContainer, IContainer> rs = c => c.PaddingVertical(10).PaddingHorizontal(5).BorderBottom(1).BorderColor(Colors.Grey.Lighten3);
+                            table.Cell().Element(rs).Text(item.IdProduto.ToString());
+                            table.Cell().Element(rs).Text(item.NomeProduto);
+                            table.Cell().Element(rs).AlignRight().Text(item.EstoqueMinimo > 0 ? item.EstoqueMinimo.ToString("N2") : "-").FontColor(Colors.Grey.Medium);
+
+                            if (!cega) table.Cell().Element(rs).AlignRight().Text(item.EstoqueAtual.ToString("N2")).SemiBold();
+
+                            table.Cell().Element(rs).AlignCenter().Text("____________");
+                        }
+                    });
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 206 - VALORIZAÇÃO DE ESTOQUE
+        public byte[] ExportarPdfRelatorio206(List<Relatorio206DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4.Landscape());
+                    page.Margin(1, Unit.Centimetre);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "VALORIZAÇÃO DE ESTOQUE E PROJEÇÃO DE LUCRO", "#206"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(40);  // ID
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(1);   // Qtd
+                            columns.RelativeColumn(1);   // Custo Un.
+                            columns.RelativeColumn(1);   // Preço Un.
+                            columns.RelativeColumn(1.5f);// Custo Total
+                            columns.RelativeColumn(1.5f);// Venda Total
+                            columns.RelativeColumn(1.5f);// Lucro Proj.
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("ID");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("QTD");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("CUSTO UN");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("PREÇO UN");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("CUSTO TOTAL");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("VENDA TOTAL");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("LUCRO PROJ.");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString());
+                            table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2")).SemiBold();
+
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.CustoMedio.ToString("C2")).FontColor(Colors.Grey.Darken2);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.PrecoVenda.ToString("C2")).FontColor(Colors.Grey.Darken2);
+
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ValorTotalCusto.ToString("C2"));
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ValorTotalVenda.ToString("C2")).FontColor("#163889").SemiBold();
+
+                            var corLucro = item.LucroProjetado >= 0 ? Colors.Green.Darken2 : Colors.Red.Medium;
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.LucroProjetado.ToString("C2")).FontColor(corLucro).SemiBold();
+                        }
+
+                        // Totalizador Final do Relatório
+                        table.Cell().ColumnSpan(5).PaddingVertical(5).AlignRight().Text("TOTAIS GERAIS:").SemiBold().FontSize(10);
+                        table.Cell().PaddingVertical(5).AlignRight().Text(dados.Sum(x => x.ValorTotalCusto).ToString("C2")).SemiBold().FontSize(10);
+                        table.Cell().PaddingVertical(5).AlignRight().Text(dados.Sum(x => x.ValorTotalVenda).ToString("C2")).SemiBold().FontSize(10).FontColor("#163889");
+
+                        var totalLucro = dados.Sum(x => x.LucroProjetado);
+                        var corTotalLucro = totalLucro >= 0 ? Colors.Green.Darken2 : Colors.Red.Medium;
+                        table.Cell().PaddingVertical(5).AlignRight().Text(totalLucro.ToString("C2")).SemiBold().FontSize(10).FontColor(corTotalLucro);
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 207 - GIRO E VELOCIDADE DE ESTOQUE
+        public byte[] ExportarPdfRelatorio207(List<Relatorio207DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            return Document.Create(container => {
+                container.Page(page => {
+                    page.Size(PageSizes.A4); page.Margin(1, Unit.Centimetre); page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+                    page.Header().Element(c => GerarCabecalho(c, "GIRO E VELOCIDADE DE ESTOQUE", "#207"));
+                    page.Content().PaddingVertical(10).Table(table => {
+                        table.ColumnsDefinition(c => { c.ConstantColumn(40); c.RelativeColumn(3); c.RelativeColumn(1); c.RelativeColumn(1); c.RelativeColumn(1); });
+                        table.Header(h => { h.Cell().Element(HeaderStyle).Text("ID"); h.Cell().Element(HeaderStyle).Text("PRODUTO"); h.Cell().Element(HeaderStyle).AlignRight().Text("ESTOQUE"); h.Cell().Element(HeaderStyle).AlignRight().Text("TOTAL SAÍDAS"); h.Cell().Element(HeaderStyle).AlignRight().Text("MÉDIA/DIA"); });
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.IdProduto.ToString()); table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.EstoqueAtual.ToString("N2")); table.Cell().Element(RowStyle).AlignRight().Text(item.TotalSaidas.ToString("N2")).SemiBold(); table.Cell().Element(RowStyle).AlignRight().Text(item.SaidaMediaDiaria.ToString("N2")).FontColor("#163889");
+                        }
+                    });
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 208 - DIVERGÊNCIAS E AJUSTES DE INVENTÁRIO
+        public byte[] ExportarPdfRelatorio208(List<Relatorio208DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            return Document.Create(container => {
+                container.Page(page => {
+                    page.Size(PageSizes.A4.Landscape()); page.Margin(1, Unit.Centimetre); page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+                    page.Header().Element(c => GerarCabecalho(c, "DIVERGÊNCIAS E AJUSTES DE INVENTÁRIO", "#208"));
+                    page.Content().PaddingVertical(10).Table(table => {
+                        table.ColumnsDefinition(c => { c.ConstantColumn(70); c.ConstantColumn(40); c.RelativeColumn(3); c.RelativeColumn(1); c.RelativeColumn(1); c.RelativeColumn(2); });
+                        table.Header(h => { h.Cell().Element(HeaderStyle).Text("DATA"); h.Cell().Element(HeaderStyle).Text("ID"); h.Cell().Element(HeaderStyle).Text("PRODUTO"); h.Cell().Element(HeaderStyle).AlignRight().Text("QTD AJUSTE"); h.Cell().Element(HeaderStyle).AlignRight().Text("R$ IMPACTO"); h.Cell().Element(HeaderStyle).Text("OBS"); });
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.DataAjuste.ToString("dd/MM/yy")); table.Cell().Element(RowStyle).Text(item.IdProduto.ToString()); table.Cell().Element(RowStyle).Text(item.NomeProduto);
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.QuantidadeAjustada.ToString("N2")).FontColor(item.QuantidadeAjustada < 0 ? Colors.Red.Medium : Colors.Green.Medium).SemiBold();
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ImpactoFinanceiro.ToString("C2")).FontColor(item.ImpactoFinanceiro < 0 ? Colors.Red.Medium : Colors.Green.Medium);
+                            table.Cell().Element(RowStyle).Text(item.Observacao);
+                        }
+                    });
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
+        #endregion
+
+        #region RELATÓRIO 301 - HISTÓRICO ANALÍTICO DE MOVIMENTAÇÕES
+        public byte[] ExportarPdfRelatorio301(List<Relatorio301DTO> dados)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4.Landscape());
+                    page.Margin(1, Unit.Centimetre);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Verdana));
+
+                    page.Header().Element(c => GerarCabecalho(c, "HISTÓRICO ANALÍTICO DE MOVIMENTAÇÕES", "#301"));
+
+                    page.Content().PaddingVertical(10).Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.ConstantColumn(65);  // Data
+                            columns.RelativeColumn(2);   // Tipo
+                            columns.RelativeColumn(2);   // Pessoa
+                            columns.RelativeColumn(3);   // Produto
+                            columns.RelativeColumn(1);   // Qtd
+                            columns.RelativeColumn(1);   // R$ Total
+                            columns.RelativeColumn(2);   // Obs
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Element(HeaderStyle).Text("DATA");
+                            header.Cell().Element(HeaderStyle).Text("TIPO DE MOV.");
+                            header.Cell().Element(HeaderStyle).Text("PESSOA / USUÁRIO");
+                            header.Cell().Element(HeaderStyle).Text("PRODUTO");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("QTD");
+                            header.Cell().Element(HeaderStyle).AlignRight().Text("R$ TOTAL");
+                            header.Cell().Element(HeaderStyle).Text("OBS");
+                        });
+
+                        foreach (var item in dados)
+                        {
+                            table.Cell().Element(RowStyle).Text(item.DataMovimento.ToString("dd/MM/yy HH:mm"));
+
+                            table.Cell().Element(RowStyle).Text(item.TipoMovimento);
+                            table.Cell().Element(RowStyle).Text(item.Pessoa);
+                            table.Cell().Element(RowStyle).Text(item.Produto);
+
+                            // Formatação de cor para Entrada (Verde +) e Saída (Vermelho -)
+                            var corQtd = item.IsEntrada ? Colors.Green.Darken2 : Colors.Red.Medium;
+                            var sinal = item.IsEntrada ? "+" : "";
+
+                            table.Cell().Element(RowStyle).AlignRight().Text($"{sinal}{item.Quantidade:N2}").FontColor(corQtd).SemiBold();
+                            table.Cell().Element(RowStyle).AlignRight().Text(item.ValorTotal.ToString("C2")).FontColor(Colors.Grey.Darken2);
+
+                            table.Cell().Element(RowStyle).Text(item.Observacao).FontSize(8).FontColor(Colors.Grey.Medium);
+                        }
+                    });
+
+                    page.Footer().Element(c => GerarRodape(c, dados.Count));
+                });
+            }).GeneratePdf();
+        }
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+
         #region MÉTODOS AUXILIARES
 
         private void GerarCabecalho(IContainer container, string titulo, string codigoRelatorio)

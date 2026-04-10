@@ -1,34 +1,631 @@
-html {
-  font-size: 14px;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* #region 1. VARIÁVEIS DE DESIGN (CONSUMO DO THEME.CSS) */
+:root {
+    /* Mapeamento amigável para o MVC */
+    --glass-bg: var(--ui-glass-bg);
+    --glass-border: var(--ui-glass-border);
+    --glass-blur: var(--ui-glass-blur);
+    --text: var(--ui-text-primary);
+    --subtext: var(--ui-text-secondary);
+    --text-btn: var(--ui-text-button);
+    --bg-gradient-start: var(--ui-bg-gradient-start);
+    --bg-gradient-end: var(--ui-bg-gradient-end);
+    --btn-info: var(--state-info);
+    --btn-success: var(--state-success);
+    --btn-danger: var(--state-danger);
+    --btn-warning: var(--state-warning);
+    --table-odd: var(--ui-table-odd);
+    --table-even: var(--ui-table-even);
+}
+/* #endregion */
+
+/* #region 2. BASE, TIPOGRAFIA E SCROLLBAR */
+* {
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease !important;
+    box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+html, body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    background-attachment: fixed;
+    color: var(--text) !important;
+    min-height: 100vh;
+    scroll-behavior: smooth;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* Scrollbar Customizada (Padrão App) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-body {
-  margin-bottom: 60px;
+::-webkit-scrollbar-thumb {
+    background-color: var(--text);
+    border-radius: 10px;
+    opacity: 0.3;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text) !important;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+main {
+    width: 90%;
+    margin: auto;
+    padding-bottom: 50px; /* Espaço para o menu quando estiver embaixo */
 }
 
+/* --- COMPORTAMENTO DO CONTEÚDO (PROTEGE CONTRA O MENU FIXO NO TOPO) --- */
+.content-with-nav {
+    /* 20px (topo) + 70px (altura do menu) + 30px (respiro) = 120px */
+    padding-top: 120px !important;
+}
 
+/* --- SUPER TIPOGRAFIA HOME (O "VITRIN.O" GIGANTE) --- */
+h1.vitrino {
+    /* 1. A FONTE INTER (Fina e Elegante) */
+    font-family: 'Roboto', sans-serif !important;
+    font-weight: normal !important; /* Peso extrafino */
+    font-size: clamp(80px, 20vw, 250px) !important;
+    letter-spacing: 0.05em;
+    /* 2. O GRADIENTE VOLTOU */
+    /* Substitua as variáveis abaixo pelas cores exatas do seu tema se precisar */
+    background: linear-gradient(90deg, var(--text), var(--sys-primary-light, #4facfe));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent; /* Fallback essencial para o gradiente brilhar */
+    /* 3. POSICIONAMENTO E ALTURA (Deixando mais "alta") */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    /* O scaleY(1.3) é o segredo: ele estica a fonte verticalmente, deixando ela mais alta e imponente */
+    transform: translate(-50%, -60%) scaleY(1.3);
+    z-index: 0;
+    /* 4. OPACIDADE: Aumentei para 0.15 para o gradiente ser visível. 
+       Se achar muito forte, baixe para 0.10 */
+    /* 5. PROTEÇÃO DE CLIQUE */
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    transition: opacity 0.4s ease;
+}
 
+/* Comportamento no Dark Mode */
+[data-theme="dark"] h1.vitrino {
+    /* Gradiente voltado para cores claras no dark mode */
+    background: linear-gradient(90deg, #ffffff, var(--sys-primary-light, #00f2fe));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* #endregion */
+
+/* #region 3. ESTRUTURA DO MENU (FLOAT NAV) */
+.navbar-varejo {
+    position: fixed;
+    z-index: 10000;
+    /* --- A MÁGICA DO FORMATO PILL --- */
+    height: 70px !important; /* Altura CRAVADA */
+    max-height: 70px !important; /* Impede qualquer elemento de esticar o menu */
+    border-radius: 100px !important; /* Arredondamento extremo para criar as pontas da pílula */
+    padding: 0 25px !important; /* ZERO de espaçamento vertical, apenas nas laterais */
+
+    display: flex !important;
+    align-items: center;
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(var(--ui-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
+    border: 1px solid var(--ui-glass-border);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    width: auto;
+    min-width: fit-content;
+}
+
+    .navbar-varejo > .container-fluid {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Classe ativada via JS ao sair da Home ou Scroll */
+    .navbar-varejo.sticky-nav {
+        bottom: auto;
+        top: 20px;
+        padding: 8px 20px;
+    }
+
+.nav-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--glass-border);
+    margin: 0 15px;
+    opacity: 0.5;
+}
+/* #endregion */
+
+/* #region 4. DROPDOWNS E TOOLTIPS (VITRIN.O STYLE) */
+.nav-drop {
+    position: relative;
+    cursor: pointer;
+}
+
+.nav-drop-content {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    bottom: 150%; /* Abre para cima por padrão */
+    opacity: 0;
+    visibility: hidden;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 12px;
+    min-width: 220px;
+    transition: 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.nav-drop:hover .nav-drop-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Inverte a abertura se o menu estiver no topo */
+.navbar-varejo.sticky-nav .nav-drop-content {
+    bottom: auto;
+    top: 150%;
+}
+/* #endregion */
+
+/* #region 5. COMPONENTES UI (CARDS, BOTÕES E BADGES) */
+.glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+}
+
+.btn-glass {
+    height: 40px;
+    border-radius: 30px;
+    font-weight: 600;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-btn) !important;
+    transition: 0.3s;
+}
+
+    .btn-glass:hover {
+        transform: translateY(-2px);
+        filter: saturate(1.5);
+    }
+
+.btn-success {
+    background: var(--btn-success) !important;
+    color: white !important;
+}
+
+.btn-danger {
+    background: var(--btn-danger) !important;
+    color: white !important;
+}
+
+.report-id-badge {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text);
+    background: rgba(22, 56, 137, 0.1);
+    border: 1px solid var(--glass-border);
+}
+/* #endregion */
+
+/* #region 6. FORMULÁRIOS E SWITCH */
+.form-control, .form-select {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px !important;
+    color: var(--text) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Switch de Tema */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--glass-bg);
+    transition: .4s;
+    border-radius: 34px;
+    border: 1px solid var(--glass-border);
+}
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 3px;
+        background-color: var(--text);
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+/* #endregion */
+
+/* #region 7. TABELAS (ENGINE RESPONSIVA) */
+.table-glass {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+    .table-glass thead th {
+        color: var(--text);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        padding: 15px;
+        border: none;
+        border-bottom: 2px solid var(--glass-border);
+    }
+
+    .table-glass tbody tr {
+        background: var(--glass-bg);
+        border-radius: 15px;
+        transition: 0.3s;
+    }
+
+    .table-glass td {
+        padding: 15px;
+        border: none;
+    }
+
+    /* Zebra Inteligente */
+    .table-glass tbody tr:nth-child(odd) {
+        background: var(--table-odd);
+    }
+
+    .table-glass tbody tr:nth-child(even) {
+        background: var(--table-even);
+    }
+
+@media (max-width: 768px) {
+    .table-responsive-stack thead {
+        display: none;
+    }
+
+    .table-responsive-stack tr {
+        display: block;
+        margin-bottom: 20px;
+        border-radius: 20px;
+    }
+
+    .table-responsive-stack td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+        .table-responsive-stack td::before {
+            content: attr(data-label);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            color: var(--text);
+            opacity: 0.7;
+        }
+}
+/* #endregion */
+
+/* #region 8. MENU VITRIN.O (FLOAT NAV COMPLETA) */
+
+/* 8.1 - Container Principal (A Pílula) */
+.navbar-varejo {
+    position: fixed;
+    z-index: 10000;
+    display: flex !important;
+    align-items: center;
+    padding: 10px 25px;
+    border-radius: 60px;
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(var(--ui-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
+    border: 1px solid var(--ui-glass-border);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    width: auto;
+    min-width: fit-content;
+}
+
+    /* ESTADO 1: HOME (Centralizado) */
+    .navbar-varejo.nav-home-center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* ESTADO 2: OUTRAS TELAS (Fixo no Topo) */
+    .navbar-varejo.nav-top-fixed,
+    .navbar-varejo.sticky-nav {
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+.navbar-collapse {
+    display: flex !important;
+    flex-basis: auto;
+}
+
+/* 8.2 - Grupo de Navegação e Ícones Coloridos */
+.nav-group {
+    display: flex !important;
+    flex-direction: row !important;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 15px;
+    align-items: center;
+}
+
+.nav-drop {
+    position: relative;
+    padding: 15px 10px;
+    cursor: pointer;
+}
+
+    .nav-drop > i, .nav-link-glass i {
+        font-size: 1.7rem !important;
+        color: var(--text) !important;
+        display: block;
+        transition: all 0.3s ease !important;
+        filter: saturate(1.3) brightness(1.1);
+    }
+
+    .nav-drop:hover > i, .nav-link-glass:hover i, .nav-drop.active > i {
+        transform: translateY(-4px) scale(1.05);
+        filter: saturate(1) brightness(1.1);
+        color: var(--sys-primary-light) !important;
+    }
+
+/* 8.3 - Dropdowns Estilo Glass (SEMPRE ABRE PARA BAIXO AGORA) */
+.nav-drop-content {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    top: 100%; /* Sempre abaixo do menu */
+    bottom: auto;
+    opacity: 0;
+    visibility: hidden;
+    background: var(--ui-glass-bg);
+    background-color: rgba(var(--ui-bg-rgb, 255, 255, 255), 0.95);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--ui-glass-border);
+    border-radius: 20px;
+    padding: 10px;
+    min-width: 260px;
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+[data-theme='dark'] .nav-drop-content {
+    background-color: rgba(15, 23, 42, 0.98);
+}
+
+/* Ativação via Clique do JS */
+.nav-drop.active .nav-drop-content {
+    opacity: 1;
+    visibility: visible;
+}
+
+.nav-drop-content a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: var(--text) !important;
+    text-decoration: none !important;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    width: 100%;
+}
+
+    .nav-drop-content a:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: var(--ui-text-primary) !important;
+        transform: translateX(8px);
+    }
+
+    .nav-drop-content a i {
+        font-size: 1.2rem;
+        width: 25px;
+        text-align: center;
+        filter: saturate(1.5);
+    }
+
+.drop-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text);
+    opacity: 0.5;
+    margin: 5px 0 10px 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--ui-glass-border);
+}
+
+/* 8.4 - Hub de Usuário, Divisor e Logout */
+.nav-hub {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--text);
+}
+
+.logout-btn-varejo i {
+    font-size: 1.7rem !important;
+    color: var(--text);
+    transition: all 0.3s ease;
+    vertical-align: middle;
+}
+
+.logout-btn-varejo:hover i {
+    transform: scale(1.1);
+    color: #dc3545 !important;
+    filter: drop-shadow(0 0 5px rgba(220, 53, 69, 0.4));
+}
+
+.nav-divider {
+    width: 1px;
+    height: 30px;
+    background: var(--ui-glass-border);
+    margin: 0 10px;
+    opacity: 0.5;
+}
+
+/* 8.5 - Switch de Tema Premium (Sol e Lua) */
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+    .theme-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.theme-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.15);
+    border: 1px solid var(--ui-glass-border);
+    transition: .4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 6px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.sun-icon {
+    color: #f1c40f;
+    font-size: 0.9rem;
+    filter: drop-shadow(0 0 5px rgba(241, 196, 15, 0.6));
+    z-index: 1;
+    transition: 0.4s;
+}
+
+.moon-icon {
+    color: #bdc3c7;
+    font-size: 0.9rem;
+    filter: drop-shadow(0 0 5px rgba(189, 195, 199, 0.6));
+    z-index: 1;
+    transition: 0.4s;
+}
+
+.theme-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 34px;
+    bottom: 3px;
+    background-color: #fff;
+    transition: .4s;
+    border-radius: 50%;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.theme-switch input:checked + .theme-slider:before {
+    transform: translateX(-30px);
+}
+
+.theme-switch input:checked + .theme-slider .sun-icon {
+    opacity: 0.2;
+    transform: scale(0.8);
+}
+
+.theme-switch input:not(:checked) + .theme-slider .moon-icon {
+    opacity: 0.2;
+    transform: scale(0.8);
+}
+
+[data-theme="dark"] .theme-slider {
+    background-color: rgba(255,255,255,0.1);
+}
+/* #endregion */

@@ -5,11 +5,13 @@
 
 <RelatorioFiltro OnSearch="ExecutarBusca" OnClear="Limpar" OnExport="Exportar">
     <ChildContent>
-        <div class="col-md-12 col-lg-8">
-            <RelatorioFiltroData DataInicio="filtro.DataInicio"
-                                 DataInicioChanged="v => filtro.DataInicio = v"
-                                 DataFim="filtro.DataFim"
-                                 DataFimChanged="v => filtro.DataFim = v" />
+        <div class="row g-3">
+            <div class="col-md-12 col-lg-6">
+                <RelatorioFiltroData DataInicio="filtro.DataInicio"
+                                     DataInicioChanged="v => filtro.DataInicio = v"
+                                     DataFim="filtro.DataFim"
+                                     DataFimChanged="v => filtro.DataFim = v" />
+            </div>
         </div>
     </ChildContent>
 
@@ -34,78 +36,27 @@
 <div class="mt-4">
     @if (loading)
     {
-        <div class="text-center p-5">
+        <div class="text-center p-5 glass-card">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
             <p class="mt-3 fw-bold text-primary">Carregando histórico...</p>
         </div>
     }
     else
     {
-        <div class="card border-0 shadow-sm overflow-hidden" style="background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
-            <div class="table-responsive">
-                @if (listaDados != null && listaDados.Any())
-                {
-                    <table class="table mb-0 align-middle" style="color: var(--sys-primary);">
-                        <thead style="background: linear-gradient(145deg, rgba(150,150,150,0.15), rgba(150,150,150,0.05));">
-                            <tr style="font-size: 0.85rem; text-transform: uppercase;">
-                                <th>Data/Hora</th>
-                                <th>Produto</th>
-                                <th class="text-end">Preço Antigo</th>
-                                <th class="text-end">Preço Novo</th>
-                                <th class="text-center">Variação</th>
-                                <th class="text-center">Usuário</th>
-                            </tr>
-                        </thead>
-                        <tbody style="font-size: 0.95rem;">
-                            @foreach (var item in listaDados)
-                            {
-                                <tr>
-                                    <td style="border-color: var(--glass-border);">@item.DataAlteracao.ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td style="border-color: var(--glass-border); font-weight: 500;">
-                                        @item.NomeProduto <br />
-                                        <small class="text-muted" style="font-size: 0.75rem;">@item.Categoria</small>
-                                    </td>
-                                    <td style="border-color: var(--glass-border);" class="text-end text-muted text-decoration-line-through">
-                                        @item.PrecoAnterior.ToString("C2")
-                                    </td>
-                                    <td style="border-color: var(--glass-border);" class="text-end fw-bold">
-                                        @item.PrecoNovo.ToString("C2")
-                                    </td>
-                                    <td style="border-color: var(--glass-border);" class="text-center">
-                                        @if (item.VariacaoPercentual > 0)
-                                        {
-                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">
-                                                <i class="fa-solid fa-arrow-trend-up me-1"></i> +@item.VariacaoPercentual.ToString("N2")%
-                                            </span>
-                                        }
-                                        else if (item.VariacaoPercentual < 0)
-                                        {
-                                            <span class="badge bg-success bg-opacity-10 text-success border border-success">
-                                                <i class="fa-solid fa-arrow-trend-down me-1"></i> @item.VariacaoPercentual.ToString("N2")%
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">0,00%</span>
-                                        }
-                                    </td>
-                                    <td style="border-color: var(--glass-border);" class="text-center">
-                                        <div class="badge bg-light text-dark border"><i class="fa-regular fa-user me-1"></i> @item.Usuario</div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-                else if (dadosVazios)
-                {
-                    <div class="p-5 text-center text-muted">
-                        <i class="fa-solid fa-clock-rotate-left fa-2x mb-3 opacity-50"></i>
-                        <p class="mb-0">Nenhuma alteração de preço registrada no período selecionado.</p>
-                    </div>
-                }
+        @if (listaDados != null && listaDados.Any())
+        {
+            <div class="glass-card overflow-hidden">
+                <RelatorioTabelaDinamica TItem="Relatorio107DTO" Dados="listaDados" Colunas="colunas107" />
             </div>
-        </div>
+        }
+        else if (dadosVazios)
+        {
+            <div class="p-5 text-center glass-card">
+                <i class="fa-solid fa-clock-rotate-left fa-2x mb-3 text-muted opacity-50"></i>
+                <h5 class="fw-bold" style="color: var(--ui-text-primary);">Nenhuma alteração</h5>
+                <p class="mb-0" style="color: var(--ui-text-secondary);">Nenhuma alteração de preço registrada no período ou com os filtros selecionados.</p>
+            </div>
+        }
     }
 </div>
 
@@ -118,7 +69,7 @@
 
     private RelatorioFiltroProdutosDTO filtro = new()
     {
-        DataInicio = DateTime.Now.AddDays(-30), // Padrão 30 dias atrás
+        DataInicio = DateTime.Now.AddDays(-30),
         DataFim = DateTime.Now
     };
 
@@ -133,6 +84,17 @@
     private List<string> selecionadosMarcas = new();
     private List<string> selecionadosFamilias = new();
     private List<string> selecionadosProdutos = new();
+
+    // === DEFINIÇÃO DAS COLUNAS ===
+    private List<RelatorioTabelaDinamica<Relatorio107DTO>.ConfigColuna> colunas107 = new() {
+        new() { Titulo = "Data/Hora", Propriedade = "DataAlteracao", Formato = "dd/MM/yyyy HH:mm" },
+        new() { Titulo = "Produto", Propriedade = "NomeProduto" },
+        new() { Titulo = "Categoria", Propriedade = "Categoria" }, // Separamos a categoria para não quebrar a tabela genérica
+        new() { Titulo = "Preço Antigo", Propriedade = "PrecoAnterior", Formato = "C2" },
+        new() { Titulo = "Preço Novo", Propriedade = "PrecoNovo", Formato = "C2" },
+        new() { Titulo = "Variação (%)", Propriedade = "VariacaoPercentual", Formato = "N2" },
+        new() { Titulo = "Usuário", Propriedade = "Usuario" }
+    };
 
     protected override async Task OnInitializedAsync()
     {

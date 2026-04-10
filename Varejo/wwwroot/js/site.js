@@ -59,14 +59,17 @@
     $(seletores).filter(':visible:first').focus();
     // #endregion
 
-    // #region 3. NAVEGAÇÃO COM ENTER
-    $('form').on('keydown', 'input, select, textarea', function (e) {
+    // #region 3. NAVEGAÇÃO COM ENTER (Formulários)
+    $('form').on('keydown', 'input, select', function (e) {
         if (e.key === 'Enter') {
-            if (this.tagName.toLowerCase() === 'textarea') return;
-            e.preventDefault();
+            e.preventDefault(); // Impede o envio acidental antes da hora
             const form = $(this).closest('form');
-            const campos = form.find('input, select, textarea, button:not([type="button"])').filter(':visible:not([disabled]):not([readonly])');
+
+            // Mapeia todos os inputs visíveis, habilitados e o botão de submit final
+            const campos = form.find('input, select, textarea, button[type="submit"]').filter(':visible:not([disabled]):not([readonly])');
             const indexAtual = campos.index(this);
+
+            // Se houver um próximo campo, foca nele. Se for o último, submete.
             if (indexAtual > -1 && indexAtual + 1 < campos.length) {
                 campos.eq(indexAtual + 1).focus();
             } else {

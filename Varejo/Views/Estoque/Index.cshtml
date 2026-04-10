@@ -5,133 +5,166 @@
 }
 
 <div class="container-fluid mt-4">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-dark text-white fw-bold">
-                    <i class="fa-solid fa-filter me-2"></i> Filtros de Busca
+    <div class="row g-4">
+        
+        <div class="col-lg-3">
+            <div class="glass-card h-100">
+                
+                <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                    <i class="fa-solid fa-filter fs-4 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                    <h5 class="mb-0 fw-bold">Filtros de Busca</h5>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Index" method="get">
+
+                <form asp-action="Index" method="get">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold opacity-75 small text-uppercase" style="letter-spacing: 0.5px;">Produto</label>
+                        <input asp-for="Filtro.NomeProduto" class="form-control" placeholder="Nome ou Complemento...">
+                        </div>
+
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Produto</label>
-                            <input asp-for="Filtro.NomeProduto" class="form-control form-control-sm" placeholder="Nome ou Complemento...">
-                            </div>
+                            <label class="form-label fw-bold opacity-75 small text-uppercase" style="letter-spacing: 0.5px;">Marca</label>
+                            <select asp-for="Filtro.MarcaId" class="form-select" asp-items="ViewBag.Marcas">
+                                <option value="">-- Todas --</option>
+                            </select>
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Marca</label>
-                                <select asp-for="Filtro.MarcaId" class="form-select form-select-sm" asp-items="ViewBag.Marcas">
-                                    <option value="">-- Todas --</option>
-                                </select>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold opacity-75 small text-uppercase" style="letter-spacing: 0.5px;">Categoria</label>
+                            <select asp-for="Filtro.CategoriaId" class="form-select" asp-items="ViewBag.Categorias">
+                                <option value="">-- Todas --</option>
+                            </select>
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Categoria</label>
-                                <select asp-for="Filtro.CategoriaId" class="form-select form-select-sm" asp-items="ViewBag.Categorias">
-                                    <option value="">-- Todas --</option>
-                                </select>
+                        <hr class="border-secondary border-opacity-25 my-4" />
+                    
+                        <h6 class="fw-bold mb-3 opacity-75 text-uppercase small" style="letter-spacing: 0.5px;">Status de Estoque</h6>
+                
+                        <div class="form-check mb-2">
+                            <input asp-for="Filtro.AbaixoMinimo" class="form-check-input" type="checkbox" id="chkAbaixoMinimo">
+                                <label for="chkAbaixoMinimo" class="form-check-label fw-semibold text-danger">Abaixo do Mínimo</label>
                             </div>
-
-                            <hr />
-                            <h6 class="small fw-bold mb-3">Status de Estoque</h6>
-                        
+                    
                             <div class="form-check mb-2">
-                                <input asp-for="Filtro.AbaixoMinimo" class="form-check-input" type="checkbox">
-                                    <label class="form-check-label text-danger small">Abaixo do Mínimo</label>
+                                <input asp-for="Filtro.AcimaMaximo" class="form-check-input" type="checkbox" id="chkAcimaMaximo">
+                                    <label for="chkAcimaMaximo" class="form-check-label fw-semibold text-warning">Acima do Máximo</label>
                                 </div>
+                    
                                 <div class="form-check mb-2">
-                                    <input asp-for="Filtro.AcimaMaximo" class="form-check-input" type="checkbox">
-                                        <label class="form-check-label text-warning small">Acima do Máximo</label>
+                                    <input asp-for="Filtro.EstoqueZerado" class="form-check-input" type="checkbox" id="chkZerado">
+                                        <label for="chkZerado" class="form-check-label fw-semibold opacity-75">Estoque Zerado</label>
                                     </div>
-                                    <div class="form-check mb-2">
-                                        <input asp-for="Filtro.EstoqueZerado" class="form-check-input" type="checkbox">
-                                            <label class="form-check-label text-muted small">Estoque Zerado</label>
+                    
+                                    <div class="form-check mb-4">
+                                        <input asp-for="Filtro.EstoqueNegativo" class="form-check-input" type="checkbox" id="chkNegativo">
+                                            <label for="chkNegativo" class="form-check-label fw-semibold" style="color: var(--sys-primary-light, #4facfe);">Estoque Negativo</label>
                                         </div>
-                                        <div class="form-check mb-3">
-                                            <input asp-for="Filtro.EstoqueNegativo" class="form-check-input" type="checkbox">
-                                                <label class="form-check-label text-primary small">Estoque Negativo</label>
-                                            </div>
 
-                                            <button type="submit" class="btn btn-primary w-100 btn-sm mb-2">
-                                                <i class="fa-solid fa-magnifying-glass me-1"></i> Filtrar
+                                        <div class="d-flex flex-column gap-2 mb-4 pb-4 border-bottom border-secondary border-opacity-25">
+                                            <button type="submit" class="btn-glass btn-success border-0 text-white w-100 justify-content-center">
+                                                <i class="fa-solid fa-magnifying-glass"></i> Filtrar
                                             </button>
-                                            <a asp-action="Index" class="btn btn-light w-100 btn-sm border">Limpar</a>
-                                        </form>
-                                    </div>
-                                </div>
+                                            <a asp-action="Index" class="btn-glass w-100 justify-content-center text-decoration-none">
+                                                <i class="fa-solid fa-eraser"></i> Limpar
+                                            </a>
+                                        </div>
+                                    </form>
 
-                                <form asp-action="GerarSnapshot" method="post" onsubmit="return confirm('Gerar foto do estoque atual?')">
-                                    <button type="submit" class="btn btn-outline-info btn-sm w-100">
-                                        <i class="fa-solid fa-camera me-1"></i> Snapshot Diário
-                                    </button>
-                                </form>
+                                    <form asp-action="GerarSnapshot" method="post" onsubmit="return confirm('Gerar foto do estoque atual?')">
+                                        <button type="submit" class="btn-glass btn-info border-0 text-white w-100 justify-content-center">
+                                            <i class="fa-solid fa-camera"></i> Snapshot Diário
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
 
-                            <div class="col-md-9">
-                                <div class="card shadow-sm border-0">
-                                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                                        <h5 class="mb-0 fw-bold text-secondary">
-                                            <i class="fa-solid fa-boxes-stacked me-2 text-primary"></i>Posição de Estoque
-                                        </h5>
-                                        <span class="badge bg-light text-dark border">@Model.Itens.Count itens encontrados</span>
+                            <div class="col-lg-9">
+                                <div class="glass-card h-100">
+                
+                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-solid fa-boxes-stacked fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                                            <h4 class="mb-0 fw-bold">Posição de Estoque</h4>
+                                        </div>
+                                        <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: var(--glass-border);">
+                                            <i class="fa-solid fa-list-ol me-1"></i> @Model.Itens.Count itens encontrados
+                                        </span>
                                     </div>
+
                                     <div class="table-responsive">
-                                        <table class="table table-hover align-middle mb-0">
-                                            <thead class="table-light">
+                                        <table class="table-glass table-responsive-stack">
+                                            <thead>
                                                 <tr>
-                                                    <th>Produto</th>
-                                                    <th>Família</th>
-                                                    <th class="text-center">Mín/Máx</th>
-                                                    <th class="text-end">Saldo</th>
-                                                    <th class="text-center">Status</th>
+                                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                                        <div class="d-flex justify-content-between align-items-center">Produto <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                                    </th>
+                                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                                                        <div class="d-flex justify-content-between align-items-center">Família <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                                    </th>
+                                                    <th class="text-md-center">Mín/Máx</th>
+                                                    <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;" class="text-md-end">
+                                                        <div class="d-flex justify-content-between align-items-center">Saldo <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                                    </th>
+                                                    <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;" class="text-md-center">
+                                                        <div class="d-flex justify-content-between align-items-center">Status <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                                                    </th>
                                                     <th class="text-center">Ações</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach (var item in Model.Itens)
+                                                @if (Model.Itens != null && Model.Itens.Any())
+                                                {
+                                                    @foreach (var item in Model.Itens)
+                                                    {
+                                                        <tr>
+                                                            <td data-label="Produto">
+                                                                <div class="fw-bold">@item.NomeProduto</div>
+                                                                <small class="opacity-50 fw-semibold">ID: @item.ProdutoId</small>
+                                                            </td>
+                                                            <td data-label="Família">
+                                                                <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: var(--glass-border);">@item.Familia</span>
+                                                            </td>
+                                                            <td data-label="Mín/Máx" class="text-md-center opacity-75 fw-semibold small">
+                                                                <span title="Mínimo">@item.EstoqueMinimo.ToString("N2")</span> /
+                                                                <span title="Máximo">@item.EstoqueMaximo.ToString("N2")</span>
+                                                            </td>
+                                                            <td data-label="Saldo" class="text-md-end fw-bold">
+                                                                <span class="@(item.EstoqueAtual <= 0 ? "text-danger" : "text-success") fs-6">
+                                                                    @item.EstoqueAtual.ToString("N2")
+                                                                </span>
+                                                            </td>
+                                                            <td data-label="Status" class="text-md-center">
+                                                                @if (item.AbaixoMinimo)
+                                                                {
+                                                                    <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25">COMPRAR</span>
+                                                                }
+                                                                else if (item.AcimaMaximo)
+                                                                {
+                                                                    <span class="report-id-badge bg-warning bg-opacity-10 text-warning border-warning border-opacity-25" style="color: #d97706 !important;">EXCESSO</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25">OK</span>
+                                                                }
+                                                            </td>
+                                                            <td data-label="Ações">
+                                                                <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                                                    <a asp-action="Details" asp-route-id="@item.ProdutoId" class="btn btn-sm btn-info text-white rounded-pill px-3" title="Histórico Movimentação">
+                                                                        <i class="fa-solid fa-clock-rotate-left"></i> <span class="d-none d-xl-inline ms-1">Extrato</span>
+                                                                    </a>
+                                                                    <a asp-action="EditConfig" asp-route-id="@item.ProdutoId" class="btn btn-sm btn-warning text-dark rounded-pill px-3" title="Configurar Estoque">
+                                                                        <i class="fa-solid fa-gears"></i> <span class="d-none d-xl-inline ms-1">Limites</span>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
                                                 {
                                                     <tr>
-                                                        <td>
-                                                            <div class="fw-bold">@item.NomeProduto</div>
-                                                            <small class="text-muted">ID: @item.ProdutoId</small>
-                                                        </td>
-                                                        <td><span class="badge bg-light text-secondary border">@item.Familia</span></td>
-                                                        <td class="text-center small">
-                                                            <span title="Mínimo">@item.EstoqueMinimo.ToString("N2")</span> /
-                                                            <span title="Máximo">@item.EstoqueMaximo.ToString("N2")</span>
-                                                        </td>
-                                                        <td class="text-end fw-bold">
-                                                            <span class="@(item.EstoqueAtual <= 0 ? "text-danger" : "text-dark")">
-                                                                @item.EstoqueAtual.ToString("N2")
-                                                            </span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            @if (item.AbaixoMinimo)
-                                                            {
-                                                                <span class="badge bg-danger">COMPRAR</span>
-                                                            }
-                                                            else if (item.AcimaMaximo)
-                                                            {
-
-                                                                <span class="badge bg-warning text-dark">EXCESSO</span>
-                                                            }
-                                                            else
-                                                            {
-
-                                                                <span class="badge bg-success">OK</span>
-                                                            }
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <div class="btn-group">
-                                                                <a asp-action="Details" asp-route-id="@item.ProdutoId" class="btn btn-sm btn-outline-primary" title="Histórico Movimentação">
-                                                                    <i class="fa-solid fa-clock-rotate-left"></i>
-                                                                </a>
-                                                               <a asp-action="EditConfig" 
-   asp-route-id="@item.ProdutoId" 
-   class="btn btn-sm btn-outline-primary" 
-   title="Configurar Estoque">
-    <i class="fa-solid fa-gears"></i> </a>
-                                                            </div>
+                                                        <td colspan="6" class="text-center p-4">
+                                                            <i class="fa-solid fa-magnifying-glass fs-1 opacity-25 d-block mb-3"></i>
+                                                            <span class="opacity-75 fw-semibold">Nenhum produto encontrado com os filtros atuais.</span>
                                                         </td>
                                                     </tr>
                                                 }
@@ -140,5 +173,6 @@
                                     </div>
                                 </div>
                             </div>
+        
                         </div>
                     </div>

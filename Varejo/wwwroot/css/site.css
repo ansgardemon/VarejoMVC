@@ -455,6 +455,27 @@ input:checked + .slider:before {
         text-decoration: none;
     }
 
+/* --- DARK MODE DOS DROPDOWNS (MENU) --- */
+[data-theme='dark'] .nav-drop-content {
+    background: rgba(15, 23, 42, 0.95) !important; /* Azul escuro estilo painel */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important; /* Sombra mais forte no dark */
+}
+
+    [data-theme='dark'] .nav-drop-content a {
+        color: #cbd5e1 !important; /* Cinza claro elegante */
+    }
+
+        [data-theme='dark'] .nav-drop-content a:hover {
+            background: rgba(255, 255, 255, 0.08) !important; /* Efeito de brilho super suave */
+            color: #ffffff !important; /* Fica branco puro ao focar */
+        }
+
+    [data-theme='dark'] .nav-drop-content .drop-title {
+        color: rgba(255, 255, 255, 0.4) !important; /* Títulos de seção apagadinhos */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
 /* 8.3 - Dropdowns Estilo Glass (SEMPRE ABRE PARA BAIXO AGORA) */
 .nav-drop-content {
     position: absolute;
@@ -894,6 +915,26 @@ input:checked + .slider:before {
     background: rgba(255, 255, 255, 0.05);
 }
 /* #endregion */
+
+/* --- DARK MODE GLOBAL PARA INPUTS E SELECTS --- */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background: rgba(15, 23, 42, 0.5) !important; /* Fundo escurecido e translúcido */
+    color: #ffffff !important; /* Texto branco */
+    border-color: rgba(255, 255, 255, 0.1) !important; /* Borda sutil */
+}
+
+    /* Cor do texto de dica (placeholder) no dark mode */
+    [data-theme="dark"] .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+/* O SEGREDO DO SELECT: Forçar cor sólida nas opções nativas */
+[data-theme="dark"] select option {
+    background-color: #0f172a !important; /* Fundo sólido escuro (Obrigatório para options) */
+    color: #ffffff !important; /* Texto branco */
+    padding: 10px; /* Dá um respiro entre as opções */
+}
 
 /* MOBILE (Celulares e Tablets menores) */
 @media (max-width: 991px) {

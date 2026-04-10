@@ -139,4 +139,61 @@
 
     // #endregion
 
+    // #region 11. ENGINE DE ORDENAÇÃO DE TABELAS UNIVERSAL
+    $(document).on('click', 'th[data-sortable="true"]', function () {
+        const th = $(this);
+        const table = th.closest('table');
+        const tbody = table.find('tbody');
+        const rows = tbody.find('tr').toArray();
+
+        // Ignora se a tabela estiver vazia (linha de "Nenhum registro")
+        if (rows.length === 1 && $(rows[0]).find('td').attr('colspan')) return;
+
+        const columnIndex = th.index();
+        const type = th.data('sort-type') || 'string'; // 'number' ou 'string'
+
+        let isAsc = table.attr('data-sort-dir') === 'asc';
+        const currentSortCol = table.attr('data-sort-col');
+
+        if (currentSortCol == columnIndex) {
+            isAsc = !isAsc; // Inverte direção
+        } else {
+            isAsc = true; // Zera para A-Z
+        }
+
+        table.attr('data-sort-dir', isAsc ? 'asc' : 'desc');
+        table.attr('data-sort-col', columnIndex);
+
+        // Reseta todos os ícones desta tabela específica
+        table.find('th i.fa-sort, th i.fa-sort-up, th i.fa-sort-down')
+            .attr('class', 'fa-solid fa-sort opacity-50 ms-2');
+
+        // Destaca o ícone da coluna clicada
+        const activeIcon = th.find('i');
+        if (activeIcon.length) {
+            activeIcon.attr('class', isAsc ? 'fa-solid fa-sort-up text-primary opacity-100 ms-2' : 'fa-solid fa-sort-down text-primary opacity-100 ms-2');
+        }
+
+        // Processamento da ordenação
+        rows.sort(function (a, b) {
+            let valA = $(a).find('td').eq(columnIndex).text().trim();
+            let valB = $(b).find('td').eq(columnIndex).text().trim();
+
+            if (type === 'number') {
+                // Remove tudo que não for número, ponto ou sinal negativo (para moedas e IDs)
+                valA = parseFloat(valA.replace(/[^\d.-]/g, '')) || 0;
+                valB = parseFloat(valB.replace(/[^\d.-]/g, '')) || 0;
+                return isAsc ? valA - valB : valB - valA;
+            }
+
+            return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        });
+
+        // Reinsere as linhas na tabela
+        $.each(rows, function (index, row) {
+            tbody.append(row);
+        });
+    });
+    // #endregion
+
 });

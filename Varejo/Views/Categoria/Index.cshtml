@@ -1,40 +1,85 @@
 ﻿@model IEnumerable<Varejo.ViewModels.CategoriaViewModel>
 
 @{
-	ViewData["Title"] = "Categorias";
+    ViewData["Title"] = "Categorias";
 }
 
-<h2>Categorias</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-folder-tree fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <a asp-action="Create" class="btn-glass btn-success text-decoration-none border-0">
+                <i class="fa-solid fa-plus"></i>
+                <span class="d-none d-sm-inline ms-1">Nova Categoria</span>
+            </a>
+        </div>
 
-<p>
-	<a class="btn btn-primary" asp-action="Create">Nova Categoria</a>
-</p>
-
-<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-	<table class="w-100">
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>Descrição</th>
-				<th>Quantidade de Familias</th>
-				<th class="text-center">Ações</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var categoria in Model)
-			{
-				<tr>
-					<td data-label="#">@categoria.IdCategoria</td>
-					<td data-label="Descrição">@categoria.DescricaoCategoria</td>
-					<td data-label="Quantidade de Famílias">@categoria.QuantidadeFamilia</td>
-					<td data-label="Ações" class="text-center" id="acoes">
-						<a class="btn btn-info btn-sm text-white" asp-action="Details" asp-route-id="@categoria.IdCategoria">Detalhes</a>
-						<a class="btn btn-warning btn-sm text-white" asp-action="Edit" asp-route-id="@categoria.IdCategoria">Editar</a>
-						<a class="btn btn-danger btn-sm text-white" asp-action="Delete" asp-route-id="@categoria.IdCategoria">Excluir</a>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+        <div class="table-responsive">
+            <table class="table-glass table-responsive-stack">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;" title="Ordenar por ID">
+                            <div class="d-flex justify-content-between align-items-center">
+                                # <i class="fa-solid fa-sort opacity-50 ms-2"></i>
+                            </div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;" title="Ordenar por Descrição">
+                            <div class="d-flex justify-content-between align-items-center">
+                                Descrição <i class="fa-solid fa-sort opacity-50 ms-2"></i>
+                            </div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;" title="Ordenar por Qtd">
+                            <div class="d-flex justify-content-between align-items-center">
+                                Quantidade de Famílias <i class="fa-solid fa-sort opacity-50 ms-2"></i>
+                            </div>
+                        </th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var categoria in Model)
+                        {
+                            <tr>
+                                <td data-label="#">@categoria.IdCategoria</td>
+                                <td data-label="Descrição" class="fw-semibold">@categoria.DescricaoCategoria</td>
+                                <td data-label="Quantidade de Famílias">
+                                    <span class="report-id-badge">
+                                        @categoria.QuantidadeFamilia
+                                    </span>
+                                </td>
+                                <td data-label="Ações">
+                                    <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                        <a class="btn btn-sm btn-info text-white rounded-pill px-3" asp-action="Details" asp-route-id="@categoria.IdCategoria" title="Detalhes">
+                                            <i class="fa-solid fa-eye"></i> <span class="d-none d-xl-inline ms-1">Detalhes</span>
+                                        </a>
+                                        <a class="btn btn-sm btn-warning text-dark rounded-pill px-3" asp-action="Edit" asp-route-id="@categoria.IdCategoria" title="Editar">
+                                            <i class="fa-solid fa-pen-to-square"></i> <span class="d-none d-xl-inline ms-1">Editar</span>
+                                        </a>
+                                        <a class="btn btn-sm btn-danger text-white rounded-pill px-3" asp-action="Delete" asp-route-id="@categoria.IdCategoria" title="Excluir">
+                                            <i class="fa-solid fa-trash-can"></i> <span class="d-none d-xl-inline ms-1">Excluir</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center p-4">
+                                <i class="fa-regular fa-folder-open fs-1 opacity-25 d-block mb-3"></i>
+                                <span class="opacity-75 fw-semibold">Nenhuma categoria encontrada.</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-

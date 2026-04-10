@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Varejo.Models
@@ -48,6 +49,18 @@ namespace Varejo.Models
 
         public int? PessoaId { get; set; }
         public Pessoa? Pessoa { get; set; }
+
+        [DisplayName("Origem Recebimento")]
+        public int? RecebimentoId { get; set; } // O '?' torna nulo para lançamentos manuais
+
+        [ForeignKey("RecebimentoId")]
+        public virtual Recebimento? Recebimento { get; set; }
+
+        [DisplayName("Origem Venda")]
+        public int? VendaId { get; set; } // O '?' torna nulo para lançamentos manuais
+
+        [ForeignKey("VendaId")]
+        public virtual Venda? Venda { get; set; }
 
         // histórico de pagamentos
         public ICollection<PagamentoTitulo> Pagamentos { get; set; } = new List<PagamentoTitulo>();

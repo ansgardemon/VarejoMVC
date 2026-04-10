@@ -77,13 +77,15 @@ namespace Varejo.Repositories
         }
 
         public async Task GerarTitulosAsync(
-            int documento,
-            decimal valorTotal,
-            int prazoPagamentoId,
-            int especieTituloId,
-            int? formaPagamentoId,
-            int? pessoaId,
-            DateTime dataEmissao)
+    int documento,
+    decimal valorTotal,
+    int prazoPagamentoId,
+    int especieTituloId,
+    int? formaPagamentoId,
+    int? pessoaId,
+    DateTime dataEmissao,
+    int? recebimentoId = null, // Parâmetro opcional
+    int? vendaId = null)       // Parâmetro opcional
         {
             var prazo = await _context.PrazosPagamento
                 .FirstOrDefaultAsync(p => p.IdPrazoPagamento == prazoPagamentoId);
@@ -120,11 +122,12 @@ namespace Varejo.Repositories
                     FormaPagamentoId = formaPagamentoId,
                     PrazoPagamentoId = prazoPagamentoId,
                     PessoaId = pessoaId,
-                    Pagamentos = new List<PagamentoTitulo>() // 🔥 importante
+                    RecebimentoId = recebimentoId, // GRAVA O VÍNCULO DO RECEBIMENTO
+                    VendaId = vendaId,             // GRAVA O VÍNCULO DA VENDA
+                    Pagamentos = new List<PagamentoTitulo>()
                 };
 
                 titulo.AtualizarValores();
-
                 titulos.Add(titulo);
                 soma += valorParcela;
             }

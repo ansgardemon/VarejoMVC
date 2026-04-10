@@ -188,5 +188,45 @@ namespace Varejo.Controllers
                 }).ToList();
             }
         }
+
+
+        // GET: Recebimento/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            var recebimento = await _recebimentoRepo.GetByIdAsync(id);
+
+            if (recebimento == null)
+            {
+                return NotFound();
+            }
+
+            return View(recebimento);
+        }
+
+        // POST: Recebimento/Desintegrar/5
+        [HttpPost]
+        [ValidateAntiForgeryToken] // Boa prática para métodos de exclusão
+        public async Task<IActionResult> Desintegrar(int id)
+        {
+            try
+            {
+                var sucesso = await _recebimentoRepo.DesintegrarRecebimentoAsync(id);
+
+                if (sucesso)
+                {
+                    TempData["Sucesso"] = "Recebimento desintegrado, estoque estornado e financeiro removido!";
+                }
+                else
+                {
+                    TempData["Erro"] = "Não foi possível localizar o recebimento para desintegrar.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Erro"] = "Erro ao desintegrar nota: " + ex.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

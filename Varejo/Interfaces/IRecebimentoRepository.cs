@@ -12,5 +12,7 @@ namespace Varejo.Interfaces
 
         // Para evitar duplicidade no XML
         Task<bool> ExisteChaveAcessoAsync(string chaveAcesso);
+
+        Task<bool> DesintegrarRecebimentoAsync(int id);
     }
 }

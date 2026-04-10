@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Varejo.Models
 {
@@ -29,6 +30,14 @@ namespace Varejo.Models
         [DisplayName("Cliente/Fornecedor")]
         public int PessoaId { get; set; }
         public Pessoa Pessoa { get; set; }
+
+        //Relacionamento com Recebimento
+
+        [DisplayName("Origem Recebimento")]
+        public int? RecebimentoId { get; set; } // O '?' torna nulo para lançamentos manuais
+
+        [ForeignKey("RecebimentoId")]
+        public virtual Recebimento? Recebimento { get; set; }
 
 
 

@@ -23,7 +23,7 @@ namespace Varejo.Repositories
 
         public async Task<Recebimento> GetByIdAsync(int id) =>
             await _context.Recebimentos
-                .Include(r => r.Fornecedor) // AJUSTADO: era Pessoa
+                .Include(r => r.Fornecedor)
                 .Include(r => r.Itens)
                     .ThenInclude(i => i.Produto)
                 .Include(r => r.Itens)
@@ -45,9 +45,8 @@ namespace Varejo.Repositories
 
                 // 1. Salva o Recebimento (Capa da Nota)
                 _context.Recebimentos.Add(recebimento);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // Gera o IdRecebimento aqui
 
-                // Use ToList() para desvincular da coleção rastreada se necessário
                 var itensCompra = recebimento.Itens.Where(i => i.EhBonificacao == false).ToList();
                 var itensBonif = recebimento.Itens.Where(i => i.EhBonificacao == true).ToList();
 
@@ -62,15 +61,15 @@ namespace Varejo.Repositories
                         DataMovimento = recebimento.DataEntrada,
                         TipoMovimentoId = tipoMovimentoId,
                         PessoaId = recebimento.PessoaId,
+                        RecebimentoId = recebimento.IdRecebimento, // VÍNCULO DIRETO DA NOVA COLUNA
                         Observacao = $"NF: {recebimento.NumeroNota} - {sufixoObs}"
                     };
 
                     _context.Movimentos.Add(movimento);
-                    await _context.SaveChangesAsync(); // Gera o IdMovimento
+                    await _context.SaveChangesAsync();
 
                     foreach (var item in itens)
                     {
-                        // Gravar o detalhe do movimento
                         var produtoMovimento = new ProdutoMovimento
                         {
                             MovimentoId = movimento.IdMovimento,
@@ -80,7 +79,6 @@ namespace Varejo.Repositories
                         };
                         _context.ProdutosMovimento.Add(produtoMovimento);
 
-                        // Registrar no Estoque
                         var estoqueOk = await _estoqueRepo.RegistrarMovimentacaoAsync(
                             produtoId: item.ProdutoId,
                             movimentoId: movimento.IdMovimento,
@@ -92,8 +90,6 @@ namespace Varejo.Repositories
 
                         if (!estoqueOk) throw new Exception($"Erro no estoque: Produto {item.ProdutoId}");
 
-                        // Atualização de Custo (Somente se não for bonificação, ou conforme sua regra de negócio)
-                        // Geralmente bonificação não gera novo custo médio por ser valor zero na nota
                         if (tipoMovimentoId == parametros.TipoMovimentoCompraId)
                         {
                             var custosAntigos = await _context.ProdutosCusto
@@ -114,13 +110,11 @@ namespace Varejo.Repositories
                     }
                 }
 
-                // 2. Processar Movimento de Compra
+                // 2. Processar Movimentos
                 await ProcessarGrupoMovimento(itensCompra, parametros.TipoMovimentoCompraId, "Importação XML");
-
-                // 3. Processar Movimento de Bonificação (Usando a nova coluna da migration)
                 await ProcessarGrupoMovimento(itensBonif, parametros.TipoMovimentoEntradaBonificacaoId, "Bonificação XML");
 
-                // 4. Financeiro (Apenas sobre os itens que NÃO são bonificação)
+                // 3. Financeiro (Filtrando apenas itens de compra)
                 decimal valorTotalFinanceiro = itensCompra.Sum(i => i.Quantidade * i.ValorUnitario);
 
                 if (recebimento.PrazoPagamentoId.HasValue && valorTotalFinanceiro > 0)
@@ -129,10 +123,12 @@ namespace Varejo.Repositories
                         documento: int.TryParse(recebimento.NumeroNota, out var doc) ? doc : recebimento.IdRecebimento,
                         valorTotal: valorTotalFinanceiro,
                         prazoPagamentoId: recebimento.PrazoPagamentoId.Value,
-                        especieTituloId: 1,
+                        especieTituloId: 1, // Entrada/Compra
                         formaPagamentoId: recebimento.FormaPagamentoId,
                         pessoaId: recebimento.PessoaId,
-                        dataEmissao: recebimento.DataEntrada
+                        dataEmissao: recebimento.DataEntrada,
+                        recebimentoId: recebimento.IdRecebimento, // Passa o ID do recebimento
+                        vendaId: null // Explicitamente nulo para recebimentos
                     );
                 }
 
@@ -150,10 +146,68 @@ namespace Varejo.Repositories
         public async Task<IEnumerable<Recebimento>> GetAllAsync()
         {
             return await _context.Recebimentos
-               .Include(r => r.Fornecedor) // AJUSTADO: era Pessoa
+               .Include(r => r.Fornecedor)
                .AsNoTracking()
                .OrderByDescending(r => r.DataEntrada)
                .ToListAsync();
+        }
+
+        public async Task<bool> DesintegrarRecebimentoAsync(int id)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var recebimento = await _context.Recebimentos
+                    .Include(r => r.Itens)
+                    .FirstOrDefaultAsync(r => r.IdRecebimento == id);
+
+                if (recebimento == null) return false;
+
+                // 1. Estorno de Estoque
+                foreach (var item in recebimento.Itens)
+                {
+                    await _estoqueRepo.EstornarMovimentacaoAsync(id, item.ProdutoId);
+                }
+
+                // 2. Identificar movimentos e títulos vinculados pelo ID do Recebimento (Blindado)
+                var movimentosParaDeletarIds = await _context.Movimentos
+                    .Where(m => m.RecebimentoId == id)
+                    .Select(m => m.IdMovimento)
+                    .ToListAsync();
+
+                // 3. Limpeza do Kardex
+                var historicos = _context.HistoricosProduto.Where(h => movimentosParaDeletarIds.Contains(h.MovimentoId));
+                _context.HistoricosProduto.RemoveRange(historicos);
+
+                // 4. Limpeza dos Itens do Movimento
+                var itensMov = _context.ProdutosMovimento.Where(pm => movimentosParaDeletarIds.Contains(pm.MovimentoId));
+                _context.ProdutosMovimento.RemoveRange(itensMov);
+
+                // 5. Limpeza da Capa dos Movimentos
+                var movimentos = _context.Movimentos.Where(m => m.RecebimentoId == id);
+                _context.Movimentos.RemoveRange(movimentos);
+
+                // 6. Financeiro: Deleta apenas o que nasceu deste recebimento
+                var titulos = _context.TitulosFinanceiro.Where(t => t.RecebimentoId == id);
+                _context.TitulosFinanceiro.RemoveRange(titulos);
+
+                // 7. Limpeza de Custos
+                var custos = _context.ProdutosCusto.Where(c => c.RecebimentoId == id);
+                _context.ProdutosCusto.RemoveRange(custos);
+
+                // 8. Limpeza dos itens e capa do Recebimento
+                _context.RecebimentosItem.RemoveRange(recebimento.Itens);
+                _context.Recebimentos.Remove(recebimento);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception($"Erro na desintegração: {ex.Message}");
+            }
         }
     }
 }

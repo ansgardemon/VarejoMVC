@@ -215,5 +215,42 @@ namespace Varejo.Repositories
                 Filtro = filtro
             };
         }
+
+        public async Task<bool> EstornarMovimentacaoAsync(int recebimentoId, int produtoId)
+        {
+            // 1. Precisamos achar os movimentos gerados por este recebimento para saber a quantidade exata
+            // Note que usamos o RecebimentoId para localizar o que foi gravado no custo ou nos itens
+            var itemNota = await _context.RecebimentosItem
+                .FirstOrDefaultAsync(ri => ri.RecebimentoId == recebimentoId && ri.ProdutoId == produtoId);
+
+            if (itemNota == null) return false;
+
+            // 2. Busca o produto (onde o saldo EstoqueAtual realmente reside)
+            var produto = await _context.Produtos.FindAsync(produtoId);
+
+            if (produto != null)
+            {
+                // 3. Subtrai a quantidade que a nota havia somado.
+                // Importante: Aqui usamos a quantidade do item da nota, 
+                // mas se você usa multiplicador de embalagem, deve aplicar a mesma lógica da entrada.
+
+                // Se a sua entrada gravou no estoque em UNIDADE (ex: 1 caixa vira 12), 
+                // você precisa buscar o multiplicador da embalagem usada no itemNota.
+                var embalagem = await _context.ProdutosEmbalagem
+                    .Include(e => e.TipoEmbalagem)
+                    .FirstOrDefaultAsync(e => e.IdProdutoEmbalagem == itemNota.ProdutoEmbalagemId);
+
+                decimal multiplicador = embalagem?.TipoEmbalagem?.Multiplicador ?? 1;
+                decimal quantidadeParaSubtrair = itemNota.Quantidade * multiplicador;
+
+                produto.EstoqueAtual -= quantidadeParaSubtrair;
+
+                _context.Produtos.Update(produto);
+            }
+
+            return true;
+        }
+
+
     }
 }

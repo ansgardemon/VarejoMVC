@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Varejo.Data;
 
@@ -11,9 +12,11 @@ using Varejo.Data;
 namespace Varejo.Migrations
 {
     [DbContext(typeof(VarejoDbContext))]
-    partial class VarejoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260410000650_RelacionamentoComRecebimento")]
+    partial class RelacionamentoComRecebimento
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1178,9 +1181,6 @@ namespace Varejo.Migrations
                     b.Property<decimal>("ValorAberto")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("VendaId")
-                        .HasColumnType("int");
-
                     b.HasKey("IdTituloFinanceiro");
 
                     b.HasIndex("EspecieTituloId");
@@ -1192,8 +1192,6 @@ namespace Varejo.Migrations
                     b.HasIndex("PrazoPagamentoId");
 
                     b.HasIndex("RecebimentoId");
-
-                    b.HasIndex("VendaId");
 
                     b.ToTable("TitulosFinanceiro");
                 });
@@ -1779,10 +1777,6 @@ namespace Varejo.Migrations
                         .WithMany()
                         .HasForeignKey("RecebimentoId");
 
-                    b.HasOne("Varejo.Models.Venda", "Venda")
-                        .WithMany()
-                        .HasForeignKey("VendaId");
-
                     b.Navigation("EspecieTitulo");
 
                     b.Navigation("FormaPagamento");
@@ -1792,8 +1786,6 @@ namespace Varejo.Migrations
                     b.Navigation("PrazoPagamento");
 
                     b.Navigation("Recebimento");
-
-                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("Varejo.Models.Usuario", b =>

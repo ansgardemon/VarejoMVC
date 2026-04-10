@@ -115,7 +115,9 @@ namespace Varejo.Repositories
                         especieTituloId: 2,
                         formaPagamentoId: venda.FormaPagamentoId,
                         pessoaId: venda.PessoaId,
-                        dataEmissao: DateTime.Now
+                        dataEmissao: DateTime.Now,
+                        recebimentoId: null, // Não é um recebimento
+                        vendaId: venda.IdVenda // É uma venda!
                     );
                 }
 

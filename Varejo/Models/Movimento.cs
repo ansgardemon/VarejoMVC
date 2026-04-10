@@ -41,6 +41,17 @@ namespace Varejo.Models
 
 
 
+        //Relacionamento com Venda
+
+
+        [DisplayName("Origem Venda")]
+        public int? VendaId { get; set; } // O '?' torna nulo para lançamentos manuais
+
+        [ForeignKey("VendaId")]
+        public virtual Venda? Venda { get; set; }
+
+
+
         //RELACIONAMENTO UM PARA MUITOS
 
         public virtual ICollection<ProdutoMovimento>? ProdutosMovimento { get; set; }

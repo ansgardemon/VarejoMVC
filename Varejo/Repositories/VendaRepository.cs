@@ -73,6 +73,7 @@ namespace Varejo.Repositories
                     DataMovimento = DateTime.Now,
                     TipoMovimentoId = parametros.TipoMovimentoVendaId,
                     PessoaId = venda.PessoaId,
+                    VendaId = venda.IdVenda,
                     Observacao = $"Faturamento Venda #{venda.IdVenda}"
                 };
                 _context.Movimentos.Add(movimento);

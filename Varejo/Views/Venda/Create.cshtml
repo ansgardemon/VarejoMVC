@@ -1,6 +1,12 @@
 ﻿@model Varejo.ViewModels.VendaViewModel
 
 <div class="container-fluid">
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm border-2">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>Atenção:</strong> Verifique os erros abaixo.
+    </div>
+
     <form asp-action="Create" id="formVenda" method="post">
         <div class="row">
             <div class="col-md-9">

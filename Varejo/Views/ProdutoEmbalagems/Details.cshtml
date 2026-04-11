@@ -1,42 +1,50 @@
 ﻿@model Varejo.Models.ProdutoEmbalagem
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes da Embalagem";
 }
 
-<h1>Details</h1>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 700px;">
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-circle-info fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+        </div>
 
-<div>
-    <h4>ProdutoEmbalagem</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Preco)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Preco)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ean)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ean)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Produto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Produto.Complemento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoEmbalagem)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoEmbalagem.DescricaoTipoEmbalagem)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdProdutoEmbalagem">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        <div class="row g-4 mb-5">
+            <div class="col-md-12">
+                <div class="p-3 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Produto</small>
+                    <span class="fs-4 fw-bold">@Model.Produto.Complemento</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">EAN / Código de Barras</small>
+                    <span class="fs-5 fw-semibold"><i class="fa-solid fa-barcode me-2"></i>@Model.Ean</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Tipo</small>
+                    <span class="fs-5 fw-semibold text-primary">@Model.TipoEmbalagem.DescricaoTipoEmbalagem</span>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Preço</small>
+                    <span class="fs-5 fw-bold text-success">@Model.Preco.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+            <a asp-action="Index" class="btn-glass text-decoration-none">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.IdProdutoEmbalagem" class="btn-glass btn-warning text-dark border-0">
+                <i class="fa-solid fa-pen-to-square"></i> Editar Dados
+            </a>
+        </div>
+    </div>
 </div>

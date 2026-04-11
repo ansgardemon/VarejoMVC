@@ -4,35 +4,41 @@
     ViewData["Title"] = "Excluir Título";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
 
-        <div class="card-header bg-danger text-white">
-            <h5 class="mb-0">Confirmar Exclusão</h5>
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-danger border-opacity-25">
+            <i class="fa-solid fa-trash-can fs-3 me-3 text-danger"></i>
+            <h4 class="mb-0 fw-bold text-danger">Confirmar Exclusão</h4>
         </div>
 
-        <div class="card-body">
+        <h5 class="fw-bold mb-4 text-center">Atenção! Esta ação é irreversível. Remover título?</h5>
 
-            <p>Tem certeza que deseja excluir este título?</p>
+        <div class="p-4 rounded-4 mb-5" style="background: rgba(220, 53, 69, 0.05); border: 1px dashed rgba(220, 53, 69, 0.3);">
+            <div class="row g-3 text-center">
+                <div class="col-6 border-end border-danger border-opacity-25">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Documento / Parcela</small>
+                    <span class="fs-5 fw-bold text-danger">@Model.Documento <span class="opacity-50">(@Model.Parcela)</span></span>
+                </div>
+                <div class="col-6">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Valor Total</small>
+                    <span class="fs-5 fw-bold text-danger">@Model.Valor.ToString("C")</span>
+                </div>
+            </div>
+        </div>
 
-            <ul>
-                <li><strong>Documento:</strong> @Model.Documento</li>
-                <li><strong>Parcela:</strong> @Model.Parcela</li>
-                <li><strong>Valor:</strong> @Model.Valor.ToString("C")</li>
-            </ul>
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="IdTituloFinanceiro" />
 
-            <form asp-action="Delete" method="post">
-                <input type="hidden" asp-for="IdTituloFinanceiro" />
-
-                <button type="submit" class="btn btn-danger">
-                    Confirmar Exclusão
-                </button>
-
-                <a asp-action="Index" class="btn btn-secondary">
-                    Cancelar
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Cancelar
                 </a>
-            </form>
+                <button type="submit" class="btn-glass btn-danger border-0">
+                    <i class="fa-solid fa-trash-can"></i> Confirmar Exclusão
+                </button>
+            </div>
+        </form>
 
-        </div>
     </div>
 </div>

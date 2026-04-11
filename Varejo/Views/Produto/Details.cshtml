@@ -1,82 +1,98 @@
 ﻿@model Varejo.ViewModels.ProdutoViewModel
 
 @{
-	ViewData["Title"] = "Detalhes do Produto";
+    ViewData["Title"] = "Detalhes do Produto";
 }
 
-<h2 class="mb-4">@ViewData["Title"]</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 1000px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-circle-info fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@Model.NomeProduto</h4>
+            <div class="ms-auto">
+                @if (Model.Ativo)
+                {
+                    <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25 py-2">ATIVO</span>
+                }
+                else
+                {
+                    <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25 py-2">INATIVO</span>
+                }
+            </div>
+        </div>
 
-<div class="card shadow-sm p-4 mb-4">
-	<div class="row">
-		<!-- Coluna da esquerda: informações -->
-		<div class="col-md-8">
-			<h4 class="mb-3">Informações do Produto</h4>
-			<dl class="row">
-				<dt class="col-sm-4 fw-bold">Nome do Produto</dt>
-				<dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.NomeProduto) ? Model.NomeProduto : "(não definido)")</dd>
+        <div class="row g-4 mb-5">
+            <div class="col-md-7">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="p-3 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                            <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Complemento</small>
+                            <span class="fw-bold fs-5">@(string.IsNullOrEmpty(Model.Complemento) ? "-" : Model.Complemento)</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                            <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Estoque Atual</small>
+                            <span class="fw-bold fs-5 text-primary">@Model.EstoqueAtual.ToString("N2")</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                            <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Custo Médio</small>
+                            <span class="fw-bold fs-5 text-success">@Model.CustoMedio.ToString("C")</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-3 rounded-4" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                            <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Família Vinculada</small>
+                            <span class="fw-semibold">@(Model.Familia?.NomeFamilia ?? "-")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-				<dt class="col-sm-4 fw-bold">Complemento</dt>
-				<dd class="col-sm-8">@Model.Complemento</dd>
+            <div class="col-md-5">
+                <div class="p-2 rounded-4 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">
+                    <img src="@(string.IsNullOrEmpty(Model.UrlImagem) ? Url.Content("~/img/sem-foto.png") : Url.Content(Model.UrlImagem))"
+                         alt="@Model.NomeProduto"
+                         style="max-width:100%; max-height:250px; object-fit:contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));" />
+                </div>
+            </div>
+        </div>
 
-				<dt class="col-sm-4 fw-bold">Estoque</dt>
-				<dd class="col-sm-8">@Model.EstoqueAtual.ToString("N4")</dd>
+        <h5 class="fw-bold mb-3 opacity-75"><i class="fa-solid fa-tags me-2"></i>Embalagens e EAN</h5>
+        <div class="table-responsive mb-5">
+            <table class="table-glass table-responsive-stack">
+                <thead>
+                    <tr>
+                        <th>Tipo de Embalagem</th>
+                        <th class="text-md-center">Preço de Venda</th>
+                        <th class="text-md-end">Código EAN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var emb in Model.Embalagens)
+                    {
+                        <tr>
+                            <td data-label="Tipo" class="fw-bold">
+                                @(emb.TiposEmbalagem?.FirstOrDefault(t => t.Value == emb.TipoEmbalagemId.ToString())?.Text ?? "Padrão")
+                            </td>
+                            <td data-label="Preço" class="text-md-center text-success fw-bold">@emb.Preco.ToString("C")</td>
+                            <td data-label="EAN" class="text-md-end opacity-75">@emb.Ean</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-				<dt class="col-sm-4 fw-bold">Custo Médio</dt>
-				<dd class="col-sm-8">@Model.CustoMedio.ToString("C")</dd>
-
-				<dt class="col-sm-4 fw-bold">Família</dt>
-				<dd class="col-sm-8"> @(Model.Familia?.NomeFamilia ?? "(não definido)") </dd>
-
-				<dt class="col-sm-4 fw-bold">Ativo</dt>
-				<dd class="col-sm-8">@((Model.Ativo) ? "✅" : "❌")</dd>
-			</dl>
-		</div>
-
-		<!-- Coluna da direita: imagem -->
-		<div class="col-md-4 d-flex justify-content-center align-items-center">
-			<div style="max-width: 300px; height: 300px;">
-				<img src="@(string.IsNullOrEmpty(Model.UrlImagem) ? Url.Content("~/imagens/default.png") : Url.Content(Model.UrlImagem))"
-					 alt="@Model.NomeProduto"
-					 class="img-thumbnail mt-3"
-					 style="border-radius:12px; max-width:100%; max-height:100%; object-fit:contain; margin:auto;" />
-			</div>
-		</div>
-	</div>
-</div>
-
-@if (Model.Embalagens != null && Model.Embalagens.Any())
-{
-	<div class="mb-3">
-		<h4>Embalagens</h4>
-		<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-			<table class="w-100">
-				<thead>
-					<tr>
-						<th>Tipo de Embalagem</th>
-						<th>Preço</th>
-						<th>EAN</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var emb in Model.Embalagens)
-					{
-						<tr>
-							<td data-label="Tipo de Embalagem">
-								@(emb.TiposEmbalagem?.FirstOrDefault(t => t.Value == emb.TipoEmbalagemId.ToString())?.Text ?? "—")
-							</td>
-							<td data-label="Preço">@emb.Preco.ToString("C")</td>
-							<td data-label="EAN">@emb.Ean</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-	</div>
-}
-
-<div class="d-flex justify-content-between">
-	<a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-secondary">
-		Voltar
-	</a>
-	<a asp-action="Edit" asp-route-id="@Model.IdProduto" class="btn btn-warning">Editar</a>
+        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+            <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn-glass text-decoration-none">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.IdProduto" class="btn-glass btn-warning text-dark border-0">
+                <i class="fa-solid fa-pen-to-square"></i> Editar Produto
+            </a>
+        </div>
+    </div>
 </div>

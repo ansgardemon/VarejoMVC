@@ -1,0 +1,95 @@
+﻿@model Varejo.Models.Recebimento
+
+@{
+    ViewData["Title"] = $"Recebimento #{Model.IdRecebimento}";
+}
+
+<div class="container-fluid mt-4">
+    <div class="glass-card mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-circle-info fs-3 me-3 text-primary"></i>
+                <h4 class="mb-0 fw-bold">Recebimento #@Model.IdRecebimento</h4>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left me-1"></i> Voltar
+                </a>
+                <button class="btn-glass btn-danger border-0" onclick="confirmarExclusao(@Model.IdRecebimento)">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Desintegrar Nota
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="glass-card h-100">
+                <div class="p-2 bg-dark bg-opacity-10 rounded-3 mb-3 text-center">
+                    <h6 class="mb-0 fw-bold small text-uppercase opacity-75">Dados da Nota</h6>
+                </div>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><strong>Número NF:</strong> <span class="text-primary fw-bold">@Model.NumeroNota</span></li>
+                    <li class="mb-2"><strong>Fornecedor:</strong> <span class="fw-semibold">@Model.Fornecedor.NomeRazao</span></li>
+                    <li class="mb-2"><strong>Data Entrada:</strong> @Model.DataEntrada.ToShortDateString()</li>
+                    <li class="small opacity-50 mt-3 p-2 rounded" style="background: rgba(0,0,0,0.03); word-break: break-all;">
+                        <strong>Chave:</strong> @Model.ChaveAcesso
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="glass-card h-100">
+                <div class="p-2 bg-dark bg-opacity-10 rounded-3 mb-3">
+                    <h6 class="mb-0 fw-bold small text-uppercase opacity-75 text-center">Itens Recebidos</h6>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-glass table-responsive-stack mb-0">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th class="text-md-center">Qtd</th>
+                                <th class="text-md-center">Unitário</th>
+                                <th class="text-md-end pe-md-4">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Itens)
+                            {
+                                <tr class="@(item.EhBonificacao ? "opacity-75" : "")">
+                                    <td data-label="Produto">
+                                        <div class="fw-bold">@item.Produto.NomeProduto</div>
+                                        @if (item.EhBonificacao)
+                                        {
+                                            <span class="badge bg-primary rounded-pill py-1" style="font-size: 0.6rem;">BONIFICAÇÃO</span>
+                                        }
+                                    </td>
+                                    <td data-label="Qtd" class="text-md-center fw-bold">@item.Quantidade</td>
+                                    <td data-label="Unit." class="text-md-center opacity-75">@item.ValorUnitario.ToString("C2")</td>
+                                    <td data-label="Total" class="text-md-end pe-md-4 fw-bold text-success">
+                                        @((item.Quantidade * item.ValorUnitario).ToString("C2"))
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="formDesintegrar" asp-action="Desintegrar" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" id="desintegrarId" />
+</form>
+
+<script>
+    function confirmarExclusao(id) {
+        if (confirm("ATENÇÃO: Isso irá estornar o estoque, apagar o financeiro e excluir este recebimento. Confirma?")) {
+            document.getElementById('desintegrarId').value = id;
+            document.getElementById('formDesintegrar').submit();
+        }
+    }
+</script>

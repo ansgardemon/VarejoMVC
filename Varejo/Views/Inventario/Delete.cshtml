@@ -4,45 +4,53 @@
     ViewData["Title"] = "Excluir Inventário";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-danger text-white">
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-danger border-opacity-25">
+            <i class="fa-solid fa-triangle-exclamation fs-3 me-3 text-danger"></i>
+            <h4 class="mb-0 fw-bold text-danger">@ViewData["Title"]</h4>
         </div>
-        <div class="card-body">
-            @if (ViewData["DeleteError"] != null)
-            {
-                <div class="alert alert-danger mt-2">
-                    @ViewData["DeleteError"]
-                </div>
-            }
 
-            <h5>Você tem certeza que deseja excluir este inventário?</h5>
-            <p class="text-muted">Apenas inventários sem itens lançados podem ser removidos.</p>
-            <hr />
+        @if (ViewData["DeleteError"] != null)
+        {
+            <div class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold d-flex align-items-center mb-4" role="alert">
+                <i class="fa-solid fa-circle-exclamation fs-5 me-3"></i>
+                <div>@ViewData["DeleteError"]</div>
+            </div>
+        }
+
+        <h5 class="fw-bold mb-2">Deseja realmente excluir este inventário?</h5>
+        <p class="opacity-75 small fw-semibold mb-4"><i class="fa-solid fa-circle-info me-1"></i>Apenas inventários sem itens lançados podem ser removidos.</p>
+        
+        <div class="p-4 rounded-4 mb-5" style="background: rgba(0, 0, 0, 0.03); border: 1px dashed var(--glass-border);">
+            <div class="row g-3">
+                <div class="col-6">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">ID do Inventário</span>
+                    <span class="fs-6 fw-semibold">#@Model.Id</span>
+                </div>
+                <div class="col-6">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Data</span>
+                    <span class="fs-6 fw-semibold">@Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div class="col-12 mt-3">
+                    <span class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">Observação</span>
+                    <span class="fs-6 fw-semibold">@(string.IsNullOrEmpty(Model.Observacao) ? "-" : Model.Observacao)</span>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
             
-            <dl class="row">
-                <dt class="col-sm-3">ID</dt>
-                <dd class="col-sm-9">@Model.Id</dd>
-
-                <dt class="col-sm-3">Data</dt>
-                <dd class="col-sm-9">@Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                <dt class="col-sm-3">Observação</dt>
-                <dd class="col-sm-9">@Model.Observacao</dd>
-            </dl>
-
-            <form asp-action="Delete">
-                <input type="hidden" asp-for="Id" />
-                <div class="d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-chevron-left"></i> Cancelar
-                    </a>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fa-solid fa-trash"></i> Excluir Definitivamente
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-danger border-0">
+                    <i class="fa-solid fa-trash-can"></i> Confirmar Exclusão
+                </button>
+            </div>
+        </form>
     </div>
 </div>

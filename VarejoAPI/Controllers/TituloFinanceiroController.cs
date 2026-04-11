@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Varejo.Interfaces;
 using Varejo.Models;
+using VarejoSHARED.DTO;
 using VarejoSHARED.DTO.Financeiro.PagamentoTitulo;
 using VarejoSHARED.DTO.Financeiro.tituloFinanceiro;
 using VarejoSHARED.DTO.Financeiro.TituloFinanceiro;
@@ -91,15 +92,16 @@ namespace VarejoAPI.Controllers
                 return BadRequest(new { erro = ex.Message });
             }
         }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, TituloFinanceiroInputDTO dto)
+        [HttpPatch("{id}/observacao")]
+        public async Task<ActionResult<TituloFinanceiroOutputDTO>> AtualizarObservacao(
+            int id,
+            AtualizarObservacaoDTO dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             if (id <= 0)
                 return BadRequest("Id inválido.");
+
+            if (dto == null)
+                return BadRequest("Dados inválidos.");
 
             try
             {
@@ -108,30 +110,11 @@ namespace VarejoAPI.Controllers
                 if (model == null)
                     return NotFound();
 
-                if (model.Pagamentos?.Any() == true)
-                    return BadRequest("Não é possível alterar um título que já possui pagamentos.");
-
-                if (dto.Valor <= 0)
-                    return BadRequest("O valor do título deve ser maior que zero.");
-
-                model.Documento = dto.Documento;
-                model.Parcela = dto.Parcela;
                 model.Observacao = dto.Observacao;
-                model.Valor = dto.Valor;
-                model.DataEmissao = dto.DataEmissao;
-                model.DataVencimento = dto.DataVencimento;
-                model.EspecieTituloId = dto.EspecieTituloId;
-                model.FormaPagamentoId = dto.FormaPagamentoId;
-                model.PrazoPagamentoId = dto.PrazoPagamentoId;
-                model.PessoaId = dto.PessoaId;
-
-                model.AtualizarValores();
 
                 await _iTituloFinanceiroRepository.UpdateAsync(model);
 
-                var atualizado = await _iTituloFinanceiroRepository.GetByIdAsync(id);
-
-                return Ok(MapToDTO(atualizado));
+                return Ok(MapToDTO(model));
             }
             catch (Exception ex)
             {
@@ -183,28 +166,26 @@ namespace VarejoAPI.Controllers
                 var titulos = await _iTituloFinanceiroRepository.GetAllAsync();
                 var query = titulos.AsQueryable();
 
-                if (!dataInicio.HasValue && !dataFim.HasValue)
-                {
-                    dataInicio = DateTime.Today;
-                    dataFim = DateTime.Today.AddDays(30);
-                }
-
+               
                 if (dataInicio.HasValue)
                     query = query.Where(t => t.DataVencimento >= dataInicio.Value);
 
                 if (dataFim.HasValue)
                     query = query.Where(t => t.DataVencimento <= dataFim.Value);
 
-                if (string.IsNullOrEmpty(status) || status == "aberto")
-                    query = query.Where(t => !t.Quitado);
-                else if (status == "quitado")
-                    query = query.Where(t => t.Quitado);
+                if (!string.IsNullOrEmpty(status))
+                {
+                    if (status == "aberto")
+                        query = query.Where(t => !t.Quitado);
+                    else if (status == "quitado")
+                        query = query.Where(t => t.Quitado);
+                } 
 
                 if (!string.IsNullOrEmpty(documento))
                     query = query.Where(t => t.Documento.ToString().Contains(documento));
 
-                if (!string.IsNullOrEmpty(pessoa))
-                    query = query.Where(t => t.Pessoa != null && t.Pessoa.NomeRazao.Contains(pessoa));
+                //if (!string.IsNullOrEmpty(pessoa))
+                //    query = query.Where(t => t.Pessoa != null && t.Pessoa.NomeRazao.Contains(pessoa));
 
                 return Ok(query.Select(MapToDTO));
             }

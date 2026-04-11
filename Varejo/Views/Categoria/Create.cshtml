@@ -15,7 +15,11 @@
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
 
+<<<<<<< HEAD
             <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+=======
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
+>>>>>>> ffce076490418d82fb391e8749beb482e3e03842
 
             <div class="mb-4">
                 <label asp-for="DescricaoCategoria" class="form-label fw-bold opacity-75"></label>
@@ -27,7 +31,11 @@
                 <a asp-action="Index" class="btn-glass text-decoration-none">
                     <i class="fa-solid fa-chevron-left"></i> Voltar
                 </a>
+<<<<<<< HEAD
                 <button type="submit" class="btn-glass btn-success border-0">
+=======
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+>>>>>>> ffce076490418d82fb391e8749beb482e3e03842
                     <i class="fa-solid fa-check"></i> Salvar
                 </button>
             </div>

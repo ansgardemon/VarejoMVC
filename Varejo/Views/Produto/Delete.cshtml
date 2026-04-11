@@ -4,40 +4,36 @@
     ViewData["Title"] = "Excluir Produto";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-danger text-white">
-
-            @if (ViewData["DeleteError"] != null)
-            {
-                <div class="alert alert-danger mt-3">
-                    @ViewData["DeleteError"]
-                </div>
-            }
-
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-danger border-opacity-25">
+            <i class="fa-solid fa-triangle-exclamation fs-3 me-3 text-danger"></i>
+            <h4 class="mb-0 fw-bold text-danger">@ViewData["Title"]</h4>
         </div>
-        <div class="card-body">
-            <h5>Você tem certeza que deseja excluir este produto?</h5>
-            <hr />
-            <dl class="row">
-                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.NomeProduto)</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.NomeProduto)</dd>
-                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Complemento)</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Complemento)</dd>
-            </dl>
 
-            <form asp-action="Delete" method="post">
-                <input type="hidden" asp-for="IdProduto" />
-                <div class="d-flex justify-content-between">
-                    <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-chevron-left"></i> Cancelar
-                    </a>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fa-solid fa-trash"></i> Excluir
-                    </button>
-                </div>
-            </form>
+        <div class="text-center mb-5">
+            <h5 class="fw-bold mb-3">Tem certeza que deseja excluir permanentemente este produto?</h5>
+            
+            <div class="p-4 rounded-4" style="background: rgba(220, 53, 69, 0.05); border: 1px dashed rgba(220, 53, 69, 0.3);">
+                <h4 class="text-primary fw-bold mb-1">@Model.NomeProduto</h4>
+                <p class="opacity-75 mb-0">@Model.Complemento</p>
+                <small class="opacity-50">Família: @Model.Familia?.NomeFamilia</small>
+            </div>
         </div>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="IdProduto" />
+            <input type="hidden" asp-for="FamiliaId" />
+            
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-danger border-0">
+                    <i class="fa-solid fa-trash-can"></i> Confirmar Exclusão
+                </button>
+            </div>
+        </form>
     </div>
 </div>

@@ -5,196 +5,158 @@
     var pagamentos = ViewBag.Pagamentos as List<Varejo.Models.PagamentoTitulo>;
 }
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 1000px;">
 
-    <div class="card shadow-sm border-0">
-
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Detalhes do Título</h5>
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-circle-info fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            
+            <div class="ms-auto">
+                @if (Model.Quitado)
+                {
+                    <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25 fs-6 py-2 px-3"><i class="fa-solid fa-check-double me-2"></i>Quitado</span>
+                }
+                else
+                {
+                    <span class="report-id-badge bg-warning bg-opacity-10 text-warning border-warning border-opacity-25 fs-6 py-2 px-3" style="color:#d97706!important;"><i class="fa-solid fa-clock-rotate-left me-2"></i>Em Aberto</span>
+                }
+            </div>
         </div>
 
-        <div class="card-body">
+        @if (TempData["Erro"] != null)
+        {
+            <div class="alert bg-danger bg-opacity-10 text-danger fw-bold">@TempData["Erro"]</div>
+        }
+        @if (TempData["Sucesso"] != null)
+        {
+            <div class="alert bg-success bg-opacity-10 text-success fw-bold">@TempData["Sucesso"]</div>
+        }
 
-            @if (TempData["Erro"] != null)
-            {
-                <div class="alert alert-danger">
-                    @TempData["Erro"]
-                </div>
-            }
-
-            @if (TempData["Sucesso"] != null)
-            {
-                <div class="alert alert-success">
-                    @TempData["Sucesso"]
-                </div>
-            }
-
-            <!-- 📄 INFORMAÇÕES -->
-            <div class="row mb-4">
-
-                <div class="col-md-3">
-                    <strong>Documento:</strong><br />
-                    @Model.Documento
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Parcela:</strong><br />
-                    @Model.Parcela
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Pessoa:</strong><br />
-                    @Model.NomePessoa
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Espécie:</strong><br />
-                    @Model.EspecieDescricao
-                </div>
-
-            </div>
-
-            <div class="row mb-4">
-
-                <div class="col-md-3">
-                    <strong>Valor Total:</strong><br />
-                    @Model.Valor.ToString("C")
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Total Pago:</strong><br />
-                    @(Model.ValorPago?.ToString("C") ?? "R$ 0,00")
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Saldo:</strong><br />
-                    @Model.ValorAberto.ToString("C")
-                </div>
-
-             
-
-                <div class="col-md-3">
-                    <strong>Status:</strong><br />
-                    @if (Model.Quitado)
-                    {
-                        <span class="badge bg-success">Quitado</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-warning text-dark">Aberto</span>
-                    }
-                </div>
-
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <strong>Emissão:</strong><br />
-                    @Model.DataEmissao.ToShortDateString()
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Vencimento:</strong><br />
-                    @Model.DataVencimento.ToShortDateString()
-                </div>
-
-                <div class="col-md-3">
-                    <strong>Forma de Pagamento:</strong><br />
-                    @Model.FormaDescricao
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Documento</small>
+                    <span class="fs-5 fw-bold text-primary">@Model.Documento <span class="fs-6 opacity-50 fw-normal">(@Model.Parcela)</span></span>
                 </div>
             </div>
+            <div class="col-md-5 col-sm-6">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Pessoa</small>
+                    <span class="fs-5 fw-semibold text-truncate d-block">@Model.NomePessoa</span>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="p-3 rounded-4 h-100" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Datas</small>
+                    <span class="d-block small"><strong class="opacity-75">Emissão:</strong> @Model.DataEmissao.ToShortDateString()</span>
+                    <span class="d-block small text-danger"><strong class="opacity-75 text-dark">Vencimento:</strong> @Model.DataVencimento.ToShortDateString()</span>
+                </div>
+            </div>
+        </div>
 
-            <!-- 💰 REGISTRAR PAGAMENTO -->
-            @if (!Model.Quitado)
-            {
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-light">
-                        <strong>Registrar Pagamento</strong>
+        <div class="row g-3 mb-5">
+            <div class="col-md-4">
+                <div class="p-3 rounded-4 h-100 border border-secondary border-opacity-25" style="background: rgba(0,0,0,0.01);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Valor Total</small>
+                    <span class="fs-4 fw-bold">@Model.Valor.ToString("C")</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded-4 h-100 border border-success border-opacity-25" style="background: rgba(40,167,69,0.05);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase text-success mb-1" style="font-size: 0.7rem;">Total Pago</small>
+                    <span class="fs-4 fw-bold text-success">@(Model.ValorPago?.ToString("C") ?? "R$ 0,00")</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded-4 h-100 border border-danger border-opacity-25" style="background: rgba(220,53,69,0.05);">
+                    <small class="d-block opacity-75 fw-bold text-uppercase text-danger mb-1" style="font-size: 0.7rem;">Saldo a Pagar</small>
+                    <span class="fs-4 fw-bold text-danger">@Model.ValorAberto.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <small class="d-block opacity-50 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Espécie e Forma</small>
+                <p class="mb-1">@Model.EspecieDescricao</p>
+                <p class="mb-0 opacity-75">@Model.FormaDescricao</p>
+            </div>
+            <div class="col-md-6">
+                <small class="d-block opacity-50 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Observação</small>
+                <p class="mb-0 fst-italic">@(string.IsNullOrWhiteSpace(Model.Observacao) ? "Nenhuma observação registrada." : Model.Observacao)</p>
+            </div>
+        </div>
+
+        @if (!Model.Quitado)
+        {
+            <div class="p-4 rounded-4 mb-5 shadow-sm" style="background: var(--glass-bg); border: 2px solid var(--sys-primary-light);">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fa-solid fa-hand-holding-dollar fs-4 me-2 text-success"></i>
+                    <h6 class="fw-bold mb-0 text-success">Registrar Baixa / Pagamento</h6>
+                </div>
+
+                <form asp-action="RegistrarPagamento" method="post">
+                    <input type="hidden" name="id" value="@Model.IdTituloFinanceiro" />
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold opacity-75">Valor da Baixa</label>
+                            <input type="text" name="valor" class="form-control" placeholder="0,00" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold opacity-75">Data do Pagamento</label>
+                            <input type="date" name="data" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-success w-100 fw-bold">
+                                Confirmar Pagamento
+                            </button>
+                        </div>
                     </div>
-
-                    <div class="card-body">
-                        <form asp-action="RegistrarPagamento" method="post">
-
-                            <input type="hidden" name="id" value="@Model.IdTituloFinanceiro" />
-
-                            <div class="row">
-
-                                <div class="col-md-4">
-                                    <label>Valor</label>
-                                    <input type="text" name="valor" class="form-control" required />
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label>Data</label>
-                                    <input type="date" name="data" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-                                </div>
-
-                                <div class="col-md-4 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-success w-100">
-                                        💰 Registrar
-                                    </button>
-                                </div>
-
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-            }
-
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <strong>Observação:</strong><br />
-                    @if (!string.IsNullOrWhiteSpace(Model.Observacao))
-                    {
-                        <span>@Model.Observacao</span>
-                    }
-                    else
-                    {
-                        <span class="text-muted">Nenhuma observação</span>
-                    }
-                </div>
+                </form>
             </div>
+        }
 
-            <!-- 📜 HISTÓRICO -->
-            <h5>Histórico de Pagamentos</h5>
-
-            <table class="table table-sm table-hover mt-2">
+        <h6 class="fw-bold mb-3 opacity-75"><i class="fa-solid fa-clock-rotate-left me-2"></i>Histórico de Lançamentos</h6>
+        <div class="table-responsive mb-5">
+            <table class="table-glass table-responsive-stack mb-0">
                 <thead>
                     <tr>
-                        <th>Data</th>
-                        <th>Valor</th>
+                        <th>Data do Pagamento</th>
+                        <th class="text-md-end pe-md-4">Valor Baixado</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     @if (pagamentos != null && pagamentos.Any())
                     {
                         foreach (var p in pagamentos)
                         {
                             <tr>
-                                <td>@p.DataPagamento.ToShortDateString()</td>
-                                <td>@p.ValorPago.ToString("C")</td>
+                                <td data-label="Data" class="fw-semibold">@p.DataPagamento.ToShortDateString()</td>
+                                <td data-label="Valor" class="text-md-end pe-md-4 fw-bold text-success">@p.ValorPago.ToString("C")</td>
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="2" class="text-center text-muted">
-                                Nenhum pagamento registrado
+                            <td colspan="2" class="text-center py-4 opacity-50 text-muted">
+                                Nenhum pagamento registrado neste título.
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-
-            <!-- 🔙 -->
-            <div class="mt-3">
-                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
-                <a asp-action="Edit" asp-route-id="@Model.IdTituloFinanceiro" class="btn btn-warning">Editar</a>
-            </div>
-
         </div>
+
+        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+            <a asp-action="Index" class="btn-glass text-decoration-none">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.IdTituloFinanceiro" class="btn-glass btn-warning border-0 text-dark">
+                <i class="fa-solid fa-pen-to-square"></i> Editar Título
+            </a>
+        </div>
+
     </div>
 </div>

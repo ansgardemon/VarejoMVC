@@ -2,14 +2,155 @@
     ViewData["Title"] = "Calendário de Títulos";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
+<style>
+    /* --- CUSTOMIZAÇÃO FULLCALENDAR COM ALTO CONTRASTE E RESPONSIVIDADE --- */
+    
+    /* Variáveis Globais (Light Mode) */
+    .fc {
+        --fc-page-bg-color: transparent !important;
+        --fc-neutral-bg-color: rgba(0, 0, 0, 0.05) !important;
+        --fc-neutral-text-color: var(--text) !important; 
+        --fc-border-color: rgba(0, 0, 0, 0.15) !important; 
+        --fc-today-bg-color: rgba(var(--sys-primary-rgb, 79, 172, 254), 0.15) !important;
         
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">📅 Calendário</h5>
+        --fc-button-text-color: var(--text) !important;
+        --fc-button-bg-color: var(--glass-bg) !important;
+        --fc-button-border-color: rgba(0, 0, 0, 0.25) !important;
+        --fc-button-hover-bg-color: rgba(var(--sys-primary-rgb, 79, 172, 254), 0.1) !important;
+        --fc-button-hover-border-color: var(--sys-primary-light) !important;
+        --fc-button-active-bg-color: var(--sys-primary-light) !important;
+        --fc-button-active-border-color: var(--sys-primary-light) !important;
+        --fc-button-active-text-color: #ffffff !important;
+    }
+
+    /* Variáveis Globais (Dark Mode) */
+    [data-theme="dark"] .fc {
+        --fc-neutral-bg-color: rgba(255, 255, 255, 0.08) !important;
+        --fc-border-color: rgba(255, 255, 255, 0.2) !important; 
+        --fc-today-bg-color: rgba(255, 255, 255, 0.1) !important;
+        --fc-button-border-color: rgba(255, 255, 255, 0.3) !important;
+        --fc-button-hover-bg-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    /* Borda externa da tabela */
+    .fc-theme-standard {
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid var(--fc-border-color); 
+        background: rgba(0,0,0,0.01);
+    }
+    
+    [data-theme="dark"] .fc-theme-standard {
+        background: rgba(255,255,255,0.02);
+    }
+
+    /* Tipografia de Alto Contraste */
+    .fc-col-header-cell-cushion {
+        font-weight: 800 !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 10px 0 !important;
+        color: var(--text) !important;
+    }
+
+    .fc-daygrid-day-number {
+        font-weight: 800 !important;
+        font-size: 1.1rem;
+        padding: 8px !important;
+        color: var(--text) !important;
+    }
+
+    /* Header e Botões */
+    .fc .fc-toolbar.fc-header-toolbar {
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap; /* RESPONSIVIDADE: Permite pular linha no celular */
+        gap: 10px;
+    }
+    
+    .fc .fc-button {
+        backdrop-filter: blur(10px);
+        text-transform: capitalize;
+        font-weight: 700;
+        transition: 0.3s ease;
+        padding: 0.5rem 1.2rem;
+        box-shadow: none !important;
+    }
+
+    .fc-button-group > .fc-button { border-radius: 0; }
+    .fc-button-group > .fc-button:first-child { border-top-left-radius: 20px; border-bottom-left-radius: 20px; }
+    .fc-button-group > .fc-button:last-child { border-top-right-radius: 20px; border-bottom-right-radius: 20px; }
+
+    /* --- EVENTOS (TÍTULOS FINANCEIROS) --- */
+    .fc-event {
+        border: none !important;
+        border-left: 4px solid var(--sys-primary-light) !important; 
+        border-radius: 4px !important;
+        background: rgba(var(--sys-primary-rgb, 79, 172, 254), 0.25) !important; 
+        backdrop-filter: blur(5px);
+        padding: 4px 6px;
+        margin: 2px 4px !important;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .fc-event-title {
+        font-weight: 800 !important;
+        color: var(--text) !important;
+        font-size: 0.8rem;
+    }
+
+    [data-theme="dark"] .fc-event { background: rgba(var(--sys-primary-rgb, 79, 172, 254), 0.35) !important; }
+    [data-theme="dark"] .fc-event-title { color: #ffffff !important; }
+    
+    .fc-event:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        background: var(--sys-primary-light) !important;
+    }
+    .fc-event:hover .fc-event-title { color: #ffffff !important; }
+
+    .fc a { text-decoration: none !important; }
+    .fc-scrollgrid { border: none !important; }
+
+    /* --- REGRAS ESPECÍFICAS PARA CELULAR (MOBILE) --- 
+       Usando @@media para não quebrar o C# (Razor) 
+    */
+    @@media (max-width: 768px) {
+        .fc-toolbar-title {
+            font-size: 1.2rem !important; /* Título do mês menor */
+        }
+        .fc .fc-button {
+            padding: 0.4rem 0.8rem; /* Botões menores */
+            font-size: 0.85rem;
+        }
+        .fc-col-header-cell-cushion {
+            font-size: 0.7rem !important; /* Dias da semana */
+            padding: 5px 0 !important;
+        }
+        .fc-daygrid-day-number {
+            font-size: 0.9rem !important; /* Número do dia */
+        }
+        .fc-event-title {
+            font-size: 0.65rem !important; /* Título do evento menor */
+            white-space: normal !important; /* Permite quebrar linha para caber */
+        }
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <div class="glass-card mb-4">
+        
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+            <div class="d-flex align-items-center">
+                <i class="fa-regular fa-calendar-days fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <a asp-action="Index" class="btn-glass text-decoration-none justify-content-center">
+                <i class="fa-solid fa-list-check me-1"></i> Ir para a Lista
+            </a>
         </div>
 
-        <div class="card-body">
+        <div class="p-2">
             <div id="calendar"></div>
         </div>
 
@@ -18,21 +159,39 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
         var calendarEl = document.getElementById('calendar');
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'pt-br',
+        if (calendarEl) {
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'pt-br',
+                selectable: true,
+                editable: false,
+                
+                /* --- CONFIGURAÇÕES DE ALTURA E ENCAIXE NA TELA --- */
+                height: '70vh', /* Trava o calendário em 70% da altura da janela */
+                expandRows: true, /* Faz as linhas esticarem para preencher o espaço */
+                stickyHeaderDates: true, /* No celular, os dias da semana ficam fixos no topo */
+                
+                buttonText: {
+                    today: 'Hoje',
+                    month: 'Mês',
+                    week: 'Semana',
+                    day: 'Dia'
+                },
 
-            events: '/TituloFinanceiro/GetEventos',
+                events: '/TituloFinanceiro/GetEventos',
 
-            eventClick: function(info) {
-                var id = info.event.id;
-                window.location.href = '/TituloFinanceiro/Details/' + id;
-            }
-        });
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault(); 
+                    var id = info.event.id;
+                    if (id) {
+                        window.location.href = '/TituloFinanceiro/Details/' + id;
+                    }
+                }
+            });
 
-        calendar.render();
+            calendar.render();
+        }
     });
 </script>

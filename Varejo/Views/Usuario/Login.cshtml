@@ -2,27 +2,50 @@
     ViewData["Title"] = "Login";
 }
 
-<h2 class="mb-4">@ViewData["Title"]</h2>
+<div class="d-flex align-items-center justify-content-center" style="min-height: 75vh;">
+    <div class="glass-card p-5" style="max-width: 450px; width: 100%;">
+        
+        <div class="text-center mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle mb-3" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                <i class="fa-solid fa-user-lock fs-1" style="color: var(--sys-primary-light, #4facfe);"></i>
+            </div>
+            <h3 class="fw-bold">@ViewData["Title"]</h3>
+            <p class="opacity-75 small">Insira suas credenciais para acessar o sistema.</p>
+        </div>
 
-<form asp-action="Login" method="post">
-    @Html.AntiForgeryToken()
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold small mb-4">
+                @Html.ValidationSummary(false)
+            </div>
+        }
 
-    <div class="mb-3">
-        <label for="nomeUsuario" class="form-label">Usuário</label>
-        <input type="text" name="nomeUsuario" id="nomeUsuario" class="form-control" required />
+        <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-4">
+                <label for="nomeUsuario" class="form-label fw-bold opacity-75 small text-uppercase">Usuário</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--glass-border);">
+                        <i class="fa-solid fa-user text-primary opacity-75"></i>
+                    </span>
+                    <input type="text" name="nomeUsuario" id="nomeUsuario" class="form-control form-control-lg border-start-0 ps-0" required placeholder="Digite seu usuário..." />
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <label for="senha" class="form-label fw-bold opacity-75 small text-uppercase">Senha</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--glass-border);">
+                        <i class="fa-solid fa-lock text-primary opacity-75"></i>
+                    </span>
+                    <input type="password" name="senha" id="senha" maxlength="70" class="form-control form-control-lg border-start-0 ps-0" required placeholder="••••••••" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn-glass btn-primary border-0 text-white w-100 justify-content-center py-3 fs-5 fw-bold">
+                Entrar <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+            </button>
+        </form>
     </div>
-
-    <div class="mb-3">
-        <label for="senha" class="form-label">Senha</label>
-        <input type="password" name="senha" id="senha" maxlength="70" class="form-control" required />
-    </div>
-
-    <button type="submit" class="btn btn-primary w-100">Entrar</button>
-</form>
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger mt-3">
-        @Html.ValidationSummary(false)
-    </div>
-}
+</div>

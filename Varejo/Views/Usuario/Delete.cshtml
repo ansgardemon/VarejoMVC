@@ -4,37 +4,46 @@
     ViewData["Title"] = "Excluir Usuário";
 }
 
-<h2 class="mb-4">
-    Tem certeza que deseja excluir o usuário
-    <span class="text-primary">@Model.nomeUsuario</span>?
-</h2>
-
-
-<div class="card p-4 shadow-sm">
-    <dl class="row">
-       
-        <dt class="col-sm-3"> ID tipo de usuario </dt>
-        <dd class="col-sm-9">@Model.TipoUsuarioId</dd>
-
-        <dt class="col-sm-3">Tipo de usuario</dt>
-        <dd class="col-sm-9">@Model.TipoUsuario?.DescricaoTipoUsuario</dd>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
         
-        <dt class="col-sm-3">Nome da pessoa </dt>
-        <dd class="col-sm-9">@Model.Pessoa?.NomeRazao</dd>
-        
-        <dt class="col-sm-3">Id pessoa</dt>
-        <dd class="col-sm-9">@Model.PessoaId</dd>
-
-    </dl>
-
-    <form asp-action="Delete" method="post">
-        <input type="hidden" asp-for="IdUsuario" />
-
-        <div class="mt-4">
-            <button type="submit" class="btn btn-danger">Excluir</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-danger border-opacity-25">
+            <i class="fa-solid fa-user-xmark fs-3 me-3 text-danger"></i>
+            <h4 class="mb-0 fw-bold text-danger">Confirmar Exclusão</h4>
         </div>
-    </form>
+
+        <h5 class="fw-bold mb-4 text-center">Tem certeza que deseja excluir permanentemente o usuário <span class="text-primary">@Model.nomeUsuario</span>?</h5>
+
+        <div class="p-4 rounded-4 mb-5" style="background: rgba(220, 53, 69, 0.05); border: 1px dashed rgba(220, 53, 69, 0.3);">
+            <div class="row g-3">
+                <div class="col-6">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">ID</small>
+                    <span class="fs-5 fw-bold">@Model.TipoUsuarioId</span>
+                </div>
+                <div class="col-6">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Tipo de Permissão</small>
+                    <span class="fs-5 fw-bold text-danger">@Model.TipoUsuario?.DescricaoTipoUsuario</span>
+                </div>
+                <div class="col-12 mt-3 pt-3 border-top border-danger border-opacity-25">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Pessoa Vinculada (ID: @Model.PessoaId)</small>
+                    <span class="fs-5 fw-semibold text-dark">@Model.Pessoa?.NomeRazao</span>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="IdUsuario" />
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left me-1"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-danger border-0">
+                    <i class="fa-solid fa-trash-can me-1"></i> Confirmar Exclusão
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {

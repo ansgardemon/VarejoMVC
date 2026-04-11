@@ -4,36 +4,74 @@
     ViewData["Title"] = "Marcas";
 }
 
-<h2>Marcas</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-tags fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <a asp-action="Create" class="btn-glass btn-success text-white text-decoration-none border-0">
+                <i class="fa-solid fa-plus"></i>
+                <span class="d-none d-sm-inline ms-1">Nova Marca</span>
+            </a>
+        </div>
 
-<p>
-    <a class="btn btn-primary" asp-action="Create">Nova Marca</a>
-</p>
-
-<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-<table class="w-100">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Nome da Marca</th>
-            <th>Quantidade de Familias</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var categoria in Model)
-        {
-                <tr>
-                    <td data-label="ID">@categoria.IdMarca</td>
-                    <td data-label="Marca">@categoria.NomeMarca</td>
-                    <td data-label="Quantidade de Famílias">@categoria.QuantidadeFamilia</td>
-                    <td data-label="Ações">
-                        <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@categoria.IdMarca">Detalhes</a>
-                        <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@categoria.IdMarca">Editar</a>
-                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@categoria.IdMarca">Excluir</a>
-                    </td>
-                </tr>
-        }
-    </tbody>
-</table>
+        <div class="table-responsive">
+            <table class="table-glass table-responsive-stack" id="sortableTable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center"># <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="string" style="cursor: pointer; user-select: none;">
+                            <div class="d-flex justify-content-between align-items-center">Nome da Marca <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th data-sortable="true" data-sort-type="number" style="cursor: pointer; user-select: none;" class="text-md-center">
+                            <div class="d-flex justify-content-between align-items-center justify-content-md-center">Qtd. Famílias <i class="fa-solid fa-sort opacity-50 ms-2"></i></div>
+                        </th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var marca in Model)
+                        {
+                            <tr>
+                                <td data-label="ID">@marca.IdMarca</td>
+                                <td data-label="Marca" class="fw-semibold">@marca.NomeMarca</td>
+                                <td data-label="Quantidade de Famílias" class="text-md-center">
+                                    <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: transparent;">@marca.QuantidadeFamilia</span>
+                                </td>
+                                <td data-label="Ações">
+                                    <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                        <a asp-action="Delete" asp-route-id="@marca.IdMarca" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Excluir">
+                                            <i class="fa-solid fa-trash-can"></i> <span class="d-none d-xl-inline ms-1">Excluir</span>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@marca.IdMarca" class="btn btn-sm btn-warning text-dark rounded-pill px-3" title="Editar">
+                                            <i class="fa-solid fa-pen-to-square"></i> <span class="d-none d-xl-inline ms-1">Editar</span>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@marca.IdMarca" class="btn btn-sm btn-info text-white rounded-pill px-3" title="Detalhes">
+                                            <i class="fa-solid fa-eye"></i> <span class="d-none d-xl-inline ms-1">Detalhes</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center p-4">
+                                <i class="fa-solid fa-tags fs-1 opacity-25 d-block mb-3"></i>
+                                <span class="opacity-75 fw-semibold">Nenhuma marca cadastrada.</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

@@ -4,112 +4,103 @@
     ViewData["Title"] = "Adicionar Título Financeiro";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 900px;">
 
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-file-invoice-dollar fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
 
-        <div class="card-body">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <form asp-action="Create" method="post">
+        <div asp-validation-summary="All" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
 
-                <!-- Documento e Parcela -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Documento</label>
-                        <input asp-for="Documento" class="form-control" />
-                    </div>
+        <form asp-action="Create" method="post">
+            
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Documento" class="form-label fw-bold opacity-75">Documento (NF/Recibo)</label>
+                    <input asp-for="Documento" class="form-control form-control-lg" placeholder="Ex: NF 12345" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Parcela" class="form-label fw-bold opacity-75">Parcela</label>
+                    <input asp-for="Parcela" class="form-control form-control-lg" placeholder="Ex: 1/3" />
+                </div>
+            </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label>Parcela</label>
-                        <input asp-for="Parcela" class="form-control" />
-                    </div>
+            <div class="mb-4 position-relative">
+                <label class="form-label fw-bold opacity-75">Pessoa (Cliente/Fornecedor)</label>
+                <div class="input-group">
+                    <input type="hidden" asp-for="PessoaId" id="PessoaId" />
+                    <input type="text" id="PessoaNome" class="form-control form-control-lg border-end-0" readonly placeholder="Selecione a pessoa..." />
+                    <button type="button" class="btn btn-primary px-4" onclick="toggleSearchPessoa()" style="z-index: 0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
                 </div>
 
-                <!-- Pessoa (Lookup Search) -->
-                <div class="mb-3">
-                    <label>Pessoa</label>
+                <div id="searchPessoaBox" class="mt-2 p-3 rounded-4 position-absolute w-100 shadow-lg" style="display:none; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); z-index: 1050;">
+                    <input type="text" id="searchPessoaInput" class="form-control form-control-lg" placeholder="Digite o nome e aguarde..." onkeyup="buscarPessoa()" />
+                    <ul id="searchResults" class="list-group mt-2 shadow-sm rounded-3 overflow-hidden border-0"></ul>
+                </div>
+            </div>
 
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label asp-for="EspecieTituloId" class="form-label fw-bold opacity-75">Espécie</label>
+                    <select asp-for="EspecieTituloId" class="form-select form-control-lg" asp-items="ViewBag.Especies">
+                        <option value="">Selecione</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="FormaPagamentoId" class="form-label fw-bold opacity-75">Forma Pagto.</label>
+                    <select asp-for="FormaPagamentoId" class="form-select form-control-lg" asp-items="ViewBag.Formas">
+                        <option value="">Selecione</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="PrazoPagamentoId" class="form-label fw-bold opacity-75">Prazo Pagto.</label>
+                    <select asp-for="PrazoPagamentoId" class="form-select form-control-lg" asp-items="ViewBag.Prazos">
+                        <option value="">Selecione</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label asp-for="DataEmissao" class="form-label fw-bold opacity-75">Data Emissão</label>
+                    <input asp-for="DataEmissao" type="date" class="form-control form-control-lg" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="DataVencimento" class="form-label fw-bold opacity-75">Data Vencimento</label>
+                    <input asp-for="DataVencimento" type="date" class="form-control form-control-lg" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Valor" class="form-label fw-bold opacity-75">Valor Total</label>
                     <div class="input-group">
-                        <input type="hidden" asp-for="PessoaId" id="PessoaId" />
-                        <input type="text" id="PessoaNome" class="form-control" readonly />
-
-                        <button type="button" class="btn btn-outline-secondary" onclick="toggleSearchPessoa()">
-                            🔍
-                        </button>
-                    </div>
-
-                    <div id="searchPessoaBox" class="mt-2" style="display:none;">
-                        <input type="text" id="searchPessoaInput" class="form-control" placeholder="Digite o nome..." onkeyup="buscarPessoa()" />
-
-                        <ul id="searchResults" class="list-group mt-2"></ul>
+                        <span class="input-group-text bg-transparent border-end-0">R$</span>
+                        <input asp-for="Valor" class="form-control form-control-lg border-start-0 ps-0 text-success fw-bold" placeholder="0,00" />
                     </div>
                 </div>
+            </div>
 
-                <!-- Espécie -->
-                <div class="mb-3">
-                    <label>Espécie</label>
-                    <select asp-for="EspecieTituloId" class="form-control" asp-items="ViewBag.Especies">
-                        <option value="">Selecione</option>
-                    </select>
-                </div>
+            <div class="mb-5">
+                <label asp-for="Observacao" class="form-label fw-bold opacity-75">Observação</label>
+                <textarea asp-for="Observacao" class="form-control form-control-lg" rows="2"></textarea>
+            </div>
 
-                <!-- Forma de Pagamento -->
-                <div class="mb-3">
-                    <label>Forma de Pagamento</label>
-                    <select asp-for="FormaPagamentoId" class="form-control" asp-items="ViewBag.Formas">
-                        <option value="">Selecione</option>
-                    </select>
-                </div>
-
-                <!-- Prazo -->
-                <div class="mb-3">
-                    <label>Prazo de Pagamento</label>
-                    <select asp-for="PrazoPagamentoId" class="form-control" asp-items="ViewBag.Prazos">
-                        <option value="">Selecione</option>
-                    </select>
-                </div>
-
-                <!-- Valores -->
-                <div class="mb-3">
-                    <label>Valor</label>
-                    <input asp-for="Valor" class="form-control" />
-                </div>
-
-                <!-- Datas -->
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label>Data Emissão</label>
-                        <input asp-for="DataEmissao" type="date" class="form-control" />
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label>Data Vencimento</label>
-                        <input asp-for="DataVencimento" type="date" class="form-control" />
-                    </div>
-
-                </div>
-
-                <!-- Observação -->
-                <div class="mb-3">
-                    <label>Observação</label>
-                    <textarea asp-for="Observacao" class="form-control"></textarea>
-                </div>
-
-                <!-- Botões -->
-                <button type="submit" class="btn btn-success">Salvar</button>
-                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
-
-            </form>
-        </div>
-
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Título
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- SCRIPT: SEARCH PESSOA -->
 <script>
+    // Script Intacto
     function toggleSearchPessoa() {
         var box = document.getElementById("searchPessoaBox");
         box.style.display = box.style.display === "none" ? "block" : "none";
@@ -117,7 +108,6 @@
 
     async function buscarPessoa() {
         const term = document.getElementById("searchPessoaInput").value;
-
         if (term.length < 2) return;
 
         const response = await fetch(`/Pessoa/Search?term=${term}`);
@@ -128,18 +118,18 @@
 
         data.forEach(p => {
             const li = document.createElement("li");
-            li.className = "list-group-item list-group-item-action";
+            // Adicionei estilo Glass para os itens
+            li.className = "list-group-item list-group-item-action text-dark fw-semibold";
+            li.style.cursor = "pointer";
             li.innerText = p.text;
 
             li.onclick = function () {
                 document.getElementById("PessoaId").value = p.id;
                 document.getElementById("PessoaNome").value = p.text;
-
                 document.getElementById("searchResults").innerHTML = "";
                 document.getElementById("searchPessoaInput").value = "";
                 document.getElementById("searchPessoaBox").style.display = "none";
             };
-
             list.appendChild(li);
         });
     }

@@ -1,69 +1,133 @@
 ﻿@model Varejo.ViewModels.InventarioViewModel
-@{ Layout = null; }
+@{ 
+    Layout = null; 
+}
 
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+    <meta charset="utf-8" />
     <title>Impressão Inventário #@Model.Id</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; color: #333; }
-        .header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background-color: #f2f2f2; border: 1px solid #000; padding: 12px; text-align: left; }
-        td { border: 1px solid #000; padding: 10px; }
-        .footer { margin-top: 50px; text-align: center; font-size: 12px; }
-        .linha-assinatura { margin-top: 60px; border-top: 1px solid #000; width: 300px; display: inline-block; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #e2e8f0; 
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .document-wrapper {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .header-print { 
+            border-bottom: 3px solid #0f172a; 
+            margin-bottom: 30px; 
+            padding-bottom: 20px; 
+        }
+
+        .table th { 
+            background-color: rgba(0,0,0,0.03) !important; 
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #cbd5e1;
+            -webkit-print-color-adjust: exact; 
+        }
+        
+        .table td {
+            font-size: 0.85rem;
+            vertical-align: middle;
+            border-color: #e2e8f0;
+        }
+
+        .linha-assinatura { 
+            margin-top: 60px; 
+            border-top: 1px solid #475569; 
+            width: 300px; 
+            display: inline-block; 
+        }
         
         @@media print {
-            .btn-print { display: none; }
+            body { background-color: white !important; margin: 0; }
+            .document-wrapper { margin: 0; padding: 0; box-shadow: none; border-radius: 0; max-width: 100%; }
+            .btn-print { display: none !important; }
+            @@page { margin: 1cm; }
         }
     </style>
 </head>
 <body>
-    <div class="btn-print" style="margin-bottom: 20px;">
-        <button onclick="window.print()" style="padding: 10px 20px; cursor: pointer;">🖨️ Confirmar Impressão</button>
-        <button onclick="window.close()" style="padding: 10px 20px; cursor: pointer;">❌ Fechar</button>
+    
+    <div class="btn-print text-center py-3 bg-white border-bottom shadow-sm fixed-top">
+        <button onclick="window.print()" class="btn btn-primary fw-bold me-2">
+            <i class="fa-solid fa-print me-1"></i> Confirmar Impressão
+        </button>
+        <button onclick="window.close()" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-xmark me-1"></i> Fechar Aba
+        </button>
     </div>
 
-    <div class="header">
-        <h2>LISTA DE CONFERÊNCIA DE ESTOQUE</h2>
-        <strong>Inventário Nº: @Model.Id</strong><br>
-        <span>Data de Abertura: @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</span>
-    </div>
+    <div class="btn-print" style="height: 60px;"></div>
 
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 50%;">Produto</th>
-                <th style="width: 25%;">Embalagem</th>
-                <th style="width: 25%;">Contagem Real</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Itens)
-            {
+    <div class="document-wrapper">
+        <div class="header-print text-center">
+            <h3 class="fw-bold mb-2" style="letter-spacing: -0.5px;">LISTA DE CONFERÊNCIA DE ESTOQUE</h3>
+            <div class="d-flex justify-content-around mt-3">
+                <p class="mb-0"><strong>Inventário Nº:</strong> @Model.Id</p>
+                <p class="mb-0"><strong>Abertura:</strong> @Model.DataCriacao.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Observacao))
+        {
+            <div class="p-3 mb-4 rounded-3" style="background: rgba(0,0,0,0.02); border: 1px solid #e2e8f0;">
+                <p class="mb-0" style="font-size: 0.9rem;"><strong>Observação:</strong> @Model.Observacao</p>
+            </div>
+        }
+
+        <table class="table table-bordered table-sm mt-4">
+            <thead>
                 <tr>
-                    <td><strong>@item.NomeProduto</strong></td>
-                    <td>@item.DescricaoEmbalagem</td>
-                    <td style="text-align: center;">___________________________</td>
+                    <th style="width: 50%;">Produto</th>
+                    <th style="width: 25%;">Embalagem</th>
+                    <th style="width: 25%;" class="text-center">Contagem Real</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Itens)
+                {
+                    <tr>
+                        <td class="fw-semibold text-dark">@item.NomeProduto</td>
+                        <td class="text-muted">@item.DescricaoEmbalagem</td>
+                        <td class="text-center text-muted align-middle" style="height: 40px;">
+                            <span style="letter-spacing: 2px;">...................................</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-    @if (!string.IsNullOrEmpty(Model.Observacao))
-    {
-        <p><strong>Obs:</strong> @Model.Observacao</p>
-    }
+        <div style="text-align: center; margin-top: 80px;">
+            <div class="linha-assinatura"></div>
+            <br>
+            <span class="text-muted small fw-semibold">Assinatura do Conferente</span>
+        </div>
 
-    <div style="text-align: center; margin-top: 80px;">
-        <div class="linha-assinatura"></div>
-        <br>
-        <span>Assinatura do Conferente</span>
+        <div class="text-center text-muted" style="margin-top: 50px; font-size: 0.7rem; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+            Relatório gerado pelo sistema em @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+        </div>
     </div>
-
-    <div class="footer">
-        Relatório gerado em @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
-    </div>
+    
 </body>
 </html>

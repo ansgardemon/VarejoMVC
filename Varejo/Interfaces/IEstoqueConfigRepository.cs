@@ -22,5 +22,7 @@ namespace Varejo.Interfaces
 
         // Consultas para a sua ViewModel de Filtros
         Task<EstoqueViewModel> ObterEstoqueGeralAsync(EstoqueFiltroViewModel filtro);
+
+        Task<bool> EstornarMovimentacaoAsync(int recebimentoId, int produtoId);
     }
 }

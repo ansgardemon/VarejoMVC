@@ -36,6 +36,9 @@ namespace Varejo.Migrations
                     b.Property<int>("TipoMovimentoCompraId")
                         .HasColumnType("int");
 
+                    b.Property<int>("TipoMovimentoEntradaBonificacaoId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TipoMovimentoVendaId")
                         .HasColumnType("int");
 
@@ -44,6 +47,8 @@ namespace Varejo.Migrations
                     b.HasIndex("TipoMovimentoAvariaId");
 
                     b.HasIndex("TipoMovimentoCompraId");
+
+                    b.HasIndex("TipoMovimentoEntradaBonificacaoId");
 
                     b.HasIndex("TipoMovimentoVendaId");
 
@@ -610,14 +615,24 @@ namespace Varejo.Migrations
                     b.Property<int>("PessoaId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RecebimentoId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TipoMovimentoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VendaId")
                         .HasColumnType("int");
 
                     b.HasKey("IdMovimento");
 
                     b.HasIndex("PessoaId");
 
+                    b.HasIndex("RecebimentoId");
+
                     b.HasIndex("TipoMovimentoId");
+
+                    b.HasIndex("VendaId");
 
                     b.ToTable("Movimentos");
                 });
@@ -1159,11 +1174,17 @@ namespace Varejo.Migrations
                     b.Property<bool>("Quitado")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("RecebimentoId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Valor")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ValorAberto")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("VendaId")
+                        .HasColumnType("int");
 
                     b.HasKey("IdTituloFinanceiro");
 
@@ -1174,6 +1195,10 @@ namespace Varejo.Migrations
                     b.HasIndex("PessoaId");
 
                     b.HasIndex("PrazoPagamentoId");
+
+                    b.HasIndex("RecebimentoId");
+
+                    b.HasIndex("VendaId");
 
                     b.ToTable("TitulosFinanceiro");
                 });
@@ -1379,6 +1404,12 @@ namespace Varejo.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Varejo.Models.TipoMovimento", "TipoMovimentoEntradaBonificacao")
+                        .WithMany()
+                        .HasForeignKey("TipoMovimentoEntradaBonificacaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Varejo.Models.TipoMovimento", "TipoMovimentoVenda")
                         .WithMany()
                         .HasForeignKey("TipoMovimentoVendaId")
@@ -1388,6 +1419,8 @@ namespace Varejo.Migrations
                     b.Navigation("TipoMovimentoAvaria");
 
                     b.Navigation("TipoMovimentoCompra");
+
+                    b.Navigation("TipoMovimentoEntradaBonificacao");
 
                     b.Navigation("TipoMovimentoVenda");
                 });
@@ -1559,15 +1592,27 @@ namespace Varejo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Varejo.Models.Recebimento", "Recebimento")
+                        .WithMany()
+                        .HasForeignKey("RecebimentoId");
+
                     b.HasOne("Varejo.Models.TipoMovimento", "TipoMovimento")
                         .WithMany()
                         .HasForeignKey("TipoMovimentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Varejo.Models.Venda", "Venda")
+                        .WithMany()
+                        .HasForeignKey("VendaId");
+
                     b.Navigation("Pessoa");
 
+                    b.Navigation("Recebimento");
+
                     b.Navigation("TipoMovimento");
+
+                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("Varejo.Models.PagamentoTitulo", b =>
@@ -1741,6 +1786,14 @@ namespace Varejo.Migrations
                         .WithMany("Titulos")
                         .HasForeignKey("PrazoPagamentoId");
 
+                    b.HasOne("Varejo.Models.Recebimento", "Recebimento")
+                        .WithMany()
+                        .HasForeignKey("RecebimentoId");
+
+                    b.HasOne("Varejo.Models.Venda", "Venda")
+                        .WithMany()
+                        .HasForeignKey("VendaId");
+
                     b.Navigation("EspecieTitulo");
 
                     b.Navigation("FormaPagamento");
@@ -1748,6 +1801,10 @@ namespace Varejo.Migrations
                     b.Navigation("Pessoa");
 
                     b.Navigation("PrazoPagamento");
+
+                    b.Navigation("Recebimento");
+
+                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("Varejo.Models.Usuario", b =>

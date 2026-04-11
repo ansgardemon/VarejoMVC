@@ -1,114 +1,124 @@
 ﻿@model Varejo.ViewModels.RevisaoNotaViewModel
 
+@{
+    ViewData["Title"] = $"Revisão NF {Model.NumeroNota}";
+}
+
 <div class="container-fluid mt-4">
     <form asp-action="Confirmar" method="post">
-        @* Cabeçalho Oculto para persistência no POST *@
+        @* Cabeçalho Oculto *@
         <input type="hidden" asp-for="ChaveAcesso" />
         <input type="hidden" asp-for="NumeroNota" />
         <input type="hidden" asp-for="DataEntrada" />
         <input type="hidden" asp-for="PessoaId" />
         <input type="hidden" asp-for="CnpjCpfFornecedorXml" />
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Revisão de Entrada: NF @Model.NumeroNota</h2>
-            <div class="text-end">
-                <a asp-action="Importar" class="btn btn-outline-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-success px-5 shadow">Finalizar Recebimento</button>
-            </div>
-        </div>
-
-        @if (TempData["Erro"] != null)
-        {
-            <div class="alert alert-danger">@TempData["Erro"]</div>
-        }
-
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header bg-light fw-bold">Dados do Fornecedor</div>
-                    <div class="card-body">
-                        <p class="mb-1"><strong>Razão Social:</strong> @Model.NomeFornecedor</p>
-                        <p class="mb-0"><strong>CNPJ/CPF:</strong> @Model.CnpjCpfFornecedorXml</p>
-                    </div>
+        <div class="glass-card mb-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-list-check fs-3 me-3 text-primary"></i>
+                    <h4 class="mb-0 fw-bold">Revisão de Entrada: NF @Model.NumeroNota</h4>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-header bg-light fw-bold">Financeiro</div>
-                    <div class="card-body row">
-                        <div class="col-md-6">
-                            <label class="form-label small">Prazo de Pagamento</label>
-                            <select asp-for="PrazoPagamentoId" class="form-select" asp-items="ViewBag.Prazos" required>
-                                <option value="">-- Selecione --</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small">Forma de Pagamento</label>
-                            <select asp-for="FormaPagamentoId" class="form-select" asp-items="ViewBag.Formas" required>
-                                <option value="">-- Selecione --</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="d-flex gap-2">
+                    <a asp-action="Importar" class="btn-glass text-decoration-none">Cancelar</a>
+                    <button type="submit" class="btn-glass btn-success border-0 text-white fw-bold px-4">
+                        <i class="fa-solid fa-check-double me-2"></i> Finalizar Recebimento
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-header bg-dark text-white">Itens da Nota</div>
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="glass-card h-100 py-3" style="border-left: 4px solid var(--sys-primary-light);">
+                    <small class="d-block opacity-50 fw-bold text-uppercase mb-2" style="font-size: 0.7rem;">Fornecedor Identificado</small>
+                    <h5 class="fw-bold mb-1">@Model.NomeFornecedor</h5>
+                    <span class="report-id-badge" style="background: rgba(0,0,0,0.03); border-color: var(--glass-border);">CNPJ/CPF: @Model.CnpjCpfFornecedorXml</span>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card h-100 py-3">
+                    <small class="d-block opacity-50 fw-bold text-uppercase mb-2" style="font-size: 0.7rem;">Configuração Financeira</small>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <select asp-for="PrazoPagamentoId" class="form-select form-select-sm" asp-items="ViewBag.Prazos" required>
+                                <option value="">Prazo Pagto...</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <select asp-for="FormaPagamentoId" class="form-select form-select-sm" asp-items="ViewBag.Formas" required>
+                                <option value="">Forma Pagto...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card p-0 overflow-hidden">
+            <div class="p-3 bg-dark bg-opacity-10 border-bottom border-secondary border-opacity-25">
+                <h6 class="mb-0 fw-bold"><i class="fa-solid fa-box me-2"></i>Itens da Nota Fiscal</h6>
+            </div>
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                <table class="table-glass table-responsive-stack mb-0">
+                    <thead>
                         <tr>
-                            <th style="width: 15%">Cód. Fornecedor</th>
-                            <th>Produto (XML)</th>
-                            <th style="width: 25%">Vínculo Interno / Embalagem</th>
-                            <th style="width: 10%">Qtd</th>
-                            <th style="width: 10%">Vlr. Unit</th>
-                            <th style="width: 10%">Total</th>
+                            <th style="width: 12%" class="ps-md-4">Cód. Forn.</th>
+                            <th>Produto (XML) / Vínculo Interno</th>
+                            <th style="width: 10%" class="text-md-center">Qtd</th>
+                            <th style="width: 12%" class="text-md-center">Vlr. Unit</th>
+                            <th style="width: 12%" class="text-md-center">Total</th>
+                            <th style="width: 15%" class="text-md-center pe-md-4">Tipo</th>
                         </tr>
                     </thead>
                     <tbody>
                         @for (int i = 0; i < Model.Itens.Count; i++)
                         {
                             <tr>
-                                <td>
-                                    @Model.Itens[i].CodigoFornecedor
+                                <td class="ps-md-4" data-label="Cód. Forn.">
+                                    <span class="opacity-75 fw-bold">@Model.Itens[i].CodigoFornecedor</span>
                                     <input type="hidden" asp-for="Itens[i].CodigoFornecedor" />
                                 </td>
-                                <td>
-                                    <span class="d-block small text-muted">@Model.Itens[i].NomeProdutoXml</span>
-                                    <input type="hidden" asp-for="Itens[i].NomeProdutoXml" />
-                                </td>
-                                <td>
+                                <td data-label="Produto">
+                                    <div class="mb-2">
+                                        <small class="d-block opacity-50 fw-bold" style="font-size: 0.65rem;">DESCRIÇÃO NO XML:</small>
+                                        <span class="fw-semibold text-dark text-uppercase small">@Model.Itens[i].NomeProdutoXml</span>
+                                        <input type="hidden" asp-for="Itens[i].NomeProdutoXml" />
+                                    </div>
+                                    
                                     @if (Model.Itens[i].ProdutoIdInterno.HasValue)
                                     {
                                         <input type="hidden" asp-for="Itens[i].ProdutoIdInterno" />
-                                        <div class="input-group input-group-sm">
-                                            <span class="input-group-text bg-success text-white"><i class="bi bi-check"></i></span>
-                                            <select asp-for="Itens[i].ProdutoEmbalagemId"
-                                                    class="form-select border-success"
-                                                    asp-items="Model.Itens[i].EmbalagensDisponiveis" required>
-                                                <option value="">Selecione a Embalagem...</option>
+                                        <div class="d-flex align-items-center gap-2 mt-1">
+                                            <i class="fa-solid fa-link text-success small"></i>
+                                            <select asp-for="Itens[i].ProdutoEmbalagemId" class="form-select form-select-sm border-success border-opacity-50" style="background: rgba(40,167,69,0.05);" asp-items="Model.Itens[i].EmbalagensDisponiveis" required>
                                             </select>
                                         </div>
                                     }
                                     else
                                     {
-                                        <div class="d-grid">
-                                            <button type="button" class="btn btn-sm btn-outline-danger">
-                                                Vincular Produto Manualmente
-                                            </button>
-                                        </div>
+                                        <span href="#" class="btn btn-sm btn-outline-danger w-100 rounded-pill mt-1" style="font-size: 0.7rem; cursor:default;">
+                                            <i class="fa-solid fa-triangle-exclamation me-1"></i> Vincular Manualmente
+                                        </span>
                                     }
                                 </td>
-                                <td>
-                                    <input asp-for="Itens[i].Quantidade" class="form-control form-control-sm text-center" readonly />
+                                <td data-label="Qtd" class="text-md-center">
+                                    <input asp-for="Itens[i].Quantidade" class="form-control form-control-sm text-center border-0 bg-transparent fw-bold" readonly />
                                 </td>
-                                <td>
-                                    <input asp-for="Itens[i].ValorUnitario" class="form-control form-control-sm text-end" readonly />
+                                <td data-label="Unitário" class="text-md-center">
+                                    <input asp-for="Itens[i].ValorUnitario" class="form-control form-control-sm text-center border-0 bg-transparent fw-bold" readonly />
                                 </td>
-                                <td class="text-end fw-bold">
+                                <td data-label="Total" class="text-md-center fw-bold text-primary">
                                     @((Model.Itens[i].Quantidade * Model.Itens[i].ValorUnitario).ToString("C2"))
+                                </td>
+                                <td data-label="Tipo" class="pe-md-4">
+                                    <label class="btn-check-glass w-100 py-1" style="font-size: 0.7rem;">
+                                        <input asp-for="Itens[i].EhBonificacao" type="checkbox" />
+                                        <div class="check-content py-2">
+                                            <span class="if-checked">BONIFICAÇÃO</span>
+                                            <span class="if-not-checked">COMPRA</span>
+                                        </div>
+                                    </label>
                                 </td>
                             </tr>
                         }

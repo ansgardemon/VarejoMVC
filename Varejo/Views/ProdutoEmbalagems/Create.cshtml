@@ -1,46 +1,61 @@
 ﻿@model Varejo.Models.ProdutoEmbalagem
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nova Embalagem de Produto";
 }
 
-<h1>Create</h1>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-box-open fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+        </div>
 
-<h4>ProdutoEmbalagem</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Preco" class="control-label"></label>
-                <input asp-for="Preco" class="form-control" />
-                <span asp-validation-for="Preco" class="text-danger"></span>
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="ProdutoId" class="form-label fw-bold opacity-75">Produto</label>
+                <select asp-for="ProdutoId" class="form-select form-control-lg" asp-items="ViewBag.ProdutoId">
+                    <option value="">-- Selecione o Produto --</option>
+                </select>
             </div>
-            <div class="form-group">
-                <label asp-for="Ean" class="control-label"></label>
-                <input asp-for="Ean" class="form-control" />
-                <span asp-validation-for="Ean" class="text-danger"></span>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-7">
+                    <label asp-for="TipoEmbalagemId" class="form-label fw-bold opacity-75">Tipo de Embalagem</label>
+                    <select asp-for="TipoEmbalagemId" class="form-select form-control-lg" asp-items="ViewBag.TipoEmbalagemId"></select>
+                </div>
+                <div class="col-md-5">
+                    <label asp-for="Preco" class="form-label fw-bold opacity-75"></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--glass-border);">R$</span>
+                        <input asp-for="Preco" class="form-control form-control-lg border-start-0 ps-0" placeholder="0,00" />
+                    </div>
+                    <span asp-validation-for="Preco" class="text-danger small fw-semibold"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ProdutoId" class="control-label"></label>
-                <select asp-for="ProdutoId" class ="form-control" asp-items="ViewBag.ProdutoId"></select>
+
+            <div class="mb-4">
+                <label asp-for="Ean" class="form-label fw-bold opacity-75">Código de Barras (EAN)</label>
+                <input asp-for="Ean" class="form-control form-control-lg" placeholder="789..." />
+                <span asp-validation-for="Ean" class="text-danger small fw-semibold"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="TipoEmbalagemId" class="control-label"></label>
-                <select asp-for="TipoEmbalagemId" class ="form-control" asp-items="ViewBag.TipoEmbalagemId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Vínculo
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

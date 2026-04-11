@@ -1,54 +1,68 @@
 ﻿@model IEnumerable<Varejo.Models.Recebimento>
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Histórico de Recebimentos (Entradas)</h2>
-        <a asp-action="Importar" class="btn btn-primary">
-            <i class="bi bi-file-earmark-plus"></i> Importar Novo XML
-        </a>
-    </div>
+@{
+    ViewData["Title"] = "Histórico de Recebimentos";
+}
 
-    @if (TempData["Sucesso"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Sucesso"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="container-fluid mt-4">
+    <div class="glass-card">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-file-import fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <a asp-action="Importar" class="btn-glass btn-success text-white text-decoration-none border-0">
+                <i class="fa-solid fa-plus"></i> <span class="d-none d-md-inline ms-1">Importar Novo XML</span>
+            </a>
         </div>
-    }
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
+        @if (TempData["Sucesso"] != null)
+        {
+            <div class="alert bg-success bg-opacity-10 border border-success border-opacity-25 text-success fw-semibold mb-4 animate__animated animate__fadeInUp" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i> @TempData["Sucesso"]
+            </div>
+        }
+
+        <div class="table-responsive">
+            <table class="table-glass table-responsive-stack" id="sortableTable">
+                <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Data Entrada</th>
-                        <th>Número Nota</th>
-                        <th>Fornecedor</th>
-                        <th>Chave de Acesso</th>
-                        <th class="text-end">Ações</th>
+                        <th data-sortable="true" data-sort-type="number" class="ps-md-4">ID</th>
+                        <th data-sortable="true" data-sort-type="string">Data Entrada</th>
+                        <th data-sortable="true" data-sort-type="string">Número Nota</th>
+                        <th data-sortable="true" data-sort-type="string">Fornecedor</th>
+                        <th class="d-none d-xl-table-cell">Chave de Acesso</th>
+                        <th class="text-center pe-md-4">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @if (Model != null && Model.Any())
                     {
-                        <tr>
-                            <td>@item.IdRecebimento</td>
-                            <td>@item.DataEntrada.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td>@item.NumeroNota</td>
-                            <td>@item.Fornecedor?.NomeRazao</td>
-                            <td class="small">@item.ChaveAcesso</td>
-                            <td class="text-end">
-                                <a asp-action="Details" asp-route-id="@item.IdRecebimento" class="btn btn-sm btn-outline-info" title="Ver Detalhes">
-                                    <i class="bi bi-eye"></i> Detalhes
-                                </a>
-                            </td>
-                        </tr>
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-md-4 fw-bold opacity-50" data-label="ID">#@item.IdRecebimento</td>
+                                <td data-label="Data">@item.DataEntrada.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td data-label="NF" class="fw-bold text-primary">@item.NumeroNota</td>
+                                <td data-label="Fornecedor" class="fw-semibold">@(item.Fornecedor?.NomeRazao ?? "Não Identificado")</td>
+                                <td class="d-none d-xl-table-cell small opacity-50 text-truncate" style="max-width: 200px;">@item.ChaveAcesso</td>
+                                <td data-label="Ações" class="pe-md-4">
+                                    <div class="d-flex justify-content-end justify-content-md-center">
+                                        <a asp-action="Details" asp-route-id="@item.IdRecebimento" class="btn btn-sm btn-info text-white rounded-pill px-3">
+                                            <i class="fa-solid fa-eye me-1"></i> Detalhes
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                     }
-                    @if (!Model.Any())
+                    else
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Nenhum recebimento encontrado.</td>
+                            <td colspan="6" class="text-center p-5 opacity-50 fw-semibold">
+                                <i class="fa-solid fa-box-open d-block fs-1 mb-3"></i>
+                                Nenhum recebimento encontrado no histórico.
+                            </td>
                         </tr>
                     }
                 </tbody>

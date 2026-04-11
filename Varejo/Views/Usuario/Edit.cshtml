@@ -1,63 +1,76 @@
 ﻿@model Varejo.ViewModels.UsuarioViewModel
 
 @{
-	ViewData["Title"] = "Editar Usuário";
+    ViewData["Title"] = "Editar Usuário";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 700px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-warning border-opacity-25">
+            <i class="fa-solid fa-user-pen fs-3 me-3 text-warning"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+        </div>
 
-<form asp-action="Edit" method="post">
-	<!-- Campo oculto para manter o ID no POST -->
-	<input type="hidden" asp-for="IdUsuario" />
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="IdUsuario" />
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
 
-	<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-7">
+                    <label asp-for="nomeUsuario" class="form-label fw-bold opacity-75">Nome de Usuário (Login)</label>
+                    <input asp-for="nomeUsuario" class="form-control form-control-lg" />
+                    <span asp-validation-for="nomeUsuario" class="text-danger small fw-semibold mt-1 d-block"></span>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-bold opacity-75 d-block">Status do Usuário</label>
+                    <label class="btn-check-glass toggle-ativo w-100">
+                        <input asp-for="Ativo" type="checkbox" />
+                        <div class="check-content py-2">
+                            <span class="if-checked"><i class="fa-solid fa-circle-check me-2"></i>Conta Ativa</span>
+                            <span class="if-not-checked"><i class="fa-solid fa-ban me-2"></i>Conta Inativa</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
 
-	<div class="form-group mb-3">
-		<label asp-for="nomeUsuario" class="control-label"></label>
-		<input asp-for="nomeUsuario" class="form-control" />
-		<span asp-validation-for="nomeUsuario" class="text-danger"></span>
-	</div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="TipoUsuarioId" class="form-label fw-bold opacity-75">Tipo de Permissão</label>
+                    <select asp-for="TipoUsuarioId" class="form-select form-control-lg" asp-items="ViewBag.TipoUsuario">
+                        <option value="">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="TipoUsuarioId" class="text-danger small fw-semibold mt-1 d-block"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="PessoaId" class="form-label fw-bold opacity-75">Pessoa Vinculada</label>
+                    <select asp-for="PessoaId" class="form-select form-control-lg" asp-items="ViewBag.Pessoas">
+                        <option value="">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="PessoaId" class="text-danger small fw-semibold mt-1 d-block"></span>
+                </div>
+            </div>
 
-	<div class="form-group mb-3">
-		<label asp-for="TipoUsuarioId" class="control-label">Tipo de Usuário</label>
-		<select asp-for="TipoUsuarioId" class="form-select" asp-items="ViewBag.TipoUsuario">
-			<option value=""><i class="fa-solid fa-caret-down"></i>-- Selecione o tipo de usuário --</option>
-		</select>
-		<span asp-validation-for="TipoUsuarioId" class="text-danger"></span>
-	</div>
+            <div class="mb-5">
+                <label asp-for="Senha" class="form-label fw-bold opacity-75">Nova Senha (Deixe em branco para manter a atual)</label>
+                <input asp-for="Senha" class="form-control form-control-lg" type="password" placeholder="••••••••" />
+                <span asp-validation-for="Senha" class="text-danger small fw-semibold mt-1 d-block"></span>
+            </div>
 
-	<div class="form-group mb-3">
-		<label asp-for="PessoaId" class="control-label">Pessoa</label>
-		<select asp-for="PessoaId" class="form-select" asp-items="ViewBag.Pessoas">
-			<option value=""><i class="fa-solid fa-caret-down"></i>-- Selecione a pessoa --</option>
-		</select>
-		<span asp-validation-for="PessoaId" class="text-danger"></span>
-	</div>
-
-	<div class="form-group mb-3">
-		<label asp-for="Senha" class="control-label"></label>
-		<input asp-for="Senha" class="form-control" type="password" />
-		<span asp-validation-for="Senha" class="text-danger"></span>
-	</div>
-
-
-
-	<div class="form-group d-flex justify-content-between">
-		<div>
-			<button type="submit" class="btn btn-primary" style="margin-right:.5rem;">Salvar</button>
-			<a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-		</div>
-
-		<div class="form-group">
-			<label class="card check text-center btn ativo-btn mb-2" style="width:fit-content;">
-				<input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
-			</label>
-		</div>
-	</div>
-</form>
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left me-1"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-warning border-0 text-dark">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Atualizar Dados
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -1,85 +1,93 @@
 ﻿@model Varejo.ViewModels.VendaViewModel
 
-<div class="container-fluid">
+<div class="container-fluid mt-4">
 
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm border-2">
-        <i class="fas fa-exclamation-triangle me-2"></i>
-        <strong>Atenção:</strong> Verifique os erros abaixo.
+    <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold shadow-sm mb-4">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> <strong>Atenção:</strong> Verifique os erros abaixo.
     </div>
 
     <form asp-action="Create" id="formVenda" method="post">
-        <div class="row">
-            <div class="col-md-9">
-                <div class="card shadow-sm mb-3">
-                    <div class="card-header bg-primary text-white fw-bold">Identificação da Venda</div>
-                    <div class="card-body bg-light">
-                        <div class="row">
-                            <div class="col-md-6 mb-3 position-relative">
-                                <label class="form-label fw-bold small">CLIENTE</label>
-                                <input type="text" id="buscaCliente" class="form-control" placeholder="Pesquisar cliente...">
-                                <input type="hidden" asp-for="PessoaId" id="PessoaId">
-                                    <div id="containerCardsCliente" class="row mt-2 d-none"></div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label asp-for="FormaPagamentoId" class="form-label small fw-bold">PAGAMENTO</label>
-                                    <select asp-for="FormaPagamentoId" class="form-select" asp-items="ViewBag.FormasPagamento"></select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label asp-for="PrazoPagamentoId" class="form-label small fw-bold">PRAZO</label>
-                                    <select asp-for="PrazoPagamentoId" class="form-select" asp-items="ViewBag.PrazosPagamento"></select>
-                                </div>
+        <div class="row g-4">
+            
+            <div class="col-lg-9">
+                
+                <div class="glass-card mb-4 p-4" style="border-left: 4px solid var(--sys-primary-light);">
+                    <h6 class="fw-bold mb-3 text-uppercase opacity-75"><i class="fa-solid fa-id-card me-2"></i>1. Identificação da Venda</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6 position-relative">
+                            <label class="form-label fw-bold small opacity-75">CLIENTE</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" id="buscaCliente" class="form-control form-control-lg border-start-0 ps-0" placeholder="Pesquisar cliente (ou deixe em branco)...">
+                            </div>
+                            <input type="hidden" asp-for="PessoaId" id="PessoaId">
+                                <div id="containerCardsCliente" class="position-absolute w-100 mt-1 d-none shadow-lg rounded-4 p-2" style="background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); z-index: 1050; max-height: 300px; overflow-y: auto;"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="FormaPagamentoId" class="form-label small fw-bold opacity-75">PAGAMENTO</label>
+                                <select asp-for="FormaPagamentoId" class="form-select form-control-lg" asp-items="ViewBag.FormasPagamento"></select>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="PrazoPagamentoId" class="form-label small fw-bold opacity-75">PRAZO</label>
+                                <select asp-for="PrazoPagamentoId" class="form-select form-control-lg" asp-items="ViewBag.PrazosPagamento"></select>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card shadow-sm mb-3 border-primary">
-                        <div class="card-body">
-                            <label class="form-label fw-bold text-primary">PESQUISAR PRODUTOS</label>
-                            <input type="text" id="produtoSearch" class="form-control form-control-lg" placeholder="Digite o nome do produto..." />
-                        
-                            <div class="row mt-3" id="produtoCards"></div>
+                    <div class="glass-card mb-4 p-4">
+                        <h6 class="fw-bold mb-3 text-uppercase text-primary"><i class="fa-solid fa-barcode me-2"></i>2. Lançar Produtos</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text bg-primary text-white border-primary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" id="produtoSearch" class="form-control form-control-lg border-primary" placeholder="Digite o nome ou código do produto..." style="background: rgba(var(--sys-primary-rgb, 79, 172, 254), 0.05);" />
                         </div>
+                        <div class="row g-3" id="produtoCards"></div>
                     </div>
 
-                    <div class="card shadow-sm">
-                        <div class="card-header fw-bold">Itens da Venda</div>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0" id="tabelaItens">
-                                <thead class="table-light">
+                    <div class="glass-card p-0 overflow-hidden">
+                        <div class="p-3 bg-dark bg-opacity-10 border-bottom border-secondary border-opacity-25">
+                            <h6 class="mb-0 fw-bold"><i class="fa-solid fa-basket-shopping me-2"></i>Itens do Pedido</h6>
+                        </div>
+                        <div class="table-responsive" style="min-height: 250px;">
+                            <table class="table-glass align-middle mb-0" id="tabelaItens">
+                                <thead class="opacity-75">
                                     <tr>
-                                        <th>Produto</th>
+                                        <th class="ps-4">Produto</th>
                                         <th>Embalagem</th>
                                         <th class="text-center">Qtd</th>
                                         <th class="text-end">Unitário</th>
                                         <th class="text-end">Desc. Tot.</th>
                                         <th class="text-end">Subtotal</th>
-                                        <th></th>
+                                        <th class="pe-4"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="produtosSelecionadosBody"></tbody>
+                                <tbody id="produtosSelecionadosBody">
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-3">
-                    <div class="card shadow-sm bg-light text-white sticky-top" style="top: 20px;">
-                        <div class="card-body text-center">
-                            <h5 class="text-uppercase opacity-75">Total a Pagar</h5>
-                            <h1 class="display-6 fw-bold text-success" id="resumoTotal">R$ 0,00</h1>
-                        
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span>Bruto:</span> <span id="resumoSubtotal">R$ 0,00</span>
+                <div class="col-lg-3">
+                    <div class="glass-card sticky-top text-center" style="top: 20px; border: 2px solid var(--sys-primary-light);">
+                        <h6 class="text-uppercase opacity-75 fw-bold mb-3">Total a Pagar</h6>
+                        <h1 class="display-5 fw-bold text-success mb-4" id="resumoTotal" style="text-shadow: 0 0 20px rgba(40,167,69,0.3);">R$ 0,00</h1>
+                    
+                        <div class="p-3 rounded-4 mb-4 text-start" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border);">
+                            <div class="d-flex justify-content-between small fw-bold mb-2">
+                                <span class="opacity-75">Subtotal Bruto:</span> <span id="resumoSubtotal">R$ 0,00</span>
                             </div>
-                            <div class="d-flex justify-content-between small text-danger mb-3">
-                                <span>Descontos:</span> <span id="resumoDesconto">R$ 0,00</span>
+                            <div class="d-flex justify-content-between small fw-bold text-danger">
+                                <span class="opacity-75">Descontos:</span> <span id="resumoDesconto">R$ 0,00</span>
                             </div>
-                            <input type="hidden" asp-for="DescontoTotal" id="inputDescontoTotalFinal">
+                        </div>
+                    
+                        <input type="hidden" asp-for="DescontoTotal" id="inputDescontoTotalFinal">
 
-                                <button type="submit" class="btn btn-success btn-lg w-100 py-3 fw-bold">
-                                    <i class="fas fa-check me-2"></i>FINALIZAR
-                                </button>
-                            </div>
+                            <button type="submit" class="btn-glass btn-success w-100 py-3 fs-5 fw-bold text-white border-0 shadow-lg">
+                                <i class="fa-solid fa-circle-check me-2"></i> FINALIZAR
+                            </button>
+                    
+                            <a asp-action="Index" class="btn btn-link text-decoration-none mt-3 text-muted w-100 fw-bold">Cancelar Operação</a>
                         </div>
                     </div>
                 </div>
@@ -94,7 +102,7 @@
                 let itensVenda = [];
                 let debounceTimer;
 
-                // --- BUSCA DE PRODUTOS (ESTILO MOVIMENTO) ---
+                // --- BUSCA DE PRODUTOS ---
                 produtoSearch.addEventListener('input', function () {
                     clearTimeout(debounceTimer);
                     debounceTimer = setTimeout(async () => {
@@ -112,34 +120,39 @@
                             produtos.forEach(produto => {
                                 const imagem = produto.UrlImagem || '/imagens/default.png';
                                 const col = document.createElement('div');
-                                col.className = 'col-md-4 mb-3';
+                                col.className = 'col-xl-4 col-md-6 mb-3 animate__animated animate__fadeIn';
+                        
+                                // HTML Glassmorphism Injetado
                                 col.innerHTML = `
-                                    <div class="card h-100 shadow-sm border-0">
-                                        <img src="${imagem}" class="card-img-top p-2" style="height:120px; object-fit:contain;">
-                                        <div class="card-body p-2">
-                                            <h6 class="fw-bold mb-1 text-truncate">${produto.NomeProduto}</h6>
-                                            <div class="mb-2">
-                                                <label class="small fw-bold">Embalagem</label>
-                                                <select class="form-select form-select-sm sel-emb">
-                                                    ${produto.Embalagens.map(e => `
-                                                        <option value="${e.IdProdutoEmbalagem}" data-preco="${e.Preco}">
-                                                            ${e.TipoEmbalagemDescricao ?? 'Unid'} - R$ ${Number(e.Preco).toFixed(2)}
-                                                        </option>
-                                                    `).join('')}
-                                                </select>
-                                            </div>
-                                            <div class="row g-1 mb-2">
-                                                <div class="col-6">
-                                                    <label class="small fw-bold">Qtd</label>
-                                                    <input type="number" class="form-control form-control-sm inp-qtd" value="1" min="0.001">
-                                                </div>
-                                                <div class="col-6">
-                                                    <label class="small fw-bold text-danger">Desc.R$</label>
-                                                    <input type="number" class="form-control form-control-sm inp-desc" value="0.00">
-                                                </div>
-                                            </div>
-                                            <button type="button" class="btn btn-primary btn-sm w-100 btn-add">Adicionar</button>
+                                    <div class="p-3 rounded-4 h-100 d-flex flex-column" style="background: var(--glass-bg); border: 1px solid var(--glass-border); transition: 0.2s;">
+                                        <div class="text-center mb-3">
+                                            <img src="${imagem}" class="rounded-3" style="height:90px; object-fit:contain; mix-blend-mode: multiply;" onerror="this.src='/imagens/default.png'">
                                         </div>
+                                        <h6 class="fw-bold mb-3 text-truncate" title="${produto.NomeProduto}">${produto.NomeProduto}</h6>
+                                
+                                        <div class="mb-2">
+                                            <label class="small fw-bold opacity-75">Embalagem</label>
+                                            <select class="form-select form-select-sm sel-emb bg-transparent">
+                                                ${produto.Embalagens.map(e => `
+                                                    <option value="${e.IdProdutoEmbalagem}" data-preco="${e.Preco}">
+                                                        ${e.TipoEmbalagemDescricao ?? 'Unid'} - R$ ${Number(e.Preco).toFixed(2)}
+                                                    </option>
+                                                `).join('')}
+                                            </select>
+                                        </div>
+                                
+                                        <div class="row g-2 mb-3">
+                                            <div class="col-6">
+                                                <label class="small fw-bold opacity-75">Qtd</label>
+                                                <input type="number" class="form-control form-control-sm inp-qtd bg-transparent fw-bold text-center" value="1" min="0.001">
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="small fw-bold text-danger">Desc. R$</label>
+                                                <input type="number" class="form-control form-control-sm inp-desc bg-transparent text-danger fw-bold text-center" value="0.00">
+                                            </div>
+                                        </div>
+                                
+                                        <button type="button" class="btn btn-sm btn-primary w-100 fw-bold mt-auto btn-add rounded-pill">Adicionar</button>
                                     </div>`;
                         
                                 containerProdutoCards.appendChild(col);
@@ -174,9 +187,13 @@
                     }, 300);
                 });
 
-                       function atualizarTabela() {
+                function atualizarTabela() {
                     containerProdutosBody.innerHTML = '';
                     let tBruto = 0; let tDesc = 0;
+
+                    if (itensVenda.length === 0) {
+                        containerProdutosBody.innerHTML = `<tr><td colspan="7" class="text-center py-4 opacity-50">Nenhum item adicionado.</td></tr>`;
+                    }
 
                     itensVenda.forEach((item, i) => {
                         const totalDesc = item.DescontoUnitario * item.Quantidade;
@@ -186,48 +203,44 @@
                         tDesc += totalDesc;
 
                         containerProdutosBody.innerHTML += `
-                            <tr>
-                                <td class="small fw-bold">
+                            <tr class="animate__animated animate__fadeIn">
+                                <td class="ps-4 fw-bold">
                                     ${item.NomeProduto}
                                     <input type="hidden" name="Itens[${i}].ProdutoId" value="${item.ProdutoId}">
                                     <input type="hidden" name="Itens[${i}].NomeProduto" value="${item.NomeProduto}">
                                 </td>
-                                <td class="small">
-                                    ${item.NomeEmbalagem}
+                                <td>
+                                    <span class="badge bg-secondary bg-opacity-10 text-dark border border-secondary border-opacity-25">${item.NomeEmbalagem}</span>
                                     <input type="hidden" name="Itens[${i}].ProdutoEmbalagemId" value="${item.ProdutoEmbalagemId}">
                                     <input type="hidden" name="Itens[${i}].NomeEmbalagem" value="${item.NomeEmbalagem}">
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center fw-bold">
                                     <input type="hidden" name="Itens[${i}].Quantidade" value="${item.Quantidade.toString().replace('.',',')}">
                                     ${item.Quantidade}
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end opacity-75">
                                     <input type="hidden" name="Itens[${i}].ValorUnitario" value="${item.ValorUnitario.toFixed(2).replace('.',',')}">
                                     R$ ${item.ValorUnitario.toFixed(2)}
                                 </td>
-                                <td class="text-end text-danger">
+                                <td class="text-end text-danger fw-semibold">
                                     <input type="hidden" name="Itens[${i}].DescontoUnitario" value="${item.DescontoUnitario.toFixed(2).replace('.',',')}">
-                                    R$ ${totalDesc.toFixed(2)}
+                                    - R$ ${totalDesc.toFixed(2)}
                                 </td>
-                                <td class="text-end fw-bold">
+                                <td class="text-end fw-bold text-primary">
                                     <input type="hidden" name="Itens[${i}].Subtotal" value="${subtotalItem.toFixed(2).replace('.',',')}">
                                     R$ ${subtotalItem.toFixed(2)}
                                 </td>
-                                <td>
-                                    <button type="button" class="btn btn-link text-danger p-0" onclick="removerItem(${i})">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                <td class="pe-4 text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle" onclick="removerItem(${i})" title="Remover"><i class="fa-solid fa-xmark"></i></button>
                                 </td>
                             </tr>`;
                     });
 
-                    // Atualiza os totais do rodapé/lateral
                     const totalFinal = tBruto - tDesc;
                     document.getElementById('resumoSubtotal').innerText = 'R$ ' + tBruto.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                    document.getElementById('resumoDesconto').innerText = 'R$ ' + tDesc.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                    document.getElementById('resumoDesconto').innerText = '- R$ ' + tDesc.toLocaleString('pt-BR', {minimumFractionDigits: 2});
                     document.getElementById('resumoTotal').innerText = 'R$ ' + totalFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2});
     
-                    // Hidden do Total de Desconto da Venda (se sua ViewModel principal pedir)
                     const inputDescTotal = document.getElementById('inputDescontoTotalFinal');
                     if(inputDescTotal) inputDescTotal.value = tDesc.toFixed(2).replace('.',',');
                 }
@@ -237,7 +250,7 @@
                     atualizarTabela();
                 }
 
-                               // --- BUSCA DE CLIENTES (CARD EXPANDIDO) ---
+                // --- BUSCA DE CLIENTES ---
                 document.getElementById('buscaCliente').addEventListener('input', function(e) {
                     const termo = e.target.value;
                     const container = document.getElementById('containerCardsCliente');
@@ -253,44 +266,32 @@
                         .then(data => {
                             container.innerHTML = '';
                             if (!data || data.length === 0) {
-                                container.classList.add('d-none');
+                                container.innerHTML = '<div class="p-2 text-center opacity-50">Nenhum cliente encontrado.</div>';
+                                container.classList.remove('d-none');
                                 return;
                             }
 
                             data.forEach(c => {
                                 const id = c.IdPessoa || c.idPessoa;
                                 const nome = c.NomeRazao || c.nomeRazao;
-                                const doc = c.CpfCnpj || c.cpfCnpj || 'Sem Documento';
+                                const doc = c.CpfCnpj || c.cpfCnpj || 'S/ Doc';
 
                                 const col = document.createElement('div');
-                                // Mudamos para col-12 para ocupar toda a largura da div pai
                                 col.className = 'col-12 mb-2';
-                
+        
                                 col.innerHTML = `
-                                    <div class="card shadow-sm border-primary-hover" style="cursor:pointer; border: 1px solid #dee2e6; transition: 0.2s;">
-                                        <div class="card-body p-3">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                                        <i class="fas fa-user text-primary fa-lg"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <h5 class="mb-1 fw-bold text-dark text-uppercase" style="letter-spacing: 0.5px;">${nome}</h5>
-                                                    <div class="d-flex gap-3">
-                                                        <span class="badge bg-light text-secondary border">
-                                                            <i class="fas fa-id-card me-1"></i> ${doc}
-                                                        </span>
-                                                        <span class="badge bg-light text-secondary border">
-                                                            <i class="fas fa-tag me-1"></i> ID: ${id}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                    
+                                    <div class="p-2 rounded-3 text-dark item-hover" style="cursor:pointer; transition: 0.2s;">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="fa-solid fa-user text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-bold">${nome}</h6>
+                                                <small class="opacity-50"><i class="fa-solid fa-id-card me-1"></i> ${doc}</small>
                                             </div>
                                         </div>
                                     </div>`;
-                
+        
                                 col.onclick = () => {
                                     document.getElementById('PessoaId').value = id;
                                     document.getElementById('buscaCliente').value = nome;
@@ -298,10 +299,24 @@
                                     container.innerHTML = '';
                                     document.getElementById('produtoSearch').focus();
                                 };
+                        
+                                col.firstElementChild.addEventListener('mouseenter', function(){ this.style.background = 'rgba(79, 172, 254, 0.1)'; });
+                                col.firstElementChild.addEventListener('mouseleave', function(){ this.style.background = 'transparent'; });
+
                                 container.appendChild(col);
                             });
                             container.classList.remove('d-none');
                         });
                 });
+        
+                // Esconde drop de clientes ao clicar fora
+                document.addEventListener('click', function(e) {
+                    const container = document.getElementById('containerCardsCliente');
+                    if(!document.getElementById('buscaCliente').contains(e.target) && !container.contains(e.target)){
+                        container.classList.add('d-none');
+                    }
+                });
+        
+                atualizarTabela(); // Init table state
             </script>
-        }
+        }   

@@ -3,15 +3,15 @@
 }
 
 <div class="d-flex flex-column justify-content-center align-items-center" style="height: 80vh; text-align: center;">
-    <h1 class="display-4 text-danger mb-3">
-        <i class="fa-solid fa-shield-halved"></i> Acesso Negado
-    </h1>
+    <div class="glass-card p-5 text-center" style="max-width: 500px; border-top: 4px solid #dc3545;">
+        <i class="fa-solid fa-shield-halved text-danger mb-3" style="font-size: 4rem; filter: drop-shadow(0 0 10px rgba(220,53,69,0.5));"></i>
+        <h2 class="fw-bold text-danger mb-3">@ViewData["Title"]</h2>
+        <p class="lead opacity-75 mb-5 fw-semibold">
+            Você não tem permissão para acessar esta página ou executar esta ação.
+        </p>
 
-    <p class="lead mb-4">
-        Você não tem permissão para acessar esta página.
-    </p>
-
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
-        <i class="fa-solid fa-house"></i> Voltar para a Home
-    </a>
+        <a asp-controller="Home" asp-action="Index" class="btn-glass justify-content-center">
+            <i class="fa-solid fa-house me-2"></i> Voltar para a Home
+        </a>
+    </div>
 </div>

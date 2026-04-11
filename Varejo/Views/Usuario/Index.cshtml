@@ -1,54 +1,71 @@
 ﻿@model IEnumerable<Varejo.Models.Usuario>
 
 @{
-	ViewData["Title"] = "Usuários Ativos";
+    ViewData["Title"] = "Usuários Ativos";
 }
 
-<h2 class="mb-4">@ViewData["Title"]</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card">
+        
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-users fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Inativos" class="btn-glass text-decoration-none text-danger border-danger border-opacity-25">
+                    <i class="fa-solid fa-user-slash me-1"></i> Usuários Inativos
+                </a>
+                <a asp-action="Create" class="btn-glass btn-success text-white border-0 text-decoration-none">
+                    <i class="fa-solid fa-user-plus me-1"></i> Novo Usuário
+                </a>
+            </div>
+        </div>
 
-
-<div class="mb-3">
-	<a class="btn btn-primary me-2" asp-action="Create">Novo Usuário</a>
-	<a class="btn btn-secondary" asp-action="Inativos">Usuários Inativos</a>
+        <div class="table-responsive">
+            <table class="table-glass table-responsive-stack" id="sortableTable">
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-sort-type="number" class="ps-md-4">ID <i class="fa-solid fa-sort opacity-50 ms-1"></i></th>
+                        <th data-sortable="true" data-sort-type="string">Nome de Usuário <i class="fa-solid fa-sort opacity-50 ms-1"></i></th>
+                        <th>Status</th>
+                        <th data-sortable="true" data-sort-type="number" class="text-md-center">Pessoa ID <i class="fa-solid fa-sort opacity-50 ms-1"></i></th>
+                        <th data-sortable="true" data-sort-type="string">Tipo de Usuário <i class="fa-solid fa-sort opacity-50 ms-1"></i></th>
+                        <th class="text-center pe-md-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var usuario in Model.Where(u => u.Ativo))
+                    {
+                        <tr>
+                            <td data-label="ID" class="ps-md-4 fw-bold opacity-50">@usuario.IdUsuario</td>
+                            <td data-label="Usuário" class="fw-bold text-primary">@usuario.nomeUsuario</td>
+                            <td data-label="Status">
+                                <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25 py-1 px-2"><i class="fa-solid fa-circle-check me-1"></i>Ativo</span>
+                            </td>
+                            <td data-label="Pessoa ID" class="text-md-center opacity-75 fw-semibold">@usuario.PessoaId</td>
+                            <td data-label="Tipo Usuário">
+                                <span class="report-id-badge" style="background: rgba(0,0,0,0.03); border-color: var(--glass-border);">@(usuario.TipoUsuario?.DescricaoTipoUsuario ?? "-")</span>
+                            </td>
+                            <td data-label="Ações" class="pe-md-4">
+                                <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                    <a asp-action="Delete" asp-route-id="@usuario.IdUsuario" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Excluir"><i class="fa-solid fa-trash-can"></i></a>
+                                    <a asp-action="Edit" asp-route-id="@usuario.IdUsuario" class="btn btn-sm btn-warning text-dark rounded-pill px-3" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
+                                    <a asp-controller="Pessoa" asp-action="Details" asp-route-id="@usuario.PessoaId" class="btn btn-sm btn-info text-white rounded-pill px-3" title="Ver Pessoa"><i class="fa-solid fa-address-card"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any(u => u.Ativo))
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center p-5 opacity-50 fw-semibold">
+                                <i class="fa-solid fa-users-slash d-block fs-1 mb-3"></i> Nenhum usuário ativo.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-<div class="table-responsive" style="border-radius: 12px; overflow: hidden;">
-	<table class="w-100">
-		<thead>
-			<tr>
-				<th scope="col">#</th>
-				<th scope="col">Nome</th>
-				<th scope="col">Ativo</th>
-				<th scope="col">ID da Pessoa</th>
-				<th scope="col">Tipo de Usuário</th>
-				<th scope="col">Ações</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var usuario in Model.Where(u => u.Ativo))
-			{
-				<tr>
-					<td data-label="ID">@usuario.IdUsuario</td>
-					<td data-label="Usuário">@usuario.nomeUsuario</td>
-					<td data-label="Status">
-						@if (usuario.Ativo)
-						{
-							<span class="badge bg-success">Ativo</span>
-						}
-						else
-						{
-							<span class="badge bg-danger">Inativo</span>
-						}
-					</td>
-					<td data-label="Pessoa ID">@usuario.PessoaId</td>
-					<td data-label="Tipo Usuário">@(usuario.TipoUsuario?.DescricaoTipoUsuario ?? "-")</td>
-					<td data-label="Ações">
-						<a class="btn btn-info btn-sm" asp-controller="Pessoa" asp-action="Details" asp-route-id="@usuario.PessoaId">Ver Pessoa</a>
-						<a class="btn btn-warning btn-sm me-1" asp-action="Edit" asp-route-id="@usuario.IdUsuario">Editar</a>
-						<a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@usuario.IdUsuario">Excluir</a>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-</div>
-

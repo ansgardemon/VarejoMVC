@@ -4,35 +4,95 @@
     ViewData["Title"] = "Gerenciar Famílias";
 }
 
+<style>
+    /* CSS LOCAL PARA GARANTIR O FUNCIONAMENTO DO DROPDOWN */
+    .col-search-container {
+        position: relative !important;
+        z-index: 1100 !important; /* Acima da coluna da direita */
+    }
+
+        .col-search-container .glass-card {
+            overflow: visible !important; /* Essencial para o drop sair do card */
+        }
+
+    #containerResultadosFamilia {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--glass-bg);
+        backdrop-filter: blur(25px) !important;
+        -webkit-backdrop-filter: blur(25px) !important;
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        z-index: 99999 !important;
+        margin-top: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none; /* Controlado pelo JS */
+    }
+
+    .item-resultado {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--glass-border);
+        transition: all 0.2s ease;
+        cursor: pointer;
+        color: var(--text) !important;
+    }
+
+        .item-resultado:last-child {
+            border-bottom: none;
+        }
+
+        .item-resultado:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .item-resultado .res-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: block;
+            color: var(--text);
+        }
+
+        .item-resultado .res-sub {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            display: block;
+            color: var(--text);
+        }
+</style>
+
 <div class="container-fluid mt-4">
     <div class="glass-card mb-4 py-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 small fw-bold opacity-75 text-uppercase" style="letter-spacing: 0.5px;">
                 <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none text-reset">Fornecedores</a></li>
-                <li class="breadcrumb-item active" style="color: var(--sys-primary-light, #4facfe);" aria-current="page">@fornecedor.NomeRazao</li>
+                <li class="breadcrumb-item active text-truncate" style="color: var(--sys-primary-light, #4facfe); max-width: 250px;" aria-current="page">@fornecedor.NomeRazao</li>
             </ol>
         </nav>
     </div>
 
     <div class="row g-4">
-        <div class="col-lg-5">
+        <div class="col-lg-5 col-search-container">
             <div class="glass-card h-100">
                 <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
                     <i class="fa-solid fa-magnifying-glass-plus fs-4 me-2" style="color: var(--sys-primary-light, #4facfe);"></i>
-                    <h5 class="mb-0 fw-bold">Vincular Nova Família</h5>
+                    <h5 class="mb-0 fw-bold">Vincular Família</h5>
                 </div>
                 
                 <div class="position-relative">
                     <label class="form-label opacity-75 small fw-bold text-uppercase mb-2">Pesquisar Categoria / Família</label>
                     <div class="input-group">
                         <span class="input-group-text bg-transparent border-end-0" style="border-color: var(--glass-border);">
-                            <i class="fa-solid fa-users-rectangle" style="color: var(--sys-primary-light, #4facfe);"></i>
+                            <i class="fa-solid fa-search" style="color: var(--sys-primary-light, #4facfe);"></i>
                         </span>
-                        <input type="text" id="buscaFamilia" class="form-control form-control-lg border-start-0 ps-0" placeholder="Ex: Cervejas, Vinhos..." autocomplete="off" />
+                        <input type="text" id="buscaFamilia" class="form-control form-control-lg border-start-0 ps-0" placeholder="Digite para buscar..." autocomplete="off" />
                     </div>
 
-                    <div id="containerResultadosFamilia" class="position-absolute w-100 nav-drop-content d-none mt-2 rounded-4 overflow-hidden" style="z-index: 1050; max-height: 300px; overflow-y: auto;">
-                    </div>
+                    <div id="containerResultadosFamilia"></div>
                 </div>
                 
                 <form id="formVincular" asp-action="VincularFamilia" method="post">
@@ -49,99 +109,96 @@
                     <h5 class="mb-0 fw-bold">Famílias Vinculadas</h5>
                 </div>
 
-                @if (!Model.Any())
-                {
-                    <div class="p-4 text-center rounded-4 mb-4" style="background: rgba(0,0,0,0.02); border: 1px dashed var(--glass-border);">
-                        <i class="fa-solid fa-link-slash fs-1 opacity-25 mb-3 d-block"></i>
-                        <p class="mb-0 opacity-75 fw-semibold">Nenhuma família vinculada. Use a busca ao lado para adicionar.</p>
-                    </div>
-                }
-                else
-                {
-                    <div class="d-flex flex-column gap-3">
+                <div class="d-flex flex-column gap-3">
+                    @if (!Model.Any())
+                    {
+                        <div class="p-4 text-center rounded-4 border border-dashed border-secondary border-opacity-25">
+                            <p class="mb-0 opacity-50 fw-semibold">Nenhuma família vinculada.</p>
+                        </div>
+                    }
+                    else
+                    {
                         @foreach (var item in Model)
                         {
-                            <div class="p-3 rounded-4 d-flex align-items-center justify-content-between" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border); border-left: 4px solid var(--sys-primary-light, #4facfe);">
-                                <div>
-                                    <h6 class="mb-1 fw-bold">@item.NomeFamilia</h6>
-                                    <span class="report-id-badge" style="background: rgba(0,0,0,0.05); border-color: transparent; padding: 2px 6px;">ID: @item.IdFamilia</span>
+                            <div class="p-3 rounded-4 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: rgba(0,0,0,0.03); border: 1px solid var(--glass-border); border-left: 4px solid var(--sys-primary-light, #4facfe);">
+                                <div class="text-truncate" style="flex: 1; min-width: 150px;">
+                                    <h6 class="mb-0 fw-bold text-truncate">@item.NomeFamilia</h6>
+                                    <span class="report-id-badge" style="font-size: 0.65rem;">ID: @item.IdFamilia</span>
                                 </div>
                                 <div class="d-flex gap-2">
                                     <form asp-action="RemoverFamilia" method="post" class="m-0">
                                         <input type="hidden" name="pessoaId" value="@fornecedor.IdPessoa" />
                                         <input type="hidden" name="familiaId" value="@item.IdFamilia" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('Tem certeza que deseja desvincular esta família?')">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('Desvincular?')">
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
                                     </form>
-                                    <a asp-action="ConfigurarGrade" asp-route-pessoaId="@fornecedor.IdPessoa" asp-route-familiaId="@item.IdFamilia" class="btn btn-sm btn-primary text-white rounded-pill px-3 border-0" title="Configurar De-Para">
-                                        <i class="fa-solid fa-table-cells-large"></i> <span class="d-none d-sm-inline ms-1">De-Para</span>
+                                    <a asp-action="ConfigurarGrade" asp-route-pessoaId="@fornecedor.IdPessoa" asp-route-familiaId="@item.IdFamilia" class="btn btn-sm btn-primary text-white rounded-pill px-3 border-0">
+                                        <i class="fa-solid fa-gears"></i> <span class="d-none d-sm-inline ms-1">De-Para</span>
                                     </a>
                                 </div>
                             </div>
                         }
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script>
-        document.getElementById('buscaFamilia').addEventListener('input', function(e) {
-            const termo = e.target.value;
-            const container = document.getElementById('containerResultadosFamilia');
-        
-            if (termo.length < 2) {
-                container.classList.add('d-none');
-                return;
-            }
+        $(document).ready(function () {
+            const inputBusca = $('#buscaFamilia');
+            const container = $('#containerResultadosFamilia');
 
-            fetch('/Fornecedor/BuscarFamilias?termo=' + encodeURIComponent(termo))
-                .then(res => res.json())
-                .then(data => {
-                    container.innerHTML = '';
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="p-3 text-center small opacity-50 fw-semibold">Nenhuma família encontrada.</div>';
-                        container.classList.remove('d-none');
-                        return;
-                    }
+            inputBusca.on('input', function () {
+                const termo = $(this).val().trim();
 
-                    data.forEach(f => {
-                        const div = document.createElement('div');
-                        // Classe drop-item é pra puxar o efeito hover do nosso menu Glass
-                        div.className = 'p-3 border-bottom border-secondary border-opacity-25 drop-item';
-                        div.style.cursor = 'pointer';
-                        div.style.transition = 'all 0.2s ease';
-                        div.innerHTML = `
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-bold" style="color: var(--text);">${f.nomeFamilia}</div>
-                                    <div class="opacity-75 small">${f.categoria}</div>
-                                </div>
-                                <i class="fa-solid fa-plus fs-5" style="color: var(--sys-primary-light, #4facfe);"></i>
-                            </div>`;
-                        
-                        // Efeito hover via JS pra não precisar criar CSS novo
-                        div.onmouseenter = () => div.style.background = 'rgba(255,255,255,0.1)';
-                        div.onmouseleave = () => div.style.background = 'transparent';
+                if (termo.length < 2) {
+                    container.hide().empty();
+                    return;
+                }
 
-                        div.onclick = () => {
-                            document.getElementById('inputFamiliaId').value = f.idFamilia;
-                            document.getElementById('formVincular').submit();
-                        };
-                        container.appendChild(div);
+                fetch('/Fornecedor/BuscarFamilias?termo=' + encodeURIComponent(termo))
+                    .then(res => res.json())
+                    .then(data => {
+                        container.empty();
+                        if (!data || data.length === 0) {
+                            container.append('<div class="p-3 text-center small opacity-50 text-white">Nenhum resultado.</div>');
+                            container.show();
+                            return;
+                        }
+
+                        data.forEach(f => {
+                            const itemHtml = `
+                                <div class="item-resultado" data-id="${f.idFamilia}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-truncate" style="max-width: 85%;">
+                                            <span class="res-title text-truncate">${f.nomeFamilia}</span>
+                                            <span class="res-sub text-truncate">${f.categoria}</span>
+                                        </div>
+                                        <i class="fa-solid fa-plus-circle fs-5" style="color: var(--sys-primary-light);"></i>
+                                    </div>
+                                </div>`;
+                            container.append(itemHtml);
+                        });
+                        container.show();
                     });
-                    container.classList.remove('d-none');
-                });
-        });
+            });
 
-        // Clique fora para fechar
-        document.addEventListener('click', function(e) {
-            if (!document.getElementById('buscaFamilia').contains(e.target) && !document.getElementById('containerResultadosFamilia').contains(e.target)) {
-                document.getElementById('containerResultadosFamilia').classList.add('d-none');
-            }
+            // Clique no item (Delegação de evento)
+            $(document).on('click', '.item-resultado', function (e) {
+                const idFamilia = $(this).data('id');
+                $('#inputFamiliaId').val(idFamilia);
+                $('#formVincular').submit();
+            });
+
+            // Fechar ao clicar fora
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#buscaFamilia, #containerResultadosFamilia').length) {
+                    container.hide();
+                }
+            });
         });
     </script>
-}
+    }

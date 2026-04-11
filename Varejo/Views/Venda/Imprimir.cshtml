@@ -2,7 +2,6 @@
 @{
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -13,10 +12,9 @@
         body { font-family: 'Courier New', Courier, monospace; color: #000; background-color: #fff; padding: 30px; }
         .ticket-header { border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 10px; }
         .sep { border-top: 1px dashed #000; margin: 10px 0; }
-        table td, table th { font-size: 0.9rem; border: none !important; }
-        .total-box { background-color: #f8f9fa !important; border: 1px solid #000 !important; padding: 10px; }
+        table td, table th { font-size: 0.9rem; border: none !important; padding: 4px 0 !important; }
         @@media print {
-            .no-print { display: none; }
+            .no-print { display: none !important; }
             body { padding: 0; margin: 0; }
         }
     </style>
@@ -24,11 +22,11 @@
 <body onload="window.print()">
 
     <div class="container no-print mb-4">
-        <div class="alert alert-info d-flex justify-content-between align-items-center">
+        <div class="alert alert-secondary d-flex justify-content-between align-items-center">
             <span>Pressione <b>Ctrl + P</b> se a impressão não abrir automaticamente.</span>
-            <div>
+            <div class="d-flex gap-2">
                 <button onclick="window.print()" class="btn btn-dark btn-sm">Imprimir</button>
-                <button onclick="window.close()" class="btn btn-outline-secondary btn-sm">Fechar Aba</button>
+                <button onclick="window.close()" class="btn btn-outline-secondary btn-sm">Fechar</button>
             </div>
         </div>
     </div>
@@ -41,11 +39,11 @@
 
         <div class="row mb-3">
             <div class="col-6">
-                <strong>PEDIDO:</strong> #@Model.IdVenda<br />
+                <strong>PEDIDO:</strong> #@Model.IdVenda.ToString("D5")<br />
                 <strong>DATA:</strong> @ViewBag.DataVenda
             </div>
             <div class="col-6 text-end">
-                <strong>STATUS:</strong> @(Model.Finalizada ? "FINALIZADA/FATURADA" : "ORÇAMENTO/ABERTO")
+                <strong>STATUS:</strong> @(Model.Finalizada ? "FINALIZADA" : "ORÇAMENTO")
             </div>
         </div>
 
@@ -60,7 +58,7 @@
 
         <table class="table table-sm">
             <thead>
-                <tr>
+                <tr style="border-bottom: 1px solid #000 !important;">
                     <th style="width: 50%">PRODUTO</th>
                     <th class="text-center">QTD</th>
                     <th class="text-end">UNIT.</th>
@@ -75,7 +73,7 @@
                         <td>@item.NomeProduto.ToUpper() (@item.NomeEmbalagem)</td>
                         <td class="text-center">@item.Quantidade.ToString("N2")</td>
                         <td class="text-end">@item.ValorUnitario.ToString("N2")</td>
-                        <td class="text-end text-muted">@item.DescontoUnitario.ToString("N2")</td>
+                        <td class="text-end">@item.DescontoUnitario.ToString("N2")</td>
                         <td class="text-end fw-bold">@item.Subtotal.ToString("N2")</td>
                     </tr>
                 }
@@ -85,44 +83,31 @@
         <div class="sep"></div>
 
         <div class="row justify-content-end">
-            <div class="col-5">
-                <div class="d-flex justify-content-between">
-                    <span>Subtotal Bruto:</span>
-                    <span>@Model.ValorSubtotal.ToString("C")</span>
-                </div>
-                <div class="d-flex justify-content-between text-danger">
-                    <span>Total Descontos:</span>
-                    <span>- @Model.DescontoTotal.ToString("C")</span>
-                </div>
-                <div class="d-flex justify-content-between h5 fw-bold mt-2 pt-2 border-top border-dark">
-                    <span>TOTAL LÍQUIDO:</span>
-                    <span>@Model.ValorFinal.ToString("C")</span>
+            <div class="col-6 col-md-5 text-end">
+                <div>Subtotal Bruto: @Model.ValorSubtotal.ToString("C")</div>
+                <div>Descontos: - @Model.DescontoTotal.ToString("C")</div>
+                <div class="h5 fw-bold mt-2 pt-2" style="border-top: 2px solid #000;">
+                    TOTAL: @Model.ValorFinal.ToString("C")
                 </div>
             </div>
         </div>
 
         <div class="mt-4">
-            <strong>FORMA DE PAGAMENTO:</strong> @ViewBag.FormaPagto.ToUpper() <br />
-            <strong>CONDIÇÃO:</strong> @ViewBag.Prazo.ToUpper()
+            <strong>FORMA PAGTO:</strong> @ViewBag.FormaPagto.ToUpper() <br />
+            <strong>PRAZO:</strong> @ViewBag.Prazo.ToUpper()
         </div>
 
         @if (!string.IsNullOrEmpty(Model.Observacao))
         {
-            <div class="mt-3 p-2 border">
-                <strong>OBSERVAÇÕES:</strong><br />
-                <small>@Model.Observacao</small>
+            <div class="mt-3 p-2" style="border: 1px solid #000;">
+                <strong>OBS:</strong> @Model.Observacao
             </div>
         }
 
-        <div class="text-center mt-5">
+        <div class="text-center mt-5 pt-4">
             <p class="mb-0">___________________________________________________</p>
-            <p class="small">ASSINATURA / CANHOTO DE RECEBIMENTO</p>
-        </div>
-        
-        <div class="text-center mt-4 small text-muted">
-            <p>Gerado em @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss") - Software Vitrin.O Varejo</p>
+            <p class="small">ASSINATURA DO CLIENTE</p>
         </div>
     </div>
-
 </body>
 </html>

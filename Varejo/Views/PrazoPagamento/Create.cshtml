@@ -4,34 +4,39 @@
     ViewData["Title"] = "Adicionar Prazo de Pagamento";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-calendar-plus fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
 
-        <div class="card-body">
-            <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label asp-for="Descricao" class="form-label fw-bold opacity-75">Descrição</label>
+                <input asp-for="Descricao" class="form-control form-control-lg" placeholder="Ex: 30/60/90 dias" />
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Descrição</label>
-                    <input asp-for="Descricao" class="form-control" />
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="NumeroParcelas" class="form-label fw-bold opacity-75">Número de Parcelas</label>
+                    <input asp-for="NumeroParcelas" class="form-control form-control-lg" type="number" min="1" />
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Número de Parcelas</label>
-                    <input asp-for="NumeroParcelas" class="form-control" />
+                <div class="col-md-6">
+                    <label asp-for="IntervaloDias" class="form-label fw-bold opacity-75">Intervalo (dias)</label>
+                    <input asp-for="IntervaloDias" class="form-control form-control-lg" type="number" min="0" />
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Intervalo (dias)</label>
-                    <input asp-for="IntervaloDias" class="form-control" />
-                </div>
-
-                <button type="submit" class="btn btn-success">Salvar</button>
-                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
-
-            </form>
-        </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-circle-check"></i> Salvar Prazo
+                </button>
+            </div>
+        </form>
     </div>
 </div>

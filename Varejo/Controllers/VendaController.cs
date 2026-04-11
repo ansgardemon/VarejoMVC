@@ -73,6 +73,12 @@ namespace Varejo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(VendaViewModel vm)
         {
+            // Validação 1: Impedir pedido sem itens
+            if (vm.Itens == null || !vm.Itens.Any())
+            {
+                ModelState.AddModelError("", "Não é possível finalizar uma venda sem produtos.");
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -84,11 +90,7 @@ namespace Varejo.Controllers
                         PrazoPagamentoId = vm.PrazoPagamentoId,
                         DataVenda = DateTime.Now,
                         Observacao = vm.Observacao,
-
-                        // CORREÇÃO AQUI: Somar o BRUTO (Qtd * Unitario) 
-                        // e NÃO o i.Subtotal (que já tem desconto)
                         ValorSubtotal = vm.Itens.Sum(i => i.Quantidade * i.ValorUnitario),
-
                         DescontoTotal = vm.DescontoTotal,
                         Finalizada = false
                     };
@@ -110,12 +112,16 @@ namespace Varejo.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Erro ao salvar: " + ex.Message);
+                    // Try-catch para capturar erros de banco ou lógica do repositório
+                    ModelState.AddModelError("", "Falha técnica ao salvar venda: " + ex.Message);
                 }
             }
+
+            // Se chegou aqui, algo deu errado, recarrega as bags
             await CarregarViewBags();
             return View(vm);
         }
+        
 
         public async Task<IActionResult> Details(int id)
         {

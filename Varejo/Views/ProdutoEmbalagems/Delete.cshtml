@@ -1,45 +1,45 @@
 ﻿@model Varejo.Models.ProdutoEmbalagem
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Excluir Embalagem";
 }
 
-<h1>Delete</h1>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-danger border-opacity-25">
+            <i class="fa-solid fa-trash-can fs-3 me-3 text-danger"></i>
+            <h4 class="mb-0 fw-bold text-danger">@ViewData["Title"]</h4>
+        </div>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>ProdutoEmbalagem</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Preco)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Preco)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ean)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ean)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Produto)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Produto.Complemento)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoEmbalagem)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoEmbalagem.DescricaoTipoEmbalagem)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="IdProdutoEmbalagem" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+        <h5 class="fw-bold mb-4">Confirmar a exclusão desta embalagem para o produto?</h5>
+
+        <div class="p-4 rounded-4 mb-5" style="background: rgba(0, 0, 0, 0.03); border: 1px dashed var(--glass-border);">
+            <div class="row g-3">
+                <div class="col-12">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Produto</small>
+                    <span class="fs-5 fw-bold text-primary">@Model.Produto.Complemento</span>
+                </div>
+                <div class="col-6">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Tipo</small>
+                    <span class="fw-semibold">@Model.TipoEmbalagem.DescricaoTipoEmbalagem</span>
+                </div>
+                <div class="col-6">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Preço</small>
+                    <span class="fw-bold text-success">@Model.Preco.ToString("C")</span>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="IdProdutoEmbalagem" />
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-danger border-0">
+                    <i class="fa-solid fa-trash-can"></i> Confirmar Exclusão
+                </button>
+            </div>
+        </form>
+    </div>
 </div>

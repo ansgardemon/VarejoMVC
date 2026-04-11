@@ -4,44 +4,56 @@
     ViewData["Title"] = "Esgotar Validade";
 }
 
-<h2 class="text-danger">Esgotar Validade</h2>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 600px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-danger border-opacity-25">
+            <i class="fa-solid fa-hourglass-end fs-3 me-3 text-danger"></i>
+            <h4 class="mb-0 fw-bold text-danger">@ViewData["Title"]</h4>
+        </div>
 
-<div class="alert alert-warning">
-    <strong>Atenção:</strong> Essa ação não remove o registro, apenas marca o item como <b>esgotado</b>.
-</div>
+        <div class="alert bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning-emphasis fw-semibold mb-4 d-flex align-items-center" role="alert">
+            <i class="fa-solid fa-triangle-exclamation fs-4 me-3"></i>
+            <div>
+                <strong>Atenção:</strong> Essa ação não remove o registro, apenas marca o item como <b class="text-danger">esgotado</b>.
+            </div>
+        </div>
 
-<div class="card p-3">
-    <dl class="row">
-        <dt class="col-sm-3">Produto</dt>
-        <dd class="col-sm-9">@Model.ProdutoNome</dd>
+        <div class="p-4 rounded-4 mb-5" style="background: rgba(0, 0, 0, 0.03); border: 1px dashed var(--glass-border);">
+            <div class="row g-4 text-center">
+                <div class="col-12 border-bottom border-secondary border-opacity-25 pb-3">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Produto</small>
+                    <span class="fs-5 fw-bold text-primary">@Model.ProdutoNome</span>
+                </div>
+                <div class="col-6 border-end border-secondary border-opacity-25">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Data de Validade</small>
+                    <span class="fs-5 fw-bold text-danger">@Model.DataValidade.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="col-6">
+                    <small class="d-block opacity-75 fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Status Atual</small>
+                    @if (Model.EmEstoque)
+                    {
+                        <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25 py-2 px-3"><i class="fa-solid fa-box me-1"></i> Em estoque</span>
+                    }
+                    else
+                    {
+                        <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25 py-2 px-3"><i class="fa-solid fa-ban me-1"></i> Esgotado</span>
+                    }
+                </div>
+            </div>
+        </div>
 
-        <dt class="col-sm-3">Data de Validade</dt>
-        <dd class="col-sm-9">
-            @Model.DataValidade.ToString("dd/MM/yyyy")
-        </dd>
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="IdValidade" />
 
-        <dt class="col-sm-3">Status</dt>
-        <dd class="col-sm-9">
-            @if (Model.EmEstoque)
-            {
-                <span class="badge bg-success">Em estoque</span>
-            }
-            else
-            {
-                <span class="badge bg-danger">Esgotado</span>
-            }
-        </dd>
-    </dl>
-</div>
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="IdValidade" />
-
-    <button type="submit" class="btn btn-danger">
-        Confirmar Esgotar
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">
-        Cancelar
-    </a>
-</form>
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
+                <a asp-action="Index" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left me-1"></i> Cancelar
+                </a>
+                <button type="submit" class="btn-glass btn-danger border-0">
+                    <i class="fa-solid fa-calendar-xmark me-1"></i> Confirmar Esgotamento
+                </button>
+            </div>
+        </form>
+    </div>
+</div>  

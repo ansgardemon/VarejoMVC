@@ -1047,3 +1047,60 @@ input:checked + .slider:before {
     font-size: 0.75rem;
     color: #ff6b6b !important;
 }
+
+/* #region 15. PESQUISA DINÂMICA (DROPDOWN GLASS) */
+
+#containerResultadosFamilia {
+    /* Cores dinâmicas baseadas no tema */
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    /* Z-index agressivo para mobile e sobreposição de cards */
+    z-index: 9999 !important;
+    /* Limitação de altura com scroll elegante */
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+/* Item de resultado individual */
+.item-resultado {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--glass-border);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    color: var(--text) !important; /* Respeita o dark/light mode */
+}
+
+    /* Hover adaptativo */
+    .item-resultado:hover {
+        background: rgba(var(--sys-primary-rgb, 79, 172, 254), 0.15);
+        transform: translateX(5px);
+    }
+
+    /* Títulos dentro do resultado */
+    .item-resultado .res-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: block;
+    }
+
+    .item-resultado .res-sub {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        display: block;
+    }
+
+/* Scrollbar fina para o dropdown */
+#containerResultadosFamilia::-webkit-scrollbar {
+    width: 4px;
+}
+
+#containerResultadosFamilia::-webkit-scrollbar-thumb {
+    background: var(--sys-primary-light);
+    border-radius: 10px;
+}
+
+/* #endregion */

@@ -28,6 +28,7 @@ namespace Varejo.Controllers
                 vm.TipoMovimentoVendaId = parametro.TipoMovimentoVendaId;
                 vm.TipoMovimentoCompraId = parametro.TipoMovimentoCompraId;
                 vm.TipoMovimentoAvariaId = parametro.TipoMovimentoAvariaId;
+                vm.TipoMovimentoEntradaBonificacaoId = parametro.TipoMovimentoEntradaBonificacaoId;
             }
 
             ViewBag.Tipos = await _tipoRepository.GetAllAsync();
@@ -49,7 +50,9 @@ namespace Varejo.Controllers
             {
                 TipoMovimentoVendaId = vm.TipoMovimentoVendaId,
                 TipoMovimentoCompraId = vm.TipoMovimentoCompraId,
-                TipoMovimentoAvariaId = vm.TipoMovimentoAvariaId
+                TipoMovimentoAvariaId = vm.TipoMovimentoAvariaId,
+                TipoMovimentoEntradaBonificacaoId = vm.TipoMovimentoEntradaBonificacaoId
+
             };
 
             await _repository.SaveAsync(model);

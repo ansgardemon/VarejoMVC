@@ -4,89 +4,95 @@
     ViewData["Title"] = "Adicionar Produto";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 900px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <i class="fa-solid fa-box-archive fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
-        <div class="card-body">
-            <form id="produto-form" asp-action="Create" enctype="multipart/form-data" method="post">
-                <input type="hidden" asp-for="FamiliaId" />
 
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        <form id="produto-form" asp-action="Create" enctype="multipart/form-data" method="post">
+            <input type="hidden" asp-for="FamiliaId" />
+            <div asp-validation-summary="ModelOnly" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
 
-                <div class="mb-3">
-                    <label class="form-label">Nome da Família</label>
-                    <input class="form-control" value="@ViewBag.NomeFamilia" disabled />
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold opacity-75">Família</label>
+                    <input class="form-control form-control-lg" value="@ViewBag.NomeFamilia" disabled style="background: rgba(0,0,0,0.05)!important;" />
                 </div>
-
-                <div class="mb-3">
-                    <label asp-for="Complemento" class="form-label"></label>
-                    <input asp-for="Complemento" class="form-control" />
-                    <span asp-validation-for="Complemento" class="text-danger"></span>
+                <div class="col-md-6">
+                    <label asp-for="Complemento" class="form-label fw-bold opacity-75"></label>
+                    <input asp-for="Complemento" class="form-control form-control-lg" placeholder="Ex: Sabor Uva, 500ml, Edição Limitada..." />
+                    <span asp-validation-for="Complemento" class="text-danger small fw-semibold"></span>
                 </div>
-
-                <div class="mb-3">
-                    <label asp-for="ImagemUpload" class="form-label">Imagem do Produto</label>
+                <div class="col-md-8">
+                    <label asp-for="ImagemUpload" class="form-label fw-bold opacity-75">Imagem do Produto</label>
                     <input asp-for="ImagemUpload" class="form-control" type="file" />
-                    <span asp-validation-for="ImagemUpload" class="text-danger"></span>
                 </div>
-
-                <div class="mb-3">
-                    <label class="card check p-3 text-center ativo-btn mb-2">
-                        <input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
+                <div class="col-md-4">
+                    <label class="btn-check-glass toggle-ativo w-100 mt-4">
+                        <input asp-for="Ativo" type="checkbox" checked />
+                        <div class="check-content">
+                            <span class="if-checked"><i class="fa-solid fa-circle-check me-2"></i>Produto Ativo</span>
+                            <span class="if-not-checked"><i class="fa-solid fa-circle-xmark me-2"></i>Produto Inativo</span>
+                        </div>
                     </label>
                 </div>
+            </div>
 
-                <h4>Embalagens</h4>
-                <div id="embalagens-container">
-                    @if (Model.Embalagens != null && Model.Embalagens.Any())
+            <div class="d-flex align-items-center mb-3">
+                <i class="fa-solid fa-layer-group fs-4 me-2 text-primary"></i>
+                <h5 class="fw-bold mb-0">Embalagens / Preços</h5>
+                <button type="button" id="adicionar-embalagem" class="btn btn-sm btn-glass border-0 ms-3" style="background: rgba(0,0,0,0.05);">
+                    <i class="fa-solid fa-plus me-1"></i> Nova Embalagem
+                </button>
+            </div>
+
+            <div id="embalagens-container" class="row g-3 mb-4">
+                @if (Model.Embalagens != null && Model.Embalagens.Any())
+                {
+                    @for (int i = 0; i < Model.Embalagens.Count; i++)
                     {
-                        @for (int i = 0; i < Model.Embalagens.Count; i++)
-                        {
-                            var embalagem = Model.Embalagens[i];
-                            <div class="embalagem-item mb-3 border p-2">
-                                <label class="form-label">Tipo de Embalagem</label>
-                                <select name="Embalagens[@i].TipoEmbalagemId" class="form-select">
-                                    @if (embalagem.TiposEmbalagem != null)
-                                    {
-                                        foreach (var t in embalagem.TiposEmbalagem)
-                                        {
-                                            var selected = t.Selected ? "selected" : "";
-                                            @:<option value="@t.Value" @selected>@t.Text</option>
-                                        }
-                                    }
-                                </select>
-
-
-
-                                <label class="form-label">Preço</label>
-                                <input name="Embalagens[@i].Preco" class="form-control" value="@embalagem.Preco" />
-
-                                <label class="form-label">EAN</label>
-                                <input name="Embalagens[@i].Ean" class="form-control" value="@embalagem.Ean" />
-				                <div class="mb-3 d-flex justify-content-end">
-					                <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
-				                </div>
+                        <div class="col-12 embalagem-item animate__animated animate__fadeIn">
+                            <div class="p-4 rounded-4 position-relative" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 mt-3 me-3 remover-embalagem rounded-circle shadow-sm">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold opacity-75">Tipo</label>
+                                        <select name="Embalagens[@i].TipoEmbalagemId" class="form-select">
+                                            @foreach (var t in Model.Embalagens[i].TiposEmbalagem)
+                                            {
+                                                <option value="@t.Value" selected="@t.Selected">@t.Text</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold opacity-75">Preço</label>
+                                        <input name="Embalagens[@i].Preco" class="form-control" value="@Model.Embalagens[i].Preco" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold opacity-75">Código EAN</label>
+                                        <input name="Embalagens[@i].Ean" class="form-control" value="@Model.Embalagens[i].Ean" />
+                                    </div>
+                                </div>
                             </div>
-                        }
+                        </div>
                     }
-                    else
-                    {
-                        <div class="text-muted">Nenhuma embalagem disponível.</div>
-                    }
-                </div>
+                }
+            </div>
 
-                <div class="btns-add-ajust d-inline-flex" style="margin-left: 8px; transform: translateY(0px)!important;">
-		            <button type="button" id="adicionar-embalagem" class="btn btn-success">+ Adicionar Embalagem</button>
-
-		            <button type="submit" class="btn btn-primary">Adicionar Produto</button>
-		
-                    <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-secondary">Voltar</a>
-	            </div>
-
-            </form>
-        </div>
+            <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top border-secondary border-opacity-25">
+                <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-success border-0 text-white">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Produto
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -96,41 +102,28 @@
         document.addEventListener("DOMContentLoaded", function () {
             var container = document.getElementById('embalagens-container');
             var tipos = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-                (Model.Embalagens != null && Model.Embalagens.Any() && Model.Embalagens[0].TiposEmbalagem != null)
-                    ? Model.Embalagens[0].TiposEmbalagem
-                    : new List<SelectListItem>()
-            ));
+                            (Model.Embalagens != null && Model.Embalagens.Any()) ? Model.Embalagens[0].TiposEmbalagem : new List<SelectListItem>()
+                    ));
 
-            // Adicionar nova embalagem
             document.getElementById('adicionar-embalagem').addEventListener('click', function () {
-                var index = container.children.length;
+                var index = container.querySelectorAll('.embalagem-item').length;
                 var options = tipos.map(t => `<option value="${t.Value}">${t.Text}</option>`).join('');
-
                 var html = `
-                    <div class="embalagem-item mb-3 border p-2">
-                        <label>Tipo de Embalagem</label>
-                        <select name="Embalagens[${index}].TipoEmbalagemId" class="form-select">${options}</select>
-
-                        <label>Preço</label>
-                        <input name="Embalagens[${index}].Preco" class="form-control" />
-
-                        <label>EAN</label>
-                        <input name="Embalagens[${index}].Ean" class="form-control" />
-
-                        <div class="mb-3 d-flex justify-content-end">
-					         <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
-				        </div>
+                <div class="col-12 embalagem-item animate__animated animate__fadeIn">
+                    <div class="p-4 rounded-4 position-relative" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 mt-3 me-3 remover-embalagem rounded-circle shadow-sm"><i class="fa-solid fa-xmark"></i></button>
+                        <div class="row g-3">
+                            <div class="col-md-4"><label class="form-label small fw-bold opacity-75">Tipo</label><select name="Embalagens[${index}].TipoEmbalagemId" class="form-select">${options}</select></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold opacity-75">Preço</label><input name="Embalagens[${index}].Preco" class="form-control" /></div>
+                            <div class="col-md-4"><label class="form-label small fw-bold opacity-75">Código EAN</label><input name="Embalagens[${index}].Ean" class="form-control" /></div>
+                        </div>
                     </div>
-                `;
-
+                </div>`;
                 container.insertAdjacentHTML('beforeend', html);
             });
 
-            // Remover embalagem
             container.addEventListener('click', function (e) {
-                if (e.target && e.target.classList.contains('remover-embalagem')) {
-                    e.target.closest('.embalagem-item').remove();
-                }
+                if (e.target.closest('.remover-embalagem')) { e.target.closest('.embalagem-item').remove(); }
             });
         });
     </script>

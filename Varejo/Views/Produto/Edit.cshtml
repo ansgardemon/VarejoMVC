@@ -4,141 +4,105 @@
     ViewData["Title"] = "Editar Produto";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-warning text-white">
-            <h5 class="mb-0">@ViewData["Title"]</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto" style="max-width: 900px;">
+        
+        <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-warning border-opacity-25">
+            <i class="fa-solid fa-pen-to-square fs-3 me-3 text-warning"></i>
+            <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
-        <div class="card-body">
-            <form id="produto-form" asp-action="Edit" enctype="multipart/form-data" method="post">
-                <input type="hidden" asp-for="IdProduto" />
-                <input type="hidden" asp-for="FamiliaId" />
 
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        <form id="produto-form" asp-action="Edit" enctype="multipart/form-data" method="post">
+            <input type="hidden" asp-for="IdProduto" />
+            <input type="hidden" asp-for="FamiliaId" />
 
-                <div class="mb-3">
-                    <label class="form-label">Nome da Família</label>
-                    <input class="form-control" value="@Model.Familia?.NomeFamilia" disabled />
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold opacity-75">Família</label>
+                    <input class="form-control form-control-lg" value="@Model.Familia?.NomeFamilia" disabled style="background: rgba(0,0,0,0.05)!important;" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Complemento" class="form-label fw-bold opacity-75"></label>
+                    <input asp-for="Complemento" class="form-control form-control-lg" />
+                </div>
+                
+                <div class="col-md-4 text-center">
+                    @if (!string.IsNullOrEmpty(Model.UrlImagem))
+                    {
+                        <div class="p-2 rounded-4 border border-secondary border-opacity-25 mb-2" style="background: rgba(255,255,255,0.03)">
+                            <img src="@Url.Content(Model.UrlImagem)" style="max-height: 100px; object-fit:contain;" />
+                        </div>
+                        <small class="opacity-50 fw-bold">Imagem Atual</small>
+                    }
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Complemento" class="form-label"></label>
-                    <input asp-for="Complemento" class="form-control" />
-                    <span asp-validation-for="Complemento" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="ImagemUpload" class="form-label">Imagem do Produto</label>
+                <div class="col-md-4">
+                    <label asp-for="ImagemUpload" class="form-label fw-bold opacity-75">Trocar Imagem</label>
                     <input asp-for="ImagemUpload" class="form-control" type="file" />
-                    <span asp-validation-for="ImagemUpload" class="text-danger"></span>
                 </div>
 
-                @if (!string.IsNullOrEmpty(Model.UrlImagem))
-                {
-                    <div class="mb-3">
-                        <label class="form-label">Imagem Atual</label><br />
-                        <img src="@Url.Content(Model.UrlImagem)" alt="@Model.NomeProduto" class="img-thumbnail" style="max-width: 200px; height:auto;" />
-                    </div>
-                }
-
-                <div class="mb-3">
-                    <label class="card check p-3 text-center ativo-btn mb-2">
-                        <input asp-for="Ativo" class="form-check-input d-none" type="checkbox" />
+                <div class="col-md-4">
+                    <label class="btn-check-glass toggle-ativo w-100 mt-4">
+                        <input asp-for="Ativo" type="checkbox" />
+                        <div class="check-content">
+                            <span class="if-checked"><i class="fa-solid fa-circle-check me-2"></i>Ativo</span>
+                            <span class="if-not-checked"><i class="fa-solid fa-circle-xmark me-2"></i>Inativo</span>
+                        </div>
                     </label>
                 </div>
+            </div>
 
-                <h4>Embalagens</h4>
-                <div id="embalagens-container">
-                    @if (Model.Embalagens != null && Model.Embalagens.Any())
-                    {
-                        @for (int i = 0; i < Model.Embalagens.Count; i++)
-                        {
-                            var embalagem = Model.Embalagens[i];
-                            <div class="embalagem-item mb-3 border p-2">
-                                <label class="form-label">Tipo de Embalagem</label>
-                                <select name="Embalagens[@i].TipoEmbalagemId" class="form-select">
-                                    @if (embalagem.TiposEmbalagem != null)
-                                    {
-                                        foreach (var t in embalagem.TiposEmbalagem)
+            <div class="d-flex align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Embalagens / Preços</h5>
+                <button type="button" id="adicionar-embalagem" class="btn btn-sm btn-glass border-0 ms-3" style="background: rgba(0,0,0,0.05);">
+                    <i class="fa-solid fa-plus me-1"></i> Nova Embalagem
+                </button>
+            </div>
+
+            <div id="embalagens-container" class="row g-3 mb-5">
+                @for (int i = 0; i < Model.Embalagens.Count; i++)
+                {
+                    <div class="col-12 embalagem-item">
+                        <div class="p-4 rounded-4 position-relative" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 mt-3 me-3 remover-embalagem rounded-circle shadow-sm">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold opacity-75">Tipo</label>
+                                    <select name="Embalagens[@i].TipoEmbalagemId" class="form-select">
+                                        @foreach (var t in Model.Embalagens[i].TiposEmbalagem)
                                         {
-                                            var selected = t.Value == embalagem.TipoEmbalagemId.ToString() ? "selected" : "";
-                                            @:<option value="@t.Value" @selected>@t.Text</option>
+                                            <option value="@t.Value" selected="@(t.Value == Model.Embalagens[i].TipoEmbalagemId.ToString())">@t.Text</option>
                                         }
-                                    }
-                                </select>
-
-                                <label class="form-label">Preço</label>
-                                <input name="Embalagens[@i].Preco" class="form-control" value="@embalagem.Preco" />
-
-                                <label class="form-label">EAN</label>
-                                <input name="Embalagens[@i].Ean" class="form-control" value="@embalagem.Ean" />
-
-                                <div class="mb-3 d-flex justify-content-end">
-					                <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
-				                </div>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold opacity-75">Preço</label>
+                                    <input name="Embalagens[@i].Preco" class="form-control" value="@Model.Embalagens[i].Preco" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold opacity-75">Código EAN</label>
+                                    <input name="Embalagens[@i].Ean" class="form-control" value="@Model.Embalagens[i].Ean" />
+                                </div>
                             </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="text-muted">Nenhuma embalagem disponível.</div>
-                    }
-                </div>
+                        </div>
+                    </div>
+                }
+            </div>
 
-                <div class="btns-add-ajust d-inline-flex" style="margin-left: 8px; transform: translateY(-82px)">
-		            <button type="button" id="adicionar-embalagem" class="btn btn-success">+ Adicionar Embalagem</button>
-
-		            <button type="submit" class="btn btn-primary">Atualizar Produto</button>
-		
-                    <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn btn-secondary">Voltar</a>
-	            </div>
-            </form>
-        </div>
+            <div class="d-flex justify-content-between align-items-center pt-4 border-top border-secondary border-opacity-25">
+                <a asp-action="Details" asp-controller="Familia" asp-route-id="@Model.FamiliaId" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-chevron-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn-glass btn-warning border-0 text-dark">
+                    <i class="fa-solid fa-floppy-disk"></i> Atualizar Produto
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var container = document.getElementById('embalagens-container');
-            var tipos = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-                (Model.Embalagens != null && Model.Embalagens.Any() && Model.Embalagens[0].TiposEmbalagem != null)
-                    ? Model.Embalagens[0].TiposEmbalagem
-                    : new List<SelectListItem>()
-            ));
-
-            // Adicionar nova embalagem
-            document.getElementById('adicionar-embalagem').addEventListener('click', function () {
-                var index = container.children.length;
-                var options = tipos.map(t => `<option value="${t.Value}">${t.Text}</option>`).join('');
-
-                var html = `
-                    <div class="embalagem-item mb-3 border p-2">
-                        <label>Tipo de Embalagem</label>
-                        <select name="Embalagens[${index}].TipoEmbalagemId" class="form-select">${options}</select>
-
-                        <label>Preço</label>
-                        <input name="Embalagens[${index}].Preco" class="form-control" />
-
-                        <label>EAN</label>
-                        <input name="Embalagens[${index}].Ean" class="form-control" />
-
-                        <div class="mb-3 d-flex justify-content-end">
-					         <button type="button" class="btn btn-danger mt-2 remover-embalagem">Remover</button>
-				        </div>
-                    </div>
-                `;
-
-                container.insertAdjacentHTML('beforeend', html);
-            });
-
-            // Remover embalagem
-            container.addEventListener('click', function (e) {
-                if (e.target && e.target.classList.contains('remover-embalagem')) {
-                    e.target.closest('.embalagem-item').remove();
-                }
-            });
-        });
-    </script>
 }

@@ -2,17 +2,21 @@
     ViewData["Title"] = "Calendário de Títulos";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">📅 Calendário</h5>
+<div class="container-fluid mt-4">
+    <div class="glass-card">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+            <div class="d-flex align-items-center">
+                <i class="fa-regular fa-calendar-days fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <a asp-action="Index" class="btn-glass text-decoration-none">
+                <i class="fa-solid fa-list me-1"></i> Lista de Títulos
+            </a>
         </div>
 
-        <div class="card-body">
+        <div class="p-3 bg-white rounded-4" style="opacity: 0.95;">
             <div id="calendar"></div>
         </div>
-
     </div>
 </div>
 
@@ -20,27 +24,21 @@
     document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar');
 
-        // Certifique-se que o objeto FullCalendar existe
         if (calendarEl) {
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                // Na v6, é recomendado usar esse mapeamento de plugins se não estiver usando o bundle global
                 initialView: 'dayGridMonth',
                 locale: 'pt-br',
                 selectable: true,
                 editable: false,
-                
-                // Verifique se essa URL retorna o JSON corretamente (abra no navegador para testar)
                 events: '/TituloFinanceiro/GetEventos',
-
                 eventClick: function(info) {
-                    info.jsEvent.preventDefault(); // Evita comportamentos estranhos do browser
+                    info.jsEvent.preventDefault();
                     var id = info.event.id;
                     if (id) {
                         window.location.href = '/TituloFinanceiro/Details/' + id;
                     }
                 }
             });
-
             calendar.render();
         }
     });

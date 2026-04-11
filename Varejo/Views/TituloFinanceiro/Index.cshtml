@@ -8,162 +8,158 @@
         .OrderBy(g => g.Key);
 }
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
+    <div class="glass-card mb-4">
 
-    <div class="card shadow-sm border-0">
-
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">@ViewData["Title"]</h5>
-
-            <div>
-                <a asp-action="Create" class="btn btn-light btn-sm">Novo</a>
-                <a asp-action="Calendar" class="btn btn-outline-light btn-sm ms-2">📅 Calendário</a>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25 gap-3">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-money-check-dollar fs-3 me-3" style="color: var(--sys-primary-light, #4facfe);"></i>
+                <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Calendar" class="btn-glass text-decoration-none">
+                    <i class="fa-solid fa-calendar-days me-1 text-primary"></i> Calendário
+                </a>
+                <a asp-action="Create" class="btn-glass btn-success text-white border-0 text-decoration-none">
+                    <i class="fa-solid fa-plus"></i> <span class="d-none d-sm-inline ms-1">Novo Título</span>
+                </a>
             </div>
         </div>
 
-        <div class="card-body">
+        @if (TempData["Erro"] != null)
+        {
+            <div class="alert bg-danger bg-opacity-10 text-danger fw-bold">@TempData["Erro"]</div>
+        }
+        @if (TempData["Sucesso"] != null)
+        {
+            <div class="alert bg-success bg-opacity-10 text-success fw-bold">@TempData["Sucesso"]</div>
+        }
 
-            @if (TempData["Erro"] != null)
-            {
-                <div class="alert alert-danger">@TempData["Erro"]</div>
-            }
-
-            @if (TempData["Sucesso"] != null)
-            {
-                <div class="alert alert-success">@TempData["Sucesso"]</div>
-            }
-
-            <!-- 🔍 FILTROS -->
-            <form method="get" class="mb-4">
-                <div class="row g-2">
-
-                    <div class="col-md-2">
-                        <input type="text" name="documento" class="form-control" placeholder="Documento"
-                               value="@Context.Request.Query["documento"]" />
+        <div class="p-3 rounded-4 mb-5" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+            <form method="get">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2 col-sm-6">
+                        <label class="small fw-bold opacity-75 mb-1">Documento</label>
+                        <input type="text" name="documento" class="form-control form-control-sm" placeholder="NF/Recibo" value="@Context.Request.Query["documento"]" />
                     </div>
-
-                    <div class="col-md-2">
-                        <input type="text" name="pessoa" class="form-control" placeholder="Pessoa"
-                               value="@Context.Request.Query["pessoa"]" />
+                    <div class="col-md-3 col-sm-6">
+                        <label class="small fw-bold opacity-75 mb-1">Pessoa (Nome)</label>
+                        <input type="text" name="pessoa" class="form-control form-control-sm" placeholder="Buscar pessoa..." value="@Context.Request.Query["pessoa"]" />
                     </div>
-
-                    <div class="col-md-2">
-                        <select name="status" class="form-control">
+                    <div class="col-md-2 col-sm-4">
+                        <label class="small fw-bold opacity-75 mb-1">Status</label>
+                        <select name="status" class="form-select form-select-sm">
                             <option value="aberto" selected="@(Context.Request.Query["status"] == "aberto")">Em aberto</option>
                             <option value="quitado" selected="@(Context.Request.Query["status"] == "quitado")">Quitado</option>
                             <option value="todos" selected="@(Context.Request.Query["status"] == "todos")">Todos</option>
                         </select>
                     </div>
-
-                    <div class="col-md-2">
-                        <input type="date" name="dataInicio" class="form-control"
-                               value="@Context.Request.Query["dataInicio"]" />
+                    <div class="col-md-2 col-sm-4">
+                        <label class="small fw-bold opacity-75 mb-1">Vencimento (De)</label>
+                        <input type="date" name="dataInicio" class="form-control form-control-sm" value="@Context.Request.Query["dataInicio"]" />
                     </div>
-
-                    <div class="col-md-2">
-                        <input type="date" name="dataFim" class="form-control"
-                               value="@Context.Request.Query["dataFim"]" />
+                    <div class="col-md-2 col-sm-4">
+                        <label class="small fw-bold opacity-75 mb-1">Vencimento (Até)</label>
+                        <input type="date" name="dataFim" class="form-control form-control-sm" value="@Context.Request.Query["dataFim"]" />
                     </div>
-
-                    <div class="col-md-2 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-                        <a asp-action="Index" class="btn btn-secondary w-100">Limpar</a>
+                    <div class="col-md-1 d-flex gap-2">
+                        <button type="submit" class="btn btn-sm btn-primary w-100" title="Filtrar"><i class="fa-solid fa-filter"></i></button>
+                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary w-100" title="Limpar"><i class="fa-solid fa-eraser"></i></a>
                     </div>
-
                 </div>
             </form>
-
-            <!-- 📦 CARDS POR PESSOA -->
-            @foreach (var grupo in grupos)
-            {
-                var total = grupo.Sum(x => x.Valor);
-                var pago = grupo.Sum(x => x.ValorPago ?? 0);
-                var aberto = grupo.Sum(x => x.ValorAberto);
-
-                <div class="card shadow-sm mb-4 border-0">
-
-                    <!-- 👤 HEADER -->
-                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>@grupo.Key</strong>
-                        </div>
-
-                        <div class="text-end">
-                            <small>Total: @total.ToString("C")</small> |
-                            <small>Pago: @pago.ToString("C")</small> |
-                            <small>Saldo: @aberto.ToString("C")</small>
-                        </div>
-                    </div>
-
-                    <!-- 📊 TABELA -->
-                    <div class="card-body p-0">
-
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Documento</th>
-                                    <th>Parcela</th>
-                                    <th>Vencimento</th>
-                                    <th>Valor</th>
-                                    <th>Pago</th>
-                                    <th>Saldo</th>
-                                    <th>Tipo</th>
-                                    <th>Status</th>
-                                    <th style="width: 180px;">Ações</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                @foreach (var item in grupo)
-                                {
-                                    <tr>
-                                        <td>@item.Documento</td>
-                                        <td>@item.Parcela</td>
-                                        <td>@item.DataVencimento.ToShortDateString()</td>
-                                        <td>@item.Valor.ToString("C")</td>
-                                        <td>@(item.ValorPago?.ToString("C") ?? "R$ 0,00")</td>
-                                        <td>@item.ValorAberto.ToString("C")</td>
-                                        <td>
-                                            @if (item.EspecieDescricao?.ToLower().Contains("obrig") == true)
-                                            {
-                                                <span class="badge bg-danger">Obrigação</span>
-                                            }
-                                            else if (item.EspecieDescricao?.ToLower().Contains("direit") == true)
-                                            {
-                                                <span class="badge bg-success">Direito</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-secondary">Outro</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            @if (item.Quitado)
-                                            {
-                                                <span class="badge bg-success">Quitado</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning text-dark">Aberto</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            <a asp-action="Edit" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-warning">Editar</a>
-                                            <a asp-action="Details" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-success">Detalhes</a>
-                                            <a asp-action="Delete" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-danger">Excluir</a>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-
-                        </table>
-
-                    </div>
-                </div>
-            }
-
         </div>
 
-    </div>
+        @if (!grupos.Any())
+        {
+            <div class="text-center py-5 opacity-50 fw-semibold">
+                <i class="fa-solid fa-money-bill-transfer d-block fs-1 mb-3"></i>
+                Nenhum título encontrado com estes filtros.
+            </div>
+        }
 
+        @foreach (var grupo in grupos)
+        {
+            var total = grupo.Sum(x => x.Valor);
+            var pago = grupo.Sum(x => x.ValorPago ?? 0);
+            var aberto = grupo.Sum(x => x.ValorAberto);
+
+            <div class="p-0 rounded-4 mb-4 overflow-hidden shadow-sm" style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border);">
+                <div class="d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom border-secondary border-opacity-25" style="background: rgba(255,255,255,0.05);">
+                    <h6 class="mb-2 mb-md-0 fw-bold"><i class="fa-solid fa-user me-2 text-primary"></i>@grupo.Key</h6>
+                    
+                    <div class="d-flex flex-wrap gap-3 small fw-bold opacity-75">
+                        <span>Total: @total.ToString("C")</span>
+                        <span class="text-success">Pago: @pago.ToString("C")</span>
+                        <span class="text-danger">Saldo: @aberto.ToString("C")</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table-glass table-responsive-stack mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-md-4">Documento</th>
+                                <th class="text-md-center">Parcela</th>
+                                <th>Vencimento</th>
+                                <th class="text-md-center">Total</th>
+                                <th class="text-md-center">Saldo</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                                <th class="text-center pe-md-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in grupo)
+                            {
+                                <tr>
+                                    <td data-label="Documento" class="ps-md-4 fw-bold">@item.Documento</td>
+                                    <td data-label="Parcela" class="text-md-center opacity-75">@item.Parcela</td>
+                                    <td data-label="Vencimento" class="@(item.DataVencimento < DateTime.Today && !item.Quitado ? "text-danger fw-bold" : "opacity-75")">
+                                        @item.DataVencimento.ToShortDateString()
+                                    </td>
+                                    <td data-label="Valor" class="text-md-center fw-semibold">@item.Valor.ToString("C")</td>
+                                    <td data-label="Saldo" class="text-md-center text-danger fw-bold">@item.ValorAberto.ToString("C")</td>
+                                    
+                                    <td data-label="Tipo">
+                                        @if (item.EspecieDescricao?.ToLower().Contains("obrig") == true || item.EspecieDescricao?.ToLower().Contains("pagar") == true)
+                                        {
+                                            <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25" style="padding: 2px 6px;">Pagar</span>
+                                        }
+                                        else if (item.EspecieDescricao?.ToLower().Contains("direit") == true || item.EspecieDescricao?.ToLower().Contains("receber") == true)
+                                        {
+                                            <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25" style="padding: 2px 6px;">Receber</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="report-id-badge bg-secondary bg-opacity-10 text-secondary border-secondary border-opacity-25" style="padding: 2px 6px;">Outro</span>
+                                        }
+                                    </td>
+                                    
+                                    <td data-label="Status">
+                                        @if (item.Quitado)
+                                        {
+                                            <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25 py-1"><i class="fa-solid fa-check"></i></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="report-id-badge bg-warning bg-opacity-10 text-warning border-warning border-opacity-25 py-1" style="color:#d97706!important;"><i class="fa-solid fa-clock"></i></span>
+                                        }
+                                    </td>
+                                    
+                                    <td data-label="Ações" class="pe-md-4">
+                                        <div class="d-flex justify-content-end justify-content-md-center gap-2">
+                                            <a asp-action="Delete" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Excluir"><i class="fa-solid fa-trash-can"></i></a>
+                                            <a asp-action="Edit" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-warning text-dark rounded-pill px-3" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
+                                            <a asp-action="Details" asp-route-id="@item.IdTituloFinanceiro" class="btn btn-sm btn-info text-white rounded-pill px-3" title="Detalhes/Baixar"><i class="fa-solid fa-file-invoice-dollar"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
 </div>

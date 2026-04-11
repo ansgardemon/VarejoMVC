@@ -34,6 +34,7 @@ namespace Varejo.Repositories
                 existente.TipoMovimentoVendaId = parametro.TipoMovimentoVendaId;
                 existente.TipoMovimentoCompraId = parametro.TipoMovimentoCompraId;
                 existente.TipoMovimentoAvariaId = parametro.TipoMovimentoAvariaId;
+                existente.TipoMovimentoEntradaBonificacaoId = parametro.TipoMovimentoEntradaBonificacaoId;
             }
 
             await _context.SaveChangesAsync();

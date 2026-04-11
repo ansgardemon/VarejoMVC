@@ -128,20 +128,18 @@ namespace Varejo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditConfig(EstoqueConfigViewModel vm)
         {
-            // LOG DE DEBUG (Opcional: veja no console se os dados estão chegando)
-            // Console.WriteLine($"ID: {vm.Id}, Produto: {vm.ProdutoId}, Min: {vm.EstoqueMinimo}");
-
-            if (!ModelState.IsValid)
-            {
-                // Se a validação falhar, ele volta para a tela e mostra o erro
-                return View(vm);
-            }
+            if (!ModelState.IsValid) return View(vm);
 
             try
             {
-                if (vm.Id == 0)
+                // 1. SEMPRE verifique pelo ProdutoId antes de decidir entre ADD ou UPDATE
+                // Isso evita que o erro de duplicata aconteça mesmo que o vm.Id venha errado
+                var configExistente = await _context.EstoquesConfig
+                    .FirstOrDefaultAsync(c => c.ProdutoId == vm.ProdutoId);
+
+                if (configExistente == null)
                 {
-                    // INSERT: Criar nova configuração
+                    // INSERT: Não existe configuração para este produto ainda
                     var novaConfig = new EstoqueConfig
                     {
                         ProdutoId = vm.ProdutoId,
@@ -152,25 +150,12 @@ namespace Varejo.Controllers
                 }
                 else
                 {
-                    // UPDATE: Buscar a existente para não perder a referência do rastreio
-                    var configExistente = await _context.EstoquesConfig.FindAsync(vm.Id);
+                    // UPDATE: Já existe, então apenas atualizamos os valores
+                    configExistente.EstoqueMinimo = vm.EstoqueMinimo;
+                    configExistente.EstoqueMaximo = vm.EstoqueMaximo;
 
-                    if (configExistente != null)
-                    {
-                        configExistente.EstoqueMinimo = vm.EstoqueMinimo;
-                        configExistente.EstoqueMaximo = vm.EstoqueMaximo;
-                        _context.Update(configExistente);
-                    }
-                    else
-                    {
-                        // Caso o ID exista mas o registro sumiu (raro), tratamos como novo
-                        _context.EstoquesConfig.Add(new EstoqueConfig
-                        {
-                            ProdutoId = vm.ProdutoId,
-                            EstoqueMinimo = vm.EstoqueMinimo,
-                            EstoqueMaximo = vm.EstoqueMaximo
-                        });
-                    }
+                    // Opcional: Se o vm.Id veio da view, podemos garantir que estamos no registro certo
+                    _context.EstoquesConfig.Update(configExistente);
                 }
 
                 await _context.SaveChangesAsync();
@@ -179,6 +164,7 @@ namespace Varejo.Controllers
             }
             catch (Exception ex)
             {
+                // Se cair aqui, provavelmente é um erro de concorrência ou banco
                 ModelState.AddModelError("", "Erro ao salvar no banco: " + ex.Message);
                 return View(vm);
             }

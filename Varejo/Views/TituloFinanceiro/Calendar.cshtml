@@ -18,21 +18,30 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
         var calendarEl = document.getElementById('calendar');
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'pt-br',
+        // Certifique-se que o objeto FullCalendar existe
+        if (calendarEl) {
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                // Na v6, é recomendado usar esse mapeamento de plugins se não estiver usando o bundle global
+                initialView: 'dayGridMonth',
+                locale: 'pt-br',
+                selectable: true,
+                editable: false,
+                
+                // Verifique se essa URL retorna o JSON corretamente (abra no navegador para testar)
+                events: '/TituloFinanceiro/GetEventos',
 
-            events: '/TituloFinanceiro/GetEventos',
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault(); // Evita comportamentos estranhos do browser
+                    var id = info.event.id;
+                    if (id) {
+                        window.location.href = '/TituloFinanceiro/Details/' + id;
+                    }
+                }
+            });
 
-            eventClick: function(info) {
-                var id = info.event.id;
-                window.location.href = '/TituloFinanceiro/Details/' + id;
-            }
-        });
-
-        calendar.render();
+            calendar.render();
+        }
     });
 </script>

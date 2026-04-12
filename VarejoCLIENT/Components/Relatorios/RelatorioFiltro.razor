@@ -1,4 +1,6 @@
-﻿@* Utilizamos a classe global glass-card e removemos os styles inline *@
+﻿@inject IJSRuntime JSRuntime
+
+@* Utilizamos a classe global glass-card e removemos os styles inline *@
 <div class="glass-card mb-4 p-4">
     
     <div class="row g-3">
@@ -51,6 +53,17 @@
 
     private async Task BotaoExportarClicado(string formato)
     {
+        // 1. Invoca a vibração no celular para avisar do download (Padrão duplo de alerta)
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("nativeFeatures.vibrar", new int[] { 100, 50, 100 });
+        }
+        catch
+        {
+            // O catch vazio previne que o app quebre caso o JS não carregue ou não suporte
+        }
+
+        // 2. Continua com a lógica normal de exportação
         await OnExport.InvokeAsync(formato);
     }
 }

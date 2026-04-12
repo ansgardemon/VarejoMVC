@@ -1,7 +1,9 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Nav
 @using VarejoCLIENT.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <div class="page @(isDarkMode ? "dark-theme" : "") @(IsLoginScreen ? "login-mode" : "")" data-theme="@(isDarkMode ? "dark" : "light")">
     
@@ -38,15 +40,25 @@
 @code {
     private bool collapseNavMenu = true;
     private bool isDarkMode = false;
-    
-    private bool IsLoginScreen => Nav.Uri.ToLower().EndsWith("/login") || !AuthService.IsAutenticado;
+    private bool isUserAutenticado = false; // Nova variável de controle
+
+    // Atualizado para usar a nova variável assíncrona
+    private bool IsLoginScreen => Nav.Uri.ToLower().EndsWith("/login") || !isUserAutenticado;
 
     private void ToggleMenu() => collapseNavMenu = !collapseNavMenu;
     private void ToggleDarkMode() => isDarkMode = !isDarkMode;
 
-    protected override void OnInitialized()
+    // Trocado para Async para podermos ler o Token do LocalStorage com segurança
+    protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.IsAutenticado && !Nav.Uri.ToLower().Contains("/login"))
-            Nav.NavigateTo("login");
+        // Pergunta ao nosso "Maestro" se tem alguém logado (Lê o JWT)
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        isUserAutenticado = authState.User.Identity?.IsAuthenticated ?? false;
+
+        // Se não estiver logado e não estiver na tela de login, joga pra lá
+        if (!isUserAutenticado && !Nav.Uri.ToLower().Contains("/login"))
+        {
+            Nav.NavigateTo("/login");
+        }
     }
 }

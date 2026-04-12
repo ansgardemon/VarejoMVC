@@ -1,4 +1,7 @@
-﻿<div class="nav-wrapper @(IsDarkMode ? "dark-menu" : "")">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+
+<div class="nav-wrapper @(IsDarkMode ? "dark-menu" : "")">
     <div class="nav-header-varejo">
         <div class="brand-group">
             <span class="brand-main">VAREJO</span>
@@ -11,22 +14,75 @@
     </div>
 
     <nav class="nav flex-column px-3 nav-menu-list">
+        
+        @* ===== BADGE DO USUÁRIO LOGADO ===== *@
+        <AuthorizeView>
+            <Authorized>
+                @{
+                    // O FindFirst é a forma nativa e mais segura de buscar claims no .NET
+                    var UsuarioId = context.User.FindFirst("UsuarioId")?.Value ?? "0";
+                    
+
+                    var name = context.User.FindFirst("Nome")?.Value
+                            ?? context.User.FindFirst("unique_name")?.Value
+                            ?? context.User.FindFirst("name")?.Value
+                            ?? context.User.Identity?.Name
+                            ?? "Usuário Logado";
+
+                    var role = context.User.FindFirst("Cargo")?.Value
+                            ?? context.User.FindFirst("role")?.Value
+                            ?? context.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+                            ?? "Acesso Restrito";
+                }
+
+                <div class="nav-label mt-2">PERFIL</div>
+
+
+                <div class="nav-item-glass d-flex align-items-center w-100 mb-1" @onclick="ToggleUserMenu" style="cursor: pointer; padding-right: 15px; user-select: none;">
+                    <div class="shadow-sm flex-shrink-0">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    
+                    <div class="nav-text d-flex flex-column justify-content-center flex-grow-1 overflow-hidden ms-2" style="line-height: 1.2;">
+                        <span class="fw-bold text-truncate" style="font-size: 0.85rem; color: var(--ui-text-primary);" title="@name">@name</span>
+                        <small class="text-truncate" style="font-size: 0.65rem; color: var(--ui-text-secondary); opacity: 0.8;" title="@role">@role</small>
+                    </div>
+                    
+                    <i class="fa-solid fa-chevron-down ms-2 flex-shrink-0 @(isUserMenuOpen ? "rotate-180" : "")"
+                       style="font-size: 0.7rem; color: var(--ui-text-secondary); opacity: 0.5; transition: transform 0.3s ease;"></i>
+                </div>
+
+                @if (isUserMenuOpen)
+                {
+                    <div class="user-submenu animate__animated animate__fadeInDown">
+                        <NavLink class="nav-item-glass sub-item text-decoration-none d-flex align-items-center"
+                                 href="@($"Usuario/Edit/{UsuarioId}")" @onclick="HandleClick">
+                            <div class="icon-box-sub"><i class="fa-solid fa-key"></i></div>
+                            <span class="nav-text small ms-2">Alterar Senha</span>
+                        </NavLink>
+                    </div>
+                }
+                
+                <div class="nav-spacer" style="height: 15px;"></div>
+            </Authorized>
+        </AuthorizeView>
+
         <div class="nav-label">SISTEMA</div>
 
         <NavLink class="nav-item-glass" href="dashboard" Match="NavLinkMatch.All" @onclick="HandleClick">
-            <div class="icon-box"><i class="fa-solid fa-house-chimney"></i></div>
+            <div class=""><i class="fa-solid fa-house-chimney"></i></div>
             <span class="nav-text">Dashboard</span>
         </NavLink>
 
         <NavLink class="nav-item-glass" href="relatorios" @onclick="HandleClick">
-            <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class=""><i class="fa-solid fa-chart-pie"></i></div>
             <span class="nav-text">Relatórios</span>
         </NavLink>
 
         <div class="nav-spacer"></div>
 
-        <NavLink class="nav-item-glass logout-btn" href="logout" @onclick="HandleClick">
-            <div class="icon-box"><i class="fa-solid fa-power-off"></i></div>
+        <NavLink class="nav-item-glass logout-btn" href="login" @onclick="HandleClick">
+            <div class=""><i class="fa-solid fa-power-off"></i></div>
             <span class="nav-text">Sair</span>
         </NavLink>
     </nav>
@@ -36,6 +92,10 @@
     [Parameter] public EventCallback OnMenuItemClicked { get; set; }
     [Parameter] public EventCallback OnThemeToggle { get; set; }
     [Parameter] public bool IsDarkMode { get; set; }
+
+    private bool isUserMenuOpen = false;
+
+    private void ToggleUserMenu() => isUserMenuOpen = !isUserMenuOpen;
 
     private async Task HandleClick()
     {

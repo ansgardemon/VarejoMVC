@@ -1,20 +1,28 @@
 {
-  "name": "Varejo Gestor",
-  "short_name": "Varejo",
-  "start_url": "/",
+  "name": "Vitrin.O Varejo",
+  "short_name": "Vitrin.O",
+  "start_url": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#1e3c72",
+  "theme_color": "#1e3c72",
+  "description": "Sistema de Gestão e PDV Vitrin.O Varejo",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "192x192"
     },
     {
       "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "icon-maskable.png",
+      "type": "image/png",
       "sizes": "512x512",
-      "type": "image/png"
+      "purpose": "maskable"
     }
   ]
 }

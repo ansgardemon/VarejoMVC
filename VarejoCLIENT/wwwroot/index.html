@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VarejoCLIENT</title>
     <base href="/" />
+
+    <meta name="theme-color" content="#1e3c72" />
+
     <link rel="preload" id="webassembly" />
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -16,14 +18,79 @@
     <link href="manifest.json" rel="manifest" />
     <script type="importmap"></script>
 </head>
-
 <body>
+
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .splash-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            }
+
+            .glass-loader {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 20px;
+                padding: 40px;
+                text-align: center;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                animation: pulse 2s infinite;
+            }
+
+            .spinner {
+                width: 50px;
+                height: 50px;
+                border: 5px solid rgba(255,255,255,0.3);
+                border-radius: 50%;
+                border-top-color: #fff;
+                animation: spin 1s ease-in-out infinite;
+                margin: 0 auto 20px auto;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(0.98);
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                }
+
+                50% {
+                    transform: scale(1);
+                    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
+                }
+
+                100% {
+                    transform: scale(0.98);
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                }
+            }
+        </style>
+
+        <div class="splash-container">
+            <div class="glass-loader">
+                <div class="spinner"></div>
+                <h2 style="color: white; margin: 0; font-weight: bold; letter-spacing: 1px;">VITRIN.O VAREJO</h2>
+                <p style="color: rgba(255,255,255,0.7); margin-top: 10px; font-size: 0.9rem;">Preparando ambiente seguro...</p>
+            </div>
+        </div>
     </div>
 
     <div id="blazor-error-ui">
@@ -31,14 +98,30 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
+
     <script src="js/theme.js"></script>
     <script src="js/downloadPDF.js"></script>
     <script src="js/chart.js"></script>
+    <script src="js/nativeFeatures.js"></script>
 
+    <script>
+        window.authInterop = {
+            salvarToken: function (token) {
+                localStorage.setItem("jwt_token", token);
+            },
+            lerToken: function () {
+                return localStorage.getItem("jwt_token");
+            },
+            removerToken: function () {
+                localStorage.removeItem("jwt_token");
+            }
+        };
+    </script>
 
     <script src="_framework/blazor.webassembly.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
 </body>
-
 </html>

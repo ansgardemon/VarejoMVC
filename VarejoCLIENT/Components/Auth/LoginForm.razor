@@ -1,7 +1,15 @@
 ﻿@namespace VarejoCLIENT.Components
 @using VarejoCLIENT.Services
-@inject AuthService AuthService
+@using VarejoCLIENT.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Net.Http.Json
+
+@* INJEÇÕES ADICIONADAS PARA O JWT *@
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Nav
+@inject AuthService AuthService
 
 <div class="card p-4 shadow border-0" style="max-width: 400px; width: 100%; margin: auto; background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
     <div class="text-center mb-4">
@@ -52,16 +60,57 @@
         carregando = true;
         erro = "";
 
-        var sucesso = await AuthService.LoginAsync(usuarioInput, senhaInput);
+        try
+        {
+            // 1. Prepara os dados para enviar para a API MVC
+            var loginData = new { NomeUsuario = usuarioInput, Senha = senhaInput };
+            
+            // 2. Faz a chamada HTTP para o seu Controller (AuthController)
+            var response = await Http.PostAsJsonAsync("api/auth/login", loginData);
 
-        if (sucesso)
-        {
-            Nav.NavigateTo("/relatorios");
+            if (response.IsSuccessStatusCode)
+            {
+                var resultado = await response.Content.ReadFromJsonAsync<LoginResponseDTO>();
+                
+                if (resultado != null && resultado.sucesso)
+                {
+                    // 3. Salva o Token no LocalStorage via JSInterop
+                    await JSRuntime.InvokeVoidAsync("authInterop.salvarToken", resultado.token);
+
+                    // 4. Avisa o Blazor que o usuário está oficialmente logado
+                    var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
+                    customAuthStateProvider.NotificarLogin(resultado.token);
+
+                    // Opcional: Chama a vibração do Passo 2 para dar feedback
+                    try { await JSRuntime.InvokeVoidAsync("nativeFeatures.vibrar", 50); } catch { }
+
+                    // 5. Redireciona para onde você já estava direcionando
+                    Nav.NavigateTo("/relatorios");
+                }
+                else
+                {
+                    erro = "Usuário ou senha inválidos.";
+                }
+            }
+            else
+            {
+                erro = "Usuário ou senha inválidos.";
+            }
         }
-        else
+        catch (Exception)
         {
-            erro = "Usuário ou senha inválidos.";
+            erro = "Erro de comunicação com o servidor.";
         }
-        carregando = false;
+        finally
+        {
+            carregando = false;
+        }
+    }
+
+    // Classe auxiliar para receber o JSON certinho da sua API
+    private class LoginResponseDTO
+    {
+        public bool sucesso { get; set; }
+        public string token { get; set; } = "";
     }
 }

@@ -7,15 +7,18 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Varejo.Services;
 
+// NOVOS USINGS PARA O JWT
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //DB
 builder.Services.AddDbContext<VarejoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VarejoContext") ?? throw new InvalidOperationException("Connection string 'VarejoContext' not found.")));
-
 builder.Services.AddDbContext<VarejoDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 //REPOSITORIOS
 builder.Services.AddScoped<IEnderecoRepository, EnderecoRepository>();
@@ -47,10 +50,6 @@ builder.Services.AddScoped<IFornecedorConfigRepository, FornecedorConfigReposito
 builder.Services.AddScoped<IRecebimentoRepository, RecebimentoRepository>();
 builder.Services.AddScoped<IXmlService, XmlService>();
 
-
-
-
-
 //data protection
 var dpBase = Path.Combine(
     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "VitrinoKeys");
@@ -68,18 +67,42 @@ builder.Services.AddAntiforgery(options =>
     options.HeaderName = "X-CSRF-TOKEN";
 });
 
-// Cookie Authentication
-builder.Services.AddAuthentication("VarejoAuth")
-    .AddCookie("VarejoAuth", options =>
-    {
-        options.Cookie.Name = "Vitrino.Auth";
-        options.LoginPath = "/Usuario/Login";
-        options.AccessDeniedPath = "/Usuario/AcessoNegado";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-        options.SlidingExpiration = true;
-    });
+// ====================================================================
+// AUTENTICAÇÃO (MISTO DE COOKIE MVC + JWT BLAZOR)
+// ====================================================================
+var jwtKey = Encoding.ASCII.GetBytes("SuperChaveSecretaDoVitrinOVarejo2024!@#"); // Ideal puxar do appsettings.json em prod!
 
-// MVC + JSON + AutoValidateAntiForgeryToken em m?todos de escrita
+builder.Services.AddAuthentication(options =>
+{
+    // Define o Cookie como padrão para não quebrar as Views do seu sistema MVC
+    options.DefaultScheme = "VarejoAuth";
+    options.DefaultChallengeScheme = "VarejoAuth";
+})
+// 1. Mantém a sua autenticação de Cookie intacta
+.AddCookie("VarejoAuth", options =>
+{
+    options.Cookie.Name = "Vitrino.Auth";
+    options.LoginPath = "/Usuario/Login";
+    options.AccessDeniedPath = "/Usuario/AcessoNegado";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    options.SlidingExpiration = true;
+})
+// 2. Adiciona o JWT para os endpoints que o Blazor vai consumir
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.RequireHttpsMetadata = false; // Em produção, mude para true
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+// ====================================================================
+
+// MVC + JSON + AutoValidateAntiForgeryToken em métodos de escrita
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());
@@ -111,6 +134,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("PermitirTudo");
 
+// O app.UseAuthentication() e app.UseAuthorization() já estavam no lugar perfeito!
 app.UseAuthentication();
 app.UseAuthorization();
 

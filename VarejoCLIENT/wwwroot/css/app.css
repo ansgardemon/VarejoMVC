@@ -632,3 +632,129 @@ option {
     opacity: 1;
 }
 /* #endregion */
+
+/* #region 9. NAV MENU & SIDEBAR */
+.nav-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--sys-primary);
+    margin-bottom: 10px;
+    margin-left: 12px;
+    opacity: 0.8;
+}
+
+[data-theme="dark"] .nav-label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.nav-item-glass {
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(var(--ui-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
+    border: 1px solid var(--ui-glass-border);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    padding: 8px;
+    margin-bottom: 10px;
+    color: var(--ui-text-secondary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+    .nav-item-glass:hover, .nav-item-glass.active {
+        background: rgba(255, 255, 255, 0.4);
+        transform: translateX(4px);
+        color: var(--sys-primary);
+        border-color: var(--sys-primary-light);
+    }
+
+[data-theme="dark"] .nav-item-glass:hover,
+[data-theme="dark"] .nav-item-glass.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ui-text-primary);
+}
+
+.icon-box {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(22, 56, 137, 0.1);
+    color: var(--sys-primary);
+    transition: all 0.3s ease;
+}
+
+.nav-item-glass:hover .icon-box, .nav-item-glass.active .icon-box {
+    background: var(--sys-primary);
+    color: white;
+}
+
+[data-theme="dark"] .icon-box {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ui-text-primary);
+}
+
+[data-theme="dark"] .nav-item-glass:hover .icon-box,
+[data-theme="dark"] .nav-item-glass.active .icon-box {
+    background: var(--sys-primary);
+    color: white;
+}
+
+/* Submenu de Alterar Senha */
+.user-submenu {
+    margin-left: 20px;
+    padding-left: 10px;
+    border-left: 2px solid var(--ui-glass-border);
+    margin-bottom: 15px;
+}
+
+.sub-item {
+    padding: 6px 10px !important;
+    margin-top: 5px;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    background: transparent;
+    border-radius: 12px !important;
+    border: 1px solid transparent;
+    box-shadow: none;
+}
+
+    .sub-item:hover {
+        background: var(--ui-glass-bg);
+        border: 1px solid var(--ui-glass-border);
+    }
+
+.icon-box-sub {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    background: rgba(22, 56, 137, 0.05);
+    color: var(--sys-primary);
+}
+
+[data-theme="dark"] .icon-box-sub {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ui-text-primary);
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+.nav-spacer {
+    flex-grow: 1;
+}
+
+.nav-text {
+    font-weight: 600;
+    margin-left: 10px;
+}
+/* #endregion */

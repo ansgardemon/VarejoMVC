@@ -25,6 +25,7 @@ namespace Varejo.Services
                 
                 // INCLUÍDO O PESSOA ID (Fundamental para o PDV e Relatórios!)
                 new Claim("PessoaId", usuario.PessoaId.ToString()),
+                new Claim("UsuarioId", usuario.IdUsuario.ToString()),
                 
                 // Pegamos o nível de acesso que você já tem modelado
                 new Claim(ClaimTypes.Role, usuario.TipoUsuario?.DescricaoTipoUsuario ?? "Visitante")

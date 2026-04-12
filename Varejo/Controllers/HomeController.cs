@@ -9,5 +9,11 @@ namespace Varejo.Controllers
             ViewData["NavbarClass"] = "nav-content";
             return View();
         }
+
+        public IActionResult Privacy()
+        {
+     
+            return View();
+        }
     }
 }

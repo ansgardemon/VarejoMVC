@@ -105,4 +105,77 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var container = document.getElementById('embalagens-container');
+            
+            // Serializa os tipos de embalagem para usar no JS
+            var tipos = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                            (Model.Embalagens != null && Model.Embalagens.Any() && Model.Embalagens[0].TiposEmbalagem != null)
+                                    ? Model.Embalagens[0].TiposEmbalagem
+                                    : new List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>()
+                    ));
+
+            // Função para Adicionar
+            document.getElementById('adicionar-embalagem').addEventListener('click', function () {
+                // Conta quantos itens já existem para definir o índice [i]
+                var index = container.querySelectorAll('.embalagem-item').length;
+                var options = tipos.map(t => `<option value="${t.Value}">${t.Text}</option>`).join('');
+
+                var html = `
+                    <div class="col-12 embalagem-item">
+                        <div class="p-4 rounded-4 position-relative" style="background: rgba(0,0,0,0.02); border: 1px solid rgba(255,255,255,0.1);">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 mt-3 me-3 remover-embalagem rounded-circle shadow-sm">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold opacity-75">Tipo</label>
+                                    <select name="Embalagens[${index}].TipoEmbalagemId" class="form-select">${options}</select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold opacity-75">Preço</label>
+                                    <input name="Embalagens[${index}].Preco" class="form-control" placeholder="0,00" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold opacity-75">Código EAN</label>
+                                    <input name="Embalagens[${index}].Ean" class="form-control" placeholder="789..." />
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                container.insertAdjacentHTML('beforeend', html);
+            });
+
+            // Função para Remover (Delegada ao container)
+            container.addEventListener('click', function (e) {
+                // Verifica se clicou no botão ou no ícone dentro do botão
+                if (e.target.classList.contains('remover-embalagem') || e.target.closest('.remover-embalagem')) {
+                    var item = e.target.closest('.embalagem-item');
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.9)';
+                    item.style.transition = '0.2s';
+                    
+                    setTimeout(() => {
+                        item.remove();
+                        // Reindexar os inputs para o ASP.NET não se perder no POST
+                        reindexarEmbalagens();
+                    }, 200);
+                }
+            });
+
+            function reindexarEmbalagens() {
+                container.querySelectorAll('.embalagem-item').forEach((item, idx) => {
+                    item.querySelectorAll('select, input').forEach(input => {
+                        let name = input.getAttribute('name');
+                        if (name) {
+                            input.setAttribute('name', name.replace(/\[\d+\]/, `[${idx}]`));
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 }

@@ -1,6 +1,113 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+﻿
+@{
+    ViewData["Title"] = "Sobre o Sistema";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container-fluid mt-4">
+    <div class="glass-card mx-auto p-5" style="max-width: 1000px;">
+        
+        @* Cabeçalho Principal *@
+        <div class="text-center mb-5">
+            <div class="d-inline-block p-3 rounded-circle bg-warning bg-opacity-25 mb-3 border border-warning border-opacity-25">
+                <i class="fa-solid fa-shield-halved fs-1 text-warning"></i>
+            </div>
+            <h1 class="fw-bold m-0">VITRIN.O Varejo</h1>
+            @* Usando --subtext para evitar o sumiço do muted *@
+            <p style="color: var(--subtext); font-weight: 500;">ERP de Gestão Comercial • Versão 1.0.0-beta</p>
+        </div>
+
+        <div class="row g-4">
+            @* Seção: Contexto Acadêmico *@
+            <div class="col-md-7">
+                <h4 class="text-warning mb-3"><i class="fa-solid fa-graduation-cap me-2"></i>Contexto Acadêmico</h4>
+                <p style="color: var(--text); opacity: 0.9;">
+                    Este sistema foi desenvolvido como projeto prático para o curso <strong>Técnico em Informática para Internet (TIPI04)</strong>.
+                    O foco do desenvolvimento está na arquitetura limpa e na experiência do usuário (UX) moderna.
+                </p>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fa-solid fa-location-dot me-2 text-warning"></i> Senac São Miguel - São Paulo/SP</li>
+                    <li class="mb-2"><i class="fa-solid fa-clock me-2 text-warning"></i> Turma Noturna (2024 ~ 2026)</li>
+                </ul>
+
+                <hr class="my-4" style="border-color: var(--glass-border); opacity: 0.3;">
+
+                <h4 class="text-warning mb-3"><i class="fa-solid fa-code-branch me-2"></i>Stack Tecnológica</h4>
+                <div class="d-flex flex-wrap gap-2">
+                    @* Badges seguindo o padrão .btn-glass do seu CSS *@
+                    <span class="badge border p-2" style="background: rgba(0,0,0,0.2); border-color: var(--glass-border)!important; color: var(--text);">
+                        <i class="fa-brands fa-microsoft me-1 text-primary"></i> ASP.NET Core 8.0 + SQL SERVER
+                    </span>
+                    <span class="badge border p-2" style="background: rgba(0,0,0,0.2); border-color: var(--glass-border)!important; color: var(--text);">
+                        <i class="fa-solid fa-bolt me-1 text-warning"></i> Blazor
+                    </span>
+                    <span class="badge border p-2" style="background: rgba(0,0,0,0.2); border-color: var(--glass-border)!important; color: var(--text);">
+                        <i class="fa-solid fa-book me-1 text-info"></i> Swagger UI
+                    </span>
+                    <span class="badge border p-2" style="background: rgba(0,0,0,0.2); border-color: var(--glass-border)!important; color: var(--text);">
+                        <i class="fa-solid fa-font-awesome me-1 text-success"></i> BOOTSTRAP 5 + FontAwesome 6 + CSS Customizado
+                    </span>
+                </div>
+            </div>
+
+            @* Seção: Equipe (Utilizando as variáveis de design do CSS) *@
+            <div class="col-md-5">
+                <div class="p-4 rounded-4" style="background: rgba(0,0,0,0.15); border: 1px solid var(--glass-border);">
+                    <h5 class="text-warning mb-4"><i class="fa-solid fa-users me-2"></i>Equipe</h5>
+                    
+                    <div class="mb-3 d-flex align-items-center">
+                        <div class="avatar-circle me-3">M</div>
+                        <div>
+                            <h6 class="mb-0">Matheus</h6>
+                            <small style="color: var(--subtext); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px;">Back-End & Arquitetura</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 d-flex align-items-center">
+                        <div class="avatar-circle me-3 bg-primary bg-opacity-75">F</div>
+                        <div>
+                            <h6 class="mb-0">Filipe</h6>
+                            <small style="color: var(--subtext); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px;">Front-End & Blazor</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 d-flex align-items-center">
+                        <div class="avatar-circle me-3 bg-info bg-opacity-75">G</div>
+                        <div>
+                            <h6 class="mb-0">Gabriel</h6>
+                            <small style="color: var(--subtext); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px;">API Design</small>
+                        </div>
+                    </div>
+
+                    <h6 style="color: var(--subtext); font-size: 0.75rem; font-weight: 800; text-transform: uppercase;" class="mb-2">Ex-Membros:</h6>
+                    <p style="color: var(--subtext); font-size: 0.85rem;" class="mb-0 opacity-50">
+                        <del>Caio</del>, <del>Daniel</del> (Desistência).
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        @* Rodapé Legal *@
+        <div class="mt-5 pt-4 text-center" style="border-top: 1px solid var(--glass-border);">
+            <p style="color: var(--subtext); font-size: 0.85rem;" class="mb-1">
+                Ambiente de Desenvolvimento: <strong>localhost</strong>. Sem fins lucrativos ou fiscais.
+            </p>
+            <p style="color: var(--subtext); font-size: 0.8rem;">&copy; @DateTime.Now.Year - VITRIN.O | Senac São Miguel</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos locais complementares para evitar conflitos */
+    .avatar-circle {
+        width: 38px;
+        height: 38px;
+        background: var(--btn-warning);
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 800;
+        font-size: 0.9rem;
+    }
+</style>

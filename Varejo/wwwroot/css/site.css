@@ -1,28 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-/* #region 1. VARIÁVEIS DE DESIGN (CONSUMO DO THEME.CSS) */
-:root {
-    /* Mapeamento amigável para o MVC */
-    --glass-bg: var(--ui-glass-bg);
-    --glass-border: var(--ui-glass-border);
-    --glass-blur: var(--ui-glass-blur);
-    --text: var(--ui-text-primary);
-    --subtext: var(--ui-text-secondary);
-    --text-muted: var(--ui-text-muted); /* Mapeamento do Muted */
-    --text-btn: var(--ui-text-button);
-    --bg-gradient-start: var(--ui-bg-gradient-start);
-    --bg-gradient-end: var(--ui-bg-gradient-end);
-    --btn-info: var(--state-info);
-    --btn-success: var(--state-success);
-    --btn-danger: var(--state-danger);
-    --btn-warning: var(--state-warning);
-    --table-odd: var(--ui-table-odd);
-    --table-even: var(--ui-table-even);
-}
-/* #endregion */
-
-
-/* #region 2. BASE, TIPOGRAFIA E SCROLLBAR */
+/* #region 1. BASE, TIPOGRAFIA E SCROLLBAR */
 * {
     transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease !important;
     box-sizing: border-box;
@@ -32,9 +10,9 @@ html, body {
     font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    background: linear-gradient(135deg, var(--ui-bg-gradient-start), var(--ui-bg-gradient-end));
     background-attachment: fixed;
-    color: var(--text) !important;
+    color: var(--ui-text-primary) !important;
     min-height: 100vh;
     scroll-behavior: smooth;
     transform: none !important;
@@ -42,7 +20,6 @@ html, body {
     perspective: none !important;
 }
 
-/* Scrollbar Customizada (Padrão App) */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -53,20 +30,24 @@ html, body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--text);
+    background-color: var(--ui-text-primary);
     border-radius: 10px;
     opacity: 0.3;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    color: var(--text) !important;
+    color: var(--ui-text-primary) !important;
     font-weight: 800;
     letter-spacing: -0.5px;
 }
 
-/* Classes Utilitárias de Texto */
+/* Classes Utilitárias Integradas ao Tema */
 .text-muted {
     color: var(--ui-text-muted) !important;
+}
+
+.text-dark {
+    color: var(--ui-text-dark) !important;
 }
 
 .nav-text small {
@@ -76,22 +57,19 @@ h1, h2, h3, h4, h5, h6 {
 main {
     width: 90%;
     margin: auto;
-    padding-bottom: 50px; /* Espaço para o menu quando estiver embaixo */
+    padding-bottom: 50px;
 }
 
-/* --- COMPORTAMENTO DO CONTEÚDO (PROTEGE CONTRA O MENU FIXO NO TOPO) --- */
 .content-with-nav {
-    /* 20px (topo) + 70px (altura do menu) + 30px (respiro) = 120px */
     padding-top: 120px !important;
 }
 
-/* --- SUPER TIPOGRAFIA HOME (O "VITRIN.O" GIGANTE) --- */
 h1.vitrino {
     font-family: 'Roboto', sans-serif !important;
     font-weight: normal !important;
     font-size: clamp(80px, 20vw, 250px) !important;
     letter-spacing: 0.05em;
-    background: linear-gradient(90deg, var(--text), var(--sys-primary-light, #4facfe));
+    background: linear-gradient(90deg, var(--ui-text-primary), var(--sys-primary-light, #4facfe));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -116,8 +94,7 @@ h1.vitrino {
 }
 /* #endregion */
 
-
-/* #region 3. ESTRUTURA DO MENU (FLOAT NAV BASE) */
+/* #region 2. ESTRUTURA DO MENU (FLOAT NAV BASE) */
 .navbar-varejo {
     position: fixed;
     z-index: 10000;
@@ -160,7 +137,7 @@ h1.vitrino {
 .nav-divider {
     width: 1px;
     height: 24px;
-    background: var(--glass-border);
+    background: var(--ui-glass-border);
     margin: 0 15px;
     opacity: 0.5;
 }
@@ -171,8 +148,7 @@ h1.vitrino {
 }
 /* #endregion */
 
-
-/* #region 4. DROPDOWNS E TOOLTIPS (VITRIN.O STYLE) */
+/* #region 3. DROPDOWNS E TOOLTIPS */
 .nav-drop {
     position: relative;
     cursor: pointer;
@@ -185,9 +161,9 @@ h1.vitrino {
     bottom: 150%;
     opacity: 0;
     visibility: hidden;
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
+    background: var(--ui-glass-bg);
+    backdrop-filter: blur(var(--ui-glass-blur));
+    border: 1px solid var(--ui-glass-border);
     border-radius: 20px;
     padding: 12px;
     min-width: 220px;
@@ -207,12 +183,11 @@ h1.vitrino {
 }
 /* #endregion */
 
-
-/* #region 5. COMPONENTES UI (CARDS, BOTÕES E BADGES) */
+/* #region 4. COMPONENTES UI (CARDS, BOTÕES E BADGES) */
 .glass-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(var(--glass-blur));
+    background: var(--ui-glass-bg);
+    border: 1px solid var(--ui-glass-border);
+    backdrop-filter: blur(var(--ui-glass-blur));
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     padding: 1.5rem;
@@ -227,9 +202,9 @@ h1.vitrino {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: var(--text-btn) !important;
+    background: var(--ui-glass-bg);
+    border: 1px solid var(--ui-glass-border);
+    color: var(--ui-text-button) !important;
     transition: 0.3s;
 }
 
@@ -239,12 +214,12 @@ h1.vitrino {
     }
 
 .btn-success {
-    background: var(--btn-success) !important;
+    background: var(--state-success) !important;
     color: white !important;
 }
 
 .btn-danger {
-    background: var(--btn-danger) !important;
+    background: var(--state-danger) !important;
     color: white !important;
 }
 
@@ -254,19 +229,18 @@ h1.vitrino {
     border-radius: 8px;
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--ui-text-primary);
     background: rgba(22, 56, 137, 0.1);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--ui-glass-border);
 }
 /* #endregion */
 
-
-/* #region 6. FORMULÁRIOS, SWITCH E VALIDAÇÕES */
+/* #region 5. FORMULÁRIOS, SWITCH E VALIDAÇÕES */
 .form-control, .form-select {
     background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid var(--glass-border) !important;
+    border: 1px solid var(--ui-glass-border) !important;
     border-radius: 12px !important;
-    color: var(--text) !important;
+    color: var(--ui-text-primary) !important;
     backdrop-filter: blur(10px);
 }
 
@@ -323,10 +297,10 @@ h1.vitrino {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--glass-bg);
+    background-color: var(--ui-glass-bg);
     transition: .4s;
     border-radius: 34px;
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--ui-glass-border);
 }
 
     .slider:before {
@@ -336,7 +310,7 @@ h1.vitrino {
         width: 18px;
         left: 4px;
         bottom: 3px;
-        background-color: var(--text);
+        background-color: var(--ui-text-primary);
         transition: .4s;
         border-radius: 50%;
     }
@@ -346,8 +320,7 @@ input:checked + .slider:before {
 }
 /* #endregion */
 
-
-/* #region 7. TABELAS (ENGINE RESPONSIVA) */
+/* #region 6. TABELAS (ENGINE RESPONSIVA) */
 .table-glass {
     width: 100%;
     border-collapse: separate;
@@ -355,16 +328,16 @@ input:checked + .slider:before {
 }
 
     .table-glass thead th {
-        color: var(--text);
+        color: var(--ui-text-primary);
         text-transform: uppercase;
         font-size: 0.75rem;
         padding: 15px;
         border: none;
-        border-bottom: 2px solid var(--glass-border);
+        border-bottom: 2px solid var(--ui-glass-border);
     }
 
     .table-glass tbody tr {
-        background: var(--glass-bg);
+        background: var(--ui-glass-bg);
         border-radius: 15px;
         transition: 0.3s;
     }
@@ -375,11 +348,11 @@ input:checked + .slider:before {
     }
 
     .table-glass tbody tr:nth-child(odd) {
-        background: var(--table-odd);
+        background: var(--ui-table-odd);
     }
 
     .table-glass tbody tr:nth-child(even) {
-        background: var(--table-even);
+        background: var(--ui-table-even);
     }
 
 @media (max-width: 768px) {
@@ -398,7 +371,7 @@ input:checked + .slider:before {
         justify-content: space-between;
         align-items: center;
         text-align: right;
-        border-bottom: 1px solid var(--glass-border);
+        border-bottom: 1px solid var(--ui-glass-border);
     }
 
         .table-responsive-stack td::before {
@@ -406,53 +379,33 @@ input:checked + .slider:before {
             font-weight: 800;
             text-transform: uppercase;
             font-size: 0.7rem;
-            color: var(--text);
+            color: var(--ui-text-primary);
             opacity: 0.7;
         }
 }
 /* #endregion */
 
-
-/* #region 8. MENU VITRIN.O (FLOAT NAV COMPLETA) */
-/* 8.1 - Container Principal (A Pílula) */
-.navbar-varejo {
-    position: fixed;
-    z-index: 10000;
-    display: flex !important;
-    align-items: center;
-    padding: 10px 25px;
-    border-radius: 60px;
-    background: var(--ui-glass-bg);
-    backdrop-filter: blur(var(--ui-glass-blur));
-    -webkit-backdrop-filter: blur(var(--ui-glass-blur));
-    border: 1px solid var(--ui-glass-border);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    width: auto;
-    min-width: fit-content;
+/* #region 7. MENU VITRIN.O (COMPORTAMENTO ESPECÍFICO) */
+.navbar-varejo.nav-home-center {
+    top: 50vh !important;
+    left: 50vw !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    position: fixed !important;
 }
 
-    .navbar-varejo.nav-home-center {
-        top: 50vh !important;
-        left: 50vw !important;
-        transform: translate(-50%, -50%) !important;
-        margin: 0 !important;
-        position: fixed !important;
-    }
-
-    .navbar-varejo.nav-top-fixed,
-    .navbar-varejo.sticky-nav {
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+.navbar-varejo.nav-top-fixed,
+.navbar-varejo.sticky-nav {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
 
 .navbar-collapse {
     display: flex !important;
     flex-basis: auto;
 }
 
-/* 8.2 - Grupo de Navegação e Ícones Coloridos */
 .nav-group {
     display: flex !important;
     flex-direction: row !important;
@@ -471,7 +424,7 @@ input:checked + .slider:before {
 
     .nav-drop > i, .nav-link-glass i {
         font-size: 1.7rem !important;
-        color: var(--text) !important;
+        color: var(--ui-text-primary) !important;
         display: block;
         transition: all 0.3s ease !important;
         filter: saturate(1.3) brightness(1.1);
@@ -504,13 +457,12 @@ input:checked + .slider:before {
         border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
 
-/* 8.3 - Dropdowns Estilo Glass (SEMPRE ABRE PARA BAIXO AGORA) */
 .nav-drop-content {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%) translateY(10px);
     top: 100%;
     bottom: auto;
+    transform: translateX(-50%) translateY(10px);
     opacity: 0;
     visibility: hidden;
     background: var(--ui-glass-bg);
@@ -543,7 +495,7 @@ input:checked + .slider:before {
     align-items: center;
     gap: 12px;
     padding: 12px 15px;
-    color: var(--text) !important;
+    color: var(--ui-text-primary) !important;
     text-decoration: none !important;
     border-radius: 14px;
     font-size: 0.95rem;
@@ -571,19 +523,18 @@ input:checked + .slider:before {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    color: var(--text);
+    color: var(--ui-text-primary);
     opacity: 0.5;
     margin: 5px 0 10px 10px;
     padding-bottom: 5px;
     border-bottom: 1px solid var(--ui-glass-border);
 }
 
-/* 8.4 - Hub de Usuário, Divisor e Logout */
 .nav-hub {
     display: flex;
     align-items: center;
     gap: 15px;
-    color: var(--text);
+    color: var(--ui-text-primary);
 }
 
 .nav-divider {
@@ -645,7 +596,7 @@ input:checked + .slider:before {
 
     .logout-btn-varejo i {
         font-size: 1.7rem !important;
-        color: var(--text);
+        color: var(--ui-text-primary);
         transition: all 0.3s ease;
     }
 
@@ -659,7 +610,6 @@ input:checked + .slider:before {
             filter: saturate(1.5) drop-shadow(0 0 5px rgba(220, 53, 69, 0.4));
         }
 
-/* 8.5 - Switch de Tema Premium (Sol e Lua) */
 .theme-switch {
     position: relative;
     display: inline-block;
@@ -741,11 +691,8 @@ input:checked + .slider:before {
     background-color: rgba(255,255,255,0.1);
 }
 
-/* MEDIA QUERY - MENU MOBILE (Celulares e Tablets menores) */
 @media (max-width: 991px) {
-    .navbar-collapse,
-    .nav-hub,
-    .nav-divider {
+    .navbar-collapse, .nav-hub, .nav-divider {
         display: none !important;
     }
 
@@ -753,7 +700,7 @@ input:checked + .slider:before {
         bottom: 20px !important;
         right: 20px !important;
         left: auto !important;
-        bottom: auto !important;
+        top: auto !important;
         transform: none !important;
         width: 55px !important;
         height: 55px !important;
@@ -775,14 +722,13 @@ input:checked + .slider:before {
 }
 /* #endregion */
 
-
-/* #region 9. OFFCANVAS MOBILE (DRILL-DOWN MENU) */
+/* #region 8. OFFCANVAS MOBILE */
 .glass-offcanvas.offcanvas {
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-right: 1px solid var(--ui-glass-border);
-    color: var(--text) !important;
+    color: var(--ui-text-primary) !important;
     width: 85vw !important;
     max-width: 320px;
     z-index: 10005 !important;
@@ -802,7 +748,7 @@ input:checked + .slider:before {
 }
 
 .glass-offcanvas .offcanvas-title {
-    color: var(--text) !important;
+    color: var(--ui-text-primary) !important;
 }
 
 [data-theme="dark"] .glass-offcanvas .offcanvas-title {
@@ -828,7 +774,7 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    color: var(--text) !important;
+    color: var(--ui-text-primary) !important;
     text-decoration: none;
     font-size: 1rem;
     font-weight: 500;
@@ -902,8 +848,7 @@ input:checked + .slider:before {
 }
 /* #endregion */
 
-
-/* #region 10. COMPONENTES FLUTUANTES E FOOTER */
+/* #region 9. COMPONENTES FLUTUANTES E FOOTER */
 .footer-glass {
     width: 100%;
     padding: 15px 0;
@@ -925,7 +870,7 @@ input:checked + .slider:before {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text);
+    color: var(--ui-text-primary);
     font-size: 1.2rem;
     cursor: pointer;
     z-index: 9999;
@@ -949,8 +894,7 @@ input:checked + .slider:before {
 }
 /* #endregion */
 
-
-/* #region 12. PESSOAS - TOGGLES E CHECKS CUSTOMIZADOS */
+/* #region 10. PESSOAS - TOGGLES E CHECKS */
 .btn-check-glass {
     cursor: pointer;
     position: relative;
@@ -961,8 +905,8 @@ input:checked + .slider:before {
     }
 
     .btn-check-glass .check-content {
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
+        background: var(--ui-glass-bg);
+        border: 1px solid var(--ui-glass-border);
         padding: 15px;
         border-radius: 15px;
         text-align: center;
@@ -976,17 +920,16 @@ input:checked + .slider:before {
         background: rgba(var(--sys-primary-rgb, 79, 172, 254), 0.2);
         border-color: var(--sys-primary-light);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
 
 .toggle-ativo .if-not-checked {
     display: block;
-    color: var(--btn-danger);
+    color: var(--state-danger);
 }
 
 .toggle-ativo .if-checked {
     display: none;
-    color: var(--btn-success);
+    color: var(--state-success);
 }
 
 .toggle-ativo input:checked + .check-content {
@@ -1009,13 +952,12 @@ input:checked + .slider:before {
 }
 /* #endregion */
 
-
-/* #region 15. PESQUISA DINÂMICA (DROPDOWN GLASS) */
+/* #region 11. PESQUISA DINÂMICA (DROPDOWN) */
 #containerResultadosFamilia {
-    background: var(--glass-bg);
+    background: var(--ui-glass-bg);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--ui-glass-border);
     border-radius: 15px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     z-index: 9999 !important;
@@ -1025,10 +967,10 @@ input:checked + .slider:before {
 
 .item-resultado {
     padding: 12px 15px;
-    border-bottom: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--ui-glass-border);
     transition: all 0.2s ease;
     cursor: pointer;
-    color: var(--text) !important;
+    color: var(--ui-text-primary) !important;
 }
 
     .item-resultado:hover {
@@ -1056,4 +998,24 @@ input:checked + .slider:before {
     background: var(--sys-primary-light);
     border-radius: 10px;
 }
+/* #endregion */
+
+/* #region 12. NATIVE CALENDAR / DATE INPUTS */
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="month"],
+[data-theme="dark"] input[type="datetime-local"],
+[data-theme="dark"] input[type="time"] {
+    /* Força o pop-up nativo do navegador a abrir no modo escuro */
+    color-scheme: dark;
+}
+
+    /* Inverte a cor do ícone de calendário para ficar visível no fundo escuro */
+    [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+    [data-theme="dark"] input[type="month"]::-webkit-calendar-picker-indicator,
+    [data-theme="dark"] input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+    [data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+        filter: invert(1) brightness(200%) !important;
+        opacity: 0.8 !important;
+        cursor: pointer;
+    }
 /* #endregion */

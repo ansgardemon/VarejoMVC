@@ -1104,3 +1104,12 @@ input:checked + .slider:before {
 }
 
 /* #endregion */
+
+.text-muted {
+    color: var(--ui-text-muted) !important;
+}
+
+/* Exemplo de aplicação no NavMenu */
+.nav-text small {
+    color: var(--ui-text-muted);
+}

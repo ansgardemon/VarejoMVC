@@ -36,12 +36,6 @@
                 }
 
                 <div class="nav-label mt-2">PERFIL</div>
-                <div style="background: red; color: white; padding: 10px; font-size: 10px;">
-                    @foreach (var claim in context.User.Claims)
-                    {
-                        <div><b>@claim.Type:</b> @claim.Value</div>
-                    }
-                </div>
 
                 <div class="nav-item-glass d-flex align-items-center w-100 mb-1" @onclick="ToggleUserMenu" style="cursor: pointer; padding-right: 15px; user-select: none;">
                     <div class="shadow-sm flex-shrink-0">

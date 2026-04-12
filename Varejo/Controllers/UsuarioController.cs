@@ -49,7 +49,7 @@ namespace Varejo.Controllers
             return View(usuarios);
         }
 
-        [Authorize(Roles = "Administrador")]
+        //[Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create()
         {
 

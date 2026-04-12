@@ -58,7 +58,7 @@
         // Se não estiver logado e não estiver na tela de login, joga pra lá
         if (!isUserAutenticado && !Nav.Uri.ToLower().Contains("/login"))
         {
-            Nav.NavigateTo("login");
+            Nav.NavigateTo("/login");
         }
     }
 }

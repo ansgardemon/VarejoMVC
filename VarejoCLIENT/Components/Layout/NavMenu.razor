@@ -1,4 +1,6 @@
-﻿<div class="nav-wrapper @(IsDarkMode ? "dark-menu" : "")">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<div class="nav-wrapper @(IsDarkMode ? "dark-menu" : "")">
     <div class="nav-header-varejo">
         <div class="brand-group">
             <span class="brand-main">VAREJO</span>
@@ -11,7 +13,41 @@
     </div>
 
     <nav class="nav flex-column px-3 nav-menu-list">
-        <div class="nav-label">SISTEMA</div>
+        
+        @* ===== BADGE DO USUÁRIO LOGADO ===== *@
+        <AuthorizeView>
+            <Authorized>
+                @{
+                    // Extraímos o ID, Nome e Cargo de dentro do JWT do usuário
+                    var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    var name = context.User.Identity?.Name;
+                    var role = context.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+                }
+
+                <div class="nav-label mt-2">PERFIL</div>
+
+                <div class="nav-item-glass" data-bs-toggle="collapse" data-bs-target="#userDropdown" style="cursor: pointer; padding-right: 15px;">
+                    <div class="icon-box" style="background: var(--sys-primary); color: white;"><i class="fa-solid fa-user"></i></div>
+                    <div class="nav-text d-flex flex-column justify-content-center" style="line-height: 1.2; width: 100%;">
+                        <span class="fw-bold text-truncate" style="max-width: 120px;">@name</span>
+                        <small class="opacity-50" style="font-size: 0.7rem;">@role</small>
+                    </div>
+                    <i class="fa-solid fa-chevron-down ms-auto opacity-50" style="font-size: 0.8rem; transition: 0.3s;"></i>
+                </div>
+
+                <div class="collapse" id="userDropdown">
+                    <div class="d-flex flex-column ms-3 mt-1 ps-2" style="border-left: 2px solid var(--glass-border);">
+                        <a class="nav-item-glass py-2 text-decoration-none" href="/Usuario/Edit/@userId" @onclick="HandleClick">
+                            <div class="icon-box" style="transform: scale(0.8);"><i class="fa-solid fa-key"></i></div>
+                            <span class="nav-text small">Alterar Senha</span>
+                        </a>
+                    </div>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+        @* =================================== *@
+
+        <div class="nav-label mt-4">SISTEMA</div>
 
         <NavLink class="nav-item-glass" href="dashboard" Match="NavLinkMatch.All" @onclick="HandleClick">
             <div class="icon-box"><i class="fa-solid fa-house-chimney"></i></div>

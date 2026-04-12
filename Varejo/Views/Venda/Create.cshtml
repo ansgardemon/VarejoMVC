@@ -11,11 +11,11 @@
             
             <div class="col-lg-9">
                 
-                <div class="glass-card mb-4 p-4" style="border-left: 4px solid var(--sys-primary-light);">
+                <div class="glass-card mb-4 p-4 position-relative" style="border-left: 4px solid var(--sys-primary-light); z-index: 1050;">
                     <h6 class="fw-bold mb-3 text-uppercase opacity-75"><i class="fa-solid fa-id-card me-2"></i>1. Identificação da Venda</h6>
                     <div class="row g-3">
                         
-                        <div class="col-md-6 position-relative" style="z-index: 1050;">
+                        <div class="col-md-6 position-relative">
                             <label class="form-label fw-bold small opacity-75">CLIENTE</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-transparent border-end-0"><i class="fa-solid fa-user"></i></span>
@@ -23,7 +23,7 @@
                             </div>
                             <input type="hidden" asp-for="PessoaId" id="PessoaId">
                             
-                                <div id="containerCardsCliente" class="position-absolute w-100 mt-1 d-none rounded-4 p-2" style="background: var(--glass-bg); background-color: rgba(var(--bs-body-bg-rgb, 255, 255, 255), 0.90); backdrop-filter: blur(30px); border: 1px solid var(--glass-border); z-index: 9999; max-height: 300px; overflow-y: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.3);"></div>
+                                <div id="containerCardsCliente" class="position-absolute w-100 mt-1 d-none rounded-4 p-2 shadow-lg" style="background: var(--glass-bg); backdrop-filter: blur(40px); border: 1px solid var(--glass-border); z-index: 9999; max-height: 300px; overflow-y: auto;"></div>
                             </div>
 
                             <div class="col-md-3">
@@ -37,7 +37,7 @@
                         </div>
                     </div>
 
-                    <div class="glass-card mb-4 p-4">
+                    <div class="glass-card mb-4 p-4 position-relative" style="z-index: 1040;">
                         <h6 class="fw-bold mb-3 text-uppercase text-primary"><i class="fa-solid fa-barcode me-2"></i>2. Lançar Produtos</h6>
                         <div class="input-group mb-3">
                             <span class="input-group-text bg-primary text-white border-primary"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -281,15 +281,16 @@
                                 const col = document.createElement('div');
                                 col.className = 'col-12 mb-2';
         
+                                // AJUSTE AQUI: Removido a classe 'text-dark' para que a cor da letra siga o Dark/Light Mode.
                                 col.innerHTML = `
-                                    <div class="p-2 rounded-3 text-dark item-hover" style="cursor:pointer; transition: 0.2s;">
+                                    <div class="p-2 rounded-3 item-hover" style="cursor:pointer; transition: 0.2s;">
                                         <div class="d-flex align-items-center">
                                             <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
                                                 <i class="fa-solid fa-user text-primary"></i>
                                             </div>
                                             <div>
                                                 <h6 class="mb-0 fw-bold">${nome}</h6>
-                                                <small class="opacity-50"><i class="fa-solid fa-id-card me-1"></i> ${doc}</small>
+                                                <small class="opacity-75"><i class="fa-solid fa-id-card me-1"></i> ${doc}</small>
                                             </div>
                                         </div>
                                     </div>`;

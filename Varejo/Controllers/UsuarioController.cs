@@ -49,7 +49,7 @@ namespace Varejo.Controllers
             return View(usuarios);
         }
 
-        //[Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create()
         {
 
@@ -174,6 +174,18 @@ namespace Varejo.Controllers
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // 1. Pega o ID do usuário que está logado agora fazendo a requisição
+            var loggedInUserIdStr = User.FindFirst("IdUsuario")?.Value;
+
+            // 2. Compara: Se o ID do usuário logado for igual ao ID do usuário que ele quer excluir... BARRADO!
+            if (int.TryParse(loggedInUserIdStr, out int loggedInUserId) && loggedInUserId == id)
+            {
+                // Manda uma mensagem para a tela (se você usar TempData para alertas) e devolve ele pra lista.
+                TempData["Error"] = "Operação bloqueada: Você não pode excluir ou inativar sua própria conta!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Se não for ele mesmo, a vida segue normal.
             await _usuarioRepository.InativarUsuario(id);
             return RedirectToAction(nameof(Index));
         }

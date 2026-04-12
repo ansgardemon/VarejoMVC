@@ -77,21 +77,35 @@
 
 /* #region 1. VARIÁVEIS DO SISTEMA VAREJO */
 :root {
+    /* --- SYSTEM (AZUIS) --- */
     --sys-primary: #163889;
     --sys-primary-light: #0d9dfde6;
+    /* --- BRAND (CLIENTE - VINHO/CREME) --- */
     --brand-primary: #6D213C;
     --brand-secondary: #3e1021;
     --brand-accent: #E6C786;
     --brand-bg: #FBF5E8;
     --brand-dark: #381D2A;
     --brand-light: #FFFFFF;
+    /* --- UI BASE --- */
     --ui-bg-gradient-start: #e8f1ff;
     --ui-bg-gradient-end: #c8d8ff;
     --ui-text-primary: var(--sys-primary);
     --ui-text-secondary: #0f172acc;
+    --ui-text-muted: #64748b;
+    --ui-text-button: var(--sys-primary);
+    /* --- GLASS --- */
     --ui-glass-bg: #ffffff26;
     --ui-glass-border: #ffffff40;
     --ui-glass-blur: 20px;
+    /* --- STATES --- */
+    --state-info: #0d9dfde6;
+    --state-success: #27eb8fe6;
+    --state-danger: #dc3545e6;
+    --state-warning: #ffe200e6;
+    /* --- TABLE --- */
+    --ui-table-odd: #ffffff40;
+    --ui-table-even: #c8c8c840;
 }
 
 [data-theme="dark"] {
@@ -99,8 +113,14 @@
     --ui-bg-gradient-end: #1e293b;
     --ui-text-primary: #a4daf5;
     --ui-text-secondary: #ffffffb3;
+    --ui-text-muted: #ffffff70;
+    --ui-text-button: #f0f0f0;
     --ui-glass-bg: #ffffff14;
     --ui-glass-border: #ffffff30;
+    --state-info: #0a7cccCC;
+    --state-success: #1f9b5dcc;
+    --state-danger: #b02a37CC;
+    --state-warning: #b38f0eCC;
 }
 /* #endregion */
 
@@ -136,17 +156,19 @@ a {
     font-size: 1.4rem;
     letter-spacing: -0.5px;
 }
+
+.text-muted {
+    color: var(--ui-text-muted) !important;
+}
 /* #endregion */
 
 /* #region 3. ESTRUTURA GLOBAL E APP LAYOUT */
 @media (min-width: 992px) {
-    /* Trava a altura da página inteira em 100% da tela (Mata o scroll global) */
     .page {
         height: 100vh !important;
         overflow: hidden !important;
     }
 
-    /* Menu lateral travado com 100% de altura */
     .sidebar-varejo {
         height: 100vh;
         overflow-y: auto;
@@ -154,7 +176,6 @@ a {
         flex-shrink: 0;
     }
 
-    /* Apenas o painel direito rola! */
     .main-content {
         height: 100vh;
         overflow-y: auto;
@@ -179,7 +200,6 @@ a {
     }
 }
 
-/* HIERARQUIA DE Z-INDEX (FILTRO VS TABELA) */
 .dynamic-content-container > *:nth-child(1) {
     position: relative;
     z-index: 9999;
@@ -307,6 +327,24 @@ a {
     [data-theme="dark"] .btn-glass-sm:hover {
         background: rgba(255, 255, 255, 0.25);
     }
+
+.btn-glass-back {
+    background: var(--ui-glass-bg);
+    border: 1px solid var(--ui-glass-border);
+    color: var(--ui-text-primary);
+    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn-glass-back:hover {
+        background: var(--brand-accent);
+        color: var(--brand-dark);
+    }
 /* #endregion */
 
 /* #region 6. FORMULÁRIOS, INPUTS E SEARCH */
@@ -355,6 +393,23 @@ label, .form-label {
     color: rgba(255, 255, 255, 0.6);
 }
 
+.glass-input {
+    background: var(--ui-glass-bg) !important;
+    border: 1px solid var(--ui-glass-border) !important;
+    color: var(--ui-text-primary) !important;
+    backdrop-filter: blur(5px);
+}
+
+    .glass-input:focus {
+        border-color: var(--brand-accent) !important;
+        box-shadow: 0 0 0 0.25rem rgba(230, 199, 134, 0.25) !important;
+    }
+
+    .glass-input:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
 .search-bar-glass {
     position: relative;
     width: 100%;
@@ -379,7 +434,6 @@ label, .form-label {
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* CORREÇÕES NATIVAS DO NAVEGADOR */
 option {
     background-color: #ffffff;
     color: var(--sys-primary);
@@ -470,7 +524,6 @@ option {
         background: rgba(255, 255, 255, 0.05);
     }
 
-/* TABELA MOBILE (CARDS) */
 @media (max-width: 768px) {
     .glass-table thead {
         display: none;
@@ -576,7 +629,6 @@ option {
     border-radius: 8px;
     font-size: 0.75rem;
     font-weight: 700;
-    /* Usa a cor inteligente: Azul Escuro no Light / Azul Neon no Dark */
     color: var(--ui-text-primary);
     background: rgba(22, 56, 137, 0.1);
     border: 1px solid rgba(22, 56, 137, 0.2);
@@ -584,7 +636,6 @@ option {
 }
 
 [data-theme="dark"] .report-id-badge {
-    /* No dark mode, o fundo e a borda ficam mais sutis (estilo vidro) */
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.15);
 }
@@ -630,6 +681,18 @@ option {
 .glass-card:hover .dashboard-icon-container {
     transform: scale(1.08) rotate(3deg);
     opacity: 1;
+}
+
+.avatar-circle {
+    width: 80px;
+    height: 80px;
+    background: var(--ui-glass-bg);
+    border: 1px solid var(--ui-glass-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 }
 /* #endregion */
 
@@ -705,7 +768,6 @@ option {
     color: white;
 }
 
-/* Submenu de Alterar Senha */
 .user-submenu {
     margin-left: 20px;
     padding-left: 10px;

@@ -180,5 +180,47 @@ namespace VarejoAPI.Controllers
                 usuario.TipoUsuarioId
             });
         }
+
+        // GET: api/Usuario/Perfil/5 (Novo endpoint para pegar os dados amigáveis pro Blazor)
+        [HttpGet("Perfil/{id:int}")]
+        public async Task<ActionResult> GetPerfil(int id)
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(id);
+            if (usuario == null) return NotFound();
+
+            // Retorna um objeto anônimo formatado exatamente como o Blazor espera
+            return Ok(new
+            {
+                Nome = usuario.Pessoa?.NomeRazao ?? "Não Cadastrado",
+                Cargo = usuario.TipoUsuario?.DescricaoTipoUsuario ?? "Não Definido",
+                Login = usuario.nomeUsuario
+            });
+        }
+
+        // PUT: api/Usuario/UpdateSenha/5 (Específico para não pedir PessoaId e TipoUsuarioId)
+        [HttpPut("UpdateSenha/{id:int}")]
+        public async Task<IActionResult> UpdateSenha(int id, [FromBody] NovaSenhaDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Senha))
+                return BadRequest("A senha não pode estar vazia.");
+
+            var usuario = await _usuarioRepository.GetByIdAsync(id);
+            if (usuario == null)
+                return NotFound();
+
+            // Atualiza apenas a senha
+            usuario.Senha = dto.Senha;
+
+            try
+            {
+                // O seu Repository já está configurado para encriptar com BCrypt. Perfeito!
+                await _usuarioRepository.UpdateAsync(usuario);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return Conflict(ex.Message);
+            }
+        }
     }
 }

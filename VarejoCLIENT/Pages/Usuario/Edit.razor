@@ -1,0 +1,161 @@
+﻿@page "/Usuario/Edit/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel.DataAnnotations
+@attribute [Authorize]
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<div class="container-fluid animate__animated animate__fadeIn pb-4">
+    
+    <div class="d-flex align-items-center mb-4 mt-2">
+        <button class="btn btn-glass-back me-3 flex-shrink-0" @onclick="Voltar" aria-label="Voltar">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div class="flex-grow-1 overflow-hidden">
+            <h4 class="mb-0 fw-bold text-truncate" style="color: var(--ui-text-primary);">Configurações de Perfil</h4>
+            <small class="text-muted d-block text-truncate">Gerencie seu acesso e senha</small>
+        </div>
+    </div>
+
+    <div class="glass-alert py-3 px-4 mb-4 flex-row text-start align-items-center" style="border-radius: 16px;">
+        <i class="fa-solid fa-user-shield fa-2x me-3" style="color: var(--brand-accent); opacity: 0.8;"></i>
+        <div>
+            <h6 class="fw-bold mb-1" style="color: inherit;">Segurança da Conta</h6>
+            <span class="small opacity-75" style="line-height: 1.2;">Use senhas fortes com números e caracteres especiais. O sistema criptografará seus dados automaticamente.</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="glass-card p-3 p-md-4">
+                @if (usuario == null)
+                {
+                    <div class="d-flex justify-content-center py-5 my-4">
+                        <div class="spinner-border" style="color: var(--sys-primary);" role="status"></div>
+                    </div>
+                }
+                else
+                {
+                    <EditForm Model="@editModel" OnValidSubmit="HandleSave">
+                        <DataAnnotationsValidator />
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label text-muted small fw-bold">NOME COMPLETO</label>
+                                <input type="text" class="form-control glass-input" value="@usuario.Nome" disabled />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">CARGO / PERFIL</label>
+                                <input type="text" class="form-control glass-input" value="@usuario.Cargo" disabled />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">USUÁRIO (LOGIN)</label>
+                                <input type="text" class="form-control glass-input" value="@usuario.Login" disabled />
+                            </div>
+
+                            <hr class="my-4 mx-auto w-100" style="border-color: var(--ui-glass-border);" />
+                            
+                            <h6 class="mb-3 fw-bold" style="color: var(--ui-text-primary);"><i class="fa-solid fa-key me-2"></i>Definir Nova Senha</h6>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">NOVA SENHA</label>
+                                <InputText type="password" class="form-control glass-input" @bind-Value="editModel.NovaSenha" placeholder="Digite a nova senha" />
+                                <ValidationMessage For="@(() => editModel.NovaSenha)" class="text-danger small mt-1" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">CONFIRMAR SENHA</label>
+                                <InputText type="password" class="form-control glass-input" @bind-Value="editModel.ConfirmaSenha" placeholder="Repita a nova senha" />
+                                <ValidationMessage For="@(() => editModel.ConfirmaSenha)" class="text-danger small mt-1" />
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-2">
+                            <button type="submit" class="btn btn-glass-primary w-100 d-md-inline-block w-md-auto px-5" disabled="@isSubmitting">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                <i class="fa-solid fa-check me-2"></i>Salvar Alterações
+                            </button>
+                        </div>
+                    </EditForm>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private UsuarioPerfilDTO usuario;
+    private EditSenhaModel editModel = new();
+    private bool isSubmitting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Consume o novo endpoint que traz Nome e Cargo preenchidos
+            usuario = await Http.GetFromJsonAsync<UsuarioPerfilDTO>($"api/Usuario/Perfil/{Id}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Erro ao carregar usuário: " + ex.Message);
+        }
+    }
+
+    private async Task HandleSave()
+    {
+        isSubmitting = true;
+        
+        try
+        {
+            // Cria um objeto anônimo casando com o NovaSenhaDTO da API
+            var payload = new { Senha = editModel.NovaSenha };
+            var response = await Http.PutAsJsonAsync($"api/Usuario/UpdateSenha/{Id}", payload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Mostra alerta visual nativo do browser antes de voltar
+                await JS.InvokeVoidAsync("alert", "Senha alterada com sucesso! Faça login com sua nova credencial.");
+                Nav.NavigateTo("login"); // Melhor prática: forçar o re-login para usar o novo Hash.
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Ocorreu um erro ao tentar salvar a senha no servidor.");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[ERRO API]: {e.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void Voltar() => Nav.NavigateTo("dashboard");
+
+    public class UsuarioPerfilDTO
+    {
+        public string Nome { get; set; }
+        public string Cargo { get; set; }
+        public string Login { get; set; }
+    }
+
+    public class EditSenhaModel
+    {
+        [Required(ErrorMessage = "A nova senha é obrigatória.")]
+        [MinLength(6, ErrorMessage = "A senha deve ter no mínimo 6 caracteres.")]
+        public string NovaSenha { get; set; }
+
+        [Required(ErrorMessage = "Confirme a nova senha.")]
+        [Compare(nameof(NovaSenha), ErrorMessage = "As senhas não conferem.")]
+        public string ConfirmaSenha { get; set; }
+    }
+}

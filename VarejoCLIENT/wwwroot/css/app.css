@@ -75,56 +75,7 @@
     }
 /* #endregion */
 
-/* #region 1. VARIÁVEIS DO SISTEMA VAREJO */
-:root {
-    /* --- SYSTEM (AZUIS) --- */
-    --sys-primary: #163889;
-    --sys-primary-light: #0d9dfde6;
-    /* --- BRAND (CLIENTE - VINHO/CREME) --- */
-    --brand-primary: #6D213C;
-    --brand-secondary: #3e1021;
-    --brand-accent: #E6C786;
-    --brand-bg: #FBF5E8;
-    --brand-dark: #381D2A;
-    --brand-light: #FFFFFF;
-    /* --- UI BASE --- */
-    --ui-bg-gradient-start: #e8f1ff;
-    --ui-bg-gradient-end: #c8d8ff;
-    --ui-text-primary: var(--sys-primary);
-    --ui-text-secondary: #0f172acc;
-    --ui-text-muted: #64748b;
-    --ui-text-button: var(--sys-primary);
-    /* --- GLASS --- */
-    --ui-glass-bg: #ffffff26;
-    --ui-glass-border: #ffffff40;
-    --ui-glass-blur: 20px;
-    /* --- STATES --- */
-    --state-info: #0d9dfde6;
-    --state-success: #27eb8fe6;
-    --state-danger: #dc3545e6;
-    --state-warning: #ffe200e6;
-    /* --- TABLE --- */
-    --ui-table-odd: #ffffff40;
-    --ui-table-even: #c8c8c840;
-}
-
-[data-theme="dark"] {
-    --ui-bg-gradient-start: #0f172a;
-    --ui-bg-gradient-end: #1e293b;
-    --ui-text-primary: #a4daf5;
-    --ui-text-secondary: #ffffffb3;
-    --ui-text-muted: #ffffff70;
-    --ui-text-button: #f0f0f0;
-    --ui-glass-bg: #ffffff14;
-    --ui-glass-border: #ffffff30;
-    --state-info: #0a7cccCC;
-    --state-success: #1f9b5dcc;
-    --state-danger: #b02a37CC;
-    --state-warning: #b38f0eCC;
-}
-/* #endregion */
-
-/* #region 2. BASE & TIPOGRAFIA */
+/* #region 1. BASE & TIPOGRAFIA */
 html, body {
     font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
     margin: 0;
@@ -160,9 +111,13 @@ a {
 .text-muted {
     color: var(--ui-text-muted) !important;
 }
+
+.text-dark {
+    color: var(--ui-text-dark) !important;
+}
 /* #endregion */
 
-/* #region 3. ESTRUTURA GLOBAL E APP LAYOUT */
+/* #region 2. ESTRUTURA GLOBAL E APP LAYOUT */
 @media (min-width: 992px) {
     .page {
         height: 100vh !important;
@@ -211,7 +166,7 @@ a {
 }
 /* #endregion */
 
-/* #region 4. COMPONENTES DE UI E GLASSMORPHISM */
+/* #region 3. COMPONENTES DE UI E GLASSMORPHISM */
 .glass-card {
     position: relative;
     isolation: isolate;
@@ -252,7 +207,7 @@ a {
 }
 /* #endregion */
 
-/* #region 5. BOTÕES */
+/* #region 4. BOTÕES */
 .btn-glass {
     height: 40px;
     border-radius: 30px;
@@ -347,7 +302,7 @@ a {
     }
 /* #endregion */
 
-/* #region 6. FORMULÁRIOS, INPUTS E SEARCH */
+/* #region 5. FORMULÁRIOS, INPUTS E SEARCH */
 .form-control, .form-select {
     background: rgba(255, 255, 255, 0.6) !important;
     backdrop-filter: blur(12px);
@@ -461,7 +416,7 @@ option {
     }
 /* #endregion */
 
-/* #region 7. TABELAS (DESKTOP E MOBILE) */
+/* #region 6. TABELAS (DESKTOP E MOBILE) */
 .glass-table-container {
     border-radius: 14px;
     overflow: hidden;
@@ -577,7 +532,7 @@ option {
 }
 /* #endregion */
 
-/* #region 8. MÓDULOS ESPECÍFICOS (DASHBOARD E RELATÓRIOS) */
+/* #region 7. MÓDULOS ESPECÍFICOS (DASHBOARD E RELATÓRIOS) */
 .report-wrapper {
     max-width: 1200px;
     margin: 0 auto;
@@ -696,7 +651,7 @@ option {
 }
 /* #endregion */
 
-/* #region 9. NAV MENU & SIDEBAR */
+/* #region 8. NAV MENU & SIDEBAR */
 .nav-label {
     font-size: 0.75rem;
     font-weight: 700;

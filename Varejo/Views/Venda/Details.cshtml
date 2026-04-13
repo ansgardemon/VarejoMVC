@@ -34,18 +34,18 @@
                         </button>
                     </form>
 
-                    <a asp-action="Cancelar" asp-route-id="@Model.IdVenda" class="btn-glass btn-outline-danger px-3">
+                    <a asp-action="Cancelar" asp-route-id="@Model.IdVenda" class="btn-glass btn-outline-danger px-3" style="text-decoration:none;">
                         <i class="fa-solid fa-ban me-1"></i> Cancelar
                     </a>
                 }
 
-                <a asp-action="Imprimir" asp-route-id="@Model.IdVenda" target="_blank" class="btn-glass btn-secondary text-white border-0 px-3" title="Imprimir A4">
+                <a asp-action="Imprimir" asp-route-id="@Model.IdVenda" target="_blank" class="btn-glass btn-secondary text-white border-0 px-3" title="Imprimir A4" style="text-decoration:none;">
                     <i class="fa-solid fa-print me-1"></i> A4
                 </a>
 
                 @if (Model.Finalizada)
                 {
-                    <a asp-action="ImprimirTermica" asp-route-id="@Model.IdVenda" target="_blank" class="btn-glass btn-dark text-white border-0 px-3" title="Cupom Não Fiscal">
+                    <a asp-action="ImprimirTermica" asp-route-id="@Model.IdVenda" target="_blank" class="btn-glass btn-dark text-white border-0 px-3" title="Cupom Não Fiscal" style="text-decoration:none;">
                         <i class="fa-solid fa-receipt me-1"></i> Cupom
                     </a>
                 }

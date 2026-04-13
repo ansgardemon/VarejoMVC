@@ -1,11 +1,13 @@
 ﻿@page "/relatorios"
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @using VarejoSHARED.DTO
 @using VarejoSHARED.DTO.Relatorios
 @using VarejoCLIENT.Services
 @attribute [Authorize]
 @inject RelatorioService RelService
 @inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
 
 <main class="container-fluid py-4">
     <div class="d-flex align-items-center mb-4">
@@ -77,7 +79,7 @@
                                             <button class="btn btn-link p-0 border-0 text-decoration-none"
                                                     style="color: @(rel.IsFavorito ? "var(--state-warning)" : "var(--ui-text-secondary)"); opacity: @(rel.IsFavorito ? "1" : "0.3");"
                                                     @onclick:stopPropagation
-                                                    @onclick="() => rel.IsFavorito = !rel.IsFavorito">
+                                                    @onclick="() => AlternarFavorito(rel)">
                                                 <i class="fa-solid fa-star fs-5"></i>
                                             </button>
                                         </div>
@@ -108,11 +110,54 @@
     private bool mostrarApenasFavoritos = false;
     private List<RelatorioDefinicaoDTO> todosRelatorios = new();
     private HashSet<string> gavetasAbertas = new();
+    
+    // Variável para guardar o ID de quem está logado
+    private int usuarioIdLogado = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        todosRelatorios = await RelService.GetMenuRelatoriosAsync();
-        if (todosRelatorios.Any()) gavetasAbertas.Add("#100 - Produtos");
+        // 1. Pega os dados da sessão atual
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // 2. Extrai o UsuarioId (exatamente como fizemos no NavMenu)
+        var idClaim = user.FindFirst("UsuarioId")?.Value ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        int.TryParse(idClaim, out usuarioIdLogado);
+
+        // 3. Chama o serviço passando o ID para ele preencher as estrelas que já estão no banco
+        todosRelatorios = await RelService.GetMenuRelatoriosAsync(usuarioIdLogado);
+        
+        if (todosRelatorios.Any()) gavetasAbertas.Add("");
+    }
+
+    private async Task AlternarFavorito(RelatorioDefinicaoDTO rel)
+    {
+        if (usuarioIdLogado <= 0) return; // Trava de segurança
+
+        // Toggle visual imediato para parecer super rápido pro usuário
+        rel.IsFavorito = !rel.IsFavorito;
+
+        var dto = new RelatorioFavoritoDTO
+        {
+            IdUsuario = usuarioIdLogado,
+            CodigoRelatorio = rel.Codigo
+        };
+
+        try
+        {
+            // Vai lá na API e salva a mudança no banco
+            bool statusBanco = await RelService.ToggleFavoritoAsync(dto);
+            
+            // Sincroniza o visual com a verdade absoluta que veio do banco
+            rel.IsFavorito = statusBanco;
+        }
+        catch (Exception)
+        {
+            // Se der erro de conexão, desfaz o toggle visual
+            rel.IsFavorito = !rel.IsFavorito;
+        }
+        
+        StateHasChanged();
     }
 
     private void ToggleGaveta(string categoria)

@@ -1,4 +1,5 @@
-﻿:root {
+﻿/* #region 1. VARIÁVEIS GLOBAIS (LIGHT MODE / PADRÃO) */
+:root {
     /* ================== SYSTEM (AZUIS) ================== */
     --sys-primary: #163889;
     --sys-primary-light: #0d9dfde6;
@@ -9,13 +10,14 @@
     --brand-bg: #FBF5E8; /* creme */
     --brand-dark: #381D2A;
     --brand-light: #FFFFFF;
-    /* ================== UI BASE ================== */
+    /* ================== UI BASE & TIPOGRAFIA ================== */
     --ui-bg-gradient-start: #e8f1ff;
     --ui-bg-gradient-end: #c8d8ff;
     --ui-text-primary: var(--sys-primary);
     --ui-text-secondary: #0f172acc;
     --ui-text-button: var(--sys-primary);
-    --ui-text-muted: #64748b;
+    --ui-text-muted: #64748b; /* Texto atenuado */
+    --ui-text-dark: #0f172a; /* Tom de ardósia bem escuro, quase preto */
     /* ================== GLASS ================== */
     --ui-glass-bg: #ffffff26;
     --ui-glass-border: #ffffff40;
@@ -29,8 +31,9 @@
     --ui-table-odd: #ffffff40;
     --ui-table-even: #c8c8c840;
 }
+/* #endregion */
 
-/* ================== DARK MODE ================== */
+/* #region 2. DARK MODE OVERRIDES */
 [data-theme="dark"] {
     --ui-bg-gradient-start: #0f172a;
     --ui-bg-gradient-end: #1e293b;
@@ -38,6 +41,8 @@
     --ui-text-secondary: #ffffffb3;
     --ui-text-button: #f0f0f0;
     --ui-text-muted: #ffffff70;
+    --ui-text-dark: #f8fafc; /* Vira claro no dark mode */
+
     --ui-glass-bg: #ffffff14;
     --ui-glass-border: #ffffff30;
     --state-info: #0a7cccCC;
@@ -45,3 +50,4 @@
     --state-danger: #b02a37CC;
     --state-warning: #b38f0eCC;
 }
+/* #endregion */

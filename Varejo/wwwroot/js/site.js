@@ -28,7 +28,7 @@
         if (isHome) return; // Se for a Home, o JS não empurra o menu!
 
         if ($(window).scrollTop() > 50) {
-            nav.addClass('sticky-nav');
+            //nav.addClass('sticky-nav');
         } else {
             nav.removeClass('sticky-nav');
         }

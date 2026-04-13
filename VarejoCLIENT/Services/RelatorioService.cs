@@ -19,40 +19,70 @@ namespace VarejoCLIENT.Services
         #endregion
 
         #region MENU E DEFINIÇÕES
-        public async Task<List<RelatorioDefinicaoDTO>> GetMenuRelatoriosAsync()
+
+        // 1. Criada uma lista mestre privada para não duplicar código
+        private List<RelatorioDefinicaoDTO> GetListaMestre()
         {
-            // É daqui que a sua tela de menu puxa os "Cards". 
-            // Quando tiver banco de dados para isso, é só trocar esse Task.FromResult por uma chamada _http.GetFromJsonAsync
-            return await Task.FromResult(new List<RelatorioDefinicaoDTO>
+            return new List<RelatorioDefinicaoDTO>
             {
                 // MÓDULO 100 - PRODUTOS
-                new RelatorioDefinicaoDTO { Codigo = 101, Nome = "Produtos Categorizados", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 102, Nome = "PRECIFICAÇÃO E MARGENS DE LUCRO", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 103, Nome = "Movimento de Estoque por Produto", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 104, Nome = "Curva ABC de Produtos", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 105, Nome = "Produtos Sem Giro", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 106, Nome = "Ranking de Vendas (Mais/Menos)", Categoria = "#100 - Produtos", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 107, Nome = "Histórico de Alteração de Preços", Categoria = "#100 - Produtos", IsFavorito = true },
+                new RelatorioDefinicaoDTO { Codigo = 101, Nome = "Produtos Categorizados", Categoria = "#100 - Produtos", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 102, Nome = "PRECIFICAÇÃO E MARGENS DE LUCRO", Categoria = "#100 - Produtos", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 103, Nome = "Movimento de Estoque por Produto", Categoria = "#100 - Produtos", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 104, Nome = "Curva ABC de Produtos", Categoria = "#100 - Produtos", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 105, Nome = "Produtos Sem Giro", Categoria = "#100 - Produtos", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 106, Nome = "Ranking de Vendas (Mais/Menos)", Categoria = "#100 - Produtos", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 107, Nome = "Histórico de Alteração de Preços", Categoria = "#100 - Produtos", IsFavorito = false },
                 
                 // MÓDULO 200 - ESTOQUE
-                new RelatorioDefinicaoDTO { Codigo = 201, Nome = "Posição Atual de Estoque", Categoria = "#200 - Estoque", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 202, Nome = "Lotes e Validades", Categoria = "#200 - Estoque", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 203, Nome = "Movimentação de Estoque Geral", Categoria = "#200 - Estoque", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 204, Nome = "Sugestão de Compras e Cobertura", Categoria = "#200 - Estoque", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 205, Nome = "Ficha de Inventário (Contagem)", Categoria = "#200 - Estoque", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 206, Nome = "Valorização de Estoque (Projeção)", Categoria = "#200 - Estoque", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 207, Nome = "Giro e Velocidade de Estoque", Categoria = "#200 - Estoque", IsFavorito = true },
-                new RelatorioDefinicaoDTO { Codigo = 208, Nome = "Divergência de Inventário", Categoria = "#200 - Estoque", IsFavorito = true },
-                
+                new RelatorioDefinicaoDTO { Codigo = 201, Nome = "Posição Atual de Estoque", Categoria = "#200 - Estoque", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 202, Nome = "Lotes e Validades", Categoria = "#200 - Estoque", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 203, Nome = "Movimentação de Estoque Geral", Categoria = "#200 - Estoque", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 204, Nome = "Sugestão de Compras e Cobertura", Categoria = "#200 - Estoque", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 205, Nome = "Ficha de Inventário (Contagem)", Categoria = "#200 - Estoque", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 206, Nome = "Valorização de Estoque (Projeção)", Categoria = "#200 - Estoque", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 207, Nome = "Giro e Velocidade de Estoque", Categoria = "#200 - Estoque", IsFavorito = false },
+                new RelatorioDefinicaoDTO { Codigo = 208, Nome = "Divergência de Inventário", Categoria = "#200 - Estoque", IsFavorito = false },
 
                 // MÓDULO 300 - MOVIMENTAÇÕES
-                new RelatorioDefinicaoDTO { Codigo = 301, Nome = "Histórico Analítico Geral", Categoria = "#300 - Movimentações", IsFavorito = true }
-            });
+                new RelatorioDefinicaoDTO { Codigo = 301, Nome = "Histórico Analítico Geral", Categoria = "#300 - Movimentações", IsFavorito = false }
+            };
         }
 
-        public async Task<RelatorioDefinicaoDTO?> GetDefinicaoAsync(int codigo)
+        // 2. Método ajustado para receber o ID do Usuário e buscar os favoritos no banco
+        public async Task<List<RelatorioDefinicaoDTO>> GetMenuRelatoriosAsync(int usuarioId)
         {
-            var menu = await GetMenuRelatoriosAsync();
+            var todosRelatorios = GetListaMestre();
+
+            if (usuarioId > 0)
+            {
+                try
+                {
+                    // Consulta a API para pegar apenas os códigos que este usuário favoritou
+                    var favoritosDoBanco = await _http.GetFromJsonAsync<List<int>>($"api/Relatorio/meus-favoritos/{usuarioId}");
+
+                    if (favoritosDoBanco != null && favoritosDoBanco.Any())
+                    {
+                        foreach (var rel in todosRelatorios)
+                        {
+                            // Cruza as listas: se o código estiver no banco, marca a estrela
+                            rel.IsFavorito = favoritosDoBanco.Contains(rel.Codigo);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Erro ao carregar favoritos do usuário: " + ex.Message);
+                }
+            }
+
+            return todosRelatorios;
+        }
+
+        // 3. Adicionado o parâmetro opcional usuarioId para não quebrar chamadas antigas
+        public async Task<RelatorioDefinicaoDTO?> GetDefinicaoAsync(int codigo, int usuarioId = 0)
+        {
+            var menu = await GetMenuRelatoriosAsync(usuarioId);
             return menu.FirstOrDefault(x => x.Codigo == codigo);
         }
         #endregion

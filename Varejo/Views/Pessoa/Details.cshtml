@@ -1,4 +1,5 @@
 ﻿@model Varejo.ViewModels.PessoaViewModel
+
 @{
     ViewData["Title"] = "Detalhes da Pessoa";
 }
@@ -12,13 +13,32 @@
             <div class="ms-auto">
                 @if (Model.Ativo)
                 {
-                    <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25 py-2">ATIVO</span>
+                    <span class="report-id-badge bg-success bg-opacity-10 text-success border-success border-opacity-25 py-2 mb-0">ATIVO</span>
                 }
                 else
                 {
-                    <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25 py-2">INATIVO</span>
+                    <span class="report-id-badge bg-danger bg-opacity-10 text-danger border-danger border-opacity-25 py-2 mb-0">INATIVO</span>
                 }
             </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <span class="report-id-badge mb-0 @(Model.EhJuridico ? "bg-primary text-white border-primary" : "opacity-50")">
+                <i class="fa-solid @(Model.EhJuridico ? "fa-building" : "fa-user") me-2"></i>
+                @(Model.EhJuridico ? "PESSOA JURÍDICA" : "PESSOA FÍSICA")
+            </span>
+            
+            <span class="report-id-badge mb-0 @(Model.EhCliente ? "bg-success text-white border-success" : "opacity-25")">
+                <i class="fa-solid fa-cart-shopping me-2"></i>CLIENTE
+            </span>
+            
+            <span class="report-id-badge mb-0 @(Model.EhFornecedor ? "bg-warning text-dark border-warning" : "opacity-25")">
+                <i class="fa-solid fa-truck me-2"></i>FORNECEDOR
+            </span>
+            
+            <span class="report-id-badge mb-0 @(Model.EhUsuario ? "bg-info text-white border-info" : "opacity-25")">
+                <i class="fa-solid fa-user-gear me-2"></i>USUÁRIO DO SISTEMA
+            </span>
         </div>
 
         <div class="row g-3 mb-5">
@@ -62,7 +82,13 @@
                             <td data-label="Bairro">@end.Bairro</td>
                             <td data-label="CEP">@end.Cep</td>
                             <td data-label="Localidade">@end.Cidade - @end.Uf</td>
-                            <td data-label="Complemento" class="opacity-75">@(end.Complemento ?? "-")</td>
+                            <td data-label="Complemento" class="opacity-75">@(string.IsNullOrEmpty(end.Complemento) ? "-" : end.Complemento)</td>
+                        </tr>
+                    }
+                    @if (!Model.Enderecos.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4 opacity-50 fw-bold">Nenhum endereço cadastrado para esta pessoa.</td>
                         </tr>
                     }
                 </tbody>

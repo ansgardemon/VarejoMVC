@@ -139,7 +139,6 @@
     $('#theme-checkbox-mobile').on('change', function () {
         $('#theme-checkbox').prop('checked', this.checked).trigger('change');
     });
-
     // #endregion
 
     // #region 11. ENGINE DE ORDENAÇÃO DE TABELAS UNIVERSAL
@@ -235,7 +234,6 @@
         const container = $(this).closest('.endereco-item'); // Encontra o card do endereço atual
 
         if (cep !== "" && /^[0-9]{8}$/.test(cep)) {
-            // Feedback visual de carregamento
             $(this).addClass('is-loading');
 
             $.getJSON(`https://viacep.com.br/ws/${cep}/json/?callback=?`, function (dados) {
@@ -254,16 +252,26 @@
         }
     });
 
-    // --- VALIDAÇÃO REAL-TIME CPF/CNPJ ---
+    // --- VALIDAÇÃO REAL-TIME CPF/CNPJ E AUTO-CHECK JURÍDICO ---
     $(document).on('blur', '.cpf-cnpj-mask', function () {
         const valor = $(this).val().replace(/\D/g, '');
         const input = $(this);
 
-        if (valor === "") return;
+        if (valor === "") {
+            input.removeClass('is-invalid is-valid');
+            input.next('.invalid-feedback').remove();
+            return;
+        }
 
         let valido = false;
-        if (valor.length === 11) valido = validarCPF(valor);
-        else if (valor.length === 14) valido = validarCNPJ(valor);
+        let isCnpj = false;
+
+        if (valor.length === 11) {
+            valido = validarCPF(valor);
+        } else if (valor.length === 14) {
+            valido = validarCNPJ(valor);
+            isCnpj = true;
+        }
 
         if (!valido) {
             input.addClass('is-invalid').removeClass('is-valid');
@@ -273,9 +281,19 @@
         } else {
             input.removeClass('is-invalid').addClass('is-valid');
             input.next('.invalid-feedback').remove();
+
+            // MÁGICA: Se for um CNPJ válido, marca a flag EhJuridico automaticamente
+            if (isCnpj) {
+                const checkJuridico = $('#EhJuridico');
+                // Ativa a flag se ela já não estiver ativa
+                if (checkJuridico.length && !checkJuridico.prop('checked')) {
+                    checkJuridico.prop('checked', true).trigger('change');
+                }
+            }
         }
     });
 
+    // --- FUNÇÕES MATEMÁTICAS REAIS DE VALIDAÇÃO ---
     function validarCPF(cpf) {
         if (cpf.length !== 11 || !!cpf.match(/(\d)\1{10}/)) return false;
         cpf = cpf.split('').map(el => +el);
@@ -296,6 +314,7 @@
         }
         let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
         if (resultado != digitos.charAt(0)) return false;
+
         tamanho = tamanho + 1;
         numeros = cnpj.substring(0, tamanho);
         soma = 0;

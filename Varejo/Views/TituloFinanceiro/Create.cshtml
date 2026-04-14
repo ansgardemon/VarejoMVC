@@ -12,7 +12,10 @@
             <h4 class="mb-0 fw-bold">@ViewData["Title"]</h4>
         </div>
 
-        <div asp-validation-summary="All" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert bg-danger bg-opacity-10 border border-danger border-opacity-25 text-danger fw-semibold" role="alert"></div>
+        }
 
         <form asp-action="Create" method="post">
             
@@ -37,9 +40,9 @@
                     </button>
                 </div>
 
-                <div id="searchPessoaBox" class="mt-2 p-3 rounded-4 position-absolute w-100 shadow-lg" style="display:none; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); z-index: 1050;">
+                <div id="searchPessoaBox" class="mt-2 p-3 rounded-4 position-absolute w-100 shadow-lg" style="display:none; background: var(--ui-glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--ui-glass-border); z-index: 1050;">
                     <input type="text" id="searchPessoaInput" class="form-control form-control-lg" placeholder="Digite o nome e aguarde..." onkeyup="buscarPessoa()" />
-                    <ul id="searchResults" class="list-group mt-2 shadow-sm rounded-3 overflow-hidden border-0"></ul>
+                    <ul id="searchResults" class="list-group mt-2 shadow-sm rounded-3 overflow-hidden border-0 bg-transparent"></ul>
                 </div>
             </div>
 
@@ -76,8 +79,8 @@
                 <div class="col-md-4">
                     <label asp-for="Valor" class="form-label fw-bold opacity-75">Valor Total</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-transparent border-end-0">R$</span>
-                        <input asp-for="Valor" class="form-control form-control-lg border-start-0 ps-0 text-success fw-bold" placeholder="0,00" />
+                        <span class="input-group-text bg-transparent border-end-0" style="color: var(--ui-text-primary);">R$</span>
+                        <input asp-for="Valor" class="form-control form-control-lg border-start-0 ps-0 fw-bold" style="color: var(--state-success) !important;" placeholder="0,00" />
                     </div>
                 </div>
             </div>
@@ -100,7 +103,6 @@
 </div>
 
 <script>
-    // Script Intacto
     function toggleSearchPessoa() {
         var box = document.getElementById("searchPessoaBox");
         box.style.display = box.style.display === "none" ? "block" : "none";
@@ -118,10 +120,10 @@
 
         data.forEach(p => {
             const li = document.createElement("li");
-            // Adicionei estilo Glass para os itens
-            li.className = "list-group-item list-group-item-action text-dark fw-semibold";
-            li.style.cursor = "pointer";
-            li.innerText = p.text;
+            
+            li.className = "item-resultado list-group-item bg-transparent border-0 rounded-3 mb-1";
+            
+            li.innerHTML = `<span class="res-title">${p.text}</span>`;
 
             li.onclick = function () {
                 document.getElementById("PessoaId").value = p.id;

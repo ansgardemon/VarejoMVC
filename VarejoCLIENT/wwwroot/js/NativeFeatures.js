@@ -12,3 +12,19 @@ window.nativeFeatures = {
         }
     }
 };
+
+window.notificacao = {
+    solicitarPermissao: async () => {
+        const perm = await Notification.requestPermission();
+        return perm === 'granted';
+    },
+    mostrar: (titulo, mensagem) => {
+        if (Notification.permission === 'granted') {
+            new Notification(titulo, {
+                body: mensagem,
+                icon: '/icon-512.png', // Caminho do ícone do seu app
+                vibrate: [200, 100, 200]
+            });
+        }
+    }
+};

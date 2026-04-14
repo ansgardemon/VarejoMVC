@@ -4,34 +4,35 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Net.Http.Json
 
-@* INJEÇÕES ADICIONADAS PARA O JWT *@
+@* INJEÇÕES ADICIONADAS PARA O JWT E BIOMETRIA *@
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Nav
 @inject AuthService AuthService
 
-<div class="card p-4 shadow border-0" style="max-width: 400px; width: 100%; margin: auto; background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border) !important;">
+<div class="card p-4 shadow border-0" style="max-width: 400px; width: 100%; margin: auto; background: var(--ui-glass-bg, rgba(255,255,255,0.1)); backdrop-filter: blur(var(--ui-glass-blur, 20px)); border: 1px solid var(--ui-glass-border, rgba(255,255,255,0.2)) !important; border-radius: 20px;">
+    
     <div class="text-center mb-4">
-        <div class="mx-auto mb-3 shadow-sm" style="width: 55px; height: 55px; background: var(--sys-primary); border-radius: 14px; display: grid; place-items: center;">
+        <div class="mx-auto mb-3 shadow-sm" style="width: 55px; height: 55px; background: var(--sys-primary, #163889); border-radius: 14px; display: grid; place-items: center;">
             <i class="fa-solid fa-box text-white fs-3"></i>
         </div>
-        <h3 class="fw-bold" style="color: var(--sys-primary);">Varejo Gestor</h3>
-        <hr style="border-color: var(--glass-border);" />
+        <h3 class="fw-bold" style="color: var(--sys-primary, #163889);">Varejo Gestor</h3>
+        <hr style="border-color: var(--ui-glass-border, rgba(0,0,0,0.1));" />
     </div>
 
     <div class="mb-3">
-        <label class="form-label fw-bold" style="color: var(--sys-primary);">Usuário</label>
-        <InputText @bind-Value="usuarioInput" class="form-control" placeholder="Digite seu usuário" />
+        <label class="form-label fw-bold" style="color: var(--sys-primary, #163889);">Usuário</label>
+        <InputText @bind-Value="usuarioInput" class="form-control form-control-lg" placeholder="Digite seu usuário" style="border-radius: 12px; background: rgba(255,255,255,0.5);" />
     </div>
 
     <div class="mb-4">
-        <label class="form-label fw-bold" style="color: var(--sys-primary);">Senha</label>
-        <InputText @bind-Value="senhaInput" type="password" class="form-control" placeholder="******" />
+        <label class="form-label fw-bold" style="color: var(--sys-primary, #163889);">Senha</label>
+        <InputText @bind-Value="senhaInput" type="password" class="form-control form-control-lg" placeholder="******" style="border-radius: 12px; background: rgba(255,255,255,0.5);" />
     </div>
 
-    <button class="btn w-100 fw-bold shadow-sm" style="background: var(--sys-primary); color: white;" @onclick="ExecutarLogin" disabled="@carregando">
-        @if (carregando)
+    <button class="btn btn-lg w-100 fw-bold shadow-sm mb-3" style="background: var(--sys-primary, #163889); color: white; border-radius: 12px;" @onclick="ExecutarLogin" disabled="@carregando">
+        @if (carregando && !usandoBiometria)
         {
             <span class="spinner-border spinner-border-sm"></span>
         }
@@ -40,6 +41,22 @@
             <span><i class="fa-solid fa-right-to-bracket me-2"></i> Entrar no Sistema</span>
         }
     </button>
+
+    @if (suportaBiometria)
+    {
+        <button class="btn btn-lg w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center" 
+                style="background: transparent; color: var(--sys-primary, #163889); border: 2px solid var(--sys-primary, #163889); border-radius: 12px;" 
+                @onclick="ExecutarLoginBiometrico" disabled="@carregando">
+            @if (carregando && usandoBiometria)
+            {
+                <span class="spinner-border spinner-border-sm me-2"></span> <span>Aguardando...</span>
+            }
+            else
+            {
+                <i class="fa-solid fa-fingerprint fs-4 me-2"></i> <span>Entrar com Biometria</span>
+            }
+        </button>
+    }
 
     @if (!string.IsNullOrEmpty(erro))
     {
@@ -54,10 +71,29 @@
     private string senhaInput = "";
     private string erro = "";
     private bool carregando = false;
+    
+    // Controles da Biometria
+    private bool suportaBiometria = false;
+    private bool usandoBiometria = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Verifica silenciosamente se o dispositivo tem leitor de digital/rosto
+                suportaBiometria = await JSRuntime.InvokeAsync<bool>("biometria.isSupported");
+                StateHasChanged();
+            }
+            catch { /* Ignora se o JS ainda não carregou */ }
+        }
+    }
 
     private async Task ExecutarLogin()
     {
         carregando = true;
+        usandoBiometria = false;
         erro = "";
 
         try
@@ -76,14 +112,14 @@
                 {
                     // 3. Salva o Token no LocalStorage via JSInterop
                     await JSRuntime.InvokeVoidAsync("authInterop.salvarToken", resultado.token);
-
+                    
                     // 4. Avisa o Blazor que o usuário está oficialmente logado
                     var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
                     customAuthStateProvider.NotificarLogin(resultado.token);
-
+                    
                     // Opcional: Chama a vibração do Passo 2 para dar feedback
                     try { await JSRuntime.InvokeVoidAsync("nativeFeatures.vibrar", 50); } catch { }
-
+                    
                     // 5. Redireciona para onde você já estava direcionando
                     Nav.NavigateTo("/dashboard");
                 }
@@ -104,6 +140,52 @@
         finally
         {
             carregando = false;
+        }
+    }
+
+    private async Task ExecutarLoginBiometrico()
+    {
+        carregando = true;
+        usandoBiometria = true;
+        erro = "";
+
+        try
+        {
+            // 1. Aciona o Leitor de Digital / FaceID do celular
+            var biometriaValida = await JSRuntime.InvokeAsync<bool>("biometria.autenticar");
+
+            if (biometriaValida)
+            {
+                // SE A DIGITAL BATEU:
+                // Para um PWA rápido, você busca um RefreshToken ou um PIN criptografado salvo no LocalStorage
+                // Aqui estou simulando a chamada para a sua API com um token de biometria salvo previamente.
+                
+                var tokenSalvo = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "auth_token_biometria");
+
+                if (!string.IsNullOrEmpty(tokenSalvo))
+                {
+                    var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
+                    customAuthStateProvider.NotificarLogin(tokenSalvo);
+                    Nav.NavigateTo("/dashboard");
+                }
+                else
+                {
+                    erro = "Nenhuma credencial vinculada. Faça login com senha primeiro para ativar a biometria.";
+                }
+            }
+            else
+            {
+                erro = "Biometria cancelada ou não reconhecida.";
+            }
+        }
+        catch (Exception)
+        {
+            erro = "Erro ao acionar o sensor biométrico.";
+        }
+        finally
+        {
+            carregando = false;
+            StateHasChanged();
         }
     }
 
